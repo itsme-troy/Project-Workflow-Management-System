@@ -1,0 +1,87 @@
+{% extends 'project/base.html'%} <!-- use the base file -->
+{% load static %}
+{% block content %} <!-- content of all web pages go -->
+
+    </br> 
+    
+        <h1> Eligible Student List </h1> 
+        <br/>
+        <table class ="table table-striped table-hover table-bordered table"> 
+        
+           <thead> 
+                  <tr> 
+                      {% comment %} <th scope="col"> Profile Picture  </th>  {% endcomment %}
+                      <th scope="col"> Last Name  </th> 
+                      <th scope="col"> First name </th> 
+                      <th scope="col"> Email </th> 
+                      <th> Action </th>
+                  </tr> 
+              </thead>  
+              <tbody>
+                <ul> 
+        
+        {% for student in student_list %}
+            {% if student.role == 'STUDENT' %}
+                {% if student.eligible %}
+                        <tr> 
+                            {% comment %} <td> </td>  {% endcomment %}
+                            <td> 
+                                {% comment %} <a href ="{% url 'show-student' student.id %}"> {{ student.first_name}} {{ student.last_name}}</a> <br/>  {% endcomment %}
+                                {{ student.last_name }} 
+                            </td> 
+                            <td>    {{ student.first_name }} </td> 
+                            <td> {{ student.email }} </td> 
+                       
+                            <td> <a href="{% url 'show-student' student.id %}">  
+                                <button type="button" class="btn btn-outline-primary btn-sm "> View Profile </button> </a> </td>
+                     
+                        </tr> 
+                    {% endif %}
+            {% endif %}
+        {% endfor %}
+    </table> 
+
+    </br>
+    <hr/> 
+</br> 
+<h1> Student waitlist </h1> 
+<br/>
+<table class ="table table-striped table-hover table-bordered table"> 
+
+   <thead> 
+          <tr>
+          
+              <th scope="col"> Last Name  </th> 
+              <th scope="col"> First name </th> 
+              <th scope="col"> Email </th> 
+              <th> Action </th>
+          </tr> 
+      </thead>  
+      <tbody>
+        <ul> 
+
+    {% for student in student_list %}
+        {% if student.role == 'STUDENT' %}
+            {% if not student.eligible %}
+                    <tr> 
+                        <td> 
+                            {% comment %} <a href ="{% url 'show-student' student.id %}"> {{ student.first_name}} {{ student.last_name}}</a> <br/>  {% endcomment %}
+                            {{ student.last_name }} 
+                        </td> 
+                        <td> 
+                            {{ student.first_name }}
+                        </td> 
+                        <td> {{ student.email }} </td> 
+
+                        <td> <a href="{% url 'show-student' student.id %}">  
+                            <button type="button" class="btn btn-outline-primary btn-sm "> View Profile </button> </a> </td>
+                 
+                    </tr> 
+                {% endif %}
+        {% endif %}
+    {% endfor %}
+</table> 
+
+</br>
+
+{% endblock %}

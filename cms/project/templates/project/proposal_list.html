@@ -1,0 +1,27 @@
+{% extends 'project/base.html'%} <!-- use the base file -->
+
+{% block content %} <!-- content of all web pages go -->
+
+        <h1> Proposals </h1> 
+        <br/> 
+    <table class ="table table-striped table-hover table-bordered table"> 
+        <thead> 
+          <tr> 
+              <th scope="col"> Project Name  </th> 
+              <th scope="col"> Adviser </th> 
+          </tr> 
+      </thead>  
+      <tbody>
+
+        <ul> 
+        {% for project in project_list %}
+                {% if not project.approved %}
+                <tr> 
+                        <td> <a href ="{% url 'show-proposal' project.id %}" > {{ project}} </a>  </td>
+                        <td> {{ project.adviser }} </td>  
+                </tr> 
+                {% endif %}
+        {% endfor %}
+
+{% endblock %}
+

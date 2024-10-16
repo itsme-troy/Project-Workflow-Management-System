@@ -1,0 +1,36 @@
+{% extends 'project/base.html'%} <!-- use the base file -->
+
+{% block content %} <!-- content of all web pages go -->
+ 
+        <h1> Projects </h1> 
+
+        {% comment %} ID: {{ user.id }} {% endcomment %}
+    <br/> 
+
+    <table class ="table table-striped table-hover table-bordered table"> 
+      <thead> 
+        <tr> 
+            <th scope="col"> Project Name  </th> 
+            <th scope="col"> Adviser </th> 
+   
+        </tr> 
+    </thead>  
+    <tbody>
+      <ul> 
+
+      {% for project in project_list %}
+         {% if project.approved %}
+
+            <tr>
+              <td> <a href ="{% url 'show-project' project.id %}" > {{ project}} </a>  </td> 
+              <td>  {{ project.adviser}} </td> 
+  
+              
+            </tr> 
+
+            <br/> 
+        {% endif %}
+      {% endfor %}
+  </table>     
+{% endblock %}
+

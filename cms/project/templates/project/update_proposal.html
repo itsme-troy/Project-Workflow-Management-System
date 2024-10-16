@@ -1,0 +1,40 @@
+
+{% extends 'project/base.html'%} <!-- use the base file -->
+
+{% block content %} <!-- content of all web pages go -->
+
+{% comment %} {% if user.is_authenticated %} {% endcomment %}
+    {% comment %} {% if user == project.adviser %} {% endcomment %}
+        <h1> Update Proposal...</h1> <br/> 
+        <!--logged in user can be called by
+        "user" which is already valid for every page -->
+        {% comment %} Logged In user: {{ user }}
+            
+        <br/>   
+        Adviser : {{ project.adviser }} {% endcomment %}
+        <!-- use form rendered from views -->
+        
+        <!-- put the data from the form.
+        solution is put an instance of project-->
+        <form action="" method=POST> 
+            {% csrf_token %}
+            {{ form.as_p }}
+            <br/> 
+            <input type="submit" value="Update"
+            class="btn btn-secondary"> 
+        {% comment %} {% else %}
+            <h2> Access Denied! </h2> 
+            <p> Only the Project's Adviser can update this project...</p>
+            Logged In user: {{ user }}
+                
+            <br/>   
+            Adviser : {{ project.adviser }}
+        {% endif %} {% endcomment %}
+{% comment %} {% else %}
+    <h1> Sorry! You must be Logged In to view This Page... </h1> 
+
+    <a href="{% url 'login' %}">Login Here! </a> 
+
+{% endif %} {% endcomment %}
+ 
+{% endblock %}

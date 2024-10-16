@@ -1,0 +1,31 @@
+{% extends 'project/base.html'%} <!-- use the base file -->
+
+{% block content %} <!-- content of all web pages go -->
+
+</br> 
+  
+    {% if user.is_authenticated %}
+        <center> 
+            <h1> Submit A Project Proposal </h1> 
+            <br/> <br/> 
+        </center>  
+    
+        {% if submitted %}
+            Your Proposal Was Submitted Successfully!
+        {% else %}
+            <form action="" method=POST> 
+                {% csrf_token %}
+                
+                {{ form.as_p }}
+                
+
+                <input type="submit" value="Submit" 
+                class="btn btn-secondary">
+            </form> 
+        {% endif %}
+    {% else %}
+        <h1> Sorry. Please Login to view this Page. </h1> 
+
+        <a href="{% url 'login' %}">Login Here! </a> 
+    {% endif %}
+{% endblock %}

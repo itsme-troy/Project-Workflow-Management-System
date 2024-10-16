@@ -1,0 +1,29 @@
+{% extends 'project/base.html'%} <!-- use the base file -->
+
+{% block content %} <!-- content of all web pages go -->
+
+    </br> 
+        <h1>Login </h1> 
+    <br/>
+    
+        <form action="" method=POST> 
+            {% csrf_token %}
+            
+                <div class="mb-3">
+                  <label for="exampleInputEmail1" class="form-label">Email Address</label>
+                  <input type="email" class="form-control" name="email" aria-describedby="emailHelp">
+                 
+                <div class="mb-3">
+                  <label for="exampleInputPassword1" class="form-label">Password</label>
+                  <input type="password" class="form-control" name="password">
+                </div>
+             
+             
+
+            <input type="submit" value="Submit" 
+            class="btn btn-secondary">
+        </form> 
+
+        
+
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'project/base.html' %}
+
+{% block content %}
+
+</br> 
+
+<center> 
+    <h1> Update User </h1> </br> 
+</center> 
+
+<form method="POST" action="" enctype="multipart/form-data"> 
+     {% csrf_token %}
+    {{ user_form.as_p }}
+    {{ profile_form.as_p }}
+</br> <br> 
+
+    <button type="submit" class="btn btn-secondary"> 
+        Save All changes</button> 
+
+    
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'project/base.html' %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+        <center> 
+            <h1> Register A Project Group </h1> 
+            <br/> <br/> 
+        </center>  
+    
+        {% if submitted %}
+            Your Project Group Was Submitted Successfully!
+        {% else %}
+            <form action="" method=POST> 
+                {% csrf_token %}
+                
+                {{ form.as_p }}
+                
+                <input type="submit" value="Submit" 
+                class="btn btn-secondary">
+            </form> 
+        {% endif %}
+    {% else %}
+        <h1> Sorry. Please Login to view this Page. </h1> 
+
+        <a href="{% url 'login' %}">Login Here! </a> 
+    {% endif %}
+{% endblock %}

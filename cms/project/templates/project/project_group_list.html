@@ -1,0 +1,107 @@
+{% extends 'project/base.html' %}
+
+{% block content %}
+
+</br> 
+<center> 
+    <h1> Project Group List </h1> </br> 
+</center> 
+ 
+<div class="row"> 
+  {% for group in project_groups %}
+    {% if group.approved %}
+      <div class="col-sm-4 mb-4">
+        <div class="card">
+          <div class="card-header">
+              Name: {{ group.group_name }} 
+          </div>
+          <div class="card-body">
+          <h5 class="card-title"> Adviser: {{ group.adviser}} </h5>
+          <p class="card-text"> 
+              <ul>
+                <li> Proponents: <br/> 
+                  {% for student in group.proponents.all%}
+                      {{ student }} </br>
+                    {% endfor %}
+                </li> 
+              </ul> 
+            
+          </p>
+          </div>
+          {% if user.is_authenticated %}
+            {% if user == group.adviser %}
+              <div class="card-footer text-body-secondary">
+                    {% if not group.approved %}  
+                    <a href="{% url 'approve-project-group' group.id %}"
+                      class="btn btn-outline-success btn-sm"> Accept Group </a>  
+
+                      <a href="{% url 'delete-project-group' group.id %}"
+                      class="btn btn-outline-danger btn-sm"> Delete Group </a>  
+
+                    {% else %}
+                    <a href="{% url 'reject-project-group' group.id %}"
+                      class="btn btn-outline-danger btn-sm"> Reject Group </a> 
+                    {% endif %}
+                      
+            
+              </div> 
+            {% endif %} 
+          {% endif %}
+          </div>
+        </div>
+      {% endif %}
+  {% endfor %}
+</div>
+   
+<center> </br>
+  <h1> Project Group waitlist </h1> </br> 
+</center> 
+
+<div class="row"> 
+{% for group in project_groups %}
+  {% if not group.approved %}
+    <div class="col-sm-4 mb-4">
+      <div class="card">
+        <div class="card-header">
+            Name: {{ group.group_name }} 
+        </div>
+        <div class="card-body">
+        <h5 class="card-title"> Adviser: {{ group.adviser}} </h5>
+        <p class="card-text"> 
+            <ul>
+              <li> Proponents: <br/> 
+                {% for student in group.proponents.all%}
+                    {{ student }} </br>
+                  {% endfor %}
+              </li> 
+            </ul> 
+          
+        </p>
+        </div>
+        {% if user.is_authenticated %}
+          {% if user == group.adviser %}
+            <div class="card-footer text-body-secondary">
+                  {% if not group.approved %}  
+                  <a href="{% url 'approve-project-group' group.id %}"
+                    class="btn btn-outline-success btn-sm"> Accept Group </a>  
+
+                    <a href="{% url 'delete-project-group' group.id %}"
+                    class="btn btn-outline-danger btn-sm"> Delete Group </a>  
+
+                  {% else %}
+                  <a href="{% url 'reject-project-group' group.id %}"
+                    class="btn btn-outline-danger btn-sm"> Reject Group </a> 
+                  {% endif %}
+                    
+          
+            </div> 
+          {% endif %} 
+        {% endif %}
+        </div>
+      </div>
+    {% endif %}
+{% endfor %}
+</div>
+ 
+
+{% endblock %}

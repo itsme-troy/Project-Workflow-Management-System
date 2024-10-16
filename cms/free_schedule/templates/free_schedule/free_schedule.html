@@ -1,0 +1,27 @@
+{% extends 'free_schedule/base.html' %}
+
+{% block content %}
+
+{% if user.is_authenticated  %}
+    </br> 
+
+    <p> Hello, <b> {{ user }} </b> . Please Enter your Available Schedule/s. </br> </p>
+
+    <center> 
+    </br> 
+        <div class="col-md-12"> 
+            <div id='calendar'></div> 
+            {% comment %} {% for event in events %}
+                {{ event }}
+            {% endfor %} {% endcomment %}
+        </div> 
+    </center> 
+
+{% else %}
+    <h1> Sorry! Please login first to view this Page. </h1> 
+</br> </br> 
+    <a href="{% url 'login' %}"> Login Here </a>
+
+{% endif %}
+
+{% endblock %}
