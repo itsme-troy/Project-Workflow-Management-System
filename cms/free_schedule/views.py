@@ -60,7 +60,6 @@ def add_sched(request):
     data = {}
     return JsonResponse(data)
 
-
 def update_sched(request):
     start = request.GET.get("start", None)
     end = request.GET.get("end", None)

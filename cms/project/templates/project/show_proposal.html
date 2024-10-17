@@ -8,10 +8,12 @@
 {% if not project.approved %}
 
     <div class="card">
+        
     <div class="card-header">
         {% comment %} <a href ="{% url 'list-proposals' %}"  class="btn btn primary stretched-link"> {{ project }} </a>  {% endcomment %}
-        {{ project }}
+        {{ project.title }}
     </div>
+    
     <div class="card-body">
     <h5 class="card-title"> Adviser: {{ project.adviser.first_name }} {{ project.adviser.last_name }}</h5>
     <p class="card-text"> 
@@ -31,9 +33,12 @@
         
         {% comment %} <li> Approved: {{ project.approved }} </li> {% endcomment %}
         <li> Project owner: {{ project_owner }} </li> 
+        <li> Faculty Comments: {{ project.comments }} </li> 
         </ul> 
     </p>
+    
     </div>
+   
     {% if user.is_authenticated %}
         {% if user == project.adviser %}
         <div class="card-footer text-body-secondary">

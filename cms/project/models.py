@@ -204,6 +204,15 @@ class Project_Group(models.Model):
     approved = models.BooleanField('Approved by an Adviser', default=False)
     owner = models.IntegerField("Project Group Creator", blank=False, default=24)
 
+    def save(self, *args, **kwargs):
+        # Only set the group name if it's not already set
+        if not self.group_name:
+            # Save the object to get the ID
+            super().save(*args, **kwargs)
+            # Set the group name based on the ID
+            self.group_name = f'Group {self.id}'  # or any format you prefer
+        super().save(*args, **kwargs)  # Save again with the new group name
+
     def __str__(self):
         return self.group_name or ''  # return
     
@@ -249,11 +258,13 @@ class Project(models.Model):
     #     REDEFENSE = "Re-Defense", "REDEFENSE", 
     #     NOT_ACCEPTED =  "Not-Accepted", "NOT_ACCEPTED",
 
-    title = models.CharField('Title', max_length=120, blank=True, null=True) # 120 characters
-    project_type = models.CharField('Project Type', blank=True, null=True, max_length=50 )
-    description = models.TextField(blank= True, null=True) # we dont have to put a description if we do not want to
-    proponents = models.ForeignKey(Project_Group, blank=True, null=True, on_delete=models.SET_NULL)   
-    adviser = models.ForeignKey(Approved_Adviser, blank=True, null=True, on_delete=models.SET_NULL) # If adviser deletes profile, then the projects' adviser will be set to null 
+    title = models.CharField('Title', max_length=120, null=True) # 120 characters
+    project_type = models.CharField('Project Type', null=True, max_length=50 )
+    description = models.TextField(null=True) # we dont have to put a description if we do not want to
+    comments= models.TextField(null=True) # we dont have to put a description if we do not want to
+    
+    proponents = models.ForeignKey(Project_Group, null=True, on_delete=models.SET_NULL)   
+    adviser = models.ForeignKey(Approved_Adviser, null=True, on_delete=models.SET_NULL) # If adviser deletes profile, then the projects' adviser will be set to null 
     panel = models.ManyToManyField(Faculty, related_name='project_panel', blank=True )
 
     # start_date = models.DateTimeField('Start date', null=True,  blank=True)
@@ -272,8 +283,8 @@ class Project(models.Model):
     final_defense = models.CharField('Final Defense ', max_length=50, blank=True, null=True )
     
     # allows to use model in admin area.
-    def __str__(self):  
-        return self.title
+    def __str__(self):
+        return str(self.title) if self.title else "No Project"
     
 class ProjectManager(BaseUserManager): 
     def get_queryset(self, *args, **kwargs):
@@ -288,18 +299,18 @@ class ApprovedProject(Project):
 
 class Defense_Application(models.Model): 
     owner = models.IntegerField("Application Owner", blank=True, default=24)
-    project_group = models.ForeignKey(ApprovedProjectGroup, blank=True, null=True, on_delete=models.CASCADE)
-    title = models.CharField(max_length=255, blank=True, null=True)
+    project_group = models.ForeignKey(ApprovedProjectGroup, null=True, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255,  null=True)
     project = models.ForeignKey(ApprovedProject, null=False, blank=False, on_delete=models.CASCADE)
-    abstract = models.TextField(blank= True, null=True) # we dont have to put a description if we do not want to
-    adviser = models.ForeignKey(Approved_Adviser, related_name='application_adviser', blank=True, null=True, on_delete=models.SET_NULL) # If adviser deletes profile, then the projects' adviser will be set to null 
+    abstract = models.TextField( null=True) # we dont have to put a description if we do not want to
+    adviser = models.ForeignKey(Approved_Adviser, related_name='application_adviser', null=True, on_delete=models.SET_NULL) # If adviser deletes profile, then the projects' adviser will be set to null 
     panel = models.ManyToManyField(Approved_panel, related_name='application_panel', blank=True, null=True)
  
     document = models.FileField(upload_to='submissions/', null=True, blank=True )
     submission_date = models.DateTimeField(auto_now_add=False, null=True, blank=True )
 
     def __str__(self):
-        return f"{self.project}" 
+        return f"{self.project}" if self.project else "No Project Assigned"
         
     # def __str__(self): 
     #     return f"{self.title} by {self.project_group}"

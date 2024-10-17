@@ -5,15 +5,13 @@ from .models import Project, Defense_Application, Project_Group, StudentProfile,
 class ProjectGroupForm(ModelForm): 
     class Meta: 
         model = Project_Group
-        fields = ['group_name', 'adviser', 'proponents'] 
+        fields = ['adviser', 'proponents'] 
         
         labels = { 
-            'group_name':'Group Name',
             'adviser': 'Adviser',
             'proponents': 'Proponents', 
         }
         widgets = { 
-            'group_name': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Enter name of the Group'}),
             'adviser': forms.Select(attrs={'class':'form-select', 'placeholder': 'Select Adviser'}), 
             'proponents': forms.SelectMultiple(attrs={'class':'form-select', 'placeholder': 'Select Proponents'}), 
             }
@@ -61,7 +59,7 @@ class ProjectForm(ModelForm):
         ]
 
         fields =   ('title', 'project_type', 'proponents', 'adviser',
-            'panel', 'description') 
+            'panel', 'description', 'comments') 
     
         labels = { 
             'title':'Title',
@@ -70,6 +68,7 @@ class ProjectForm(ModelForm):
             'adviser':'Adviser', 
             'panel':'Panel', 
             'description': 'Executive Summary',
+            'comments': 'Faculty Comments'
              # 'defense_date':'YYYY-MM-DD HH:MM:SS',
         }
         widgets = { 
@@ -79,6 +78,7 @@ class ProjectForm(ModelForm):
             'adviser': forms.Select(attrs={'class':'form-select', 'placeholder': 'Adviser'}),
             'panel': forms.SelectMultiple(attrs={'class':'form-control', 'placeholder': 'Panel'}), 
             'description': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Project Description'}),
+            'comments': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Comments'}),
             #'defense_date': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Defense Date'}),
         }
 

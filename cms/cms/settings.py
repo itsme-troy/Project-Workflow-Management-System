@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "users",
     "calendar_app",
     "free_schedule", 
+    "common_schedule", 
  
 ]
 

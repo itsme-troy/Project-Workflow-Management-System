@@ -10,8 +10,7 @@ urlpatterns = [
     path('users/', include('users.urls')), 
     path('calendar_app/', include('calendar_app.urls')), 
     path('free_schedule/', include('free_schedule.urls')), 
-    # path('common_schedule/', include('common_schedule.urls')),
-
+    path('common_schedule/', include('common_schedule.urls')),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

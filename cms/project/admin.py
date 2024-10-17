@@ -64,7 +64,7 @@ class ProjectAdmin(admin.ModelAdmin): #project_type'
 @admin.register(Project_Group)
 class Project_GroupAdmin(admin.ModelAdmin):
     fields = ('group_name', 'adviser', 'proponents', 'approved')
-
+    list_display = ('group_name', 'adviser', 'approved')
 @admin.register(Defense_Application)
 class Defense_ApplicationAdmin(admin.ModelAdmin): 
     fields = ('owner', 'project_group', 'title', 'project', 'adviser','abstract', 'panel', 'document', 'submission_date')

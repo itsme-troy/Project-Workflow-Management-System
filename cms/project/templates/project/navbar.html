@@ -75,7 +75,7 @@
                 {% if user.is_superuser %}
                   <li><a class="dropdown-item" href="{% url 'coordinator_approval' %}"> Coordinator Approval  </a></li>
                   <li><a class="dropdown-item" href="{% url 'list-defense-applications' %}"> All Defense Applications </a></li>
-                  {% comment %} <li><a class="dropdown-item" href="{% url 'common-schedule' %}"> View Common Available Schedule   </a></li> {% endcomment %}
+                  <li><a class="dropdown-item" href="{% url 'common-sched-calendar' %}"> View Common Available Schedule   </a></li>
                 {% endif %}
                 
               </ul>

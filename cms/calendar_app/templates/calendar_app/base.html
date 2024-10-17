@@ -67,23 +67,18 @@
     <center> <h4> Schedule Defense </h4> </br> </center> 
 {% else %}
     <center> <h4> Calendar </h4> </br> </center>
-{% endif %}
+{% endif%} 
 
 <div class="container">
   <div id="calendar"></div>
 
  <div class="row">
 
-    
     {% block content %}{% endblock %}
  </div>
 </div>
-
 <script>
-    
-    
    $(document).ready(function () {
-    
        var calendar = $('#calendar').fullCalendar({
            header: {
                left: 'prev,next today',
@@ -270,14 +265,11 @@
           });
           
           {% endif %}
-          
       });
              
       
        });
 
-
-       
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
