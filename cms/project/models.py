@@ -197,24 +197,16 @@ class CoordinatorProfile(models.Model):
     coordinator_id= models.IntegerField(null=True, blank=True)
 
 class Project_Group(models.Model): 
-    group_name = models.CharField('Group Name', max_length=120, blank=True, null=True, default='') # 120 characters
-    adviser = models.ForeignKey(Faculty, related_name="group_adviser", null=True, on_delete=models.SET_NULL) 
+    # adviser = models.ForeignKey(Faculty, related_name="group_adviser", null=True, on_delete=models.SET_NULL) 
     proponents = models.ManyToManyField(Student, related_name='project_proponents', blank=True )
 
     approved = models.BooleanField('Approved by an Adviser', default=False)
     owner = models.IntegerField("Project Group Creator", blank=False, default=24)
 
-    def save(self, *args, **kwargs):
-        # Only set the group name if it's not already set
-        if not self.group_name:
-            # Save the object to get the ID
-            super().save(*args, **kwargs)
-            # Set the group name based on the ID
-            self.group_name = f'Group {self.id}'  # or any format you prefer
-        super().save(*args, **kwargs)  # Save again with the new group name
-
     def __str__(self):
-        return self.group_name or ''  # return
+        # Fetch all last names in the group
+        last_names = self.proponents.values_list('last_name', flat=True)  # Assuming 'last_name' is a field in the Student model
+        return f"{', '.join(last_names)}" if last_names else 'No Students'
     
 class ProjectGroupManager(BaseUserManager): 
     def get_queryset(self, *args, **kwargs):
@@ -250,18 +242,23 @@ class Approved_panel(Faculty):
     class Meta: 
         proxy = True 
 
-class Project(models.Model): 
-    # class Defense_result(models.TextChoices): 
-    #     PENDING = "-", "PENDING"
-    #     ACCEPTED = "Accepted", "ACCEPTED"
-    #     ACCEPTED_WITH_REVISIONS = "Accepted with Revisions", "ACCEPTED_WITH_REVISIONS" 
-    #     REDEFENSE = "Re-Defense", "REDEFENSE", 
-    #     NOT_ACCEPTED =  "Not-Accepted", "NOT_ACCEPTED",
+class ApprovedStudentManager(BaseUserManager): 
+    def get_queryset(self, *args, **kwargs):
+        results = super().get_queryset(*args, **kwargs)
+        return results.filter(eligible=True)
+    
+class Approved_student(Student): 
+    approved_panel = ApprovedStudentManager()
+    
+    class Meta: 
+        proxy = True 
 
+
+class Project(models.Model): 
     title = models.CharField('Title', max_length=120, null=True) # 120 characters
     project_type = models.CharField('Project Type', null=True, max_length=50 )
     description = models.TextField(null=True) # we dont have to put a description if we do not want to
-    comments= models.TextField(null=True) # we dont have to put a description if we do not want to
+    comments= models.TextField(null=True, blank=True) # we dont have to put a description if we do not want to
     
     proponents = models.ForeignKey(Project_Group, null=True, on_delete=models.SET_NULL)   
     adviser = models.ForeignKey(Approved_Adviser, null=True, on_delete=models.SET_NULL) # If adviser deletes profile, then the projects' adviser will be set to null 
@@ -277,15 +274,36 @@ class Project(models.Model):
     # determines whether a project is a approved project or a proposal 
     approved = models.BooleanField('Approved by an Adviser', default=False)
     
-    proposal_defense = models.CharField('Preliminary Defense', max_length=50, blank=True, null=True)
-    design_defense = models.CharField('Design Defense', max_length=50,  blank=True, null=True )
-    preliminary_defense = models.CharField('Preliminary Defense', max_length=50, blank=True, null=True)
-    final_defense = models.CharField('Final Defense ', max_length=50, blank=True, null=True )
-    
     # allows to use model in admin area.
     def __str__(self):
         return str(self.title) if self.title else "No Project"
     
+class ProjectPhase(models.Model):
+    PHASE_CHOICES = [
+        ('proposal', 'Proposal Defense'),
+        ('design', 'Design Defense'),
+        ('preliminary', 'Preliminary Defense'),
+        ('final', 'Final Defense'),
+    ]
+
+    RESULT_CHOICES = [
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('accepted_with_revisions', 'Accepted with Revisions'),
+        ('redefense', 'Re-Defense'),
+        ('not_accepted', 'Not Accepted'),
+
+    ]
+
+    project = models.ForeignKey(Project, related_name='phases', on_delete=models.CASCADE)
+    phase_type = models.CharField(max_length=20, choices=PHASE_CHOICES, blank=False, default='proposal')
+    verdict = models.CharField(max_length=50, choices=RESULT_CHOICES, blank=False, default='pending')  # Now defaults to 'pending'
+    date = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.project.title} - {self.get_phase_type_display()}"
+
+
 class ProjectManager(BaseUserManager): 
     def get_queryset(self, *args, **kwargs):
         results = super().get_queryset(*args, **kwargs)
@@ -304,10 +322,10 @@ class Defense_Application(models.Model):
     project = models.ForeignKey(ApprovedProject, null=False, blank=False, on_delete=models.CASCADE)
     abstract = models.TextField( null=True) # we dont have to put a description if we do not want to
     adviser = models.ForeignKey(Approved_Adviser, related_name='application_adviser', null=True, on_delete=models.SET_NULL) # If adviser deletes profile, then the projects' adviser will be set to null 
-    panel = models.ManyToManyField(Approved_panel, related_name='application_panel', blank=True, null=True)
+    panel = models.ManyToManyField(Approved_panel, related_name='application_panel', blank=True)
  
     document = models.FileField(upload_to='submissions/', null=True, blank=True )
-    submission_date = models.DateTimeField(auto_now_add=False, null=True, blank=True )
+    submission_date = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
         return f"{self.project}" if self.project else "No Project Assigned"

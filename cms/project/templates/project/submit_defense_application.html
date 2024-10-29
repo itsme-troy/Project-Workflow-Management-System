@@ -3,18 +3,27 @@
 {% block content %}
 
 </br> 
+
+ Logged in User: {{ request.user.id}} 
+ 
 {% if user.is_authenticated %}
 <center> 
     <h1> Submit Defense Application </h1> </br> 
+
     <br/> <br/> 
 </center> 
     {% if submitted %}
         Your Defense Application Was Submitted Successfully!
     {% else %}
-        <form action="" method=POST> 
+        <form action="" method="POST" id="capstonesubmissionForm"> 
             {% csrf_token %}
-                
-            {{ form.as_p }}
+            
+           <!-- Show last phase and next phase -->
+           <p><strong>Last Phase:</strong> {{ last_phase.phase_type}}  {% if last_phase %} {% else %} None </p> {%endif %}
+           <p><strong>Next Phase:</strong> {{ next_phase_type }}</p>
+            
+            <!-- Render form fields -->
+           {{ form.as_p }}
 
             {% comment %} <div class="mb-3">
                 <label for="formFile" class="form-label">Manuscript </label>
@@ -25,10 +34,22 @@
             class="btn btn-secondary">
         </form> 
     {% endif %}
+    {% comment %} document.querySelector('select[name="title"]').removeAttribute('disabled');
+     {% endcomment %}
 {% else %}
         <h1> Sorry. Please Login to view this Page. </h1> 
 
         <a href="{% url 'login' %}">Login Here! </a> 
 {% endif %}
+<script>
+    document.getElementById('capstonesubmissionForm').onsubmit = function() {
+        // Enable the proponents and adviser fields before submitting the form
+        document.querySelector('select[name="project"]').removeAttribute('disabled');
+        document.querySelector('select[name="project_group"]').removeAttribute('disabled');
+        document.querySelector('select[name="adviser"]').removeAttribute('disabled');
+        document.querySelector('select[name="panel"]').removeAttribute('disabled');
+       
+    };
+</script>
 
 {% endblock %}

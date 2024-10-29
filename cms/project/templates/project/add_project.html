@@ -13,19 +13,27 @@
         {% if submitted %}
             Your Proposal Was Submitted Successfully!
         {% else %}
-            <form action="" method=POST> 
+            <form action="" method="POST" id="projectForm"> 
                 {% csrf_token %}
                 
                 {{ form.as_p }}
-                
+       
 
                 <input type="submit" value="Submit" 
                 class="btn btn-secondary">
             </form> 
+
         {% endif %}
     {% else %}
         <h1> Sorry. Please Login to view this Page. </h1> 
 
         <a href="{% url 'login' %}">Login Here! </a> 
     {% endif %}
+    <script>
+        document.getElementById('projectForm').onsubmit = function() {
+            // Enable the proponents and adviser fields before submitting the form
+            document.querySelector('select[name="proponents"]').removeAttribute('disabled');
+            document.querySelector('select[name="adviser"]').removeAttribute('disabled');
+        };
+    </script>
 {% endblock %}

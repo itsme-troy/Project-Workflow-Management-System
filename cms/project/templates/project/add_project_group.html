@@ -3,6 +3,8 @@
 {% block content %}
 
 {% if user.is_authenticated %}
+
+{{ approved_users }}
         <center> 
             <h1> Register A Project Group </h1> 
             <br/> <br/> 
@@ -21,6 +23,32 @@
                 class="btn btn-secondary">
             </form> 
         {% endif %}
+        <!-- JavaScript to handle disabling logged-in user in the proponents field -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the logged-in user's ID
+            let loggedInUserId = "{{ user.id }}";
+            // Get the proponents select element
+            let proponentsSelect = document.getElementById('id_proponents');
+
+            // Loop through the options and disable the logged-in user from being deselected
+            for (let option of proponentsSelect.options) {
+                if (option.value === loggedInUserId) {
+                    option.disabled = true;  // Disable the option, but it will remain selected
+                }
+            }
+
+            // Ensure that only up to 3 proponents (including the logged-in user) can be selected
+            proponentsSelect.addEventListener('change', function() {
+                let selectedOptions = [...proponentsSelect.selectedOptions];
+                if (selectedOptions.length > 3) {
+                    alert("You can only select up to 3 proponents, including yourself.");
+                    // Unselect the last selected option if the limit is exceeded
+                    selectedOptions[selectedOptions.length - 1].selected = false;
+                }
+            });
+        });
+    </script>
     {% else %}
         <h1> Sorry. Please Login to view this Page. </h1> 
 

@@ -8,35 +8,35 @@
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
          
         {% if user.is_authenticated %}
-            <li class="nav-item"> <a class="nav-link" href="{% url 'my-profile' request.user.id %}" >My Profile </a> </li>
-        {% endif %}
-        
+            <li class="nav-item"> <a class="nav-link" href="{% url 'my-profile' request.user.id %}" >My Profile </a> </li>        
 
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Users
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Users
+                
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'list-student' %}"> Student  </a></li>
+                <li><a class="dropdown-item" href="{% url 'list-faculty' %}"> Faculty  </a></li>
+              </ul>
+            </li>
+          
+        {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Project Groups 
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'list-project-group' %}"> Show Project Groups </a></li>
+              <li><a class="dropdown-item" href="{% url 'list-project-group-waitlist' %}"> Show Project Groups Waitlist </a></li>
+          
+                {% if user.role == 'STUDENT' %}
+                  <li><a class="dropdown-item" href="{% url 'add-project-group' %}"> Register a Project Group  </a></li>
+                {% endif %}
             
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{% url 'list-student' %}"> Student  </a></li>
-            <li><a class="dropdown-item" href="{% url 'list-faculty' %}"> Faculty  </a></li>
-          </ul>
-        </li>
-        
-
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Project Groups 
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{% url 'list-project-group' %}"> Show Project Groups </a></li>
-            {% if user.is_authenticated %}
-              {% if user.role == 'STUDENT' %}
-                <li><a class="dropdown-item" href="{% url 'add-project-group' %}"> Register a Project Group  </a></li>
-              {% endif %}
-            {% endif %}
-          </ul>
-        </li>
+            </ul>
+          </li>
+          {% endif %}
 
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -55,7 +55,8 @@
               
             </ul>
           </li>
-        
+        {% endif %}
+
         {% if user.is_authenticated %}
           {% if user.role == 'STUDENT' %}
             <li class="nav-item"> <a class="nav-link" href="{% url 'submit-defense-application' %}"> Submit Defense Application  </a></li>

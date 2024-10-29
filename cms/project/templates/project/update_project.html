@@ -1,11 +1,10 @@
-
 {% extends 'project/base.html'%} <!-- use the base file -->
 
 {% block content %} <!-- content of all web pages go -->
 
 {% if user.is_authenticated %}
     {% if user == project.adviser %} 
-        <h1> Update Project...</h1> <br/> 
+        <h1> Update Project Panel and Comments</h1> <br/> 
         <!--logged in user can be called by
         "user" which is already valid for every page -->
         {% comment %} Logged In user: {{ user }}
@@ -16,7 +15,7 @@
         
         <!-- put the data from the form.
         solution is put an instance of project-->
-        <form action="" method=POST> 
+        <form action="" method="POST" id="updateProjectForm"> 
             {% csrf_token %}
             {{ form.as_p }}
             <br/> 
@@ -36,5 +35,18 @@
     <a href="{% url 'login' %}">Login Here! </a> 
 
 {% endif %} 
+
+<script>
+    document.getElementById('updateProjectForm').onsubmit = function() {
+        // Enable the proponents and adviser fields before submitting the form
+        document.querySelector('input[name="title"]').removeAttribute('disabled');
+        document.querySelector('select[name="project_type"]').removeAttribute('disabled');
+        document.querySelector('select[name="proponents"]').removeAttribute('disabled');
+        document.querySelector('select[name="adviser"]').removeAttribute('disabled');
+        document.querySelector('textarea[name="description"]').removeAttribute('disabled');
+      
+    
+    };
+</script>
  
 {% endblock %}

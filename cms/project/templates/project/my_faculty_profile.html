@@ -33,14 +33,14 @@
             <strong>  Advisees </strong>
          </center> </br>
             
-            {% for group in project_group %}
+            {% for project in projects %}
 
                 <div class="card" style="width: 18rem;">
                     <div class="card-header">
-                    Adviser: {{ group.adviser }} </br> 
+                    Adviser: {{ project.adviser }} </br> 
                    
                 </div>
-                    {% for student in group.proponents.all %}
+                    {% for student in project.proponents.proponents.all %}
     
                         <ul class="list-group list-group-flush">
                         <li class="list-group-item"> {{ student }} </br> </li>

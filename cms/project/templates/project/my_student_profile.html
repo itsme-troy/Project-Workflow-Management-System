@@ -25,24 +25,25 @@
 
             <center>
             <h3> Project Group </h3> </center> </br> 
+            
+            
+                {% for group in project_group %}
 
-            {% for group in project_group %}
-
-                <div class="card" style="width: 18rem;">
-                    <div class="card-header">
-                    Adviser: {{ group.adviser }} </br> 
-                   
-                </div>
-                    {% for student in group.proponents.all %}
-    
-                        <ul class="list-group list-group-flush">
-                        <li class="list-group-item"> {{ student }} </br> </li>
-                        </ul>
-                   
-                    {% endfor %}
-                </div>
-            </br> 
-            {% endfor %}
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-header">
+                        Adviser:  </br>  
+                    
+                    </div>
+                        {% for student in group.proponents.all %}
+        
+                            <ul class="list-group list-group-flush">
+                            <li class="list-group-item"> {{ student }} </br> </li>
+                            </ul>
+                    
+                        {% endfor %}
+                    </div>
+                </br> 
+                {% endfor %}
             
         </br>   </br> 
             <a href="{% url 'update-user' %}" class="btn btn-secondary"> Update Profile</a> </br> </br> 

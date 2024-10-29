@@ -1,52 +1,134 @@
 from django import forms 
 from django.forms import ModelForm 
 from .models import Project, Defense_Application, Project_Group, StudentProfile, Student
+from .models import Faculty, ProjectPhase
+from django.core.exceptions import ValidationError
 
-class ProjectGroupForm(ModelForm): 
-    class Meta: 
+class ProjectGroupForm(ModelForm):
+    class Meta:
         model = Project_Group
-        fields = ['adviser', 'proponents'] 
+        fields = ['proponents']  # 'adviser', 
         
-        labels = { 
-            'adviser': 'Adviser',
-            'proponents': 'Proponents', 
+        labels = {
+            # 'adviser': 'Select Adviser',
+            'proponents': 'Select Proponents: hold "ctrl" button to select multiple',
         }
-        widgets = { 
-            'adviser': forms.Select(attrs={'class':'form-select', 'placeholder': 'Select Adviser'}), 
-            'proponents': forms.SelectMultiple(attrs={'class':'form-select', 'placeholder': 'Select Proponents'}), 
-            }
-        
-class CapstoneSubmissionForm(ModelForm): 
-    class Meta: 
+        widgets = {
+            # 'adviser': forms.Select(attrs={'class': 'form-select', 'placeholder': 'Select Adviser'}),
+            'proponents': forms.SelectMultiple(attrs={'class': 'form-select', 'placeholder': 'Select Proponents'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Retrieve the logged-in user from the view
+        approved_users = kwargs.pop('approved_users', [])  # List of users with approved project groups
+        super(ProjectGroupForm, self).__init__(*args, **kwargs)
 
-        type_of_defense = [ 
-            ("Topic Defense", "Topic Defense" ),
-            ("Design Defense", "Design Defense"),
-            ("Preliminary Defense", "Preliminary Defense"),
-            ("Final Defense", "Final Defense")
-        ]
+        if user:
+            # Ensure user is cast to the actual user object if it's a SimpleLazyObject
+            if hasattr(user, '_wrapped') and isinstance(user._wrapped, object):
+                user = user._wrapped
 
+            # Pre-select the logged-in user's ID in the proponents field
+            if 'proponents' in self.fields:
+                initial_proponents = self.initial.get('proponents', [])  # Get initial proponents
+                self.initial['proponents'] = [user.id] + list(initial_proponents)  # Pre-select logged-in user's ID
+
+             # Adjust the queryset to exclude users with approved project groups
+            self.fields['proponents'].queryset = self.fields['proponents'].queryset.exclude(id__in=approved_users)
+
+            # Adjust the queryset to include the logged-in user but prevent them from being deselected
+            self.fields['proponents'].queryset = self.fields['proponents'].queryset.exclude(id=user.id) | self.fields['proponents'].queryset.filter(id=user.id)
+            self.fields['proponents'].widget.attrs['data-logged-in-user'] = str(user.id)  # Tag for the front-end to know the user
+
+    def clean_proponents(self):
+        proponents = self.cleaned_data.get('proponents')
+
+        # Get the logged-in user's ID from the initial data
+        user_id = self.initial.get('proponents', [None])[0]  # Get the first proponent's ID or None if not set
+
+        # Ensure the logged-in user (by ID) is always part of the proponents
+        if user_id and user_id not in [proponent.id for proponent in proponents]:
+            proponents = list(proponents)  # Convert to a list if necessary
+            # Add the logged-in user back to the proponents list
+            proponents.append(self.fields['proponents'].queryset.get(id=user_id))
+
+        # Limit proponents to 3 (including the logged-in user)
+        if len(proponents) > 3:
+            raise ValidationError('You can only select up to 3 proponents, including yourself.')
+
+        return proponents
+
+class VerdictForm(forms.ModelForm):
+    class Meta:
+        model = ProjectPhase
+        fields = ['verdict']  # status stores the verdict
+        widgets = {
+            'verdict': forms.Select(choices=ProjectPhase.RESULT_CHOICES, attrs={'class': 'form-select'}),
+        }
+
+class CapstoneSubmissionForm(ModelForm):
+    class Meta:
         model = Defense_Application
-        fields = ['title', 'project', 'project_group', 'adviser', 'panel','document' ]
+        fields = ['title', 'project', 'project_group', 'adviser', 'panel', 'document']
         
-        labels = { 
-            'title':'Type of Defense',
+        labels = {
+            'title': 'Type of Defense',
             'project': 'Project',
             'project_group': 'Project Group',
-            'adviser':'Adviser ', 
+            'adviser': 'Adviser',
             'panel': 'Panel',
             'document': 'Manuscript',
         }
-        widgets = { 
-            'title': forms.Select(choices=type_of_defense, attrs={'class':'form-select', 'placeholder': 'Select Type of Defense'}), 
-            'project': forms.Select(attrs={'class':'form-select', 'placeholder': 'Enter'}), 
-            'project_group' : forms.Select(attrs={'class':'form-select', 'placeholder': 'Proponents'}),
-            'adviser': forms.Select(attrs={'class':'form-select', 'placeholder': 'Panel'}),  
-            'panel': forms.SelectMultiple(attrs={'class':'form-control', 'placeholder': 'Panel'}), 
-            'document': forms.FileInput(attrs={'class':'form-control', 'placeholder': 'Title'}),
-            #'document'
+
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Select Type of Defense'}),
+            'project': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Enter'}),
+            'project_group': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Proponents'}),
+            'adviser': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Panel'}),
+            'panel': forms.SelectMultiple(attrs={'class': 'form-control', 'placeholder': 'Panel'}),
+            'document': forms.FileInput(attrs={'class': 'form-control', 'placeholder': 'Title'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Disable fields
+        self.fields['project_group'].widget.attrs['disabled'] = 'disabled'
+        self.fields['adviser'].widget.attrs['disabled'] = 'disabled'
+        self.fields['project'].widget.attrs['disabled'] = 'disabled'
+        self.fields['panel'].widget.attrs['disabled'] = 'disabled'
+        self.fields['title'].widget.attrs['readonly'] = 'readonly'
+
+        # Fetch the project from initial data or instance
+        project = self.initial.get('project') if 'project' in self.initial else None    
         
+        if project:
+            # Set initial queryset and values for the panel
+            self.fields['panel'].initial = project.panel.all()
+            self.fields['panel'].queryset = project.panel.all()
+
+            # Exclude the adviser from the panel queryset
+            adviser_id = self.initial.get('adviser')
+            if adviser_id:
+                self.fields['panel'].queryset = self.fields['panel'].queryset.exclude(id=adviser_id)
+
+            # Set the title in the form's initial data
+            self.fields['title'].initial = self.initial.get('next_phase_type') 
+            
+            # Auto-set the title (phase) based on the last completed phase
+            # last_phase = project.phases.order_by('-date').first()
+            # next_phase_type = 'Proposal Defense'  # Default for new projects
+
+            # if last_phase:
+            #     if last_phase.phase_type == 'proposal' and last_phase.verdict in ['accepted', 'accepted_with_revisions']:
+            #         next_phase_type = 'Design Defense'
+            #     elif last_phase.phase_type == 'design' and last_phase.verdict in ['accepted', 'accepted_with_revisions']:
+            #         next_phase_type = 'Preliminary Defense'
+            #     elif last_phase.phase_type == 'preliminary' and last_phase.verdict in ['accepted', 'accepted_with_revisions']:
+            #         next_phase_type = 'Final Defense'
+            #     elif last_phase.verdict == 'redefense':
+            #         next_phase_type = last_phase.get_phase_type_display()  # Repeat current phase
+
 # Create a project form 
 class ProjectForm(ModelForm): 
     # meta allows to sort of define things in a class
@@ -74,14 +156,40 @@ class ProjectForm(ModelForm):
         widgets = { 
             'title': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Project Title'}),
             'project_type': forms.Select(choices=project_type_choices, attrs={'class':'form-select'}), 
-            'proponents': forms.Select(attrs={'class':'form-select', 'placeholder': 'Proponents'}), 
-            'adviser': forms.Select(attrs={'class':'form-select', 'placeholder': 'Adviser'}),
+            'proponents': forms.Select(attrs={'class':'form-control', 'placeholder': 'Proponents'}), 
+            'adviser': forms.Select(attrs={'class':'form-control', 'placeholder': 'Adviser'}),
             'panel': forms.SelectMultiple(attrs={'class':'form-control', 'placeholder': 'Panel'}), 
             'description': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Project Description'}),
             'comments': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Comments'}),
-            #'defense_date': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Defense Date'}),
         }
+    
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(ProjectForm, self).__init__(*args, **kwargs)
 
+        # Disable the proponents field
+        self.fields['proponents'].widget.attrs['disabled'] = 'disabled'
+
+        # Hide the comments field if the user is a student
+        if user and user.role == 'STUDENT':
+            self.fields.pop('comments', None)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        adviser = cleaned_data.get('adviser')
+        panel = cleaned_data.get('panel')
+
+        if adviser and panel:
+            # Check if adviser is in panel
+            if adviser in panel:
+                raise ValidationError('The adviser cannot be one of the panelists.')
+
+            # If user is a student, enforce single selection
+            if len(panel) > 1:
+                raise ValidationError( 'Students can select only one panelist.')
+
+        return cleaned_data
+    
 class UpdateProjectForm(ModelForm): 
     # meta allows to sort of define things in a class
     class Meta: 
@@ -101,8 +209,7 @@ class UpdateProjectForm(ModelForm):
         ]
 
         fields =   ('title', 'project_type', 'proponents', 'adviser',
-            'panel', 'description', 'proposal_defense', 'design_defense',
-            'preliminary_defense', 'final_defense') 
+            'panel', 'description', 'comments') 
     
         labels = { 
             'title':'Title',
@@ -111,11 +218,8 @@ class UpdateProjectForm(ModelForm):
             'adviser':'Adviser', 
             'panel':'Panel', 
             'description': 'Executive Summary',
-            'proposal_defense':'Proposal Defense', 
-            'design_defense': 'Design Defense', 
-            'preliminary_defense': 'Preliminary Defense',  
-            'final_defense': 'Final Defense', 
-            # 'defense_date':'YYYY-MM-DD HH:MM:SS',
+           # 'defense_date':'YYYY-MM-DD HH:MM:SS',
+           'comments': 'Faculty Comments',
         }
         widgets = { 
             'title': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Project Title'}),
@@ -124,9 +228,42 @@ class UpdateProjectForm(ModelForm):
             'adviser': forms.Select(attrs={'class':'form-select', 'placeholder': 'Adviser'}),
             'panel': forms.SelectMultiple(attrs={'class':'form-select', 'placeholder': 'Panel'}), 
             'description': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Project Description'}),
-            'proposal_defense': forms.Select(choices=defense_result_choices,  attrs={'class':'form-select'}),
-            'design_defense': forms.Select(choices=defense_result_choices,  attrs={'class':'form-select'}),
-            'preliminary_defense':  forms.Select(choices=defense_result_choices,  attrs={'class':'form-select'}),
-            'final_defense': forms.Select(choices=defense_result_choices,  attrs={'class':'form-select'}),
              #'defense_date': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Defense Date'}),
-}
+            'comments': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Enter Project Comments'}),
+        }   
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Make fields read-only by disabling them
+        self.fields['title'].widget.attrs['disabled'] = 'disabled'
+        self.fields['project_type'].widget.attrs['disabled'] = 'disabled'
+        self.fields['proponents'].widget.attrs['disabled'] = 'disabled'
+        self.fields['adviser'].widget.attrs['disabled'] = 'disabled'
+        self.fields['description'].widget.attrs['disabled'] = 'disabled'
+
+        # Pre-select the initial panelist and restrict panel selection
+        self.pre_selected_panelist = self.instance.panel.all()[:1]  # Select the first panelist only
+        self.fields['panel'].initial = self.pre_selected_panelist
+        self.fields['panel'].queryset = self.fields['panel'].queryset.exclude(id=self.instance.adviser.id)
+
+    def clean_panel(self):
+        panelists = self.cleaned_data.get('panel')
+        errors = []
+
+        # Ensure the pre-selected panelist is always included
+        if not all(panelist in panelists for panelist in self.pre_selected_panelist):
+            errors.append("The selected panelist of Students must remain selected.")
+        
+        # Allow only one additional panelist beyond the pre-selected one
+        additional_panelists = panelists.exclude(id__in=[p.id for p in self.pre_selected_panelist])
+        if len(additional_panelists) > 1:
+            errors.append("You can only select one additional panelist.")
+        
+         # Add errors to the form if there are any
+        if errors:
+            for error in errors:
+                self.add_error('panel', error)
+            # Return None so that the form is marked invalid but not break with an exception
+            return None
+        
+        return panelists
