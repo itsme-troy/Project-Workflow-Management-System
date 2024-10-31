@@ -3,9 +3,9 @@
 
 {% block content %} <!-- content of all web pages go -->
 
-{% comment %} {% if user.is_authenticated %} {% endcomment %}
-    {% comment %} {% if user == project.adviser %} {% endcomment %}
-        <h1> Update Proposal...</h1> <br/> 
+{% if user.is_authenticated %}
+    {% if user == project.adviser %} 
+        <h1> Update Proposal Panel and Comments </h1> <br/> 
         <!--logged in user can be called by
         "user" which is already valid for every page -->
         {% comment %} Logged In user: {{ user }}
@@ -16,25 +16,37 @@
         
         <!-- put the data from the form.
         solution is put an instance of project-->
-        <form action="" method=POST> 
+        <form action="" method="POST" id="updateProposalForm"> 
             {% csrf_token %}
             {{ form.as_p }}
             <br/> 
             <input type="submit" value="Update"
             class="btn btn-secondary"> 
-        {% comment %} {% else %}
+        {% else %}
             <h2> Access Denied! </h2> 
             <p> Only the Project's Adviser can update this project...</p>
             Logged In user: {{ user }}
                 
             <br/>   
             Adviser : {{ project.adviser }}
-        {% endif %} {% endcomment %}
-{% comment %} {% else %}
+        {% endif %} 
+{% else %}
     <h1> Sorry! You must be Logged In to view This Page... </h1> 
 
     <a href="{% url 'login' %}">Login Here! </a> 
 
-{% endif %} {% endcomment %}
+{% endif %}
  
+<script>
+    document.getElementById('updateProposalForm').onsubmit = function() {
+        // Enable the proponents and adviser fields before submitting the form
+        document.querySelector('input[name="title"]').removeAttribute('disabled');
+        document.querySelector('select[name="project_type"]').removeAttribute('disabled');
+        document.querySelector('select[name="proponents"]').removeAttribute('disabled');
+        document.querySelector('select[name="adviser"]').removeAttribute('disabled');
+        document.querySelector('textarea[name="description"]').removeAttribute('disabled');
+    
+    };
+</script>
+
 {% endblock %}

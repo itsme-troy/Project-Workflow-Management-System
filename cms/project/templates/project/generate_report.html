@@ -1,11 +1,20 @@
 {% extends 'project/base.html' %}
 
 {% block content %}
+<!-- Add this style section in the head or at the top of your template -->
+<style>
+  .verdict-pending { color: #f0ad4e; } /* Orange */
+  .verdict-accepted { color: #5cb85c; } /* Green */
+  .verdict-accepted_with_revisions { color: #5bc0de; } /* Blue */
+  .verdict-redefense { color: #d9534f; } /* Red */
+  .verdict-not_accepted { color: #d9534f; } /* Red */
+  .verdict-not-started { color: #777; } /* Gray */
+</style>
+
 
 </br> 
 <center> 
     <h1> Report Generation and Projects Defense Progress </h1> </br> 
-
 
 </center> </br> 
 <div class="row">
@@ -55,45 +64,41 @@
       </div>
   </div>
  </br> </br> <hr/> </br>
-
-  <table class ="table table-striped table-hover table-bordered table"> 
-    <thead> 
-      <tr> 
-          <th scope="col"> Project Name  </th> 
-          <th scope="col"> Adviser </th> 
-          <th scope="col"> Proposal Defense </th> 
-          <th scope="col"> Design Defense </th> 
-          <th scope="col"> Preliminary Defense  </th> 
-          <th scope="col"> Final Defense </th> 
- 
-      </tr> 
-  </thead>  
+ <table class="table table-striped table-hover table-bordered">
+  <thead>
+      <tr>
+          <th scope="col">Project Name</th>
+          <th scope="col">Adviser</th>
+          <th scope="col">Proposal Defense</th>
+          <th scope="col">Design Defense</th>
+          <th scope="col">Preliminary Defense</th>
+          <th scope="col">Final Defense</th>
+      </tr>
+  </thead>
   <tbody>
-    <ul> 
+      {% for project_data in projects_with_phases %}
+          {% if project_data.project.approved %}
+              <tr>
+                  <td>{{ project_data.project }}</td>
+                  <td>{{ project_data.project.adviser }}</td>
+                  
+                  <td class="verdict-{{ project_data.defense_results.proposal|lower|slugify }}">
+                      {{ project_data.defense_results.proposal }}
+                  </td>
+                  <td class="verdict-{{ project_data.defense_results.design|lower|slugify }}">
+                      {{ project_data.defense_results.design }}
+                  </td>
+                  <td class="verdict-{{ project_data.defense_results.preliminary|lower|slugify }}">
+                      {{ project_data.defense_results.preliminary }}
+                  </td>
+                  <td class="verdict-{{ project_data.defense_results.final|lower|slugify }}">
+                      {{ project_data.defense_results.final }}
+                  </td>
+              </tr>
+          {% endif %}
+      {% endfor %}
+  </tbody>
+</table>
 
-    {% for project in projects %}
-       {% if project.approved %}
 
-          <tr>
-            <td> {{ project }} </a>  </td> 
-            <td>  {{ project.adviser}} </td> 
-            <td> {{ project.proposal_defense }}  </td> 
-            <td>  {{ project.design_defense }} </td> 
-            <td>  {{ project.preliminary_defense }} </td> 
-            <td>  {{ project.final_defense }} </td> 
-            <td>  
-              {% if user.is_authenticated %}
-                {% if user == project.adviser %}
-                    <a href="{% url 'update-project' project.id %}"
-                    class="btn btn-outline-secondary btn-sm"> Update Project </a> 
-                 {% endif %}
-              {% endif %} 
-               </td> 
-          
-              </tr> 
-
-          <br/> 
-        {% endif %}
-    {% endfor %}
-</table>     
 {% endblock %}

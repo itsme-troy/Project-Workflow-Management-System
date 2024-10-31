@@ -28,7 +28,7 @@
             </a>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="{% url 'list-project-group' %}"> Show Project Groups </a></li>
-              <li><a class="dropdown-item" href="{% url 'list-project-group-waitlist' %}"> Show Project Groups Waitlist </a></li>
+              <li><a class="dropdown-item" href="{% url 'my-project-group-waitlist' %}"> My Project Group Waitlist </a></li>
           
                 {% if user.role == 'STUDENT' %}
                   <li><a class="dropdown-item" href="{% url 'add-project-group' %}"> Register a Project Group  </a></li>
@@ -72,20 +72,45 @@
                 <li><a class="dropdown-item" href="{% url 'adviser-projects' %}"> My Advisory Projects  </a></li>
                 <li><a class="dropdown-item" href="{% url 'generate-report' %}"> Report Generation  </a></li>
                 <li><a class="dropdown-item" href="{% url 'free-schedule' %}"> Set Available Schedule  </a></li>
-
-                {% if user.is_superuser %}
-                  <li><a class="dropdown-item" href="{% url 'coordinator_approval' %}"> Coordinator Approval  </a></li>
-                  <li><a class="dropdown-item" href="{% url 'list-defense-applications' %}"> All Defense Applications </a></li>
-                  <li><a class="dropdown-item" href="{% url 'common-sched-calendar' %}"> View Common Available Schedule   </a></li>
-                {% endif %}
                 
               </ul>
           </li>
           {% endif %}
-        
-              <li class="nav-item"> <a class="nav-link" href="{% url 'show-calendar' %}" >Calendar </a> </li>     
-              <li class="nav-item"> <a class="nav-link" href="{% url 'logout' %}" >Logout</a> </li>
+
+          {% if user.is_superuser %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Coordinator Tab
+            </a>
+            <ul class="dropdown-menu">
             
+              <li><a class="dropdown-item" href="{% url 'generate-report' %}"> Report Generation  </a></li>
+                <li><a class="dropdown-item" href="{% url 'coordinator-approval-faculty' %}"> Faculty Approval Form </a></li>
+                <li><a class="dropdown-item" href="{% url 'coordinator-approval-student' %}"> Student Approval Form  </a></li>
+                
+                <li><a class="dropdown-item" href="{% url 'list-defense-applications' %}"> All Defense Applications </a></li>
+                <li><a class="dropdown-item" href="{% url 'common-sched-calendar' %}"> View Common Available Schedule   </a></li>
+             
+            </ul>
+        </li>
+        {% endif %}
+      
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Notifications
+              <span class="badge bg-danger notification-count" style="display: none;">0</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end notification-menu" aria-labelledby="notificationDropdown" style="width: 300px; max-height: 400px; overflow-y: auto;">
+              <div class="notifications-list">
+                  <!-- Notifications will be inserted here by JavaScript -->
+              </div>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item text-center" href="#">View All Notifications</a>
+          </div>
+      </li>
+
+              <li class="nav-item"> <a class="nav-link" href="{% url 'logout' %}" >Logout</a> </li>
+  
           {% else %}
             <li class="nav-item"> <a class="nav-link" href="{% url 'login' %}" >Login</a> </li>
         

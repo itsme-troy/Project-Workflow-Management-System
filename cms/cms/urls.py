@@ -11,6 +11,7 @@ urlpatterns = [
     path('calendar_app/', include('calendar_app.urls')), 
     path('free_schedule/', include('free_schedule.urls')), 
     path('common_schedule/', include('common_schedule.urls')),
+    # path('google_calendar/', include('google_calendar.urls')),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

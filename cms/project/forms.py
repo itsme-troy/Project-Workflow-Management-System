@@ -4,6 +4,72 @@ from .models import Project, Defense_Application, Project_Group, StudentProfile,
 from .models import Faculty, ProjectPhase
 from django.core.exceptions import ValidationError
 
+class ProjectGroupInviteForm(ModelForm):
+    class Meta:
+        model = Project_Group
+        fields = ['proponents']
+        
+        labels = {
+            'proponents': 'Select Additional Members: hold "ctrl" button to select multiple',
+        }
+        widgets = {
+            'proponents': forms.SelectMultiple(attrs={'class': 'form-select', 'placeholder': 'Select Proponents'}),
+        }
+        
+    def __init__(self, *args, **kwargs):
+        group = kwargs.pop('group', None)  # Get the existing group
+        super(ProjectGroupInviteForm, self).__init__(*args, **kwargs)
+
+        if group:
+            # Get all users who are either pending or approved
+            existing_members = list(group.pending_proponents.all()) + list(group.proponents.all())
+            existing_member_ids = [member.id for member in existing_members]
+
+            # Exclude users who are already in any approved group
+            users_in_approved_groups = Student.objects.filter(
+                id__in=Project_Group.objects.filter(approved=True).values_list('proponents', flat=True)
+            )
+
+            # Store group reference for use in clean_proponents
+            self.group = group
+
+             # If the group already has 3 members (pending + approved), disable new selections
+            if len(existing_members) >= 3:
+                self.fields['proponents'].widget.attrs['disabled'] = 'disabled'
+                self.fields['proponents'].help_text = 'Maximum group size (3) reached'
+
+            # Set the queryset to exclude existing members and users in approved groups
+            self.fields['proponents'].queryset = (
+                Student.objects.filter(role='STUDENT')
+                .exclude(id__in=existing_member_ids)
+                .exclude(id__in=users_in_approved_groups)
+            )
+
+            # Pre-select existing members and make them unselectable in the frontend
+            self.fields['proponents'].initial = existing_member_ids
+            
+            # Add data attributes for JavaScript to handle disabled selections
+            self.fields['proponents'].widget.attrs['data-existing-members'] = ','.join(map(str, existing_member_ids))
+
+    def clean_proponents(self):
+        proponents = self.cleaned_data.get('proponents')
+        group = getattr(self, 'group', None)
+
+        if group:
+             # Get existing members (both pending and approved)
+            existing_members = list(group.pending_proponents.all()) + list(group.proponents.all())
+            
+            # Calculate how many new members can be added
+            available_slots = 3 - len(existing_members)
+            
+            if available_slots <= 0 and proponents:
+                raise ValidationError('The group already has the maximum number of members (3).')
+            
+            if len(proponents) > available_slots:
+                raise ValidationError(f'You can only add {available_slots} more member{"s" if available_slots != 1 else ""} to this group.')
+
+        return proponents
+
 class ProjectGroupForm(ModelForm):
     class Meta:
         model = Project_Group
@@ -157,7 +223,7 @@ class ProjectForm(ModelForm):
             'title': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Project Title'}),
             'project_type': forms.Select(choices=project_type_choices, attrs={'class':'form-select'}), 
             'proponents': forms.Select(attrs={'class':'form-control', 'placeholder': 'Proponents'}), 
-            'adviser': forms.Select(attrs={'class':'form-control', 'placeholder': 'Adviser'}),
+            'adviser': forms.Select(attrs={'class':'form-select', 'placeholder': 'Adviser'}),
             'panel': forms.SelectMultiple(attrs={'class':'form-control', 'placeholder': 'Panel'}), 
             'description': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Project Description'}),
             'comments': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Comments'}),

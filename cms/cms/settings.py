@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "calendar_app",
     "free_schedule", 
     "common_schedule", 
+    "google_calendar",
  
 ]
 
@@ -127,3 +128,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "project.AppUser"
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_AUTHENTICATION_METHOD = "email"
+
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Or your SMTP server
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'your-email@gmail.com'
+EMAIL_HOST_PASSWORD = 'your-app-specific-password'  # Use app-specific password for Gmail
+DEFAULT_FROM_EMAIL = 'your-email@gmail.com'

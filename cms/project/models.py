@@ -6,8 +6,10 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
-#from free_schedule.models import Available_schedule
-# Create your models here.
+
+from django.contrib.auth import get_user_model
+
+
 
 # Multiple User types 
 # Users can have 1 role only, (Admin, Coordinator, Faculty, Student)
@@ -15,11 +17,6 @@ from django.utils import timezone
 # Students and Teachers require separate profile data 
 
 class AppUserManager(UserManager):
-      
-    # def save(self, *args, **kwargs):
-    #     if not self.pk:
-    #         self.role = self.base_role
-    #         return super().save(*args, **kwargs)
         
     def _create_user(self, email, password, **extra_fields):
         # check if user provided email 
@@ -74,7 +71,6 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
     profile_image = models.ImageField(null=True, blank=True, default='static/images/default_profile_pic.jpg',upload_to="images/")
 
     #available_schedule = models.ManyToManyField(Available_schedule, related_name='Faculty_available', blank=True )
-
 
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
@@ -199,10 +195,26 @@ class CoordinatorProfile(models.Model):
 class Project_Group(models.Model): 
     # adviser = models.ForeignKey(Faculty, related_name="group_adviser", null=True, on_delete=models.SET_NULL) 
     proponents = models.ManyToManyField(Student, related_name='project_proponents', blank=True )
-
-    approved = models.BooleanField('Approved by an Adviser', default=False)
-    owner = models.IntegerField("Project Group Creator", blank=False, default=24)
-
+    pending_proponents = models.ManyToManyField(
+        Student, 
+        related_name='pending_project_groups', 
+        blank=True
+    )
+    approved_by_students = models.ManyToManyField(
+        Student,
+        related_name='approved_project_groups',
+        blank=True
+    )
+    declined_proponents = models.ManyToManyField(Student, related_name='declined_groups', blank=True)
+    
+    approved = models.BooleanField('All Students Approved', default=False)
+    creator = models.ForeignKey(
+        Student,
+        on_delete=models.CASCADE,
+        related_name='owned_groups',
+        verbose_name="Project Group Creator"
+    )
+    
     def __str__(self):
         # Fetch all last names in the group
         last_names = self.proponents.values_list('last_name', flat=True)  # Assuming 'last_name' is a field in the Student model
@@ -218,7 +230,6 @@ class ApprovedProjectGroup(Project_Group):
     
     class Meta: 
         proxy = True 
-
 
 class AdviserManager(BaseUserManager): 
     def get_queryset(self, *args, **kwargs):
@@ -253,6 +264,23 @@ class Approved_student(Student):
     class Meta: 
         proxy = True 
 
+class Notification(models.Model):
+    NOTIFICATION_TYPES = (
+        ('invitation', 'Group Invitation'),
+        ('accepted', 'Invitation Accepted'),
+        ('rejected', 'Invitation Rejected'),
+    )
+
+    recipient = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='notifications')
+    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES)
+    group = models.ForeignKey('Project_Group', on_delete=models.CASCADE)
+    sender = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='sent_notifications')
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-created_at']
 
 class Project(models.Model): 
     title = models.CharField('Title', max_length=120, null=True) # 120 characters

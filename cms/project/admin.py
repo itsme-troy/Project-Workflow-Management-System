@@ -11,7 +11,7 @@ from .models import Defense_Application
 from .models import Student, Faculty, Coordinator 
 from .models import StudentProfile, FacultyProfile, ProjectPhase
 from .models import ApprovedProject, ApprovedProjectGroup
-from .models import Approved_Adviser, Approved_panel, Approved_student
+from .models import Approved_Adviser, Approved_panel, Approved_student, Notification
 #admin.site.register(Project_Group)
 admin.site.register(AppUser)
 admin.site.register(Student)
@@ -55,6 +55,13 @@ admin.site.unregister(Faculty)
 # Reregister User 
 admin.site.register(Faculty, FacultyAdmin)
 
+@admin.register(Notification) #  'project_type',
+class NotificationAdmin(admin.ModelAdmin): #project_type'
+    fields = ('sender', 'recipient','notification_type','group', 'message', 'created_at', 'is_read')
+    list_display = ('sender', 'recipient', 'notification_type', 'created_at')
+    readonly_fields = ['created_at', ]
+    ordering = ('created_at', )
+   
 @admin.register(Project) #  'project_type',
 class ProjectAdmin(admin.ModelAdmin): #project_type'
     fields = ('title', 'adviser','description','proponents', 'panel', 'owner', 'approved')
@@ -62,6 +69,7 @@ class ProjectAdmin(admin.ModelAdmin): #project_type'
     ordering = ('title', )
     search_fields = ('title', 'description', 'adviser')
     list_filter = ('adviser', )
+
 
 @admin.register(ProjectPhase)
 class ProjectPhaseAdmin(admin.ModelAdmin):
@@ -73,8 +81,8 @@ class ProjectPhaseAdmin(admin.ModelAdmin):
 
 @admin.register(Project_Group)
 class Project_GroupAdmin(admin.ModelAdmin):
-    fields = ('owner', 'approved', 'proponents')
-    list_display = ( 'approved', 'owner')
+    fields = ('proponents', 'pending_proponents', 'approved_by_students', 'declined_proponents', 'approved', 'creator')
+    list_display = ( 'approved', 'creator')
 
 @admin.register(Defense_Application)
 class Defense_ApplicationAdmin(admin.ModelAdmin): 

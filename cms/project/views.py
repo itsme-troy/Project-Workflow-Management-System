@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.conf import settings 
 from django.contrib.auth.decorators import login_required
 # Create your views here.
-from .forms import ProjectForm, CapstoneSubmissionForm, UpdateProjectForm, ProjectGroupForm
+from .forms import ProjectForm, CapstoneSubmissionForm, UpdateProjectForm, ProjectGroupForm, ProjectGroupInviteForm
 from .forms import  VerdictForm
 from .models import AppUserManager, Defense_Application
 from .models import Student, Faculty, ApprovedProjectGroup,  Project_Group
@@ -21,6 +21,12 @@ from django.db import IntegrityError
 from .models import ProjectPhase
 import logging
 from django.db.models import Subquery, OuterRef, Max
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.conf import settings
+from .models import Notification
+from django.http import JsonResponse
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +85,6 @@ def submit_defense_application(request):
          # Fetch the approved project for the group
         project = ApprovedProject.objects.filter(proponents=user_group).first()
 
-
         if project is None:
             messages.error(request, "No project found for your group. Please submit a project first.")
             return redirect('home')
@@ -95,6 +100,10 @@ def submit_defense_application(request):
         next_phase_type = 'Proposal Defense'  # Default phase for new projects
        
         if last_phase:
+            if last_phase.phase_type == 'final' and last_phase.verdict in ['accepted', 'accepted_with_revisions']:
+                messages.error(request, "You have already passed the Final Defense. No more defense applications are needed. Congratulations!")
+                return redirect('home')
+            
             if last_phase.verdict == 'redefense':
                 next_phase_type = last_phase.phase_type  # Repeat the same phase type
             elif last_phase.phase_type == 'proposal':
@@ -164,7 +173,7 @@ def submit_defense_application(request):
                     elif last_phase.phase_type == 'design' and last_phase.verdict in ['accepted', 'accepted_with_revisions']:
                         phase_type = 'preliminary'
                     elif last_phase.phase_type == 'preliminary' and last_phase.verdict in ['accepted', 'accepted_with_revisions']:
-                        phase_type = 'final defense'
+                        phase_type = 'final'
                 
                 # Create the new phase if phase_type is valid
                 if phase_type:
@@ -311,30 +320,39 @@ def list_project_group(request):
         messages.success(request, "Please Login to view this page")
         return redirect('home')
     
-def list_project_group_waitlist(request):
-    if request.user.is_authenticated: 
-        # Get all project groups (filtered to those not approved)
-        project_groups = Project_Group.objects.filter(approved=False)
+def my_project_group_waitlist(request):
+    if request.user.is_authenticated:
+        # Get all project groups where the current user is a pending proponent
+        pending_groups = Project_Group.objects.filter(pending_proponents=request.user)
 
-        # Prepare project groups with proponents padded to at least 3
-        project_groups_with_proponents = []
+        # Get groups where user is creator
+        groups_where_user_is_creator = Project_Group.objects.filter(creator=request.user)
+        
+        # Get groups where user has approved
+        groups_where_user_approved = Project_Group.objects.filter(approved_by_students=request.user)
+    
+        # Consolidate groups and avoid duplicates
+        all_groups = list(set(pending_groups) | set(groups_where_user_is_creator) | set(groups_where_user_approved))
 
-        for group in project_groups:
-            # Convert queryset to a list and pad with None if there are fewer than 3 proponents
-            proponents = list(group.proponents.all())
-            proponents += [None] * (3 - len(proponents))  # Pad the list to have exactly 3 proponents
-            project_groups_with_proponents.append({
+        # Create enhanced data structure with both proponents and pending proponents
+        groups_with_all_members = [
+            {
                 'group': group,
-                'proponents': proponents
-            })
+                'current_proponents': group.proponents.all(),      # Current members
+                'pending_proponents': group.pending_proponents.all(), # Invited members
+                'declined_proponents': group.declined_proponents.all(), # Declined members
+            } for group in all_groups
+        ]
 
-        return render(request, 'project/project_group_waitlist.html', {
-            'project_groups_with_proponents': project_groups_with_proponents
+        return render(request, 'project/my_project_group_waitlist.html', {
+            'groups_with_all_members': groups_with_all_members,
+           
         })
     else:
         messages.success(request, "Please Login to view this page")
         return redirect('home')
-
+    
+    
 def update_deficiencies(request, student_id): 
     if request.user.is_authenticated: 
         return render(request, 'project/update_deficiencies.html', {})
@@ -357,46 +375,395 @@ def get_user_ids_with_group(request):
     
     return list(approved_student_ids)
 
-def add_project_group(request): 
-    if request.user.is_authenticated: 
-
-        if request.user.role=='STUDENT': 
-            # Check if the logged-in user is already in an approved project group
-            approved_groups = Project_Group.objects.filter(proponents=request.user, approved=True)
-            
-            if approved_groups.exists():
-                # If the user is already part of an approved group, show an error message
-                messages.error(request, "You are already part of an approved project group and cannot create a new one.")
-                return redirect('home')
-
-            submitted = False  # variable to determine whether a user submitted a form or just viewing the page 
-            
-            # a student must belong to only one project group 
-            
-            if request.method == "POST":
-                form = ProjectGroupForm(request.POST, user=request.user, approved_users=get_user_ids_with_group(request))
-                if form.is_valid(): # check if form is valid 
-                    # we're gonna save it but don't save it just yet
-                    project = form.save(commit=False)
-                    project.owner = request.user.id # logged in user
-                    project.save()
-                    form.save() # save it to the database
-                    return HttpResponseRedirect('/add_project_group?submitted=True') # return to add_project with variable
-                
-            else: # if they did not fill out the form, then
-                form = ProjectGroupForm(user=request.user, approved_users=get_user_ids_with_group(request)) # define the form
-                if 'submitted' in request.GET:
-                    submitted = True
-
-            return render(request, 'project/add_project_group.html', {
-             'form':form, 
-             'submitted':submitted }) # pass the form 
-        else: 
-            messages.success(request, "Only Students Are allowed to perform this Action")
-            return redirect('home')
-    else:
-        messages.success(request, "Please Login to view this page")
+def approve_group_membership(request, group_id):
+    if not request.user.is_authenticated or request.user.role != 'STUDENT':
+        messages.error(request, "Unauthorized access")
         return redirect('home')
+        
+    group = get_object_or_404(Project_Group, id=group_id)
+    
+    # Get the Student instance associated with the user
+    try:
+        student = Student.objects.get(id=request.user.id)
+    except Student.DoesNotExist:
+        messages.error(request, "Student profile not found")
+        return redirect('home')
+    
+    # Check if student is already in an approved group
+    existing_approved_group = Project_Group.objects.filter(
+        proponents=student,
+        approved=True
+    ).first()
+    
+    if existing_approved_group:
+        messages.error(request, "You are already in an approved group. You cannot join another group.")
+        return redirect('my-project-group-waitlist')
+    
+    if student not in group.pending_proponents.all():
+        messages.error(request, "You are not invited to this group")
+        return redirect('home')
+    
+    # Start a transaction to ensure all operations are atomic
+    from django.db import transaction
+    
+        
+    # Accept the current group invitation
+    group.approved_by_students.add(student)
+    group.pending_proponents.remove(student)
+    group.proponents.add(student)
+        
+    # Check if there are exactly 3 approved students
+    approved_students_count = group.approved_by_students.count()
+        
+    if approved_students_count == 3:
+            # Automatically approve the group
+        group.approved = True
+        group.save()
+            
+        # Clear any remaining pending invitations
+        group.pending_proponents.clear()
+            
+        # Create notification for all group members
+        for member in group.proponents.all():
+            try:
+                Notification.objects.create(
+                    recipient=member,
+                    notification_type='group_complete',
+                    group=group,
+                    sender=request.user,
+                    message=f"Your project group '{group.name}' has been automatically approved with 3 members."
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for {member}: {str(e)}")
+            
+        messages.success(request, "You have joined the group and it has been automatically approved with 3 members.")
+    elif approved_students_count < 3:
+        # Create notification just for the group creator about the acceptance
+        try:
+            Notification.objects.create(
+                recipient=group.creator,
+                notification_type='group_accept',
+                group=group,
+                sender=request.user,
+                message=f"{request.user.get_full_name()} has accepted the invitation to join your project group. ({approved_students_count}/3 members)"
+            )
+        except Exception as e:
+            logger.error(f"Failed to create notification: {str(e)}")
+            
+        messages.success(request, f"You have successfully joined the group. {3 - approved_students_count} more member(s) needed for automatic approval.")
+    else:
+        logger.warning(f"Group {group.id} has more than 3 approved members: {approved_students_count}")
+        messages.warning(request, "Unexpected number of group members.")
+
+    return redirect('my-project-group-waitlist')
+
+def reject_group_membership(request, group_id):
+    if not request.user.is_authenticated or request.user.role != 'STUDENT':
+        messages.error(request, "Unauthorized access")
+        return redirect('home')
+        
+    group = get_object_or_404(Project_Group, id=group_id)
+    
+    if request.user not in group.pending_proponents.all():
+        messages.error(request, "You are not invited to this group")
+        return redirect('home')
+        
+    # Move user from pending to declined instead of removing
+    group.pending_proponents.remove(request.user.id)
+    group.declined_proponents.add(request.user.id)
+    
+    messages.success(request, "Group invitation declined.")
+    return redirect('my-project-group-waitlist')
+
+# Add new view for replacing declined member
+def replace_member(request, group_id, member_id):
+    group = get_object_or_404(Project_Group, id=group_id)
+    member = get_object_or_404(Student, id=member_id)
+    
+    if request.user != group.creator:
+        messages.error(request, "Only the group creator can replace members")
+        return redirect('my-project-group-waitlist')
+    
+    if request.method == "POST":
+        form = ProjectGroupInviteForm(request.POST, group=group)
+        if form.is_valid():
+            new_members = form.cleaned_data.get('proponents', [])
+            if len(new_members) > 1:
+                messages.error(request, "You can only select one replacement member")
+                return redirect('my-project-group-waitlist')
+                
+            if new_members:
+                group.declined_proponents.remove(member)
+                group.pending_proponents.add(new_members[0])
+                
+                # Create notification for new invite
+                try:
+                    Notification.objects.create(
+                        recipient=new_members[0],
+                        notification_type='invitation',
+                        group=group,
+                        sender=request.user,
+                        message=f"{request.user.get_full_name()} has invited you to join the project group."
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to create notification: {str(e)}")
+                
+                messages.success(request, "Replacement invitation sent successfully")
+                return redirect('my-project-group-waitlist')
+    else:
+        form = ProjectGroupInviteForm(group=group)
+    
+    return render(request, 'project/replace_member.html', {
+        'form': form,
+        'group': group,
+        'member': member
+    })
+
+@login_required
+def remove_declined_member(request, group_id, member_id):
+    group = get_object_or_404(Project_Group, id=group_id)
+    member = get_object_or_404(Student, id=member_id)
+    
+    if request.user != group.creator:
+        messages.error(request, "Only the group creator can remove declined members.")
+        return redirect('my-project-group-waitlist')
+    
+    if member in group.declined_proponents.all():
+        group.declined_proponents.remove(member)
+        messages.success(request, f"{member.get_full_name()} has been removed from the list.")
+    else:
+        messages.error(request, "This member is not in the declined list.")
+    
+    return redirect('my-project-group-waitlist')
+
+@login_required
+def finalize_group(request, group_id):
+    group = get_object_or_404(Project_Group, id=group_id)
+    
+    if request.user != group.creator:
+        messages.error(request, "Only the group creator can finalize the group.")
+        return redirect('my-project-group-waitlist')
+    
+    # if group.approved_by_students.count() < 2:
+    #     messages.error(request, "You need at least 2 members to finalize the group.")
+    #     return redirect('my-project-group-waitlist')
+    
+    # Clear any pending invitations
+    group.pending_proponents.clear()
+    
+    # Mark the group as approved
+    group.approved = True
+    group.save()
+    
+    messages.success(request, "Group has been finalized successfully!")
+    return redirect('my-project-group-waitlist')
+
+@login_required
+def invite_more_members(request, group_id):
+    group = get_object_or_404(Project_Group, id=group_id)
+    
+    if request.user != group.creator:
+        messages.error(request, "Only the group creator can invite more members.")
+        return redirect('my-project-group-waitlist')
+    
+    if request.method == "POST":
+        form = ProjectGroupInviteForm(request.POST, group=group)
+        if form.is_valid():
+            new_members = form.cleaned_data.get('proponents', [])
+            
+            # Get existing members and pending members
+            existing_members = set(group.proponents.all())
+            pending_members = set(group.pending_proponents.all())
+            
+            # Track successful invites
+            successful_invites = []
+            failed_invites = []
+            
+            for member in new_members:
+                # Only add if they're not already a member or pending
+                if member not in existing_members and member not in pending_members:
+                    try:
+                        # Add to pending_proponents
+                        group.pending_proponents.add(member)
+                        
+                        # Create notification with separate try-except block
+                        try:
+                            notification = Notification.objects.create(
+                                recipient=member,
+                                notification_type='invitation',
+                                group=group,
+                                sender=request.user,
+                                message=f"{request.user.get_full_name()} has invited you to join the project group '{group.name}'"
+                            )
+                            logger.info(f"Successfully created notification {notification.id} for {member.get_full_name()}")
+                        except Exception as notif_error:
+                            logger.error(f"Failed to create notification for {member.get_full_name()}: {str(notif_error)}")
+                            # Continue with the invitation even if notification fails
+                        
+                        successful_invites.append(member.get_full_name())
+                        logger.info(f"Successfully added {member.get_full_name()} to pending proponents of group {group.id}")
+                        
+                    except Exception as e:
+                        logger.error(f"Failed to add {member.get_full_name()} to group {group.id}: {str(e)}")
+                        failed_invites.append(f"{member.get_full_name()} (error: {str(e)})")
+                else:
+                    failed_invites.append(f"{member.get_full_name()} (already invited or member)")
+            
+            # Show summary messages
+            if successful_invites:
+                messages.success(request, f"Successfully invited: {', '.join(successful_invites)}")
+            if failed_invites:
+                messages.warning(request, f"Some invitations could not be processed: {', '.join(failed_invites)}")
+                
+            return redirect('my-project-group-waitlist')
+        else:
+            messages.error(request, "Please correct the errors in the form.")
+    else:
+        form = ProjectGroupInviteForm(group=group)
+    
+    return render(request, 'project/invite_more_members.html', {
+        'form': form,
+        'group': group,
+        'current_members': group.proponents.all(),
+        'pending_members': group.pending_proponents.all(),
+    })
+
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def get_notifications(request):
+    notifications = Notification.objects.filter(recipient=request.user).order_by('-created_at')[:10]
+    unread_count = notifications.filter(is_read=False).count()
+     # Debugging logs
+    logger.debug(f"Fetching notifications for user: {request.user}")
+    logger.debug(f"Notifications count: {notifications.count()}")
+    logger.debug(f"Unread notifications count: {unread_count}")
+    
+    notifications_data = [{
+        'id': notif.id,
+        'message': notif.message,
+        'is_read': notif.is_read,
+        'created_at': notif.created_at.strftime('%Y-%m-%d %H:%M:%S')
+    } for notif in notifications]
+    
+    return JsonResponse({
+        'notifications': notifications_data,
+        'unread_count': unread_count
+    })
+
+from django.views.decorators.http import require_POST
+
+@require_POST
+@login_required 
+def mark_notification_read(request, notification_id):
+    try:
+        notification = Notification.objects.get(id=notification_id, recipient=request.user)
+        notification.is_read = True
+        notification.save()
+        return JsonResponse({'success': True})
+    except Notification.DoesNotExist:
+        return JsonResponse({'error': 'Notification not found'}, status=404)
+    
+
+def add_project_group(request): 
+    if request.user.is_authenticated and request.user.role == 'STUDENT':
+         # Check for existing approved groups 
+        approved_groups = Project_Group.objects.filter(proponents=request.user, approved=True)
+        
+        if approved_groups.exists():
+            messages.error(request, "You are already part of an approved project group and cannot create a new one.")
+            return redirect('home')
+
+        submitted = False
+        
+        if request.method == "POST":
+            form = ProjectGroupForm(request.POST, user=request.user, approved_users=get_user_ids_with_group(request))
+            if form.is_valid():
+                project = form.save(commit=False)
+                
+                try:
+                    student_creator = Student.objects.get(id=request.user.id)
+                except Student.DoesNotExist:
+                    messages.error(request, "Student profile not found.")
+                    return redirect('home')
+
+                selected_proponents = form.cleaned_data['proponents']
+                other_proponents = [p for p in selected_proponents if p.id != request.user.id]
+                
+                # Validate minimum group size
+                if len(other_proponents) == 0:
+                    messages.error(request, "You must select at least one other student for the group.")
+                    return render(request, 'project/add_project_group.html', {
+                        'form': form,
+                        'submitted': False
+                    })
+                
+                project.creator = student_creator
+                project.save()
+                
+                # Add relationships
+                project.approved_by_students.add(student_creator)
+                project.proponents.add(student_creator)
+                
+                # Add relationships and create notifications
+                for proponent in other_proponents:
+                    project.pending_proponents.add(proponent)
+                    
+                    try:
+                        # Create notification with error handling
+                        notification = Notification.objects.create(
+                            recipient=proponent,
+                            notification_type='invitation',
+                            group=project,
+                            sender=student_creator,
+                            message=f"{student_creator.get_full_name()} has invited you to join a project group."
+                        )
+                        logger.debug(f"Created notification {notification.id} for {proponent}")
+                    except Exception as e:
+                        logger.error(f"Failed to create notification for {proponent}: {str(e)}")
+                
+                messages.success(request, "Group created and invitations sent to selected students.")
+                return HttpResponseRedirect('/add_project_group?submitted=True') 
+        else:
+            form = ProjectGroupForm(user=request.user, approved_users=get_user_ids_with_group(request))
+            if 'submitted' in request.GET:
+                submitted = True
+
+        return render(request, 'project/add_project_group.html', {
+            'form':form, 
+            'submitted':submitted
+        })
+    else: 
+        messages.success(request, "Please login as a student to perform this action")
+        return redirect('home')
+    
+                # # Send email notifications to invited students
+                # for proponent in other_proponents:
+                #     # Prepare email content
+                #     context = {
+                #         'invited_student': proponent,
+                #         'creator': student_creator,
+                #         'group_name': project.name,
+                #         'accept_url': request.build_absolute_uri(f'/approve_group_membership/{project.id}'),
+                #         'reject_url': request.build_absolute_uri(f'/reject_group_membership/{project.id}')
+                #     }
+                    
+                #     # Render email templates
+                #     html_message = render_to_string('project/emails/group_invitation.html', context)
+                #     plain_message = strip_tags(html_message)
+                    
+                #     # Send the email
+                #     try:
+                #         send_mail(
+                #             subject='Project Group Invitation',
+                #             message=plain_message,
+                #             from_email=settings.DEFAULT_FROM_EMAIL,
+                #             recipient_list=[proponent.email],
+                #             html_message=html_message,
+                #             fail_silently=False,
+                #         )
+                #     except Exception as e:
+                #         logger.error(f"Failed to send email to {proponent.email}: {str(e)}")
     
 def my_profile(request, profile_id): 
     if request.user.is_authenticated: 
@@ -480,6 +847,35 @@ def generate_report(request):
         project_group_count = Project_Group.objects.count
         unapproved_project_group_count = Project_Group.objects.filter(approved=False).count
 
+
+           # Get all projects with their phases
+        projects = Project.objects.prefetch_related('phases').all()
+
+        # Create a dictionary to store defense results for each project
+        projects_with_phases = []
+        for project in projects:
+            defense_results = {
+                'proposal': 'Not Started',
+                'design': 'Not Started',
+                'preliminary': 'Not Started',
+                'final': 'Not Started'
+            }
+            
+            # Get the latest verdict for each phase type
+            for phase_type in ['proposal', 'design', 'preliminary', 'final']:
+                latest_phase = project.phases.filter(
+                    phase_type=phase_type
+                ).order_by('-date').first()
+                
+                if latest_phase:
+                    defense_results[phase_type] = latest_phase.get_verdict_display()
+
+            projects_with_phases.append({
+                'project': project,
+                'defense_results': defense_results
+            })
+
+
         return render(request, 'project/generate_report.html', 
         { "adviser_count": adviser_count, 
         "student_count": student_count,
@@ -491,6 +887,7 @@ def generate_report(request):
         "panel_uneligible_count": panel_uneligible_count,
         "project_group_count": project_group_count, 
         "unapproved_project_group_count": unapproved_project_group_count,
+        'projects_with_phases': projects_with_phases,
         })
     else: 
         messages.success(request, "Please Login to view this page")
@@ -517,33 +914,8 @@ def get_user_project_group(request):
     else: 
         return None
 
-
-# def get_user_project(request):
-#     if not request.user.is_authenticated:
-#        return None
-
-#      # Assuming 'Student' model has a OneToOne relation with User
-#     try:
-#         student = Student.objects.get(id=request.user.id)
-
-#     except Student.DoesNotExist:
-#         return None
     
-#     # Get the project group that the student is part of
-#     group = get_user_project_group(request)
-#     # Get the project that the student is part of
-#     project = ApprovedProject.objects.filter(proponents=group)
-    
-#     if project.exists():
-#         # Return the first group or handle accordingly
-#         return project.first() 
-    
-#     else: 
-#         return None
-
-
-    
-def coordinator_approval(request): 
+def coordinator_approval_faculty(request): 
     if request.user.is_authenticated: 
         # Get counts 
         project_count = Project.objects.filter(approved=True).count
@@ -574,17 +946,50 @@ def coordinator_approval(request):
                 for y in panel_id_list: 
                     User.objects.filter(pk=int(y)).update(panel_eligible=True)
                 
+
+                messages.success(request, "Faculty Approval Form has been updated")
+                return redirect('coordinator-approval-faculty')
+            else: 
+                return render(request, 
+                'project/coordinator_approval_faculty.html', 
+                {'faculty_list': faculty_list, 
+                    "project_count": project_count,
+                    "proposal_count": proposal_count,
+                    "student_count": student_count, 
+                    "faculty_count": faculty_count,
+                    "student_list": student_list, 
+                })    
+        else: 
+            messages.success(request, "You aren' authorized to view this Page ")
+            return redirect('home')
+    else: 
+        messages.success(request, "Please Login to view this page")
+        return redirect('home')
+    
+def coordinator_approval_student(request): 
+    if request.user.is_authenticated: 
+        # Get counts 
+        project_count = Project.objects.filter(approved=True).count
+        proposal_count = Project.objects.filter(approved=False).count
+        student_count = User.objects.filter(role='STUDENT').count
+        faculty_count = User.objects.filter(role='FACULTY').count
+        student_list = User.objects.filter(role='STUDENT').order_by('last_name')
+        
+        # get list of faculty 
+        faculty_list = User.objects.filter(role='FACULTY').order_by('last_name')
+        if request.user.is_superuser:
+            if request.method == "POST":  
+            
                 student_box_list = request.POST.getlist('student_box')
                 student_list.update(eligible=False)
                 for z in student_box_list:
                     User.objects.filter(pk=int(z)).update(eligible=True)
 
-
-                messages.success(request, "Coordinator Approval Page has been updated")
-                return redirect('coordinator_approval')
+                messages.success(request, "Student Approval Form has been updated")
+                return redirect('coordinator-approval-student')
             else: 
                 return render(request, 
-                'project/coordinator_approval.html', 
+                'project/coordinator_approval_student.html', 
                 {'faculty_list': faculty_list, 
                     "project_count": project_count,
                     "proposal_count": proposal_count,
@@ -662,36 +1067,37 @@ def delete_proposal(request, project_id):
         return redirect('list-proposals')
         
 def update_proposal(request, project_id): 
-     # look on projects by ID 
-    project = Project.objects.get(pk=project_id)
-    # if they are gonna post, use this form otherwise, don't use anything. 
-    form = UpdateProjectForm(request.POST or None, instance=project)
-    
-    # save data to the database and return somewhere 
-    if form.is_valid(): 
-        form.save()
-        messages.success(request, "Proposal updated Succesfully!")
-        return redirect('list-proposals')
-    # pass it to the page using render 
-    return render(request, 'project/update_proposal.html', 
-    {'project': project, 
-     'form': form})
-
-# Delete Project
-def delete_project(request, project_id):
-
-    if request.method == 'POST':
+    if request.user.is_authenticated: 
         # look on projects by ID 
         project = Project.objects.get(pk=project_id)
+        # if they are gonna post, use this form otherwise, don't use anything. 
         if request.user == project.adviser: 
-            project.delete()
-            messages.success(request, "Project Deleted Succesfully ! ")
-            return JsonResponse({'success': True})
-            # return redirect('list-projects')
+            form = UpdateProjectForm(request.POST or None, instance=project)
+        
+        # save data to the database and return somewhere 
+        if form.is_valid(): 
+            # Handle disabled fields by reassigning their initial values before saving
+            if isinstance(form, UpdateProjectForm):  # Check if using UpdateProjectForm
+                form.instance.title = project.title
+                form.instance.project_type = project.project_type
+                form.instance.proponents = project.proponents
+                form.instance.adviser = project.adviser
+                form.instance.description = project.description
+            form.save()
+            messages.success(request, "Proposal updated Succesfully!")
+            return redirect('list-proposals')
         else:
-            messages.error(request, "You Aren't Authorized to Delete this Project!")
-            return JsonResponse({'success': False, 'error': 'Unauthorized'})
-    return JsonResponse({'success': False, 'error': 'Invalid request'})
+            # Reinitialize the panel with the pre-selected panelist to retain form state
+            form.fields['panel'].initial = form.instance.panel.all()[:1]
+
+        # pass it to the page using render 
+        return render(request, 'project/update_proposal.html', 
+        {'project': project, 
+        'form': form})
+    else: 
+        messages.error(request, "You Aren't Authorized to view this page.")
+        return redirect('home')
+
 
 def update_project(request, project_id): 
     if request.user.is_authenticated: 
@@ -700,9 +1106,7 @@ def update_project(request, project_id):
         # if they are gonna post, use this form otherwise, don't use anything. 
         if request.user == project.adviser: 
             form = UpdateProjectForm(request.POST or None, instance=project)
-        else: 
-            form = ProjectForm(request.POST or None, instance=project)
-        
+       
         # save data to the database and return somewhere 
         if form.is_valid(): 
              # Handle disabled fields by reassigning their initial values before saving
@@ -731,6 +1135,23 @@ def update_project(request, project_id):
     else: 
         messages.error(request, "You Aren't Authorized to view this page.")
         return redirect('home')
+    
+    # Delete Project
+def delete_project(request, project_id):
+
+    if request.method == 'POST':
+        # look on projects by ID 
+        project = Project.objects.get(pk=project_id)
+        if request.user == project.adviser: 
+            project.delete()
+            messages.success(request, "Project Deleted Succesfully ! ")
+            return JsonResponse({'success': True})
+            # return redirect('list-projects')
+        else:
+            messages.error(request, "You Aren't Authorized to Delete this Project!")
+            return JsonResponse({'success': False, 'error': 'Unauthorized'})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
 
 def search_projects(request): 
     # determine whether some has gone to the page 
@@ -837,10 +1258,9 @@ def all_projects(request):
         messages.success(request, "Please Login to view this page")
         return redirect('home')
         
-
-
 def all_proposals(request):
     if request.user.is_authenticated: 
+        
         project_list = Project.objects.all().order_by('title')
         return render(request, 'project/proposal_list.html', 
         {'project_list': project_list})

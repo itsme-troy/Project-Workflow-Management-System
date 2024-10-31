@@ -1,0 +1,12 @@
+.unread {
+    background-color: #f8f9fa;
+}
+
+.notification-item {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}

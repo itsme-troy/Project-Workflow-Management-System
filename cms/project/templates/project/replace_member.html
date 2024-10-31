@@ -1,0 +1,15 @@
+{% extends 'project/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Replace Declined Member</h2>
+    <p>Replacing: {{ member.get_full_name }}</p>
+    
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Send Invitation</button>
+        <a href="{% url 'my-project-group-waitlist' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

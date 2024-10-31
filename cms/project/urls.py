@@ -21,7 +21,9 @@ urlpatterns = [
     path('accept_proposal/<project_id>', views.accept_proposal, name='accept-proposal'),
     path('reject_project/<project_id>', views.reject_project, name='reject-project'),
     path('adviser_projects', views.adviser_projects, name='adviser-projects'),
-    path('coordinator_approval', views.coordinator_approval, name='coordinator_approval'),
+    
+    path('coordinator_approval_faculty', views.coordinator_approval_faculty, name='coordinator-approval-faculty'),
+    path('coordinator_approval_student', views.coordinator_approval_student, name='coordinator-approval-student'),
     
     path('submit_defense_application', views.submit_defense_application, name='submit-defense-application'),
     path('defense_applications', views.list_defense_applications, name='list-defense-applications'),
@@ -29,15 +31,25 @@ urlpatterns = [
     
     path('generate_report', views.generate_report, name='generate-report'),
     path('show_student/<student_id>', views.show_student, name='show-student'),
+
     path('add_project_group', views.add_project_group, name="add-project-group"),
+    path('list_project_group', views.list_project_group, name='list-project-group'), 
+    path('my_project_group_waitlist', views.my_project_group_waitlist, name='my-project-group-waitlist'), 
+    path('approve-group-membership/<int:group_id>/', views.approve_group_membership, name='approve-group-membership'),
+    path('reject-group-membership/<int:group_id>/', views.reject_group_membership, name='reject-group-membership'),
+    path('finalize-group/<int:group_id>/', views.finalize_group, name='finalize-group'),
+    path('invite-more-members/<int:group_id>/', views.invite_more_members, name='invite-more-members'),
+    path('replace-member/<int:group_id>/<int:member_id>/', views.replace_member, name='replace-member'),
+    path('remove_declined_member/<int:group_id>/<int:member_id>/', views.remove_declined_member, name='remove_declined_member'),
     # path('my_student_profile/<profile_id>', views.my_student_profile, name="my-student-profile"), 
     path('my_profile/<profile_id>', views.my_profile, name="my-profile"), 
     path('show_faculty/<faculty_id>', views.show_faculty, name='show-faculty'),
     path('update_deficiencies/<student_id>', views.update_deficiencies, name='update_deficiencies'), 
-    path('list_project_group', views.list_project_group, name='list-project-group'), 
-    path('list_project_group_waitlist', views.list_project_group_waitlist, name='list-project-group-waitlist'), 
+
     path('approve_project_group/<group_id>', views.approve_project_group, name='approve-project-group'), 
     path('reject_project_group/<group_id>', views.reject_project_group, name='reject-project-group'),
     path('delete_project_group/<group_id>', views.delete_project_group, name='delete-project-group'),
-  
+
+    path('get_notifications/', views.get_notifications, name='get_notifications'),
+    path('mark_notification_read/<int:notification_id>/', views.mark_notification_read, name='mark_notification_read'),
 ]
