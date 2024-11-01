@@ -31,6 +31,7 @@
               <li><a class="dropdown-item" href="{% url 'my-project-group-waitlist' %}"> My Project Group Waitlist </a></li>
           
                 {% if user.role == 'STUDENT' %}
+                  <li><a class="dropdown-item" href="{% url 'join-group-list' %}">Join a Group</a></li>
                   <li><a class="dropdown-item" href="{% url 'add-project-group' %}"> Register a Project Group  </a></li>
                 {% endif %}
             

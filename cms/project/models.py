@@ -192,28 +192,25 @@ class CoordinatorProfile(models.Model):
     user = models.OneToOneField(AppUser, on_delete=models.CASCADE)
     coordinator_id= models.IntegerField(null=True, blank=True)
 
+
 class Project_Group(models.Model): 
     # adviser = models.ForeignKey(Faculty, related_name="group_adviser", null=True, on_delete=models.SET_NULL) 
     proponents = models.ManyToManyField(Student, related_name='project_proponents', blank=True )
-    pending_proponents = models.ManyToManyField(
-        Student, 
-        related_name='pending_project_groups', 
-        blank=True
-    )
-    approved_by_students = models.ManyToManyField(
-        Student,
-        related_name='approved_project_groups',
-        blank=True
-    )
+    pending_proponents = models.ManyToManyField(Student, related_name='pending_project_groups', blank=True)
+    approved_by_students = models.ManyToManyField(Student, related_name='approved_project_groups', blank=True)
     declined_proponents = models.ManyToManyField(Student, related_name='declined_groups', blank=True)
     
+    declined_requests = models.ManyToManyField(Student,related_name='declined_requests', blank=True, help_text="Students who have been declined to join this group")
+    join_requests = models.ManyToManyField(Student, related_name='requested_groups', blank=True, help_text="Students who have requested to join this group")
+    requests = models.ManyToManyField(Student, related_name='sent_requests', blank=True, help_text="Students who have sent join requests to this group")
+
     approved = models.BooleanField('All Students Approved', default=False)
-    creator = models.ForeignKey(
-        Student,
-        on_delete=models.CASCADE,
-        related_name='owned_groups',
-        verbose_name="Project Group Creator"
-    )
+    creator = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='owned_groups', verbose_name="Project Group Creator")
+    
+    def __str__(self):
+        # Fetch all last names in the group
+        last_names = self.proponents.values_list('last_name', flat=True)  # Assuming 'last_name' is a field in the Student model
+        return f"{', '.join(last_names)}" if last_names else 'No Students'
     
     def __str__(self):
         # Fetch all last names in the group

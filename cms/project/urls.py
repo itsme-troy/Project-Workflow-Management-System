@@ -39,8 +39,16 @@ urlpatterns = [
     path('reject-group-membership/<int:group_id>/', views.reject_group_membership, name='reject-group-membership'),
     path('finalize-group/<int:group_id>/', views.finalize_group, name='finalize-group'),
     path('invite-more-members/<int:group_id>/', views.invite_more_members, name='invite-more-members'),
-    path('replace-member/<int:group_id>/<int:member_id>/', views.replace_member, name='replace-member'),
-    path('remove_declined_member/<int:group_id>/<int:member_id>/', views.remove_declined_member, name='remove_declined_member'),
+    # path('replace-member/<int:group_id>/<int:member_id>/', views.replace_member, name='replace-member'),
+    path('remove-member/<int:group_id>/<int:member_id>/', views.remove_member, name='remove-member'),
+    path('leave-group/<int:group_id>/', views.leave_group, name='leave-group'),
+    
+    path('join_group', views.join_group_list, name='join-group-list'),  # Add this line
+    path('request_join_group/<int:group_id>/', views.request_join_group, name='request-join-group'),  # Add this line
+    path('cancel-join-request/<int:group_id>/', views.cancel_join_request, name='cancel-join-request'),
+    path('accept-join-request/<int:group_id>/<int:user_id>/', views.accept_join_request, name='accept-join-request'),
+    path('decline-join-request/<int:group_id>/<int:user_id>/', views.decline_join_request, name='decline-join-request'),
+    
     # path('my_student_profile/<profile_id>', views.my_student_profile, name="my-student-profile"), 
     path('my_profile/<profile_id>', views.my_profile, name="my-profile"), 
     path('show_faculty/<faculty_id>', views.show_faculty, name='show-faculty'),

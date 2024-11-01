@@ -81,7 +81,7 @@ class ProjectPhaseAdmin(admin.ModelAdmin):
 
 @admin.register(Project_Group)
 class Project_GroupAdmin(admin.ModelAdmin):
-    fields = ('proponents', 'pending_proponents', 'approved_by_students', 'declined_proponents', 'approved', 'creator')
+    fields = ('proponents', 'pending_proponents', 'approved_by_students', 'declined_proponents', 'requests', 'join_requests', 'declined_requests', 'approved', 'creator')
     list_display = ( 'approved', 'creator')
 
 @admin.register(Defense_Application)
