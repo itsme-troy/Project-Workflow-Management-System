@@ -30,6 +30,9 @@
 
 <center><h1>My Project Group Waitlist</h1></center>
 <br>
+<div class="mb-3 text-end" >
+    <button onclick="window.history.back();" class="btn btn-secondary">Back</button>
+</div>
 
 {% if groups_with_all_members %}
     {% for group_data in groups_with_all_members %}
@@ -57,18 +60,23 @@
                                         <span class="badge bg-info ms-2">You</span>
                                     {% endif %}
                                     {% if proponent == group_data.group.creator %}
-                                        <span class="badge bg-primary">Creator</span>
+                                        <span class="badge bg-primary">Leader</span>
                                     {% endif %}
                                 </td>
                                 <td><span class="badge bg-success">Approved</span></td>
                                 <td>
-                                    {% if user == proponent  %}
+                                    {% if user == proponent %}
                                         <span class="hint-button">Click row to show actions</span>
                                         <div class="action-buttons">
                                             <a href="{% url 'leave-group' group_data.group.id %}" class="btn btn-outline-danger btn-sm"
                                                 onclick="return confirm('Are you sure you want to leave this group? {% if group_data.current_proponents.count > 1 %}The creator role will be transferred to another member.{% else %}The group will be deleted as you are the only member.{% endif %}')">
                                                 Leave Group
                                             </a>
+                                            {% if user == group_data.group.creator %}
+                                                <a href="{% url 'transfer-creator' group_data.group.id %}" class="btn btn-outline-primary btn-sm">
+                                                    Transfer Creator
+                                                </a>
+                                            {% endif %}
                                         </div>
                                     {% endif %}
                                 </td>

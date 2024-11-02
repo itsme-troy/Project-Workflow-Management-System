@@ -1,30 +1,61 @@
 {% extends 'project/base.html' %}
 
 {% block content %}
+<div class="hero-section text-center py-5">
+    <h1>Welcome to the SP Management System</h1>
+    <p>Streamline Your Senior Project Journey</p>
+    <a href="#" class="btn btn-primary mt-3">Get Started</a>
+</div>
 
+<div class="container mt-5">
+    <div class="row text-center">
+        <div class="col-md-4">
+            <i class="fas fa-users fa-3x"></i>
+            <h3>Group Management</h3>
+            <p>Easily form and manage project groups.</p>
+        </div>
+        <div class="col-md-4">
+            <i class="fas fa-tasks fa-3x"></i>
+            <h3>Project Tracking</h3>
+            <p>Monitor project progress and deadlines.</p>
+        </div>
+        <div class="col-md-4">
+            <i class="fas fa-calendar-alt fa-3x"></i>
+            <h3>Defense Scheduling</h3>
+            <p>Schedule and manage defense sessions.</p>
+        </div>
+    </div>
+</div>
 
+<div class="container mt-5">
+    <h2 class="text-center">User Role-Specific Information</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <h4>For Students</h4>
+            <ul>
+                <li>Join or create a project group</li>
+                <li>Submit a defense application</li>
+            </ul>
+        </div>
+        <div class="col-md-4">
+            <h4>For Faculty</h4>
+            <ul>
+                <li>Manage advisory projects</li>
+                <li>Generate insightful reports</li>
+            </ul>
+        </div>
+        <div class="col-md-4">
+            <h4>For Coordinators</h4>
+            <ul>
+                <li>System management features</li>
+                <li>Approval forms and scheduling tools</li>
+            </ul>
+        </div>
+    </div>
+</div>
 
-</br> 
-<center> 
-    <h1> Capstone Management System </h1> </br> 
-</center> 
-    <p> Focus on the process of Capstone Project Application and Defense, which includes the following:
-       <ul> 
-        <li> Identifying Eligible Students, Possible Advisers and Panelists </li> 
-        <li> Selecting Groupmates, Advisers, and Panelists </li> 
-        <li> Selecting and Tracking of Topics </li> 
-        <li> Submitting of Capstone Project Defense Application </li> 
-        <li> Scheduling of Defense (Topic, Design, Preliminary, Final) </li> 
-        <li> Tracking of Defense Status </li> 
-        <li> Report Generation providing meaningful insights </li> 
-            <ul> 
-               <li>  # total advisers </li> 
-               <li>  # total students enrolled </li> 
-               <li>   # total groups </li> 
-               <li>  # topics of each group </li> 
-               <li> Defense success/fail record/ current progress </li> 
-            </ul>     
-       </ul> 
-        <p> 
-
+<div class="footer mt-5 py-3 bg-dark text-white text-center">
+    <p>Contact us at: info@capstonemanagement.com</p>
+    <p>Follow us on social media: [Social Media Links]</p>
+</div>
 {% endblock %}

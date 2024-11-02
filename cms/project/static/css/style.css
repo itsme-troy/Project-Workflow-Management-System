@@ -1,3 +1,7 @@
+.custom-sky-blue-bg {
+    background-color: #87CEEB; /* Sky blue color */
+}
+
 .unread {
     background-color: #f8f9fa;
 }
@@ -9,4 +13,59 @@
 
 .notification-item:last-child {
     border-bottom: none;
+}
+
+/* Add a background color to the navbar */
+.custom-navbar-bg {
+    background-color: #343a40; /* Dark background */
+    color: #ffffff; /* White text */
+}
+
+.navbar-nav .nav-link {
+    color: #343a40; /* Dark text for contrast */
+    transition: color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.navbar-nav .nav-link:hover {
+    color: #007bff; /* Blue color on hover */
+}
+
+/* Style the alert messages */
+.alert {
+    background-color: #f8d7da; /* Light red background */
+    color: #721c24; /* Dark red text */
+    border-color: #f5c6cb; /* Light red border */
+}
+
+/* Add custom styles for buttons */
+.btn-close {
+    color: #721c24; /* Dark red close button */
+}
+
+/* Add any additional styles you need */
+
+body {
+    background-color: #f8f9fa; /* Light background color */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+}
+
+.container {
+    background-color: #ffffff; /* White background for content */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.navbar {
+    background-color: #ffffff; /* White background for navbar */
+    border-bottom: 1px solid #e0e0e0; /* Subtle border for separation */
+}
+
+.btn-outline-primary {
+    border-color: #007bff;
+    color: #007bff;
+}
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    color: #ffffff;
 }

@@ -48,6 +48,7 @@ urlpatterns = [
     path('cancel-join-request/<int:group_id>/', views.cancel_join_request, name='cancel-join-request'),
     path('accept-join-request/<int:group_id>/<int:user_id>/', views.accept_join_request, name='accept-join-request'),
     path('decline-join-request/<int:group_id>/<int:user_id>/', views.decline_join_request, name='decline-join-request'),
+    path('transfer-creator/<int:group_id>/', views.transfer_creator, name='transfer-creator'),
     
     # path('my_student_profile/<profile_id>', views.my_student_profile, name="my-student-profile"), 
     path('my_profile/<profile_id>', views.my_profile, name="my-profile"), 

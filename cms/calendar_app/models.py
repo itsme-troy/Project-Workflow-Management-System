@@ -12,4 +12,3 @@ class Event(models.Model):
     def __str__(self):
         return f"{self.defense_application}" 
 
-

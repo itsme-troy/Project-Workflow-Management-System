@@ -5,53 +5,85 @@
 {% if user.is_authenticated %}
 
 {{ approved_users }}
-        <center> 
-            <h1> Register A Project Group </h1> 
-            <br/> <br/> 
-        </center>  
-    
-        {% if submitted %}
-            <h3> Your Project Group Was Submitted Successfully! </br> </h3> 
-           
-        {% else %}
-            <form action="" method=POST> 
-                {% csrf_token %}
+    <div class="container mt-5">
+        <div class="text-center">
+            <h1 class="display-4">Register A Project Group</h1>
+            <hr class="my-4">
+        </div>
 
-                {{ form.as_p }}
-                
-                <input type="submit" value="Submit" 
-                class="btn btn-secondary">
-            </form> 
+        {% if submitted %}
+            <div class="alert alert-success text-center" role="alert">
+                <h3>Your Project Group Was Submitted Successfully!</h3>
+            </div>
+        {% else %}
+            <form action="" method="POST" class="mt-4">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
+                <a href="{% url 'list-project-group' %}" class="btn btn-danger btn-lg btn-block">Cancel</a> <!-- Cancel button -->
+            </form>
         {% endif %}
-        <!-- JavaScript to handle disabling logged-in user in the proponents field -->
+    </div>
+
+    <style>
+        #id_proponents {
+            height: 250px; /* Adjust the height as needed */
+        }
+        #id_proponents option:checked {
+            background-color: #d1e7dd; /* Highlight color for selected options */
+        }
+    </style>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Get the logged-in user's ID
+            const selectElement = document.querySelector('select[data-selectable="true"]');
             let loggedInUserId = "{{ user.id }}";
-            // Get the proponents select element
             let proponentsSelect = document.getElementById('id_proponents');
 
-            // Loop through the options and disable the logged-in user from being deselected
+            if (selectElement) {
+                selectElement.addEventListener('click', function(event) {
+                    const option = event.target;
+                    if (option.tagName === 'OPTION') {
+                        option.selected = !option.selected;  // Toggle selection
+                        option.classList.toggle('highlighted', option.selected);  // Toggle highlight
+                    }
+                });
+            }
             for (let option of proponentsSelect.options) {
                 if (option.value === loggedInUserId) {
-                    option.disabled = true;  // Disable the option, but it will remain selected
+                    option.disabled = true;
                 }
             }
 
-            // Ensure that only up to 3 proponents (including the logged-in user) can be selected
+            proponentsSelect.addEventListener('click', function(event) {
+                let option = event.target;
+                if (option.tagName === 'OPTION') {
+                    option.selected = !option.selected; // Toggle selection
+                }
+            });
+
             proponentsSelect.addEventListener('change', function() {
                 let selectedOptions = [...proponentsSelect.selectedOptions];
                 if (selectedOptions.length > 3) {
                     alert("You can only select up to 3 proponents, including yourself.");
-                    // Unselect the last selected option if the limit is exceeded
-                    selectedOptions[selectedOptions.length - 1].selected = false;
+                    selectedOptions[selectedOptions.length - 1].selected = false; // Deselect the last selected option
                 }
             });
         });
     </script>
-    {% else %}
-        <h1> Sorry. Please Login to view this Page. </h1> 
+    <style>
+        /* Add some CSS to highlight selected options */
+        select[data-selectable="true"] option.highlighted {
+            background-color: #d3d3d3;  /* Light gray background for highlighted options */
+        }
+        </style>
+{% else %}
+    <div class="container mt-5 text-center">
+        <h1>Sorry. Please Login to view this Page.</h1>
+        <a href="{% url 'login' %}" class="btn btn-link">Login Here!</a>
+    </div>
+{% endif %}
 
-        <a href="{% url 'login' %}">Login Here! </a> 
-    {% endif %}
 {% endblock %}

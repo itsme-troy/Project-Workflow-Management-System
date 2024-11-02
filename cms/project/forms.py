@@ -81,7 +81,7 @@ class ProjectGroupForm(ModelForm):
         }
         widgets = {
             # 'adviser': forms.Select(attrs={'class': 'form-select', 'placeholder': 'Select Adviser'}),
-            'proponents': forms.SelectMultiple(attrs={'class': 'form-select', 'placeholder': 'Select Proponents'}),
+            'proponents': forms.SelectMultiple(attrs={'class': 'form-select', 'placeholder': 'Select Proponents',  'data-selectable': 'true'}),
         }
     
     def __init__(self, *args, **kwargs):

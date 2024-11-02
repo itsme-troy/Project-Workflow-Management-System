@@ -47,6 +47,7 @@
 
     .badge {
         font-size: 0.75rem;
+        margin-right: 0.5rem; /* Add margin to the right of the badge */
     }
 
     .compact-heading {
@@ -69,7 +70,14 @@
         display: flex;
         flex-direction: column;
         overflow-y: auto;
+        position: relative; /*
     }
+    .action-buttons {
+        position: absolute;
+        bottom: 0.75rem;
+        right: 0.75rem;
+    }
+
 
     .table-container {
         flex: 1;
@@ -104,15 +112,24 @@
     .btn:hover {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
+    .btn-xs {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        margin-left: 0.5rem; /* Add margin to the left of the button */
+        margin-top: 0.25rem;
+    }
 </style>
 
 
 </style>
-{% endblock %}
-{% block content %}
+{% endblock %}{% block content %}
 <div class="container">
     <center><h1>Available Project Groups</h1></center>
     <br>
+
+    <div class="mb-3 text-end" >
+        <button onclick="window.history.back();" class="btn btn-secondary">Back</button>
+    </div>
 
     {% if groups_with_all_members %}
         <div class="groups-grid">
@@ -140,11 +157,21 @@
                                             <span class="badge bg-info ms-2">You</span>
                                             {% endif %}
                                             {% if proponent == group.group.creator %}
-                                                <span class="badge bg-primary ms-2">Creator</span>
+                                                <span class="badge bg-primary ms-2">Leader</span>
                                             {% endif %}
                                         </td>
                                     </tr>
                                 {% endfor %}
+
+                                {% with total_slots=3 %}
+                                    {% for _ in ""|center:total_slots %}
+                                        {% if forloop.counter > group.current_proponents|length %}
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endwith %}
                             </tbody>
                         </table>
 
@@ -167,11 +194,12 @@
                                                         </td>
                                                         
                                                         {% if proponent in group.declined_requests %}
-                                                            <td> <span class="badge bg-danger text-white">Denied </span>
-                                                                <form method="POST" action="{% url 'request-join-group' group.group.id %}">
+                                                            <td>
+                                                                <span class="badge bg-danger text-white">Denied</span>
+                                                                <form method="POST" action="{% url 'request-join-group' group.group.id %}" style="display: inline-block; margin-left: 0.5rem;">
                                                                     {% csrf_token %}
                                                                     <button type="submit" 
-                                                                            class="btn btn-sm btn-warning"
+                                                                            class="btn btn-sm btn-warning btn-xs"
                                                                             onclick="return confirm('Do you want to resend your join request?')">
                                                                         Resend Request
                                                                     </button>

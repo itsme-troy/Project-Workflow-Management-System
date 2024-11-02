@@ -10,16 +10,16 @@
     
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-    <title>Capstone Management System</title>
-    <style> 
-      body{background: #f4f4f4;}
-    </style> 
+    <title>Senior Project App</title>
+  
     {% block styles %}{% endblock %}
   </head>
-  <body> 
-    {% include 'project/navbar.html' %}
+  <body class="custom-sky-blue-bg">
+
+      {% include 'project/navbar.html' %}
+  
     <br/>
-     <div class="container">
+     <div class="container mt-4">
            
       {% if messages %}
         {% for message in messages %}

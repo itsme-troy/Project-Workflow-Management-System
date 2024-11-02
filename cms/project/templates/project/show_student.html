@@ -2,7 +2,6 @@
 
 {% block content %}
 
-
 </br> 
 <center> 
 
@@ -46,12 +45,15 @@
             </br> 
             {% endfor %}
              
-            
         </br>   </br> 
 
         {% if request.user.id == student.id %}
             <a href="{% url 'update-user' %}" class="btn btn-secondary"> Update Profile</a> </br> </br> 
         {% endif %}
+        
+        <!-- Add Back Button Here -->
+        <button onclick="window.history.back();" class="btn btn-primary">Back</button> </br> </br>
+        
         </div>
             
         <div> 

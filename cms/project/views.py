@@ -27,6 +27,7 @@ from django.utils.html import strip_tags
 from django.conf import settings
 from .models import Notification
 from django.http import JsonResponse
+from django.core.paginator import Paginator
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,32 @@ logger = logging.getLogger(__name__)
 from django.contrib.auth import get_user_model 
 User = get_user_model()
 
+
+@login_required
+def transfer_creator(request, group_id):
+    group = get_object_or_404(Project_Group, id=group_id)
+
+    if request.user != group.creator:
+        messages.error(request, "Only the group creator can transfer the creator role.")
+        return redirect('my-project-group-waitlist')
+
+    if request.method == "POST":
+        new_creator_id = request.POST.get('new_creator')
+        new_creator = get_object_or_404(User, id=new_creator_id)
+
+        if new_creator in group.proponents.all():
+            group.creator = new_creator
+            group.save()
+            messages.success(request, f"Creator role has been transferred to {new_creator.get_full_name()}.")
+        else:
+            messages.error(request, "Selected user is not an approved member of the group.")
+
+        return redirect('my-project-group-waitlist')
+
+    return render(request, 'project/transfer_creator.html', {
+        'group': group,
+        'approved_members': group.proponents.exclude(id=request.user.id)
+    })
 
 @login_required
 def accept_join_request(request, group_id, user_id):
@@ -158,6 +185,7 @@ def cancel_join_request(request, group_id):
         
         # Remove user from join requests
         group.join_requests.remove(request.user.id)
+        group.requests.remove(request.user.id)
         messages.success(request, 'Join request cancelled successfully.')
         
         return redirect('join-group-list')
@@ -507,7 +535,6 @@ def get_user_ids_with_group(request):
 
     
     return list(approved_student_ids)
-
 def approve_group_membership(request, group_id):
     if not request.user.is_authenticated or request.user.role != 'STUDENT':
         messages.error(request, "Unauthorized access")
@@ -531,62 +558,93 @@ def approve_group_membership(request, group_id):
     if existing_approved_group:
         messages.error(request, "You are already in an approved group. You cannot join another group.")
         return redirect('my-project-group-waitlist')
-    
+
+    # Check if student is already in an approved group
+    existing_approved_pending_group = Project_Group.objects.filter(
+        approved_by_students=student,
+        approved=False
+    ).first()
+
+    if existing_approved_pending_group:
+        messages.error(request, "You have given an approval in another group. You cannot join this group.")
+        return redirect('my-project-group-waitlist')
+
     if student not in group.pending_proponents.all():
         messages.error(request, "You are not invited to this group")
         return redirect('home')
     
     # Start a transaction to ensure all operations are atomic
     from django.db import transaction
-    
+
+    with transaction.atomic():
+        # Accept the current group invitation
+        group.approved_by_students.add(student)
+        group.pending_proponents.remove(student)
+        group.proponents.add(student)
         
-    # Accept the current group invitation
-    group.approved_by_students.add(student)
-    group.pending_proponents.remove(student)
-    group.proponents.add(student)
-        
-    # Check if there are exactly 3 approved students
-    approved_students_count = group.approved_by_students.count()
-        
-    if approved_students_count == 3:
-            # Automatically approve the group
-        group.approved = True
-        group.save()
-            
-        # Clear any remaining pending invitations
-        group.pending_proponents.clear()
-            
-        # Create notification for all group members
-        for member in group.proponents.all():
+        # Automatically decline all other pending invitations
+        other_pending_groups = Project_Group.objects.filter(
+            pending_proponents=student,
+            approved=False
+        ).exclude(id=group_id)
+
+        for other_group in other_pending_groups:
+            other_group.pending_proponents.remove(student)
+            other_group.declined_proponents.add(student)
+            # Optionally, create a notification for the decline
             try:
                 Notification.objects.create(
-                    recipient=member,
-                    notification_type='group_complete',
-                    group=group,
+                    recipient=other_group.creator,
+                    notification_type='group_decline',
+                    group=other_group,
                     sender=request.user,
-                    message=f"Your project group '{group.name}' has been automatically approved with 3 members."
+                    message=f"{request.user.get_full_name()} has declined the invitation to join your project group."
                 )
             except Exception as e:
-                logger.error(f"Failed to create notification for {member}: {str(e)}")
+                logger.error(f"Failed to create decline notification: {str(e)}")
+        
+        # Check if there are exactly 3 approved students
+        approved_students_count = group.approved_by_students.count()
+        
+        if approved_students_count == 3:
+            # Automatically approve the group
+            group.approved = True
+            group.save()
             
-        messages.success(request, "You have joined the group and it has been automatically approved with 3 members.")
-    elif approved_students_count < 3:
-        # Create notification just for the group creator about the acceptance
-        try:
-            Notification.objects.create(
-                recipient=group.creator,
-                notification_type='group_accept',
-                group=group,
-                sender=request.user,
-                message=f"{request.user.get_full_name()} has accepted the invitation to join your project group. ({approved_students_count}/3 members)"
-            )
-        except Exception as e:
-            logger.error(f"Failed to create notification: {str(e)}")
+            # Clear any remaining pending invitations
+            group.pending_proponents.clear()
             
-        messages.success(request, f"You have successfully joined the group. {3 - approved_students_count} more member(s) needed for automatic approval.")
-    else:
-        logger.warning(f"Group {group.id} has more than 3 approved members: {approved_students_count}")
-        messages.warning(request, "Unexpected number of group members.")
+            # Create notification for all group members
+            for member in group.proponents.all():
+                try:
+                    Notification.objects.create(
+                        recipient=member,
+                        notification_type='group_complete',
+                        group=group,
+                        sender=request.user,
+                        message=f"Your project group '{group.name}' has been automatically approved with 3 members."
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to create notification for {member}: {str(e)}")
+            
+            messages.success(request, "You have joined the group and it has been automatically approved with 3 members.")
+        elif approved_students_count < 3:
+            # Create notification just for the group creator about the acceptance
+            try:
+                Notification.objects.create(
+                    recipient=group.creator,
+                    notification_type='group_accept',
+                    group=group,
+                    sender=request.user,
+                    message=f"{request.user.get_full_name()} has accepted the invitation to join your project group. ({approved_students_count}/3 members)"
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification: {str(e)}")
+            
+            messages.success(request, f"You have successfully joined the group. {3 - approved_students_count} more member(s) needed for automatic approval.")
+        else:
+            logger.warning(f"Group {group.id} has more than 3 approved members: {approved_students_count}")
+            messages.warning(request, "Unexpected number of group members.")
 
     return redirect('my-project-group-waitlist')
 
@@ -835,106 +893,90 @@ def mark_notification_read(request, notification_id):
     except Notification.DoesNotExist:
         return JsonResponse({'error': 'Notification not found'}, status=404)
     
-
 def add_project_group(request): 
-    if request.user.is_authenticated and request.user.role == 'STUDENT':
-         # Check for existing approved groups 
-        approved_groups = Project_Group.objects.filter(proponents=request.user, approved=True)
-        
-        if approved_groups.exists():
-            messages.error(request, "You are already part of an approved project group and cannot create a new one.")
-            return redirect('home')
+    if not request.user.is_authenticated or request.user.role != 'STUDENT':
+        messages.error(request, "Please login as a student to perform this action")
+        return redirect('home')
 
-        submitted = False
-        
-        if request.method == "POST":
-            form = ProjectGroupForm(request.POST, user=request.user, approved_users=get_user_ids_with_group(request))
-            if form.is_valid():
-                project = form.save(commit=False)
+    # Check for existing approved groups 
+    approved_groups = Project_Group.objects.filter(proponents=request.user, approved=True)
+    
+    if approved_groups.exists():
+        messages.error(request, "You are already part of an approved project group and cannot create a new one.")
+        return redirect('my-project-group-waitlist')
+
+    # Check for pending project groups
+    pending_groups = Project_Group.objects.filter(proponents=request.user, approved=False)
+    
+    if pending_groups.exists():
+        messages.error(request, "You have a pending project group. Please leave the group before creating a new one.")
+        return redirect('my-project-group-waitlist')
+    
+    pending_groups_for_approval =  Project_Group.objects.filter(pending_proponents=request.user, approved=False)
+
+    if pending_groups_for_approval.exists():
+        messages.error(request, "You have a pending project group. Please decline the pending group before creating a new one.")
+        return redirect('my-project-group-waitlist')
+    
+    submitted = False
+    
+    if request.method == "POST":
+        form = ProjectGroupForm(request.POST, user=request.user, approved_users=get_user_ids_with_group(request))
+        if form.is_valid():
+            project = form.save(commit=False)
+            
+            try:
+                student_creator = Student.objects.get(id=request.user.id)
+            except Student.DoesNotExist:
+                messages.error(request, "Student profile not found.")
+                return redirect('home')
+
+            selected_proponents = form.cleaned_data['proponents']
+            other_proponents = [p for p in selected_proponents if p.id != request.user.id]
+            
+            # Validate minimum group size
+            if len(other_proponents) == 0:
+                messages.error(request, "You must select at least one other student for the group.")
+                return render(request, 'project/add_project_group.html', {
+                    'form': form,
+                    'submitted': False
+                })
+            
+            project.creator = student_creator
+            project.save()
+            
+            # Add relationships
+            project.approved_by_students.add(student_creator)
+            project.proponents.add(student_creator)
+            
+            # Add relationships and create notifications
+            for proponent in other_proponents:
+                project.pending_proponents.add(proponent)
                 
                 try:
-                    student_creator = Student.objects.get(id=request.user.id)
-                except Student.DoesNotExist:
-                    messages.error(request, "Student profile not found.")
-                    return redirect('home')
+                    # Create notification with error handling
+                    notification = Notification.objects.create(
+                        recipient=proponent,
+                        notification_type='invitation',
+                        group=project,
+                        sender=student_creator,
+                        message=f"{student_creator.get_full_name()} has invited you to join a project group."
+                    )
+                    logger.debug(f"Created notification {notification.id} for {proponent}")
+                except Exception as e:
+                    logger.error(f"Failed to create notification for {proponent}: {str(e)}")
+            
+            messages.success(request, "Group created and invitations sent to selected students.")
+            return HttpResponseRedirect('/add_project_group?submitted=True') 
+    else:
+        form = ProjectGroupForm(user=request.user, approved_users=get_user_ids_with_group(request))
+        if 'submitted' in request.GET:
+            submitted = True
 
-                selected_proponents = form.cleaned_data['proponents']
-                other_proponents = [p for p in selected_proponents if p.id != request.user.id]
-                
-                # Validate minimum group size
-                if len(other_proponents) == 0:
-                    messages.error(request, "You must select at least one other student for the group.")
-                    return render(request, 'project/add_project_group.html', {
-                        'form': form,
-                        'submitted': False
-                    })
-                
-                project.creator = student_creator
-                project.save()
-                
-                # Add relationships
-                project.approved_by_students.add(student_creator)
-                project.proponents.add(student_creator)
-                
-                # Add relationships and create notifications
-                for proponent in other_proponents:
-                    project.pending_proponents.add(proponent)
-                    
-                    try:
-                        # Create notification with error handling
-                        notification = Notification.objects.create(
-                            recipient=proponent,
-                            notification_type='invitation',
-                            group=project,
-                            sender=student_creator,
-                            message=f"{student_creator.get_full_name()} has invited you to join a project group."
-                        )
-                        logger.debug(f"Created notification {notification.id} for {proponent}")
-                    except Exception as e:
-                        logger.error(f"Failed to create notification for {proponent}: {str(e)}")
-                
-                messages.success(request, "Group created and invitations sent to selected students.")
-                return HttpResponseRedirect('/add_project_group?submitted=True') 
-        else:
-            form = ProjectGroupForm(user=request.user, approved_users=get_user_ids_with_group(request))
-            if 'submitted' in request.GET:
-                submitted = True
-
-        return render(request, 'project/add_project_group.html', {
-            'form':form, 
-            'submitted':submitted
-        })
-    else: 
-        messages.success(request, "Please login as a student to perform this action")
-        return redirect('home')
-    
-                # # Send email notifications to invited students
-                # for proponent in other_proponents:
-                #     # Prepare email content
-                #     context = {
-                #         'invited_student': proponent,
-                #         'creator': student_creator,
-                #         'group_name': project.name,
-                #         'accept_url': request.build_absolute_uri(f'/approve_group_membership/{project.id}'),
-                #         'reject_url': request.build_absolute_uri(f'/reject_group_membership/{project.id}')
-                #     }
-                    
-                #     # Render email templates
-                #     html_message = render_to_string('project/emails/group_invitation.html', context)
-                #     plain_message = strip_tags(html_message)
-                    
-                #     # Send the email
-                #     try:
-                #         send_mail(
-                #             subject='Project Group Invitation',
-                #             message=plain_message,
-                #             from_email=settings.DEFAULT_FROM_EMAIL,
-                #             recipient_list=[proponent.email],
-                #             html_message=html_message,
-                #             fail_silently=False,
-                #         )
-                #     except Exception as e:
-                #         logger.error(f"Failed to send email to {proponent.email}: {str(e)}")
+    return render(request, 'project/add_project_group.html', {
+        'form':form, 
+        'submitted':submitted
+    })
     
 def my_profile(request, profile_id): 
     if request.user.is_authenticated: 
@@ -986,12 +1028,12 @@ def show_faculty(request, faculty_id):
     if request.user.is_authenticated: 
         # look on faculty by ID 
         faculty = Faculty.objects.get(pk=faculty_id)
-        project_group = Project_Group.objects.filter(approved=True).filter(adviser=faculty)
+        # project_group = Project_Group.objects.filter(approved=True).filter(adviser=faculty)
         
         # pass it to the page using render 
         return render(request, 'project/show_faculty.html', 
-        {'faculty': faculty, 
-         'project_group': project_group}) 
+        {'faculty': faculty}) 
+        #  'project_group': project_group}) 
     
     else: 
         messages.success(request, "Please Login to view this page")
@@ -1340,12 +1382,36 @@ def search_projects(request):
 
 def list_student(request): 
     if request.user.is_authenticated: 
-        student_list = Student.objects.all().order_by('last_name')    
+        # student_list = Student.objects.all().order_by('last_name')    
+        
+        p = Paginator(Student.objects.filter(eligible=True).order_by('last_name'), 5) 
+        page = request.GET.get('page')
+        students = p.get_page(page)
+        nums = "a" * students.paginator.num_pages
+
         return render(request, 'project/student.html', 
-        {'student_list': student_list})
+        # {'student_list': student_list,
+        {'students': students, 
+        'nums': nums})
     else: 
         messages.success(request, "You Aren't Authorized to view this page.")
         return redirect('home')
+    
+# def list_student_waitlist(request): 
+#     if request.user.is_authenticated: 
+#         student_waitlist = Student.objects.all().order_by('last_name')    
+        
+#         p = Paginator(Student.objects.all(), 4) 
+#         page = request.GET.get('page')
+#         students = p.get_page(page)
+
+
+#         return render(request, 'project/student.html', 
+#         {'student_list': student_list,
+#          'students': students})
+#     else: 
+#         messages.success(request, "You Aren't Authorized to view this page.")
+#         return redirect('home')
 
 def list_faculty(request): 
     if request.user.is_authenticated: 
@@ -1362,6 +1428,10 @@ def add_project(request):
         group = get_user_project_group(request)
         if group is None:
             messages.success(request, "You are not a member of any Project Group. Please Register a Project Group First.")
+            return redirect('home')
+        
+        if not group.approved:
+            messages.success(request, "Your Project Group is not approved. Please Ensure all Students have approved before proceeding.")
             return redirect('home')
             
         if request.user.role == 'STUDENT': 
