@@ -213,19 +213,20 @@ class ProjectForm(ModelForm):
             'title':'Title',
             'project_type': 'Project Type',
             'proponents':'Proponents',
-            'adviser':'Adviser', 
-            'panel':'Panel', 
-            'description': 'Executive Summary',
+            'adviser':'Choose an Adviser', 
+            'description': 'Project Description',
+            'panel':'Select a Panel', 
             'comments': 'Faculty Comments'
              # 'defense_date':'YYYY-MM-DD HH:MM:SS',
         }
+
         widgets = { 
             'title': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Project Title'}),
             'project_type': forms.Select(choices=project_type_choices, attrs={'class':'form-select'}), 
             'proponents': forms.Select(attrs={'class':'form-control', 'placeholder': 'Proponents'}), 
-            'adviser': forms.Select(attrs={'class':'form-select', 'placeholder': 'Adviser'}),
-            'panel': forms.SelectMultiple(attrs={'class':'form-control', 'placeholder': 'Panel'}), 
-            'description': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Project Description'}),
+            'adviser': forms.Select(attrs={'class':'form-select', 'placeholder': 'Select an Adviser'}),
+            'description': forms.Textarea(attrs={'class':'form-control', 'placeholder':'Please provide a brief description of the project'}),
+            'panel': forms.SelectMultiple(attrs={'class':'form-control', 'placeholder': 'Panel', 'size': '10'}), 
             'comments': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Comments'}),
         }
     
@@ -233,6 +234,7 @@ class ProjectForm(ModelForm):
         user = kwargs.pop('user', None)
         super(ProjectForm, self).__init__(*args, **kwargs)
 
+       
         # Disable the proponents field
         self.fields['proponents'].widget.attrs['disabled'] = 'disabled'
 
@@ -275,31 +277,41 @@ class UpdateProjectForm(ModelForm):
         ]
 
         fields =   ('title', 'project_type', 'proponents', 'adviser',
-            'panel', 'description', 'comments') 
+            'description', 'panel', 'comments') 
     
         labels = { 
             'title':'Title',
             'project_type': 'Project Type',
             'proponents':'Proponents',
             'adviser':'Adviser', 
-            'panel':'Panel', 
             'description': 'Executive Summary',
+            'panel':'Panel', 
            # 'defense_date':'YYYY-MM-DD HH:MM:SS',
            'comments': 'Faculty Comments',
+        }
+
+        help_texts = {
+            'panel': 'Hold "Ctrl" button to select multiple panelists',
         }
         widgets = { 
             'title': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Project Title'}),
             'project_type': forms.Select(choices=project_type_choices, attrs={'class':'form-select'}), 
             'proponents': forms.Select(attrs={'class':'form-select', 'placeholder': 'Proponents'}), 
             'adviser': forms.Select(attrs={'class':'form-select', 'placeholder': 'Adviser'}),
-            'panel': forms.SelectMultiple(attrs={'class':'form-select', 'placeholder': 'Panel'}), 
             'description': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Project Description'}),
+            'panel': forms.SelectMultiple(attrs={'class':'form-control', 'placeholder': 'Panel', 'size': '10'}), 
              #'defense_date': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Defense Date'}),
             'comments': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Enter Project Comments'}),
         }   
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # Add Bootstrap class to help text
+        for field in self.fields.values():
+            if field.help_text:
+                field.help_text = f'<small class="form-text text-muted">{field.help_text}</small>'
+
         # Make fields read-only by disabling them
         self.fields['title'].widget.attrs['disabled'] = 'disabled'
         self.fields['project_type'].widget.attrs['disabled'] = 'disabled'
@@ -317,13 +329,16 @@ class UpdateProjectForm(ModelForm):
         errors = []
 
         # Ensure the pre-selected panelist is always included
-        if not all(panelist in panelists for panelist in self.pre_selected_panelist):
-            errors.append("The selected panelist of Students must remain selected.")
-        
+        missing_panelists = [panelist for panelist in self.pre_selected_panelist if panelist not in panelists]
+        if missing_panelists:
+            missing_names = ', '.join(f"{panelist.first_name} {panelist.last_name}" for panelist in missing_panelists)  # Assuming 'name' is the attribute
+            errors.append(f"The selected panelist(s) of students; {missing_names}, must remain selected.")
+
         # Allow only one additional panelist beyond the pre-selected one
         additional_panelists = panelists.exclude(id__in=[p.id for p in self.pre_selected_panelist])
         if len(additional_panelists) > 1:
-            errors.append("You can only select one additional panelist.")
+            pre_selected_names = ', '.join(f"{panelist.first_name} {panelist.last_name}" for panelist in self.pre_selected_panelist)
+            errors.append(f"You can only select one additional panelist in addition to the selected panelist(s) of students: {pre_selected_names}.")
         
          # Add errors to the form if there are any
         if errors:

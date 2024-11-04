@@ -1,14 +1,13 @@
 {% extends 'project/base.html'%} <!-- use the base file -->
 {% load static %}
 {% load custom_filters %}
+
 {% block content %} <!-- content of all web pages go -->
 
     <br/>
-
-    <div class="container">
-        <h1 class="text-center my-4">Eligible Student List</h1>
+        <h1 class="text-center my-4">Student Waitlist</h1>
         <table class="table table-striped table-hover table-bordered">
-            <caption>List of eligible students</caption>
+            <caption>List of students on the waitlist</caption>
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">Last Name</th>
@@ -19,7 +18,7 @@
             </thead>
             <tbody>
                 {% for student in students %}
-                    {% if student.role == 'STUDENT' and student.eligible %}
+                    {% comment %} {% if student.role == 'STUDENT' and not student.eligible %} {% endcomment %}
                         <tr>
                             <td>{{ student.last_name }}</td>
                             <td>{{ student.first_name }}</td>
@@ -30,12 +29,15 @@
                                 </a>
                             </td>
                         </tr>
-                    {% endif %}
+                    {% comment %} {% endif %} {% endcomment %}
                 {% endfor %}
+                
+         
             </tbody>
         </table>
+    </div>
 
-        <hr/>
+    <br/>
 
 <!-- 
 {{ students }} </br> 

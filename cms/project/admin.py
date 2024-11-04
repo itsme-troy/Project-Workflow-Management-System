@@ -64,7 +64,7 @@ class NotificationAdmin(admin.ModelAdmin): #project_type'
    
 @admin.register(Project) #  'project_type',
 class ProjectAdmin(admin.ModelAdmin): #project_type'
-    fields = ('title', 'adviser','description','proponents', 'panel', 'owner', 'approved')
+    fields = ('title', 'adviser','description','proponents', 'panel', 'owner', 'status')
     list_display = ('title', 'adviser', 'description')
     ordering = ('title', )
     search_fields = ('title', 'description', 'adviser')

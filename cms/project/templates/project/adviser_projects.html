@@ -1,65 +1,175 @@
 {% extends 'project/base.html'%} <!-- use the base file -->
 
+{% block styles %}
+<style>
+    .action-buttons {
+        display: none;
+    }
+    /* Update display property to flex instead of inline-block for better alignment */
+    tr.active .action-buttons {
+        display: flex;
+        gap: 0.5rem;  /* Add spacing between buttons */
+    }
+    .hint-button {
+        color: #6c757d;
+        background: none;
+        border: none;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+    }
+    .hint-button::before {
+        content: "↗";  /* or you could use a FontAwesome icon if you have it */
+        margin-right: 0.25rem;
+    }
+
+</style>
+{% endblock %}
+
 {% block content %} <!-- content of all web pages go -->
  
-<table class ="table table-striped table-hover table-bordered table"> 
-    <thead> 
-      <tr> 
-          <th scope="col"> Project Name  </th> 
-          <th scope="col"> Adviser </th> 
-      </tr> 
-  </thead>  
-  <tbody>
 
-<h1> My Advisory Projects  </h1> 
-</br> 
+<h1>Approved Projects</h1>
+<table class="table table-striped table-hover table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">Project Name</th>
+            <th scope="col">Adviser</th>
+            <th scope="col">Proponent 1</th>
+            <th scope="col">Proponent 2</th>
+            <th scope="col">Proponent 3</th>
+            <th scope="col">Status </th>
+            <th scope="col"> Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if approved_projects_with_groups %}
+            {% for project_data in approved_projects_with_groups %}
+                <tr onclick="toggleActions(this)">
+                    <td>
+                        <a href="{% url 'show-project' project_data.project.id %}">{{ project_data.project }}</a>
+                    </td>
+                    <td>{{ project_data.project.adviser }}</td>
+                    {% for proponent in project_data.proponents %}
+                        <td>
+                            {% if proponent %}
+                                {{ proponent.first_name }} {{ proponent.last_name }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                    <td>
+                        <span class="badge 
+                            {% if project_data.project.status == 'approved' %}
+                                bg-success
+                            {% elif project_data.project.status == 'pending' %}
+                                bg-warning text-dark
+                            {% elif project_data.project.status == 'declined' %}
+                                bg-danger
+                            {% else %}
+                                bg-secondary
+                            {% endif %}
+                        "> {{ project_data.project.status }}
+                        </span>  </td>
+                   
+                        <td> 
+                            {% if user == project_data.project.adviser %}
+                                <span class="hint-button">Click row to show actions</span>
+                                <div class="action-buttons">
+                                    <a href="{% url 'update-project' project_data.project.id %}"
+                                       class="btn btn-outline-secondary btn-sm">Update Project</a> 
+                                       <a href="{% url 'reject-project' project_data.project.id %}"
+                                       class="btn btn-outline-danger btn-sm"
+                                       onclick="return confirm('Are you sure you want to reject this project? This will move it to the Proposals section.');">Reject Project</a> 
+                                    <a href="{% url 'delete-project' project_data.project.id %}"
+                                       class="btn btn-outline-danger btn-sm"
+                                       onclick="return confirm('Are you sure you want to delete this project?');">Delete Project</a> 
+                                </div> 
+                            {% endif %} </td> 
+                    
+                </tr>
+            {% endfor %}
+        {% else %}
+        </br> <p>You have no Advisory Projects yet.</p>
+    {% endif %}
+    </tbody>
+</table><br/>  <hr/> <br/>
 
-    {% for project in projects %}
+<h1>My Received Proposals </h1>
+<table class="table table-striped table-hover table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">Project Name</th>
+            <th scope="col">Adviser</th>
+            <th scope="col">Proponent 1</th>
+            <th scope="col">Proponent 2</th>
+            <th scope="col">Proponent 3</th>
+            <th scope="col"> Status </th> 
+            <th scope="col"> Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if not_approved_projects_with_groups %}
+            {% for project_data in not_approved_projects_with_groups %}
+            
+            <tr onclick="toggleActions(this)">
+                    <td>
+                        <a href="{% url 'show-proposal' project_data.project.id %}">{{ project_data.project }}</a>
+                    </td>
+                    <td>{{ project_data.project.adviser }}</td>
+                    {% for proponent in project_data.proponents %}
+                        <td>
+                            {% if proponent %}
+                                {{ proponent.first_name }} {{ proponent.last_name }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                    
+                    <td>
+                        <span class="badge 
+                            {% if project_data.project.status == 'approved' %}
+                                bg-success
+                            {% elif project_data.project.status == 'pending' %}
+                                bg-warning text-dark
+                            {% elif project_data.project.status == 'declined' %}
+                                bg-danger
+                            {% else %}
+                                bg-secondary
+                            {% endif %}
+                        "> {{ project_data.project.status }}
+                        </span>
+                    </td>
 
-        {% if project.approved %}
-        
-            <ul> 
-                <tr> 
-                     <td>
-                        <a href="{% url 'show-project' project.id %}">{{ project }} </a> <br/> 
-                     </td> 
-                     <td>
-                        {{ project.adviser }}
-                     </td> 
-                </tr> 
+                    <td> 
+                        {% if user == project_data.project.adviser %}
+                            <span class="hint-button">Click row to show actions</span>
+                            <div class="action-buttons">
 
+                                <a href="{% url 'accept-proposal' project_data.project.id %}"
+                                class="btn btn-outline-success btn-sm"
+                                onclick="return confirm('Are you sure you want to accept this proposal? Accepting will automatically decline other pending proposals received from this group.');"> Accept Proposal  </a> 
+                        
+                                <a href="{% url 'update-proposal' project_data.project.id %}"
+                                    class="btn btn-outline-secondary btn-sm"> Update Proposal </a>   
+                                
+                                <a href="{% url 'delete-proposal' project_data.project.id %}"
+                                    class="btn btn-outline-danger btn-sm"> Delete Proposal  </a> </div>
+                        
+                        {% endif %} </td>
+                </tr>
+                {% endfor %}
+        {% else %}
+            </br> <p>No Proposals At this time.</p>
         {% endif %}
-    {% endfor %}  
-</table> 
+            
+    </tbody>
+</table>
 
-
-</br> <br> <hr/> </br> </br> 
-<h1> My Received Proposals </h1> 
-
-<table class ="table table-striped table-hover table-bordered table"> 
-        <thead> 
-          <tr> 
-              <th scope="col"> Project Name  </th> 
-              <th scope="col"> Adviser </th> 
-          </tr> 
-      </thead>  
-      <tbody>
-        <ul> 
-        {% for project in projects %}
-                {% if not project.approved %}
-
-                   <tr> 
-                        <td>
-                           <a href="{% url 'show-proposal' project.id %}">{{ project }} </a> <br/> 
-                        </td> 
-                        <td>
-                           {{ project.adviser }}
-                        </td> 
-                   </tr> 
-                {% endif %}
-        {% endfor %}  
-</table> </br> </br>  <hr/> </br> </br> 
-
+</br> </br>  <hr/> </br> </br> 
+{% comment %} 
 <h1> My Project Groups </h1> 
 </br> </br> 
 
@@ -108,8 +218,23 @@
             {% endif %}
     {% endfor %}
   </div>
-     
+      {% endcomment %}
   
 
+    <script>
+        function toggleActions(row) {
+            // Remove active class from all rows
+            document.querySelectorAll('tr').forEach(tr => tr.classList.remove('active'));
+            // Add active class to clicked row
+            row.classList.add('active');
+        }
+    
+        // Add click handler to close rows when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('tr')) {
+                document.querySelectorAll('tr').forEach(tr => tr.classList.remove('active'));
+            }
+        });
+    </script>
 {% endblock %}
 

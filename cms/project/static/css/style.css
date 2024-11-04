@@ -1,3 +1,29 @@
+/* static/css/custom.css */
+.custom-help-text {
+    color: #6c757d; /* Bootstrap's text-muted color */
+    font-size: 0.875em; /* Adjust font size */
+    margin-top: 0.25rem; /* Add some space above */
+}
+
+.bg-violet {
+    background-color: #8A2BE2; /* This is a violet color */
+}
+
+.text-white {
+    color: #FFFFFF; /* White color */
+}
+
+.user-designation {
+    font-weight: bold;
+    margin-right: 20px; /* Adjust margin as needed */
+}
+
+.d-flex {
+    display: flex;
+}
+.justify-content-between {
+    justify-content: space-between;
+}
 .custom-sky-blue-bg {
     background-color: #87CEEB; /* Sky blue color */
 }
@@ -11,9 +37,14 @@
     border-bottom: 1px solid #eee;
 }
 
-.notification-item:last-child {
-    border-bottom: none;
+/* Style the notification badge */
+.notification-count {
+    background-color: #dc3545; /* Red background */
+    color: #ffffff; /* White text */
+    border-radius: 50%; /* Circular shape */
+    padding: 5px 10px; /* Padding for better appearance */
 }
+
 
 /* Add a background color to the navbar */
 .custom-navbar-bg {
@@ -21,14 +52,42 @@
     color: #ffffff; /* White text */
 }
 
+.navbar-nav {
+    padding-left: 0; /* Remove default padding */
+    margin-bottom: 0; /* Remove default margin */
+}
+
+.navbar-nav .nav-item {
+    margin-bottom: 10px; /* Add space between items */
+}
+
+/* Update nav-link styles for better aesthetics */
 .navbar-nav .nav-link {
-    color: #343a40; /* Dark text for contrast */
-    transition: color 0.3s ease; /* Smooth transition for hover effect */
+    color: #ffffff; /* White text for better contrast */
+    transition: color 0.3s ease, background-color 0.3s ease; /* Smooth transition */
+    padding: 10px 20px; /* Increase padding for better click area */
+    border-radius: 5px; /* Rounded corners */
 }
 
 .navbar-nav .nav-link:hover {
     color: #007bff; /* Blue color on hover */
+    background-color: rgba(255, 255, 255, 0.1); /* Light transparent background on hover */
 }
+
+/* Style the dropdown menu */
+.dropdown-menu {
+    background-color: #343a40; /* Match navbar background */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+}
+.dropdown-item {
+    color: #ffffff; /* White text */
+    transition: background-color 0.3s ease; /* Smooth transition */
+}
+.dropdown-item:hover {
+    background-color: #007bff; /* Blue background on hover */
+}
+
 
 /* Style the alert messages */
 .alert {
@@ -56,10 +115,13 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
+/* Add a gradient background to the navbar */
 .navbar {
-    background-color: #ffffff; /* White background for navbar */
-    border-bottom: 1px solid #e0e0e0; /* Subtle border for separation */
+    background: linear-gradient(90deg, #343a40, #007bff); /* Dark to blue gradient */
+    border-bottom: 1px solid #e0e0e0;
+    color: #ffffff;
 }
+
 
 .btn-outline-primary {
     border-color: #007bff;
@@ -68,4 +130,11 @@ body {
 .btn-outline-primary:hover {
     background-color: #007bff;
     color: #ffffff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .navbar-nav {
+        flex-direction: column; /* Ensure vertical stacking on smaller screens */
+    }
 }

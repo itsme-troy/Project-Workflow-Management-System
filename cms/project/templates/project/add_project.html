@@ -1,5 +1,8 @@
 {% extends 'project/base.html'%} <!-- use the base file -->
 
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
 {% block content %} <!-- content of all web pages go -->
 
 </br> 
@@ -13,17 +16,13 @@
         {% if submitted %}
             Your Proposal Was Submitted Successfully!
         {% else %}
-            <form action="" method="POST" id="projectForm"> 
-                {% csrf_token %}
-                
-                {{ form.as_p }}
-       
-
-                <input type="submit" value="Submit" 
-                class="btn btn-secondary">
-                <input type="button" value="Cancel" 
-                class="btn btn-danger" onclick="window.location.href='{% url 'list-projects' %}'">
-            </form> 
+        
+                <form method="post" id="projectForm">
+                    {% csrf_token %}
+                    
+                    {{ form.as_p }} <!-- Render form fields and errors as paragraphs -->
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
 
         {% endif %}
     {% else %}

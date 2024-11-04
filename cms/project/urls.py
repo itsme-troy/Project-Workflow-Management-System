@@ -11,8 +11,13 @@ urlpatterns = [
     path('show_project/<project_id>', views.show_project, name='show-project'),
     path('show_proposal/<project_id>', views.show_proposal, name='show-proposal'),
     path('add_project', views.add_project, name="add-project"),
+    
+    
     path('list-faculty', views.list_faculty, name="list-faculty"),
     path('list-student', views.list_student, name="list-student"),
+    path('list-student-waitlist', views.list_student_waitlist, name="list-student-waitlist"),
+    
+    
     path('search_projects', views.search_projects, name="search-projects"),
     path('update_project/<project_id>', views.update_project, name='update-project'),
     path('delete_project/<project_id>', views.delete_project, name='delete-project'),
@@ -20,6 +25,7 @@ urlpatterns = [
     path('delete_proposal/<project_id>', views.delete_proposal, name='delete-proposal'),
     path('accept_proposal/<project_id>', views.accept_proposal, name='accept-proposal'),
     path('reject_project/<project_id>', views.reject_project, name='reject-project'),
+    
     path('adviser_projects', views.adviser_projects, name='adviser-projects'),
     
     path('coordinator_approval_faculty', views.coordinator_approval_faculty, name='coordinator-approval-faculty'),

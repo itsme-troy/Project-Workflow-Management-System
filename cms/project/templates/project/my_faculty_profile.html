@@ -34,21 +34,22 @@
          </center> </br>
             
             {% for project in projects %}
-
-                <div class="card" style="width: 18rem;">
-                    <div class="card-header">
-                    Adviser: {{ project.adviser }} </br> 
-                   
-                </div>
-                    {% for student in project.proponents.proponents.all %}
-    
-                        <ul class="list-group list-group-flush">
-                        <li class="list-group-item"> {{ student }} </br> </li>
-                        </ul>
-                   
-                    {% endfor %}
-                </div>
-            </br> 
+                {% if project.status == 'approved' %}
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-header">
+                        Adviser: {{ project.adviser }} </br> 
+                    
+                    </div>
+                        {% for student in project.proponents.proponents.all %}
+        
+                            <ul class="list-group list-group-flush">
+                            <li class="list-group-item"> {{ student }} </br> </li>
+                            </ul>
+                    
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                </br> 
             {% endfor %}
             
         </br>   </br> 

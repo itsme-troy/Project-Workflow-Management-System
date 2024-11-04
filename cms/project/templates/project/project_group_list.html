@@ -31,47 +31,31 @@
             {% endfor %}
         </tbody>
     </table>
-
-    <!-- Uncomment and style this section if needed
-    <div class="row">
-        {% for group in project_groups %}
-            {% if group.approved %}
-                <div class="col-sm-4 mb-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5>Adviser: {{ group.adviser }}</h5>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text">
-                                <ul>
-                                    <li>
-                                        <h6>Proponents:</h6>
-                                        {% for student in group.proponents.all %}
-                                            {{ student }} <br>
-                                        {% endfor %}
-                                    </li>
-                                </ul>
-                            </p>
-                        </div>
-                        {% if user.is_authenticated %}
-                            {% if user == group.adviser %}
-                                <div class="card-footer text-body-secondary">
-                                    {% if not group.approved %}
-                                        <a href="{% url 'approve-project-group' group.id %}" class="btn btn-outline-success btn-sm">Accept Group</a>
-                                        <a href="{% url 'delete-project-group' group.id %}" class="btn btn-outline-danger btn-sm">Delete Group</a>
-                                    {% else %}
-                                        <a href="{% url 'reject-project-group' group.id %}" class="btn btn-outline-danger btn-sm">Reject Group</a>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                        {% endif %}
-                    </div>
-                </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-    -->
-
+    <hr/>
 </div>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+
+    {% if project_groups_with_proponents.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{project_groups_with_proponents.previous_page_number}}">Previous</a></li>
+    {% endif %}
+
+ 
+    {% for i in nums %}
+    <li class="page-item {% if forloop.counter == project_groups_with_proponents.number %}disabled{% endif %}">
+    <a class="page-link" href="?page={{forloop.counter}}">{{ forloop.counter }}</a>
+</li>
+    {% endfor %}
+    {% if project_groups_with_proponents.has_next %}
+        <li class="page-item"> <a class="page-link" href="?page={{project_groups_with_proponents.next_page_number}}">Next</a></li>
+        <li class="page-item"> <a class="page-link" href="?page={{project_groups_with_proponents.paginator.num_pages}}">Last &raquo;</a></li>
+    {% endif %}
+    
+    <li class="page-item ml-auto disabled"><a href="#" class="page-link"> Page {{ students.number }} of {{ students.paginator.num_pages }} </a></li>
+
+</ul>
+</nav>
 
 {% endblock %}

@@ -247,7 +247,7 @@ def submit_defense_application(request):
             messages.error(request, "No project found for your group. Please submit a project first.")
             return redirect('home')
 
-        if not project.approved:  # Assuming 'approved' is a BooleanField
+        if project.status=='False':  # Assuming 'approved' is a BooleanField
             messages.error(request, "Your project has not been approved yet. You cannot submit a Defense Application.")
             return redirect('home')
         
@@ -456,7 +456,7 @@ def approve_project_group(request, group_id):
 
 def list_project_group(request): 
     if request.user.is_authenticated: 
-         # Get all project groups (filtered to those not approved)
+        # Get all project groups (filtered to those not approved)
         project_groups = Project_Group.objects.filter(approved=True)
 
         # Prepare project groups with proponents padded to at least 3
@@ -471,12 +471,20 @@ def list_project_group(request):
                 'proponents': proponents
             })
 
+        # Paginate the project groups
+        p = Paginator(project_groups_with_proponents, 6)  # Show 6 project groups per page
+        page = request.GET.get('page')
+        paginated_groups = p.get_page(page)
+        nums = "a" * paginated_groups.paginator.num_pages
+
         return render(request, 'project/project_group_list.html', {
-            'project_groups_with_proponents': project_groups_with_proponents
+            'project_groups_with_proponents': paginated_groups,
+            'nums': nums
         })
     else:
         messages.success(request, "Please Login to view this page")
         return redirect('home')
+    
     
 def my_project_group_waitlist(request):
     if request.user.is_authenticated:
@@ -1131,8 +1139,8 @@ def get_user_project_group(request):
 def coordinator_approval_faculty(request): 
     if request.user.is_authenticated: 
         # Get counts 
-        project_count = Project.objects.filter(approved=True).count
-        proposal_count = Project.objects.filter(approved=False).count
+        project_count = Project.objects.filter(status='approved').count
+        proposal_count = Project.objects.filter(status='pending').count
         student_count = User.objects.filter(role='STUDENT').count
         faculty_count = User.objects.filter(role='FACULTY').count
         student_list = User.objects.filter(role='STUDENT').order_by('last_name')
@@ -1182,8 +1190,8 @@ def coordinator_approval_faculty(request):
 def coordinator_approval_student(request): 
     if request.user.is_authenticated: 
         # Get counts 
-        project_count = Project.objects.filter(approved=True).count
-        proposal_count = Project.objects.filter(approved=False).count
+        project_count = Project.objects.filter(status='approved').count
+        proposal_count = Project.objects.filter(status='pending').count
         student_count = User.objects.filter(role='STUDENT').count
         faculty_count = User.objects.filter(role='FACULTY').count
         student_list = User.objects.filter(role='STUDENT').order_by('last_name')
@@ -1218,53 +1226,88 @@ def coordinator_approval_student(request):
         return redirect('home')
         
        
-# Show projects handled by an adviser 
 def adviser_projects(request):
     if request.user.is_authenticated: 
-
-        project_groups = Project_Group.objects.all
-    
-        # Grab the adviser ID 
         adviser = request.user.id
-        # Grab the projects from that adviser 
-        projects = Project.objects.filter(adviser=adviser)
+        # Grab the projects from that adviser
+        approved_projects = Project.objects.filter(adviser=adviser, status='approved')
+        
+        # Prepare data for each project with its groups and proponents
+        approved_projects_with_groups = []
 
-        if projects:  
-            return render(request, 'project/adviser_projects.html', {
-            "projects": projects, 
-            'project_groups': project_groups
-            })
-        else: 
-            messages.success(request, "This Adviser Has No Advisory Projects at  this time.")
-            return redirect('list-projects')
+        for project in approved_projects:
+            project_group = Project_Group.objects.filter(project=project, approved=True).first()
+            if project_group:
+                proponents = list(project_group.proponents.all())
+                proponents += [None] * (3 - len(proponents))  # Pad to exactly 3 proponents
+                approved_projects_with_groups.append({
+                    'project': project,
+                    'group': project_group,
+                    'proponents': proponents, 
+                    'status': project.status
+                })
+
+        not_approved_projects = Project.objects.filter(
+            adviser=adviser,
+            status__in=['pending', 'declined']
+        )
+        not_approved_projects_with_groups = []
+        
+        for project in not_approved_projects:
+            project_group = Project_Group.objects.filter(project=project, approved=True).first()
+            print("Project Group for Project:", project, "is", project_group)  # Debug statement
+            if project_group:
+                proponents = list(project_group.proponents.all())
+                proponents += [None] * (3 - len(proponents))  # Pad to exactly 3 proponents
+                not_approved_projects_with_groups.append({
+                    'project': project,
+                    'group': project_group,
+                    'proponents': proponents,
+                    'status': project.status
+                })
+
+        return render(request, 'project/adviser_projects.html', {
+            "approved_projects_with_groups": approved_projects_with_groups,
+            "not_approved_projects_with_groups": not_approved_projects_with_groups
+        })
     else: 
         messages.success(request, "Please Login to view this page")
         return redirect('home')
+    
 
+    
 def reject_project(request, project_id):
     # look on projects by ID 
     project = Project.objects.get(pk=project_id)
     if request.user == project.adviser: 
-        project.approved = False
+        project.status = 'declined'
         project.save()
         messages.success(request, "Project has been moved to 'Proposals' Succesfully ! ")
-        return redirect('list-projects')
+        return redirect('adviser-projects')
     else:
         messages.success(request, "You Aren't Authorized to Accept this Proposal!")
-        return redirect('list-projects')
+        return redirect('adviser-projects')
 
 # Accept Project
 def accept_proposal(request, project_id): 
-     # look on projects by ID 
+    # look on projects by ID 
     project = Project.objects.get(pk=project_id)
     if request.user == project.adviser: 
-        project.approved = True
+        # Decline other proposals for the same project group
+        Project.objects.filter(
+            proponents=project.proponents,  # Filter by the same project group
+            adviser=project.adviser
+        ).exclude(id=project_id).update(status='declined')
+        
+        # Approve the current proposal
+        project.status = 'approved'
         project.save()
-        messages.success(request, "Proposal Accepted Succesfully ! ")
-        return redirect('list-proposals')
+        
+        messages.success(request, "Proposal Accepted Successfully!")
     else:
         messages.success(request, "You Aren't Authorized to Accept this Proposal!")
-        return redirect('list-proposals')
+    
+    return redirect('adviser-projects')
 
 
 # Delete Project
@@ -1274,10 +1317,10 @@ def delete_proposal(request, project_id):
     if request.user == project.adviser:   
         project.delete()
         messages.success(request, "Proposal Deleted Succesfully ! ")
-        return redirect('list-proposals')
+        return redirect('adviser-projects')
     else:
         messages.error(request, "You Aren't Authorized to Delete this Proposal!")
-        return redirect('list-proposals')
+        return redirect('adviser-projects')
         
 def update_proposal(request, project_id): 
     if request.user.is_authenticated: 
@@ -1298,7 +1341,7 @@ def update_proposal(request, project_id):
                 form.instance.description = project.description
             form.save()
             messages.success(request, "Proposal updated Succesfully!")
-            return redirect('list-proposals')
+            return redirect('adviser-projects')
         else:
             # Reinitialize the panel with the pre-selected panelist to retain form state
             form.fields['panel'].initial = form.instance.panel.all()[:1]
@@ -1332,7 +1375,7 @@ def update_project(request, project_id):
                 
             form.save()
             messages.success(request, "Project Updated Succesfully! ")
-            return redirect('list-projects')
+            return redirect('adviser-projects')
         else:
             # Add error messages from the form validation
             # for field, errors in form.errors.items():
@@ -1384,7 +1427,7 @@ def list_student(request):
     if request.user.is_authenticated: 
         # student_list = Student.objects.all().order_by('last_name')    
         
-        p = Paginator(Student.objects.filter(eligible=True).order_by('last_name'), 5) 
+        p = Paginator(Student.objects.filter(role='STUDENT').filter(eligible=True).order_by('last_name'), 6) 
         page = request.GET.get('page')
         students = p.get_page(page)
         nums = "a" * students.paginator.num_pages
@@ -1397,34 +1440,44 @@ def list_student(request):
         messages.success(request, "You Aren't Authorized to view this page.")
         return redirect('home')
     
-# def list_student_waitlist(request): 
-#     if request.user.is_authenticated: 
-#         student_waitlist = Student.objects.all().order_by('last_name')    
-        
-#         p = Paginator(Student.objects.all(), 4) 
-#         page = request.GET.get('page')
-#         students = p.get_page(page)
 
-
-#         return render(request, 'project/student.html', 
-#         {'student_list': student_list,
-#          'students': students})
-#     else: 
-#         messages.success(request, "You Aren't Authorized to view this page.")
-#         return redirect('home')
-
-def list_faculty(request): 
+def list_student_waitlist(request): 
     if request.user.is_authenticated: 
-        faculty_list = User.objects.all().order_by('last_name')
-        return render(request, 'project/faculty.html', 
-        {'faculty_list': faculty_list})
-    
+        # student_list = Student.objects.all().order_by('last_name')    
+        
+        p = Paginator(Student.objects.filter(role='STUDENT').filter(eligible=False).order_by('last_name'), 6) 
+        page = request.GET.get('page')
+        students = p.get_page(page)
+        nums = "a" * students.paginator.num_pages
+
+        return render(request, 'project/student_waitlist.html', 
+        # {'student_list': student_list,
+        {'students': students, 
+        'nums': nums})
     else: 
         messages.success(request, "You Aren't Authorized to view this page.")
         return redirect('home')
 
+    
+def list_faculty(request): 
+    if request.user.is_authenticated: 
+        # student_list = Student.objects.all().order_by('last_name')    
+        
+        p = Paginator(Student.objects.filter(role='FACULTY').order_by('last_name'), 6) 
+        page = request.GET.get('page')
+        facultys = p.get_page(page)
+        nums = "a" * facultys.paginator.num_pages
+
+        return render(request, 'project/faculty.html', 
+        {'facultys': facultys, 
+        'nums': nums})
+    else: 
+        messages.success(request, "Please Login to view this page.")
+        return redirect('home')
+
 def add_project(request): 
     if request.user.is_authenticated: 
+        
         group = get_user_project_group(request)
         if group is None:
             messages.success(request, "You are not a member of any Project Group. Please Register a Project Group First.")
@@ -1435,41 +1488,24 @@ def add_project(request):
             return redirect('home')
             
         if request.user.role == 'STUDENT': 
-            submitted = False  # Variable to determine whether a user submitted a form or just viewing the page 
+            submitted = False
             if request.method == "POST":
                 form = ProjectForm(request.POST, user=request.user)
-                if form.is_valid():  # Check if form is valid 
-                    
-                    # We're gonna save it but don't save it just yet
+                if form.is_valid():
                     project = form.save(commit=False)
-                    project.owner = request.user.id  # Set the logged-in user as the owner
-                    
-                    # Set the project group from the fetched group
+                    project.owner = request.user.id
                     project.project_group = group
-                    
-                    # Assign the adviser directly as an instance
-                    # if group.adviser:
-                    #     project.adviser = group.adviser  # Use the Approved_Adviser instance
-                    # else:
-                    #     form.add_error('adviser', 'No adviser assigned to this group.')
-                    #     return render(request, 'project/add_project.html', {
-                    #         'group': group,
-                    #         'form': form,
-                    #         'submitted': submitted
-                    #     })
-                    
-                    project.save()  # Save the project to the database
-                    
-                    # Now save the panelists
-                    form.save_m2m()  # This saves the ManyToMany relationships (panel field)
-
-                    return HttpResponseRedirect('/add_project?submitted=True')  # Return to add_project with variable
+                    project.save()
+                    form.save_m2m()
+                    return HttpResponseRedirect('/add_project?submitted=True')
+                else:
+                    # Add a general error message
+                    messages.error(request, "Please correct the errors below.")
             
-            else:  # If they did not fill out the form, then
+            else:
                 form = ProjectForm(initial={
-                    # 'adviser': group.adviser.id if group.adviser else None, 
                     'proponents': group,
-                }, user=request.user)  # Define the form
+                }, user=request.user)
                 
                 if 'submitted' in request.GET:
                     submitted = True
@@ -1478,7 +1514,7 @@ def add_project(request):
                 'group': group,
                 'form': form, 
                 'submitted': submitted
-            })  # Pass the form 
+            })
         else: 
             messages.success(request, "Only Students are allowed to propose Projects.")
             return redirect('home')
@@ -1491,24 +1527,44 @@ def home(request):
 
 def all_projects(request):
     if request.user.is_authenticated: 
-        project_list = Project.objects.all().order_by('title')
+        # Create a Paginator object with the project list and specify the number of items per page
+        p = Paginator(Project.objects.filter(status='approved').order_by('title'), 5) 
+        page = request.GET.get('page')
+        projects = p.get_page(page)
+        nums = "a" * projects.paginator.num_pages
 
         return render(request, 'project/project_list.html', 
-        {'project_list': project_list,})
+        {'projects': projects, 
+        'nums': nums})
     else: 
         messages.success(request, "Please Login to view this page")
         return redirect('home')
+    
         
 def all_proposals(request):
-    if request.user.is_authenticated: 
+    if request.user.is_authenticated:
+
+        group = get_user_project_group(request)
+        # Filter projects where the logged-in user is a proponent
+        project_list = Project.objects.filter(
+            (Q(status='pending') | Q(status='declined')) & 
+            Q(proponents=group)  # Assuming 'proponents' is the field name
+        ).order_by('title')
+
         
-        project_list = Project.objects.all().order_by('title')
-        return render(request, 'project/proposal_list.html', 
-        {'project_list': project_list})
-    else: 
+        # Create a Paginator object with the project list and specify the number of items per page
+        p = Paginator(project_list, 5)  # Show 5 proposals per page
+        page = request.GET.get('page')
+        projects = p.get_page(page)
+        nums = "a" * projects.paginator.num_pages
+
+        return render(request, 'project/proposal_list.html', {
+            'projects': projects,
+            'nums': nums
+        })
+    else:
         messages.success(request, "Please Login to view this page")
         return redirect('home')
-        
 
 def show_project(request, project_id): 
     if request.user.is_authenticated: 

@@ -6,10 +6,10 @@
 </head>
 
   <body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm"> <!-- Light background with shadow for depth -->
+  <nav class="navbar navbar-expand-lg navbar-light shadow-sm"> <!-- Light background with shadow for depth -->
     <div class="container-fluid">
       <a class="navbar-brand" href="{% url 'home' %}">
-        <img src="{% static 'images/logo.png' %}" alt="Logo" style="height: 45px; margin:0 padding: 0;">
+        <img src="{% static 'images/logo.png' %}" alt="Logo" style="height: 35px; margin:0 padding: 0;">
       </a>
 
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,7 +28,9 @@
                 <i class="fas fa-users"></i> Users
               </a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'list-student' %}">Student</a></li>
+                <li><a class="dropdown-item" href="{% url 'list-student' %}">Eligible Students</a></li>
+                <li><a class="dropdown-item" href="{% url 'list-student-waitlist' %}">Student Waitlist</a></li>
+                
                 <li><a class="dropdown-item" href="{% url 'list-faculty' %}">Faculty</a></li>
               </ul>
             </li>
@@ -57,10 +59,9 @@
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{% url 'list-projects' %}"> All Projects  </a></li>
                 
-                <li><a class="dropdown-item" href="{% url 'list-proposals' %}"> All Proposals  </a></li>
-                
                 {% if user.is_authenticated %}
                   {% if user.role == 'STUDENT' %}
+                    <li><a class="dropdown-item" href="{% url 'list-proposals' %}"> All Proposals  </a></li> 
                     <li><a class="dropdown-item" href="{% url 'add-project' %}"> Add Proposal  </a></li>
                   {% endif %}
                 {% endif  %}
@@ -126,6 +127,12 @@
             <i class="fas fa-sign-out-alt"></i> Logout
           </a>
         </li>
+
+        <form class="d-flex" method="POST" action="{% url 'search-projects' %}" role="search">
+          {% csrf_token %}
+          <input class="form-control me-2" type="search" placeholder="Search Projects" aria-label="Search" name="searched">
+          <button class="btn btn-outline-primary" type="submit" style="background-color: #ffffff; color: #000000;">Search</button>
+        </form>
       {% else %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'login' %}">
@@ -143,11 +150,7 @@
         </li>
       {% endif %}
     </ul>
-    <form class="d-flex" method="POST" action="{% url 'search-projects' %}" role="search">
-      {% csrf_token %}
-      <input class="form-control me-2" type="search" placeholder="Search Projects" aria-label="Search" name="searched">
-      <button class="btn btn-outline-primary" type="submit">Search</button>
-    </form>
+   
   </div>
   </div>
   </nav>

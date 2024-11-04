@@ -280,6 +280,8 @@ class Notification(models.Model):
         ordering = ['-created_at']
 
 class Project(models.Model): 
+
+
     title = models.CharField('Title', max_length=120, null=True) # 120 characters
     project_type = models.CharField('Project Type', null=True, max_length=50 )
     description = models.TextField(null=True) # we dont have to put a description if we do not want to
@@ -296,9 +298,15 @@ class Project(models.Model):
     owner = models.IntegerField("Project Owner", blank=False, default=24)
     # defense_progress = models.CharField(max_length=50, choices=DEFENSE_PROGRESS, default="topic")
    
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('declined', 'Declined'),
+    ]
     # determines whether a project is a approved project or a proposal 
-    approved = models.BooleanField('Approved by an Adviser', default=False)
-    
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+
     # allows to use model in admin area.
     def __str__(self):
         return str(self.title) if self.title else "No Project"
@@ -332,7 +340,7 @@ class ProjectPhase(models.Model):
 class ProjectManager(BaseUserManager): 
     def get_queryset(self, *args, **kwargs):
         results = super().get_queryset(*args, **kwargs)
-        return results.filter(approved=True)
+        return results.filter(status='approved')
     
 class ApprovedProject(Project): 
     approved_project = ProjectManager()

@@ -39,7 +39,7 @@
     
     </div>
    
-    {% if user.is_authenticated %}
+    {% comment %} {% if user.is_authenticated %}
         {% if user == project.adviser %}
         <div class="card-footer text-body-secondary">
 
@@ -54,7 +54,7 @@
         
         </div> 
         {% endif %}
-    {% endif %} 
+    {% endif %}  {% endcomment %}
     </div>
 
 
