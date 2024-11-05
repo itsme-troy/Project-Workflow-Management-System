@@ -8,8 +8,8 @@ admin.site.unregister(Group)
 
 from .models import AppUser, Project, Project_Group #, Profile
 from .models import Defense_Application
-from .models import Student, Faculty, Coordinator 
-from .models import StudentProfile, FacultyProfile, ProjectPhase
+from .models import Student, Faculty, Coordinator
+from .models import StudentProfile, FacultyProfile, CoordinatorProfile, ProjectPhase
 from .models import ApprovedProject, ApprovedProjectGroup
 from .models import Approved_Adviser, Approved_panel, Approved_student, Notification
 #admin.site.register(Project_Group)
@@ -47,13 +47,28 @@ class FacultyProfileInline(admin.StackedInline):
 
 class FacultyAdmin(admin.ModelAdmin): 
     model = Faculty
-    fields = ["first_name", "last_name", "profile_image"]
+    fields = ["first_name", "last_name", "role", "profile_image"]
     inlines = [FacultyProfileInline]
     
 # Unregister initial User
 admin.site.unregister(Faculty)
 # Reregister User 
 admin.site.register(Faculty, FacultyAdmin)
+
+#  Mix Profile info into user info
+class CoordinatorProfileInline(admin.StackedInline):
+    model = CoordinatorProfile
+
+class CoordinatorAdmin(admin.ModelAdmin): 
+    model = Coordinator
+    fields = ["first_name", "last_name", "role", "profile_image"]
+    inlines = [CoordinatorProfileInline]
+    
+# Unregister initial User
+admin.site.unregister(Coordinator)
+# Reregister User 
+admin.site.register(Coordinator, CoordinatorAdmin)
+
 
 @admin.register(Notification) #  'project_type',
 class NotificationAdmin(admin.ModelAdmin): #project_type'

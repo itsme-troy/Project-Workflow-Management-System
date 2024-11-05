@@ -1,3 +1,71 @@
+h1 {
+    font-size: 2.5em;
+    color: #343a40; /* Dark color for contrast */
+    margin-bottom: 0.5em;
+}
+h2 {
+    font-size: 2em;
+    margin-bottom: 0.5em;
+}
+/* Style paragraphs for readability */
+p {
+    font-size: 1em;
+    margin-bottom: 1em;
+}
+
+
+/* Style the form container */
+#selectCoordinatorForm {
+    max-width: 600px;
+    margin: 0 auto; /* Center the form */
+    padding: 20px;
+    background-color: #ffffff; /* White background */
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+/* Style the buttons */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    transition: background-color 0.3s ease;
+}
+.btn-primary:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+.btn-outline-danger {
+    border-color: #dc3545;
+    color: #dc3545;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: #ffffff;
+}
+
+/* Style the alert messages */
+.alert {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    font-size: 1em;
+    margin-bottom: 20px;
+}
+
+/* Center the content */
+/* Center content styling */
+.center-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
 /* static/css/custom.css */
 .custom-help-text {
     color: #6c757d; /* Bootstrap's text-muted color */
@@ -95,6 +163,26 @@
     color: #721c24; /* Dark red text */
     border-color: #f5c6cb; /* Light red border */
 }
+.alert-info {
+    background-color: #d9edf7;
+    color: #31708f;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+.alert-warning {
+    background-color: #fcf8e3;
+    color: #8a6d3b;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+/* Button styling for better visibility */
+.btn {
+    font-size: 1em;
+    padding: 10px 20px;
+}
 
 /* Add custom styles for buttons */
 .btn-close {
@@ -105,7 +193,10 @@
 
 body {
     background-color: #f8f9fa; /* Light background color */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+    font-family: Arial, sans-serif;
+    font-size: 16px; 
+    line-height: 1.6; /* improve line spacing */
+
 }
 
 .container {
@@ -138,3 +229,4 @@ body {
         flex-direction: column; /* Ensure vertical stacking on smaller screens */
     }
 }
+

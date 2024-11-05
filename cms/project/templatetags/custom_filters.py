@@ -1,4 +1,5 @@
 from django import template
+from django.utils.text import slugify
 
 register = template.Library()
 
@@ -23,3 +24,7 @@ def range_filter(value):
         return range(int(value))
     except (ValueError, TypeError):
         return []
+    
+@register.filter
+def slugify_filter(value):
+    return slugify(value)

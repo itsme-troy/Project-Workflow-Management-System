@@ -30,6 +30,7 @@ urlpatterns = [
     
     path('coordinator_approval_faculty', views.coordinator_approval_faculty, name='coordinator-approval-faculty'),
     path('coordinator_approval_student', views.coordinator_approval_student, name='coordinator-approval-student'),
+    path('select_coordinator', views.select_coordinator, name='select-coordinator'),
     
     path('submit_defense_application', views.submit_defense_application, name='submit-defense-application'),
     path('defense_applications', views.list_defense_applications, name='list-defense-applications'),

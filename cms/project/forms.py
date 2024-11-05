@@ -4,6 +4,18 @@ from .models import Project, Defense_Application, Project_Group, StudentProfile,
 from .models import Faculty, ProjectPhase
 from django.core.exceptions import ValidationError
 
+from django.contrib.auth import get_user_model 
+User = get_user_model()
+
+
+class CoordinatorForm(forms.Form):
+        user = forms.ModelChoiceField(
+            queryset=Faculty.objects.filter(role='FACULTY'),
+            label="Select Coordinator",
+            widget=forms.Select(attrs={'class': 'form-select', 'size': '10'})
+        )
+
+
 class ProjectGroupInviteForm(ModelForm):
     class Meta:
         model = Project_Group
@@ -219,6 +231,9 @@ class ProjectForm(ModelForm):
             'comments': 'Faculty Comments'
              # 'defense_date':'YYYY-MM-DD HH:MM:SS',
         }
+        help_texts = {
+            'adviser': 'You are not allowed to submit proposals to multiple advisers unless the all the previous proposals are declined first.',
+        }
 
         widgets = { 
             'title': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Project Title'}),
@@ -234,7 +249,10 @@ class ProjectForm(ModelForm):
         user = kwargs.pop('user', None)
         super(ProjectForm, self).__init__(*args, **kwargs)
 
-       
+        for field in self.fields.values():
+            if field.help_text:
+                field.help_text = f'<small class="form-text text-muted">{field.help_text}</small>'
+
         # Disable the proponents field
         self.fields['proponents'].widget.attrs['disabled'] = 'disabled'
 
@@ -246,16 +264,24 @@ class ProjectForm(ModelForm):
         cleaned_data = super().clean()
         adviser = cleaned_data.get('adviser')
         panel = cleaned_data.get('panel')
+        errors = set()
 
         if adviser and panel:
             # Check if adviser is in panel
             if adviser in panel:
-                raise ValidationError('The adviser cannot be one of the panelists.')
-
+                errors.add(f"The adviser cannot be one of the panelists.")
+        
             # If user is a student, enforce single selection
             if len(panel) > 1:
-                raise ValidationError( 'Students can select only one panelist.')
+                errors.add(f'Students can select only one panelist.')
 
+        # Add errors to the form if there are any
+        if errors:
+            for error in errors:
+                self.add_error('panel', error)
+            # Return None so that the form is marked invalid but not break with an exception
+            return None
+        
         return cleaned_data
     
 class UpdateProjectForm(ModelForm): 

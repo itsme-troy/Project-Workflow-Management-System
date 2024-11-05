@@ -1,8 +1,9 @@
 {% extends 'project/base.html'%} <!-- use the base file -->
 
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/custom.css' %}">
-
+    {% block head %}
+         <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    {% endblock %}
 {% block content %} <!-- content of all web pages go -->
 
 </br> 
@@ -16,12 +17,27 @@
         {% if submitted %}
             Your Proposal Was Submitted Successfully!
         {% else %}
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li> Please Fix Errors in {{ field.label }} Field </li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+               {% endif %}
         
                 <form method="post" id="projectForm">
                     {% csrf_token %}
                     
                     {{ form.as_p }} <!-- Render form fields and errors as paragraphs -->
                     <button type="submit" class="btn btn-primary">Submit</button>
+                    <a href="{% url 'adviser-projects' %}" class="btn btn-outline-danger btn-sm"> Cancel </a>
                 </form>
 
         {% endif %}

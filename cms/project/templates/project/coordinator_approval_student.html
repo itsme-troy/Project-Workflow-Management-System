@@ -6,7 +6,7 @@
 <h1> Student Eligibility Approval Form </h1> 
 </center> </br>     
 
-<div class="card">
+{% comment %} <div class="card">
     <div class="card-header">
       System Report  
     </div>
@@ -17,7 +17,7 @@
      <p class="card-text">Proposal Count: {{ proposal_count }} </p>
    
     </div>
-  </div> </br>
+  </div> </br> {% endcomment %}
   
 <form action="" method=POST> 
     {% csrf_token %} 
@@ -32,7 +32,10 @@
         <tr> 
             <th scope="col"> Last Name </th> 
             <th scope="col"> First Name </th> 
-            <th scope="col"> Eligibility </th> 
+            <th scope="col" onclick="toggleAllCheckboxes()"> Eligibility 
+                <span class="hint-button" title="Click to toggle eligibility checkboxes">?</span>
+            </th> 
+            
             {% comment %} <th scope="col"> Eligibility Deficiencies  </th>  {% endcomment %}
         </tr> 
     </thead>  
@@ -44,21 +47,13 @@
             <td> {{ student.last_name }} </td> 
             <td> {{ student.first_name }} </td>
             <td>
-                {% if student.eligible %}
-                    <div class="form-check"> 
-                        <input class="form-check-input"
-                            type="checkbox" checked="checked"
-                            value={{student.id}} 
-                            name="student_box">
+                <div class="form-check" style="display: none;"> 
+                    <input class="form-check-input"
+                        type="checkbox" 
+                        {% if student.eligible %} checked="checked" {% endif %}
+                        value={{student.id}} 
+                        name="student_box">
                 </div> 
-                {% else %}
-                    <div class="form-check"> 
-                        <input class="form-check-input"
-                            type="checkbox" 
-                            value={{student.id}} 
-                            name="student_box"> 
-                    </div> 
-                {% endif %}
             </td>
             {% comment %} <td> {{ student.eligibilty_deficiencies }}</td> 
             <td> <a href="{% url 'update_deficiencies' 'student.id' %}" > Update </a>  </td>  {% endcomment %}
@@ -67,10 +62,133 @@
     {% endfor %}
     </tbody> 
 </table>
+<p class="help-text text-end">Click the "Eligibility" column header to display checkboxes.</p>
 
 
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+
+    {% if student_list.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{student_list.previous_page_number}}">Previous</a></li>
+    {% endif %}
+
+ 
+    {% for i in nums %}
+    <li class="page-item {% if forloop.counter == student_list.number %}disabled{% endif %}">
+    <a class="page-link" href="?page={{forloop.counter}}">{{ forloop.counter }}</a>
+</li>
+    {% endfor %}
+    <li class="page-item ml-auto disabled"><a href="#" class="page-link"> Page {{ student_list.number }} of {{ student_list.paginator.num_pages }} </a></li>
+
+    {% if student_list.has_next %}
+        <li class="page-item"> <a class="page-link" href="?page={{student_list.next_page_number}}">Next</a></li>
+        <li class="page-item"> <a class="page-link" href="?page={{student_list.paginator.num_pages}}">Last &raquo;</a></li>
+    {% endif %}
+    
+   
+</ul>
+</nav>
+<script>
+    function toggleAllCheckboxes() {
+        const checkboxDivs = document.querySelectorAll('.form-check');
+        checkboxDivs.forEach(div => {
+            div.style.display = (div.style.display === 'none') ? 'block' : 'none';
+        });
+    }
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    // Example of form validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const checkboxes = document.querySelectorAll('input[name="student_box"]:checked');
+        if (checkboxes.length === 0) {
+            e.preventDefault();
+            alert('Please select at least one student.');
+        }
+    });
+</script><style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f9f9f9;
+    }
+
+    .card {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin: 20px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        font-weight: bold;
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .hint-button {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .hint-button:hover {
+        background-color: #e0e0e0;
+    }
+
+    .help-text {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #555;
+    }
+
+    @media (max-width: 768px) {
+        .table {
+            width: 100%;
+            overflow-x: auto;
+            display: block;
+        }
+    }
+</style>
 {% endblock %}
-
-
-
-

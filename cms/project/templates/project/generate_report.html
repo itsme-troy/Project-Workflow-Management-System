@@ -1,16 +1,55 @@
 {% extends 'project/base.html' %}
+{% load custom_filters %}
+{% block styles %}
 
+  <head> 
+  <style>
+    .table {
+      width: 100%;
+      margin-bottom: 1rem;
+      color: #212529;
+  }
+  .table th,
+  .table td {
+      padding: 0.75rem;
+      vertical-align: top;
+      border-top: 1px solid #dee2e6;
+  }
+  .table thead th {
+      vertical-align: bottom;
+      border-bottom: 2px solid #dee2e6;
+  }
+  .table tbody + tbody {
+      border-top: 2px solid #dee2e6;
+  }
+  .table-hover tbody tr:hover {
+      color: #495057;
+      background-color: rgba(0, 0, 0, 0.075);
+  }
+  .table-striped tbody tr:nth-of-type(odd) {
+      background-color: rgba(0, 0, 0, 0.05);
+  }
+  .badge {
+    display: inline-block;
+    padding: 0.35em 0.5em;  
+    font-size: 85%;
+    font-weight: 700;
+    line-height: 1.2; 
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+  }
+  .badge-accepted { background-color: #5cb85c; color: white; }
+  .badge-accepted-with-revisions { background-color: #5cb85c; color: white; }
+  .badge-re-defense { background-color: #d9534f; color: white; }
+  .badge-not-accepted { background-color: #d9534f; color: white; }
+  .badge-not-started { background-color: #777; color: white; }
+
+  </style>
+</head>
+{% endblock %}
 {% block content %}
-<!-- Add this style section in the head or at the top of your template -->
-<style>
-  .verdict-pending { color: #f0ad4e; } /* Orange */
-  .verdict-accepted { color: #5cb85c; } /* Green */
-  .verdict-accepted_with_revisions { color: #5bc0de; } /* Blue */
-  .verdict-redefense { color: #d9534f; } /* Red */
-  .verdict-not_accepted { color: #d9534f; } /* Red */
-  .verdict-not-started { color: #777; } /* Gray */
-</style>
-
 
 </br> 
 <center> 
@@ -56,7 +95,7 @@
           <div class="card-body">
             <h4 class="card-title"> {{ project_group_count }}</h4>
             <h5  class="card-text"> Total Project Groups </h5>  
-            <p5 class="card-text"> Approval Required: {{   unapproved_project_group_count }}  </p5> 
+            <p class="card-text"> Approval Required: {{   unapproved_project_group_count }}  </p> 
             
             {% comment %} <a href="#" class="btn btn-primary">Go somewhere</a> {% endcomment %}
           </div>
@@ -76,27 +115,35 @@
       </tr>
   </thead>
   <tbody>
-      {% for project_data in projects_with_phases %}
-          {% if project_data.project.approved %}
-              <tr>
-                  <td>{{ project_data.project }}</td>
-                  <td>{{ project_data.project.adviser }}</td>
-                  
-                  <td class="verdict-{{ project_data.defense_results.proposal|lower|slugify }}">
-                      {{ project_data.defense_results.proposal }}
-                  </td>
-                  <td class="verdict-{{ project_data.defense_results.design|lower|slugify }}">
-                      {{ project_data.defense_results.design }}
-                  </td>
-                  <td class="verdict-{{ project_data.defense_results.preliminary|lower|slugify }}">
-                      {{ project_data.defense_results.preliminary }}
-                  </td>
-                  <td class="verdict-{{ project_data.defense_results.final|lower|slugify }}">
-                      {{ project_data.defense_results.final }}
-                  </td>
-              </tr>
-          {% endif %}
-      {% endfor %}
+    {% for project_data in projects_with_phases %}
+    {% if project_data.project.status == 'approved' %}
+        <tr>
+            <td>{{ project_data.project }}</td>
+            <td>{{ project_data.project.adviser }}</td>
+            
+            <td class="verdict-{{ project_data.defense_results.proposal|lower|slugify_filter }}">
+                <span class="badge badge-{{ project_data.defense_results.proposal|lower|slugify_filter }}">
+                    {{ project_data.defense_results.proposal }}
+                </span>
+            </td>
+            <td class="verdict-{{ project_data.defense_results.design|lower|slugify_filter }}">
+                <span class="badge badge-{{ project_data.defense_results.design|lower|slugify_filter }}">
+                    {{ project_data.defense_results.design }}
+                </span>
+            </td>
+            <td class="verdict-{{ project_data.defense_results.preliminary|lower|slugify_filter }}">
+                <span class="badge badge-{{ project_data.defense_results.preliminary|lower|slugify_filter }}">
+                    {{ project_data.defense_results.preliminary }}
+                </span>
+            </td>
+            <td class="verdict-{{ project_data.defense_results.final|lower|slugify_filter }}">
+                <span class="badge badge-{{ project_data.defense_results.final|lower|slugify_filter }}">
+                    {{ project_data.defense_results.final }}
+                </span>
+            </td>
+        </tr>
+    {% endif %}
+    {% endfor %}
   </tbody>
 </table>
 

@@ -6,10 +6,10 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 # Create your views here.
 from .forms import ProjectForm, CapstoneSubmissionForm, UpdateProjectForm, ProjectGroupForm, ProjectGroupInviteForm
-from .forms import  VerdictForm
+from .forms import  VerdictForm, CoordinatorForm
 from .models import AppUserManager, Defense_Application
 from .models import Student, Faculty, ApprovedProjectGroup,  Project_Group
-from .models import StudentProfile, FacultyProfile, Student
+from .models import StudentProfile, FacultyProfile, CoordinatorProfile, Coordinator
 # from .models import Event
 from django.utils import timezone
 from datetime import timedelta
@@ -34,6 +34,55 @@ logger = logging.getLogger(__name__)
 # Import user model 
 from django.contrib.auth import get_user_model 
 User = get_user_model()
+
+
+@login_required
+def select_coordinator(request):
+    # Allow access if the user is a superuser or the current coordinator
+    if not request.user.is_superuser and not CoordinatorProfile.objects.filter(user=request.user, is_current=True).exists():
+        messages.error(request, "You are not authorized to view this page ")
+        return redirect('home')  # Redirect if not admin or current coordinator
+
+    # Check if there is a current coordinator
+    try:
+        current_coordinator = CoordinatorProfile.objects.filter(is_current=True).first()
+    except CoordinatorProfile.DoesNotExist:
+        current_coordinator = None  # No current coordinator
+
+    submitted = False 
+
+    if request.method == 'POST':
+        form = CoordinatorForm(request.POST)
+        if form.is_valid():
+            user = form.cleaned_data['user']
+
+            # Ensure user is a Faculty instance or retrieve the Faculty instance
+            try:
+                faculty = Faculty.objects.get(id=user.id)
+            except Faculty.DoesNotExist:
+                messages.error(request, "Selected user is not a faculty member.")
+                return redirect('select_coordinator')
+            
+            # Change the role of the selected Faculty to Coordinator
+            faculty = Faculty.objects.get(id=user.id)
+            faculty.role = 'COORDINATOR'
+            faculty.save()
+       
+            # Update CoordinatorProfile
+            CoordinatorProfile.objects.update_or_create(user=faculty, defaults={'is_current': True})
+
+            messages.success(request, f"{user.get_full_name()} is now a Coordinator.")
+            return HttpResponseRedirect('/select_coordinator?submitted=True')
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = CoordinatorForm()
+
+    return render(request, 'project/select_coordinator.html', {
+        'form': form,
+        'current_coordinator': current_coordinator, 
+        'submitted': submitted,
+        })
 
 
 @login_required
@@ -241,13 +290,13 @@ def submit_defense_application(request):
             return redirect('home')
             
          # Fetch the approved project for the group
-        project = ApprovedProject.objects.filter(proponents=user_group).first()
+        project = Project.objects.filter(proponents=user_group, status='approved').first()
 
         if project is None:
-            messages.error(request, "No project found for your group. Please submit a project first.")
+            messages.error(request, "No project found for your group. Please submit a project first and wait for approval from an Adviser.")
             return redirect('home')
 
-        if project.status=='False':  # Assuming 'approved' is a BooleanField
+        elif project.status=='pending':  # Assuming 'approved' is a BooleanField
             messages.error(request, "Your project has not been approved yet. You cannot submit a Defense Application.")
             return redirect('home')
         
@@ -1134,7 +1183,6 @@ def get_user_project_group(request):
     
     else: 
         return None
-
     
 def coordinator_approval_faculty(request): 
     if request.user.is_authenticated: 
@@ -1143,10 +1191,10 @@ def coordinator_approval_faculty(request):
         proposal_count = Project.objects.filter(status='pending').count
         student_count = User.objects.filter(role='STUDENT').count
         faculty_count = User.objects.filter(role='FACULTY').count
-        student_list = User.objects.filter(role='STUDENT').order_by('last_name')
         
         # get list of faculty 
         faculty_list = User.objects.filter(role='FACULTY').order_by('last_name')
+        
         if request.user.is_superuser:
             if request.method == "POST":  
                 id_list = request.POST.getlist('boxes')
@@ -1167,26 +1215,33 @@ def coordinator_approval_faculty(request):
                 for y in panel_id_list: 
                     User.objects.filter(pk=int(y)).update(panel_eligible=True)
                 
-
                 messages.success(request, "Faculty Approval Form has been updated")
                 return redirect('coordinator-approval-faculty')
             else: 
+                # Paginate the faculty list
+                paginator = Paginator(faculty_list, 5)  # Show 10 faculty members per page
+                page_number = request.GET.get('page')
+                paginated_faculty = paginator.get_page(page_number)
+                nums = "a" * paginated_faculty.paginator.num_pages
+
                 return render(request, 
                 'project/coordinator_approval_faculty.html', 
-                {'faculty_list': faculty_list, 
+                {
+                    'faculty_list': paginated_faculty,  # Use paginated faculty
                     "project_count": project_count,
                     "proposal_count": proposal_count,
                     "student_count": student_count, 
                     "faculty_count": faculty_count,
-                    "student_list": student_list, 
+                    'nums': nums
                 })    
         else: 
-            messages.success(request, "You aren' authorized to view this Page ")
+            messages.success(request, "You aren't authorized to view this Page ")
             return redirect('home')
     else: 
         messages.success(request, "Please Login to view this page")
         return redirect('home')
     
+
 def coordinator_approval_student(request): 
     if request.user.is_authenticated: 
         # Get counts 
@@ -1198,9 +1253,9 @@ def coordinator_approval_student(request):
         
         # get list of faculty 
         faculty_list = User.objects.filter(role='FACULTY').order_by('last_name')
+        
         if request.user.is_superuser:
             if request.method == "POST":  
-            
                 student_box_list = request.POST.getlist('student_box')
                 student_list.update(eligible=False)
                 for z in student_box_list:
@@ -1209,14 +1264,22 @@ def coordinator_approval_student(request):
                 messages.success(request, "Student Approval Form has been updated")
                 return redirect('coordinator-approval-student')
             else: 
+                # Paginate the student list
+                paginator = Paginator(student_list, 10)  # Show 6 students per page
+                page_number = request.GET.get('page')
+                paginated_students = paginator.get_page(page_number)
+                nums = "a" * paginated_students.paginator.num_pages
+
                 return render(request, 
                 'project/coordinator_approval_student.html', 
-                {'faculty_list': faculty_list, 
+                {
+                    'faculty_list': faculty_list, 
                     "project_count": project_count,
                     "proposal_count": proposal_count,
                     "student_count": student_count, 
                     "faculty_count": faculty_count,
-                    "student_list": student_list, 
+                    "student_list": paginated_students,  # Use paginated students
+                    'nums': nums
                 })    
         else: 
             messages.success(request, "You aren' authorized to view this Page ")
@@ -1224,18 +1287,22 @@ def coordinator_approval_student(request):
     else: 
         messages.success(request, "Please Login to view this page")
         return redirect('home')
-        
        
 def adviser_projects(request):
     if request.user.is_authenticated: 
         adviser = request.user.id
         # Grab the projects from that adviser
-        approved_projects = Project.objects.filter(adviser=adviser, status='approved')
+        approved_projects = Project.objects.filter(adviser=adviser, status='approved').order_by('title')
         
+        approved_paginator = Paginator(approved_projects, 5)  # Show 10 projects per page
+        approved_page_number = request.GET.get('approved_page')
+        approved_page_obj = approved_paginator.get_page(approved_page_number)  
+        approved_nums = "a" * approved_page_obj.paginator.num_pages
+
+
         # Prepare data for each project with its groups and proponents
         approved_projects_with_groups = []
-
-        for project in approved_projects:
+        for project in approved_page_obj:
             project_group = Project_Group.objects.filter(project=project, approved=True).first()
             if project_group:
                 proponents = list(project_group.proponents.all())
@@ -1247,15 +1314,16 @@ def adviser_projects(request):
                     'status': project.status
                 })
 
-        not_approved_projects = Project.objects.filter(
-            adviser=adviser,
-            status__in=['pending', 'declined']
-        )
+        # Paginate not approved projects
+        not_approved_projects = Project.objects.filter(adviser=adviser, status__in=['pending', 'declined']).order_by('title')
+        not_approved_paginator = Paginator(not_approved_projects, 5)  # Show 10 projects per page
+        not_approved_page_number = request.GET.get('not_approved_page')
+        not_approved_page_obj = not_approved_paginator.get_page(not_approved_page_number)
+        not_approved_nums = "a" * not_approved_page_obj.paginator.num_pages
+
         not_approved_projects_with_groups = []
-        
-        for project in not_approved_projects:
+        for project in not_approved_page_obj:
             project_group = Project_Group.objects.filter(project=project, approved=True).first()
-            print("Project Group for Project:", project, "is", project_group)  # Debug statement
             if project_group:
                 proponents = list(project_group.proponents.all())
                 proponents += [None] * (3 - len(proponents))  # Pad to exactly 3 proponents
@@ -1268,12 +1336,15 @@ def adviser_projects(request):
 
         return render(request, 'project/adviser_projects.html', {
             "approved_projects_with_groups": approved_projects_with_groups,
-            "not_approved_projects_with_groups": not_approved_projects_with_groups
+            "not_approved_projects_with_groups": not_approved_projects_with_groups,
+            "approved_page_obj": approved_page_obj,
+            "not_approved_page_obj": not_approved_page_obj,
+            "approved_nums": approved_nums,
+            "not_approved_nums": not_approved_nums,
         })
     else: 
         messages.success(request, "Please Login to view this page")
         return redirect('home')
-    
 
     
 def reject_project(request, project_id):
@@ -1485,10 +1556,31 @@ def add_project(request):
         
         if not group.approved:
             messages.success(request, "Your Project Group is not approved. Please Ensure all Students have approved before proceeding.")
-            return redirect('home')
+            return redirect('my-project-group-waitlist')
             
+        # Check if the group already has an approved project
+        approved_project_exists = Project.objects.filter(
+            proponents=group,
+            status='approved'
+        ).exists()
+
+        if approved_project_exists:
+            messages.error(request, "Your group already has an approved project. You cannot submit another project.")
+            return redirect('list-projects')
+        
         if request.user.role == 'STUDENT': 
             submitted = False
+
+            # Check for pending projects with an adviser
+            pending_projects = Project.objects.filter(
+                proponents=group,
+                status='pending'
+            )
+
+            current_adviser = None
+            if pending_projects.exists():
+                current_adviser = pending_projects.first().adviser
+
             if request.method == "POST":
                 form = ProjectForm(request.POST, user=request.user)
                 if form.is_valid():
@@ -1506,6 +1598,10 @@ def add_project(request):
                 form = ProjectForm(initial={
                     'proponents': group,
                 }, user=request.user)
+
+                # Restrict adviser selection if there's a pending project
+                if current_adviser:
+                    form.fields['adviser'].queryset = User.objects.filter(id=current_adviser.id)
                 
                 if 'submitted' in request.GET:
                     submitted = True
@@ -1516,10 +1612,10 @@ def add_project(request):
                 'submitted': submitted
             })
         else: 
-            messages.success(request, "Only Students are allowed to propose Projects.")
+            messages.error(request, "Only Students are allowed to propose Projects.")
             return redirect('home')
     else: 
-        messages.success(request, "Please Login to view this page")
+        messages.error(request, "Please Login to view this page")
         return redirect('home')
 
 def home(request):

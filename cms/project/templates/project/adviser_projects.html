@@ -94,7 +94,26 @@
         </br> <p>You have no Advisory Projects yet.</p>
     {% endif %}
     </tbody>
-</table><br/>  <hr/> <br/>
+</table>  <hr/> 
+    <nav aria-label="Approved Projects Pagination">
+        <ul class="pagination justify-content-center">
+            {% if approved_page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?approved_page=1">&laquo; First</a></li>
+                <li class="page-item"><a class="page-link" href="?approved_page={{ approved_page_obj.previous_page_number }}">Previous</a></li>
+            {% endif %}
+
+            {% for num in approved_page_obj.paginator.page_range %}
+                <li class="page-item {% if num == approved_page_obj.number %}active{% endif %}">
+                    <a class="page-link" href="?approved_page={{ num }}">{{ num }}</a>
+                </li>
+            {% endfor %}
+
+            {% if approved_page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?approved_page={{ approved_page_obj.next_page_number }}">Next</a></li>
+                <li class="page-item"><a class="page-link" href="?approved_page={{ approved_page_obj.paginator.num_pages }}">Last &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </nav>
 
 <h1>My Received Proposals </h1>
 <table class="table table-striped table-hover table-bordered">
@@ -168,7 +187,28 @@
     </tbody>
 </table>
 
-</br> </br>  <hr/> </br> </br> 
+<hr/> 
+
+
+<nav aria-label="Not Approved Projects Pagination">
+    <ul class="pagination justify-content-center">
+        {% if not_approved_page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?not_approved_page=1">&laquo; First</a></li>
+            <li class="page-item"><a class="page-link" href="?not_approved_page={{ not_approved_page_obj.previous_page_number }}">Previous</a></li>
+        {% endif %}
+
+        {% for num in not_approved_page_obj.paginator.page_range %}
+            <li class="page-item {% if num == not_approved_page_obj.number %}active{% endif %}">
+                <a class="page-link" href="?not_approved_page={{ num }}">{{ num }}</a>
+            </li>
+        {% endfor %}
+
+        {% if not_approved_page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?not_approved_page={{ not_approved_page_obj.next_page_number }}">Next</a></li>
+            <li class="page-item"><a class="page-link" href="?not_approved_page={{ not_approved_page_obj.paginator.num_pages }}">Last &raquo;</a></li>
+        {% endif %}
+    </ul>
+</nav>
 {% comment %} 
 <h1> My Project Groups </h1> 
 </br> </br> 

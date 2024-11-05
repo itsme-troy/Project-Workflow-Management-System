@@ -6,7 +6,7 @@
 <h1> Faculty Approval Form </h1> 
 </center> </br>     
 
-<div class="card">
+{% comment %} <div class="card">
     <div class="card-header">
       System Report  
     </div>
@@ -17,9 +17,7 @@
      <p class="card-text">Proposal Count: {{ proposal_count }} </p>
    
     </div>
-  </div> </br> </br> 
-
-
+  </div> </br> </br>  {% endcomment %}
 
 <form action="" method=POST> 
     {% csrf_token %} 
@@ -33,8 +31,12 @@
         <tr> 
             <th scope="col"> Last Name </th> 
             <th scope="col"> First Name </th> 
-            <th scope="col"> Adviser Eligibility </th> 
-            <th scope="col"> Panel Eligibility </th> 
+            <th scope="col" onclick="toggleCheckboxes('adviser-column')"> Adviser Eligibility 
+                <span class="hint-button" title="Click to toggle eligibility checkboxes">?</span>
+            </th> 
+            <th scope="col" onclick="toggleCheckboxes('panel-column')"> Panel Eligibility 
+                <span class="hint-button" title="Click to toggle eligibility checkboxes">?</span>
+            </th> 
         </tr> 
     </thead>  
     <tbody>
@@ -44,50 +46,156 @@
             <tr> 
                 <td> {{ adviser.last_name }}    </td>
                 <td> {{ adviser.first_name }} </td>
-                <td>
-                    {% if adviser.adviser_eligible %}
-                        <div class="form-check"> 
-                            <input class="form-check-input"
-                                type="checkbox" checked="checked"
-                                value={{adviser.id}} 
-                                name="boxes">
+                <td class="adviser-column">
+                    <div class="form-check" style="display: none;"> 
+                        <input class="form-check-input"
+                            type="checkbox" 
+                            {% if adviser.adviser_eligible %} checked="checked" {% endif %}
+                            value={{adviser.id}} 
+                            name="boxes">
                     </div> 
-                    {% else %}
-                        <div class="form-check"> 
-                            <input class="form-check-input"
-                                type="checkbox" 
-                                value={{adviser.id}} 
-                                name="boxes"> 
-                        </div> 
-                    {% endif %}
                 </td>
 
-                <td>
-                    {% if adviser.panel_eligible %}
-                        <div class="form-check"> 
-                            <input class="form-check-input"
-                                type="checkbox" checked="checked"
-                                value={{adviser.id}} 
-                                name="box">
+                <td class="panel-column">
+                    <div class="form-check" style="display: none;"> 
+                        <input class="form-check-input"
+                            type="checkbox" 
+                            {% if adviser.panel_eligible %} checked="checked" {% endif %}
+                            value={{adviser.id}} 
+                            name="box">
                     </div> 
-                    {% else %}
-                        <div class="form-check"> 
-                            <input class="form-check-input"
-                                type="checkbox" 
-                                value={{adviser.id}} 
-                                name="box"> 
-                        </div> 
-                    {% endif %}
                 </td>
             </tr> 
         {% endfor %}
     </tbody> 
-    </table>
-    </br> 
+</table>
+<p class="help-text text-end">Click the "Eligibility" column header to display checkboxes.</p>
 
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
 
+    {% if faculty_list.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{faculty_list.previous_page_number}}">Previous</a></li>
+    {% endif %}
+
+    {% for i in nums %}
+    <li class="page-item {% if forloop.counter == faculty_list.number %}disabled{% endif %}">
+    <a class="page-link" href="?page={{forloop.counter}}">{{ forloop.counter }}</a>
+</li>
+    {% endfor %}
+    <li class="page-item ml-auto disabled"><a href="#" class="page-link"> Page {{ faculty_list.number }} of {{ faculty_list.paginator.num_pages }} </a></li>
+
+    {% if faculty_list.has_next %}
+        <li class="page-item"> <a class="page-link" href="?page={{faculty_list.next_page_number}}">Next</a></li>
+        <li class="page-item"> <a class="page-link" href="?page={{faculty_list.paginator.num_pages}}">Last &raquo;</a></li>
+    {% endif %}
+    
+</ul>
+</nav>
+
+<script>
+    function toggleCheckboxes(columnClass) {
+        const checkboxDivs = document.querySelectorAll(`.${columnClass} .form-check`);
+        checkboxDivs.forEach(div => {
+            div.style.display = (div.style.display === 'none') ? 'block' : 'none';
+        });
+    }
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    // Example of form validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const checkboxes = document.querySelectorAll('input[name="boxes"]:checked, input[name="box"]:checked');
+        if (checkboxes.length === 0) {
+            e.preventDefault();
+            alert('Please select at least one faculty member.');
+        }
+    });
+</script>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f9f9f9;
+    }
+
+    .card {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin: 20px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        font-weight: bold;
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .hint-button {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .hint-button:hover {
+        background-color: #e0e0e0;
+    }
+
+    .help-text {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #555;
+    }
+
+    @media (max-width: 768px) {
+        .table {
+            width: 100%;
+            overflow-x: auto;
+            display: block;
+        }
+    }
+</style>
 {% endblock %}
-
-
-
-

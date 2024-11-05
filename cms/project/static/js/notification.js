@@ -76,3 +76,4 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchNotifications();
     setInterval(fetchNotifications, 30000);
 });
+

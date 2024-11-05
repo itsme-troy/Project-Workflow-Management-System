@@ -21,7 +21,7 @@
         <tbody>
         <ul>
             {% for application in defense_applications %}
-            {% if application.project.approved %}
+            {% if application.project.status == 'approved' %}
             <tr>
                 <td>{{ application.title }}</td>
                 <td><a href="{% url 'show-project' application.project.id %}">{{ application.project }}</a></td>

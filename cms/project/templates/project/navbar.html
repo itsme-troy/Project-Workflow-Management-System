@@ -18,11 +18,14 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           {% if user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'my-profile' request.user.id %}">
-                <i class="fas fa-user"></i> My Profile
-              </a>
-            </li>
+            {% if user.role != 'COORDINATOR' %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'my-profile' request.user.id %}">
+                    <i class="fas fa-user"></i> My Profile
+                  </a>
+                </li>
+              {% endif %}
+
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fas fa-users"></i> Users
@@ -90,7 +93,7 @@
             </li>
             {% endif %}
 
-            {% if user.is_superuser %}
+            {% if user.role == 'COORDINATOR' or user.is_superuser %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Coordinator Tab
@@ -98,15 +101,15 @@
               <ul class="dropdown-menu">
               
                 <li><a class="dropdown-item" href="{% url 'generate-report' %}"> Report Generation  </a></li>
-                  <li><a class="dropdown-item" href="{% url 'coordinator-approval-faculty' %}"> Faculty Approval Form </a></li>
-                  <li><a class="dropdown-item" href="{% url 'coordinator-approval-student' %}"> Student Approval Form  </a></li>
-                  
+                <li><a class="dropdown-item" href="{% url 'coordinator-approval-student' %}"> Student Approval Form  </a></li>
+                <li><a class="dropdown-item" href="{% url 'coordinator-approval-faculty' %}"> Faculty Approval Form </a></li>
+                 
                   <li><a class="dropdown-item" href="{% url 'list-defense-applications' %}"> All Defense Applications </a></li>
                   <li><a class="dropdown-item" href="{% url 'common-sched-calendar' %}"> View Common Available Schedule   </a></li>
-              
+                  <li><a class="dropdown-item" href="{% url 'select-coordinator' %}"> Select New Coordinator </a></li>
               </ul>
           </li>
-          {% endif %}
+            {% endif %}
         
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
