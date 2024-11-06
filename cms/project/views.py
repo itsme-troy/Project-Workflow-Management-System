@@ -35,18 +35,17 @@ logger = logging.getLogger(__name__)
 from django.contrib.auth import get_user_model 
 User = get_user_model()
 
-
 @login_required
 def select_coordinator(request):
     # Allow access if the user is a superuser or the current coordinator
-    if not request.user.is_superuser and not CoordinatorProfile.objects.filter(user=request.user, is_current=True).exists():
+    if not request.user.is_superuser and not User.objects.filter(id=request.user.id, is_current_coordinator=True, role='COORDINATOR').exists():
         messages.error(request, "You are not authorized to view this page ")
         return redirect('home')  # Redirect if not admin or current coordinator
 
     # Check if there is a current coordinator
     try:
-        current_coordinator = CoordinatorProfile.objects.filter(is_current=True).first()
-    except CoordinatorProfile.DoesNotExist:
+        current_coordinator = Coordinator.objects.filter(is_current_coordinator=True).first()
+    except Coordinator.DoesNotExist:
         current_coordinator = None  # No current coordinator
 
     submitted = False 
@@ -66,17 +65,27 @@ def select_coordinator(request):
             # Change the role of the selected Faculty to Coordinator
             faculty = Faculty.objects.get(id=user.id)
             faculty.role = 'COORDINATOR'
+            faculty.is_current_coordinator = True
             faculty.save()
        
-            # Update CoordinatorProfile
-            CoordinatorProfile.objects.update_or_create(user=faculty, defaults={'is_current': True})
+             # Set the current logged-in user's is_current_coordinator to False
+            request.user.is_current_coordinator = False
+            request.user.save()
+
 
             messages.success(request, f"{user.get_full_name()} is now a Coordinator.")
             return HttpResponseRedirect('/select_coordinator?submitted=True')
         else:
             messages.error(request, "Please correct the errors below.")
     else:
-        form = CoordinatorForm()
+        if current_coordinator: 
+            form = CoordinatorForm(initial={'user': current_coordinator})
+        else:
+            form = CoordinatorForm()
+
+        if 'submitted' in request.GET:
+            submitted = True
+
 
     return render(request, 'project/select_coordinator.html', {
         'form': form,
@@ -1108,7 +1117,7 @@ def generate_report(request):
         student_count = Student.objects.filter(role='STUDENT').filter(eligible=True ).count 
         project_group_count = Project_Group.objects.count 
         panelist_count = Faculty.objects.filter(role='FACULTY').filter(panel_eligible=True).count
-        projects = Project.objects.all()
+        # projects = Project.objects.all()
 
         student_uneligible_count = Student.objects.filter(role='STUDENT').filter(eligible=False ).count
         adviser_uneligible_count = Faculty.objects.filter(role='FACULTY').filter(adviser_eligible=False).count
@@ -1119,7 +1128,7 @@ def generate_report(request):
 
 
            # Get all projects with their phases
-        projects = Project.objects.prefetch_related('phases').all()
+        projects = ApprovedProject.objects.prefetch_related('phases').all()
 
         # Create a dictionary to store defense results for each project
         projects_with_phases = []
@@ -1195,7 +1204,7 @@ def coordinator_approval_faculty(request):
         # get list of faculty 
         faculty_list = User.objects.filter(role='FACULTY').order_by('last_name')
         
-        if request.user.is_superuser:
+        if request.user.role == 'COORDINATOR':
             if request.method == "POST":  
                 id_list = request.POST.getlist('boxes')
 
@@ -1218,21 +1227,21 @@ def coordinator_approval_faculty(request):
                 messages.success(request, "Faculty Approval Form has been updated")
                 return redirect('coordinator-approval-faculty')
             else: 
-                # Paginate the faculty list
-                paginator = Paginator(faculty_list, 5)  # Show 10 faculty members per page
-                page_number = request.GET.get('page')
-                paginated_faculty = paginator.get_page(page_number)
-                nums = "a" * paginated_faculty.paginator.num_pages
+                # # Paginate the faculty list
+                # paginator = Paginator(faculty_list, 5)  # Show 10 faculty members per page
+                # page_number = request.GET.get('page')
+                # paginated_faculty = paginator.get_page(page_number)
+                # nums = "a" * paginated_faculty.paginator.num_pages
 
                 return render(request, 
                 'project/coordinator_approval_faculty.html', 
                 {
-                    'faculty_list': paginated_faculty,  # Use paginated faculty
+                    'faculty_list': faculty_list, 
                     "project_count": project_count,
                     "proposal_count": proposal_count,
                     "student_count": student_count, 
                     "faculty_count": faculty_count,
-                    'nums': nums
+                  
                 })    
         else: 
             messages.success(request, "You aren't authorized to view this Page ")
@@ -1254,7 +1263,7 @@ def coordinator_approval_student(request):
         # get list of faculty 
         faculty_list = User.objects.filter(role='FACULTY').order_by('last_name')
         
-        if request.user.is_superuser:
+        if request.user.role == 'COORDINATOR':
             if request.method == "POST":  
                 student_box_list = request.POST.getlist('student_box')
                 student_list.update(eligible=False)
@@ -1264,12 +1273,7 @@ def coordinator_approval_student(request):
                 messages.success(request, "Student Approval Form has been updated")
                 return redirect('coordinator-approval-student')
             else: 
-                # Paginate the student list
-                paginator = Paginator(student_list, 10)  # Show 6 students per page
-                page_number = request.GET.get('page')
-                paginated_students = paginator.get_page(page_number)
-                nums = "a" * paginated_students.paginator.num_pages
-
+    
                 return render(request, 
                 'project/coordinator_approval_student.html', 
                 {
@@ -1278,8 +1282,8 @@ def coordinator_approval_student(request):
                     "proposal_count": proposal_count,
                     "student_count": student_count, 
                     "faculty_count": faculty_count,
-                    "student_list": paginated_students,  # Use paginated students
-                    'nums': nums
+                    "student_list": student_list,  # Use paginated students
+                    
                 })    
         else: 
             messages.success(request, "You aren' authorized to view this Page ")
@@ -1496,17 +1500,17 @@ def search_projects(request):
 
 def list_student(request): 
     if request.user.is_authenticated: 
-        # student_list = Student.objects.all().order_by('last_name')    
+        student_list = Student.objects.filter(role='STUDENT').order_by('last_name')    
         
-        p = Paginator(Student.objects.filter(role='STUDENT').filter(eligible=True).order_by('last_name'), 6) 
-        page = request.GET.get('page')
-        students = p.get_page(page)
-        nums = "a" * students.paginator.num_pages
+        # p = Paginator(Student.objects.filter(role='STUDENT').order_by('last_name'), 10) 
+        # page = request.GET.get('page')
+        # students = p.get_page(page)
+        # nums = "a" * students.paginator.num_pages
 
         return render(request, 'project/student.html', 
-        # {'student_list': student_list,
-        {'students': students, 
-        'nums': nums})
+        {'student_list': student_list })
+        # {'students': students, 
+        # 'nums': nums})
     else: 
         messages.success(request, "You Aren't Authorized to view this page.")
         return redirect('home')
@@ -1534,7 +1538,7 @@ def list_faculty(request):
     if request.user.is_authenticated: 
         # student_list = Student.objects.all().order_by('last_name')    
         
-        p = Paginator(Student.objects.filter(role='FACULTY').order_by('last_name'), 6) 
+        p = Paginator(Student.objects.filter(role='FACULTY').order_by('last_name'), 8) 
         page = request.GET.get('page')
         facultys = p.get_page(page)
         nums = "a" * facultys.paginator.num_pages

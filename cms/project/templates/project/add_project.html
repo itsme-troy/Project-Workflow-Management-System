@@ -15,7 +15,9 @@
         </center>  
     
         {% if submitted %}
-            Your Proposal Was Submitted Successfully!
+            <div class="alert alert-success text-center" role="alert">
+                <h3> Your Proposal Was Submitted Successfully!</h3>
+            </div>
         {% else %}
                 {% if form.errors %}
                     <div class="alert alert-danger">

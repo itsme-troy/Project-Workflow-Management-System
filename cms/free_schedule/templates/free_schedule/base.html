@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,6 +9,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
+
+ 
+        <link rel="stylesheet" href="{% static 'project/css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'project/css/custom-navbar.css' %}">
+    
+    {% block styles %}{% endblock %} 
 </head>
 <body>
     {% include 'project/navbar.html' %}
@@ -115,5 +122,7 @@
    });
  
 </script>
+{% csrf_token %}
+<script src="{% static 'project/js/notifications.js' %}"></script>
 </body>
 </html>

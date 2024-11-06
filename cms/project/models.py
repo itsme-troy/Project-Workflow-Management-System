@@ -69,8 +69,8 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
     phone = models.CharField('Contact Phone', max_length=25, blank=True, null=True)
     course = models.CharField('Course', max_length=100, null=True, blank=True )
     profile_image = models.ImageField(null=True, blank=True, default='static/images/default_profile_pic.jpg',upload_to="images/")
-    is_current = models.BooleanField(default=True)
-
+    
+   
     #available_schedule = models.ManyToManyField(Available_schedule, related_name='Faculty_available', blank=True )
 
     is_active = models.BooleanField(default=True)
@@ -83,7 +83,9 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
     eligility_deficiencies = models.CharField('Eligibility Deficiencies', max_length=500, blank=True)
     adviser_eligible = models.BooleanField('Eligible as Adviser', default=False)
     panel_eligible = models.BooleanField('Eligible as Panelist', default=False)
-  
+    is_current_coordinator = models.BooleanField('Current Coordinator', default=False)
+
+
     USERNAME_FIELD = "email" # user will login using their email
     EMAIL_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -191,7 +193,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 class CoordinatorProfile(models.Model): 
     user = models.OneToOneField(AppUser, on_delete=models.CASCADE)
-    is_current = models.BooleanField(default=True)
+    # is_current = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         if self.is_current:

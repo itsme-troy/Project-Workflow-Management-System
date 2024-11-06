@@ -46,6 +46,7 @@
                     <thead>
 
                         <tr>
+                            <th scope="col"> # </th>
                             <th>Proponent</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -54,6 +55,7 @@
                     <tbody>
                         {% for proponent in group_data.current_proponents %}
                             <tr {% if user == proponent %}class="table-warning"{% endif %} onclick="toggleActions(this)">
+                                <td> <strong> {{ forloop.counter }} </strong> </td>
                                 <td>
                                     {{ proponent.get_full_name }}
                                     {% if user == proponent %}

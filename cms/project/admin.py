@@ -47,7 +47,7 @@ class FacultyProfileInline(admin.StackedInline):
 
 class FacultyAdmin(admin.ModelAdmin): 
     model = Faculty
-    fields = ["first_name", "last_name", "role", "profile_image"]
+    fields = ["first_name", "last_name", "role", "adviser_eligible", "panel_eligible", "profile_image"]
     inlines = [FacultyProfileInline]
     
 # Unregister initial User
@@ -59,9 +59,12 @@ admin.site.register(Faculty, FacultyAdmin)
 class CoordinatorProfileInline(admin.StackedInline):
     model = CoordinatorProfile
 
+    list_display = ["is_current"]
+
 class CoordinatorAdmin(admin.ModelAdmin): 
     model = Coordinator
-    fields = ["first_name", "last_name", "role", "profile_image"]
+    fields = ["first_name", "last_name", "role", 'is_current_coordinator', "profile_image"]
+    list_display = ["first_name", "last_name", "role", 'is_current_coordinator']
     inlines = [CoordinatorProfileInline]
     
 # Unregister initial User

@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
   <link rel="stylesheet" href="{% static 'css/custom-navbar.css' %}">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
   <body>
@@ -31,8 +32,8 @@
                 <i class="fas fa-users"></i> Users
               </a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'list-student' %}">Eligible Students</a></li>
-                <li><a class="dropdown-item" href="{% url 'list-student-waitlist' %}">Student Waitlist</a></li>
+                <li><a class="dropdown-item" href="{% url 'list-student' %}">Students</a></li>
+                {% comment %} <li><a class="dropdown-item" href="{% url 'list-student-waitlist' %}">Student Waitlist</a></li> {% endcomment %}
                 
                 <li><a class="dropdown-item" href="{% url 'list-faculty' %}">Faculty</a></li>
               </ul>
@@ -93,7 +94,8 @@
             </li>
             {% endif %}
 
-            {% if user.role == 'COORDINATOR' or user.is_superuser %}
+            {% if request.user.role == 'COORDINATOR' and request.user.is_current_coordinator or request.user.is_superuser %}
+            
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Coordinator Tab

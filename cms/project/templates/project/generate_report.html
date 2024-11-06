@@ -56,53 +56,7 @@
     <h1> Report Generation and Projects Defense Progress </h1> </br> 
 
 </center> </br> 
-<div class="row">
-    <div class="col-sm-6 mb-3 mb-sm-0">
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title"> {{ student_count }} </h4>
-          <h5 class="card-text">Total Student </h5>
-          <p5 class="card-text"> Approval Required: {{ student_uneligible_count }}
-          {% comment %} <a href="#" class="btn btn-primary">Go somewhere</a> {% endcomment %}
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-6" >
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title"> {{ adviser_count }}</h4>
-          <h5 class="card-text">Total Advisers </h5>
-          <p5 class="card-text"> Approval Required: {{ adviser_uneligible_count }}
 
-          {% comment %} <a href="#" class="btn btn-primary">Go somewhere</a> {% endcomment %}
-        </div> 
-      </div>  </br> 
-    </div>   
-
-    <div class="col-sm-6">
-        <div class="card">
-          <div class="card-body">
-            <h4 class="card-title"> {{ panelist_count }}</h4>
-            <h5  class="card-text"> Total Panelist </h5>
-            <p5 class="card-text"> Approval Required: {{ panel_uneligible_count }}
-
-            {% comment %} <a href="#" class="btn btn-primary">Go somewhere</a> {% endcomment %}
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-6">
-        <div class="card">
-          <div class="card-body">
-            <h4 class="card-title"> {{ project_group_count }}</h4>
-            <h5  class="card-text"> Total Project Groups </h5>  
-            <p class="card-text"> Approval Required: {{   unapproved_project_group_count }}  </p> 
-            
-            {% comment %} <a href="#" class="btn btn-primary">Go somewhere</a> {% endcomment %}
-          </div>
-        </div>
-      </div>
-  </div>
- </br> </br> <hr/> </br>
  <table class="table table-striped table-hover table-bordered">
   <thead>
       <tr>
@@ -145,7 +99,54 @@
     {% endif %}
     {% endfor %}
   </tbody>
-</table>
+</table>  <hr/> </br> 
 
+<div class="row">
+  <div class="col-sm-6 mb-3 mb-sm-0">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title"> {{ student_count }} </h4>
+        <h5 class="card-text">Total Student </h5>
+        <p5 class="card-text"> Approval Required: {{ student_uneligible_count }}
+        {% comment %} <a href="#" class="btn btn-primary">Go somewhere</a> {% endcomment %}
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6" >
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title"> {{ adviser_count }}</h4>
+        <h5 class="card-text">Total Advisers </h5>
+        <p5 class="card-text"> Approval Required: {{ adviser_uneligible_count }}
+
+        {% comment %} <a href="#" class="btn btn-primary">Go somewhere</a> {% endcomment %}
+      </div> 
+    </div>  </br> 
+  </div>   
+
+  <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title"> {{ panelist_count }}</h4>
+          <h5  class="card-text"> Total Panelist </h5>
+          <p5 class="card-text"> Approval Required: {{ panel_uneligible_count }}
+
+          {% comment %} <a href="#" class="btn btn-primary">Go somewhere</a> {% endcomment %}
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title"> {{ project_group_count }}</h4>
+          <h5  class="card-text"> Total Project Groups </h5>  
+          <p class="card-text"> Approval Required: {{   unapproved_project_group_count }}  </p> 
+          
+          {% comment %} <a href="#" class="btn btn-primary">Go somewhere</a> {% endcomment %}
+        </div>
+      </div>
+    </div>
+</div>
+</br> </br>
 
 {% endblock %}

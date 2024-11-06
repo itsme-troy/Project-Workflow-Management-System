@@ -8,7 +8,7 @@
     {% block content %} <!-- content of all web pages go -->
     <div class="center-content">
     
-        {% if user.is_authenticated %}
+    {% if user.is_authenticated %}
 
             <center> 
                 <h1> Select Coordinator </h1> 
@@ -16,19 +16,19 @@
             </center>  
 
              <!-- Display current coordinator -->
-             {% if current_coordinator %}
+        {% if current_coordinator %}
              <div class="alert alert-info">
-                 Current Coordinator: <strong>{{ current_coordinator.user.get_full_name }} </strong>
+                 Current Coordinator: <strong>{{ current_coordinator.get_full_name }} </strong>
              </div>
-            {% else %}
+        {% else %}
              <div class="alert alert-warning">
                  <strong>No current coordinator assigned.</strong>
              </div>
-            {% endif %}
+        {% endif %}
         
-            {% if submitted %}
-                <div class="alert alert-success">New Coordinator Selected Successfully!</div>
-            {% else %}
+        {% if submitted %}
+            <div class="alert alert-success">New Coordinator Selected Successfully!</div>
+        {% else %}
                 {% if form.errors %}
                     <div class="alert alert-danger">
                         <ul>

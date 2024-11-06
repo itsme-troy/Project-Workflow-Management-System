@@ -33,6 +33,7 @@
 <table class="table table-striped table-hover table-bordered">
     <thead>
         <tr>
+            <th scope="col"> # </th>
             <th scope="col">Project Name</th>
             <th scope="col">Adviser</th>
             <th scope="col">Proponent 1</th>
@@ -46,6 +47,7 @@
         {% if approved_projects_with_groups %}
             {% for project_data in approved_projects_with_groups %}
                 <tr onclick="toggleActions(this)">
+                    <td> <strong> {{ forloop.counter }} </strong> </td>
                     <td>
                         <a href="{% url 'show-project' project_data.project.id %}">{{ project_data.project }}</a>
                     </td>
@@ -119,6 +121,7 @@
 <table class="table table-striped table-hover table-bordered">
     <thead>
         <tr>
+            <th scope="col"> # </th>
             <th scope="col">Project Name</th>
             <th scope="col">Adviser</th>
             <th scope="col">Proponent 1</th>
@@ -133,6 +136,7 @@
             {% for project_data in not_approved_projects_with_groups %}
             
             <tr onclick="toggleActions(this)">
+                    <td> <strong> {{ forloop.counter }} </strong> </td>
                     <td>
                         <a href="{% url 'show-proposal' project_data.project.id %}">{{ project_data.project }}</a>
                     </td>

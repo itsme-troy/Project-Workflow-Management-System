@@ -9,12 +9,8 @@
     
     
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-
-    <style>
-      .test-style {
-        color: red;
-      }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+   
     <title>Senior Project App</title>
   
     {% block styles %}{% endblock %}
@@ -27,7 +23,13 @@
         <div class="user-designation d-flex align-items-center p-2 bg-light rounded shadow-sm">
           <span class="me-2 fw-bold">Logged in as:</span>
           <span>{{ user.get_full_name }}</span>
-          <span class="text-muted ms-2">({{ user.get_role_display }})</span>
+          
+          {% if user.get_role_display == "Coordinator" and not user.is_current_coordinator %}
+              <span class="text-danger ms-2">(Former Coordinator)</span>
+          {% else %}
+              <span class="text-muted ms-2">({{ user.get_role_display }})</span>
+          {% endif %}
+            
         </div>
       {% endif %}
     </div>

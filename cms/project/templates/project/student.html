@@ -3,14 +3,20 @@
 {% load custom_filters %}
 {% block content %} <!-- content of all web pages go -->
 
-    <br/>
+        <h1 class="text-center my-4">Student List</h1> <br/>
 
-    <div class="container">
-        <h1 class="text-center my-4">Eligible Student List</h1>
+        <div class="btn-group" role="group" aria-label="Student Filter">
+            <button type="button" class="btn btn-secondary" onclick="filterStudents('all')">All Students</button>
+            <button type="button" class="btn btn-secondary" onclick="filterStudents('eligible')">Eligible Students</button>
+            <button type="button" class="btn btn-secondary" onclick="filterStudents('ineligible')">Students on Waitlist</button>
+        </div>
+
+    <div class="table-responsive"> <br/> 
         <table class="table table-striped table-hover table-bordered">
-            <caption>List of eligible students</caption>
+            <caption>List of Students</caption>
             <thead class="thead-dark">
                 <tr>
+                    <th scope="col"> # </th>
                     <th scope="col">Last Name</th>
                     <th scope="col">First Name</th>
                     <th scope="col">Email</th>
@@ -18,9 +24,10 @@
                 </tr>
             </thead>
             <tbody>
-                {% for student in students %}
-                    {% if student.role == 'STUDENT' and student.eligible %}
-                        <tr>
+                {% for student in student_list %}
+                    {% if student.role == 'STUDENT' %}
+                    <tr data-eligible="{{ student.eligible|yesno:'true,false' }}">
+                            <td> <strong> {{ forloop.counter }} </strong> </td>
                             <td>{{ student.last_name }}</td>
                             <td>{{ student.first_name }}</td>
                             <td>{{ student.email }}</td>
@@ -34,7 +41,7 @@
                 {% endfor %}
             </tbody>
         </table>
-
+    </div>
         <hr/>
 
 <!-- 
@@ -45,7 +52,7 @@ Current Page: {{ students.number }} <br/>
 Number of Pages: {{ students.paginator.num_pages }} <br/> 
 <hr><br/><br/> -->
 
-<nav aria-label="Page navigation example">
+{% comment %} <nav aria-label="Page navigation example">
     <ul class="pagination justify-content-center">
 
     {% if students.has_previous %}
@@ -67,6 +74,32 @@ Number of Pages: {{ students.paginator.num_pages }} <br/>
     <li class="page-item ml-auto disabled"><a href="#" class="page-link"> Page {{ students.number }} of {{ students.paginator.num_pages }} </a></li>
 
 </ul>
-</nav>
+</nav> {% endcomment %}
+<script>
+    function filterStudents(type) {
+        const rows = document.querySelectorAll('tbody tr');
+        const buttons = document.querySelectorAll('.btn-group .btn');
+
+        // Remove 'active' class from all buttons
+        buttons.forEach(button => button.classList.remove('active'));
+
+        // Add 'active' class to the clicked button
+        document.querySelector(`.btn-group .btn[onclick="filterStudents('${type}')"]`).classList.add('active');
+
+        rows.forEach(row => {
+            const isEligible = row.dataset.eligible === 'true';
+
+            if (type === 'all') {
+                row.style.display = '';
+            } else if (type === 'eligible' && isEligible) {
+                row.style.display = '';
+            } else if (type === 'ineligible' && !isEligible) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
 
 {% endblock %}
