@@ -1,3 +1,69 @@
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #212529;
+}
+.table th,
+.table td {
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+}
+.table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+}
+.table tbody + tbody {
+    border-top: 2px solid #dee2e6;
+}
+.table-hover tbody tr:hover {
+    color: #495057;
+    background-color: rgba(0, 0, 0, 0.075);
+}
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+.badge {
+    display: inline-block;
+    padding: 0.35em 0.5em;
+    font-size: 85%;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+}
+.badge-accepted { background-color: #5cb85c; color: white; }
+.badge-accepted-with-revisions { background-color: #5cb85c; color: white; }
+.badge-re-defense { background-color: #d9534f; color: white; }
+.badge-not-accepted { background-color: #d9534f; color: white; }
+.badge-not-started { background-color: #777; color: white; }
+.badge-pending { background-color: #ffc107; color: black; }
+
+
+.compact-form {
+    margin: 0;
+    padding: 0;
+}
+
+.compact-form .form-group {
+    margin-bottom: 5px;
+}
+
+.compact-form input,
+.compact-form select,
+.compact-form button {
+    font-size: 12px;
+    padding: 5px;
+    margin: 2px 0;
+}
+
+.compact-form .btn-sm {
+    padding: 3px 6px;
+    font-size: 12px;
+}
+
 h1 {
     font-size: 2em;
     color: #343a40; /* Dark color for contrast */
@@ -35,6 +101,7 @@ p {
 }
 .btn-primary:hover {
     background-color: #0056b3; /* Darker blue on hover */
+    transform: scale(1.05);
 }
 
 .btn-secondary {
@@ -52,6 +119,7 @@ p {
     border-collapse: separate;
     border-spacing: 0 15px;
     font-size: 1em;
+    margin-bottom: 20px;
 }
 .table thead th {
     background-color: #343a40;
@@ -65,6 +133,17 @@ p {
 .table tbody tr:hover {
     background-color: #e9ecef;
 }
+.table th, .table td {
+    padding: 8px; /* Adjust padding for more space */
+    text-align: center; /* Center align text for better readability */
+}
+.table th {
+    background-color: #f8f9fa; /* Light background for headers */
+}
+.table td {
+    vertical-align: middle; /* Vertically center content */
+}
+
 
 .btn-outline-danger {
     border-color: #dc3545;
@@ -249,7 +328,11 @@ body {
     padding: 20px; /* Increase padding for more space */
     border-radius: 10px; /* Slightly more rounded corners */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    font-size: 0.9em
+    font-size: 0.9em;
+    transition: box-shadow 0.3s ease;
+}
+.card:hover {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
 }
 .card-header, .card-body, .card-footer {
     padding: 15px; /* Add padding for better spacing */
@@ -273,9 +356,117 @@ body {
 }
 
 /* Responsive adjustments */
-@media (max-width: 992px) {
+@media (max-width: 900px) {
     .navbar-nav {
         flex-direction: column; /* Ensure vertical stacking on smaller screens */
     }
 }
+@media (max-width: 768px) {
+    .table {
+        width: 100%;
+        overflow-x: auto;
+        display: block;
+    }
+    .container {
+        padding: 15px;
+    }
+    .card {
+        margin: 10px;
+    }
+}
+.form-error {
+    color: #dc3545; /* Red color for error text */
+    font-size: 0.9em; /* Adjust font size */
+    margin-top: 0.5em; /* Space above the error message */
+    padding: 5px; /* Padding around the error message */
+    background-color: #f8d7da; /* Light red background */
+    border: 1px solid #f5c6cb; /* Light red border */
+    border-radius: 4px; /* Rounded corners */
+}
 
+/* General form styling */
+form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+/* Form group styling */
+.form-group {
+    margin-bottom: 15px;
+}
+/* Label styling */
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+/* Input styling */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+/* Form input focus styles */
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+
+/* Button styling */
+input[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+#searchForm {
+    display: flex;
+    align-items: center;
+    background-color: transparent; /* Match navbar background */
+    padding: 0; /* Remove padding */
+    border-radius: 0; /* Remove border radius */
+    box-shadow: none; /* Remove shadow */
+    margin-left: auto; /* Align to the right */
+}
+#searchForm input {
+    margin-right: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    padding: 5px;
+    width: 200px; /* Adjust width as needed */
+}
+
+#searchButton {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#searchButton:hover {
+    background-color: #0056b3;
+}
+.navbar-nav {
+    margin-right: 20px; /* Add margin to separate from search form */
+}

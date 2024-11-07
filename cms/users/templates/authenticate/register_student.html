@@ -1,31 +1,43 @@
-{% extends 'project/base.html'%} <!-- use the base file -->
+{% extends 'project/base.html' %} <!-- use the base file -->
+{% load static %} <!-- load the static tag library -->
 
 {% block content %} <!-- content of all web pages go -->
 
+
 {% if form.errors %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
-    There was an error with your form... 
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-
+        There was an error with your form...
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 {% endif %}
 
-    <div class="shadow p-4 mb-5 bg-body rounded"> 
-    <h1>Register as Student </h1> 
-    <br/> 
-   
-        <form action="{% url 'register_student' %}" 
-            method=POST> 
-            {% csrf_token %}
-            
-            <!-- "as.p" means add p tags to the form-->
-            {{ form.as_p }}
+<div class="shadow p-4 mb-5 bg-body rounded">
+    <center>
+        <h1>Register as Student</h1>
+    </center>
+    <br/>
 
-            <br/> 
-    
-            <input type="submit" value="Submit" 
-            class="btn btn-secondary">
-        </form> 
-      
-    </div> 
+    <form action="{% url 'register_student' %}" method="POST">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div class="form-error">
+                        {{ field.errors|striptags }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <br/>
+
+        <input type="submit" value="Submit" class="btn btn-secondary">
+    </form>
+</div>
+
+
+<script src="{% static 'js/custom.js' %}"></script>
 {% endblock %}

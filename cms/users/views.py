@@ -31,7 +31,7 @@ def update_user(request):
         })
     
     else: 
-        messages.success(request, "Please login to view this page!")
+        messages.error(request, "Please login to view this page!")
         return redirect('home')
 
 def register_faculty(request): 

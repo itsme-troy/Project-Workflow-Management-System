@@ -288,65 +288,60 @@ def submit_verdict(request, application_id):
         messages.error(request, "Invalid request method or you are not logged in.")
         return redirect('home')
 
-    
 def submit_defense_application(request):
     if request.user.is_authenticated: 
-        # user_project = get_user_project(request)
         user_group = get_user_project_group(request)
         
         if user_group is None:
             messages.warning(request, "You are not a member of any Project Group. Please Register a Project Group First.")
             return redirect('home')
             
-         # Fetch the approved project for the group
         project = Project.objects.filter(proponents=user_group, status='approved').first()
 
         if project is None:
             messages.error(request, "No project found for your group. Please submit a project first and wait for approval from an Adviser.")
             return redirect('home')
 
-        elif project.status=='pending':  # Assuming 'approved' is a BooleanField
+        elif project.status == 'pending':
             messages.error(request, "Your project has not been approved yet. You cannot submit a Defense Application.")
             return redirect('home')
         
         # Fetch the last completed phase, if any
-        last_phase = project.phases.order_by('-date').first()
+        last_completed_phase = project.phases.exclude(verdict='pending').order_by('-date').first()
 
-         # Determine the next phase type
-        next_phase_type = 'Proposal Defense'  # Default phase for new projects
-       
-        if last_phase:
-            if last_phase.phase_type == 'final' and last_phase.verdict in ['accepted', 'accepted_with_revisions']:
+        # Check if the last completed phase has a verdict of "Not Accepted"
+        if last_completed_phase and last_completed_phase.verdict == 'not_accepted':
+            messages.error(request, "The Verdict of the recent Defense was Not-Accepted. Please Contact the Coordinator if you think this is a mistake.")
+            return redirect('home')
+
+        # Determine the next phase type
+        next_phase_type = 'proposal'  # Default phase for new projects
+        if last_completed_phase:
+            if last_completed_phase.phase_type == 'final' and last_completed_phase.verdict in ['accepted', 'accepted_with_revisions']:
                 messages.error(request, "You have already passed the Final Defense. No more defense applications are needed. Congratulations!")
                 return redirect('home')
             
-            if last_phase.verdict == 'redefense':
-                next_phase_type = last_phase.phase_type  # Repeat the same phase type
-            elif last_phase.phase_type == 'proposal':
-                if last_phase.verdict in ['accepted', 'accepted_with_revisions']:
-                    next_phase_type = 'Design Defense'
-            elif last_phase.phase_type == 'design':
-                if last_phase.verdict in ['accepted', 'accepted_with_revisions']:
-                    next_phase_type = 'Preliminary Defense'
-            elif last_phase.phase_type == 'preliminary':
-                if last_phase.verdict in ['accepted', 'accepted_with_revisions']:
-                    next_phase_type = 'Final Defense'
+            if last_completed_phase.verdict == 'redefense':
+                next_phase_type = last_completed_phase.phase_type
+            elif last_completed_phase.phase_type == 'proposal' and last_completed_phase.verdict in ['accepted', 'accepted_with_revisions']:
+                next_phase_type = 'design'
+            elif last_completed_phase.phase_type == 'design' and last_completed_phase.verdict in ['accepted', 'accepted_with_revisions']:
+                next_phase_type = 'preliminary'
+            elif last_completed_phase.phase_type == 'preliminary' and last_completed_phase.verdict in ['accepted', 'accepted_with_revisions']:
+                next_phase_type = 'final'
         
         submitted = False
         if request.method == 'POST': 
             form = CapstoneSubmissionForm(request.POST, request.FILES)
-            if form.is_valid(): # check if form is valid 
+            if form.is_valid():
                 application = form.save(commit=False)
-                application.owner = request.user.id # Assuming a one-to-one relationship
-                
-                # set Set the project group and adviser from the fetched group
+                application.owner = request.user.id
                 application.proponents = project.proponents
                 application.project = project
-                application.title = next_phase_type # Set title based on phase logic
+                application.title = next_phase_type
 
-            # Assign the adviser directly as an instance
-                if  project.adviser:
-                    application.adviser = project.adviser  # Use the Approved_Adviser instance
+                if project.adviser:
+                    application.adviser = project.adviser
                 else:
                     form.add_error('adviser', 'No adviser assigned to this group.')
                     return render(request, 'project/add_project.html', {
@@ -356,12 +351,9 @@ def submit_defense_application(request):
                         'submitted': submitted
                     })
                 
-                # Save the application object first, since you cannot set the ManyToMany field before saving
                 application.save()
 
-                # Set the panel members from the project
-                panel_members = project.panel.all()  # This should be a queryset of Approved_panel instances
-     
+                panel_members = project.panel.all()
                 if not panel_members:
                     messages.error(request, "No panel members found for this project.")
                     return render(request, 'project/submit_defense_application.html', {
@@ -371,62 +363,41 @@ def submit_defense_application(request):
                         'submitted': submitted
                     })
 
-                # Set the panel members using their IDs
                 application.panel.set(panel_members.values_list('id', flat=True))
-                
-                form.save_m2m()# Save the many-to-many relationships
+                form.save_m2m()
 
-                 # Now create the new phase for the project
-                phase_type = None
-                
-                if not last_phase:
-                    phase_type = 'proposal'
-                else:
-                    if last_phase.verdict == 'redefense':
-                        phase_type = last_phase.phase_type  # Repeat the same phase type
-                    elif last_phase.phase_type == 'proposal' and last_phase.verdict in ['accepted', 'accepted_with_revisions']:
-                        phase_type = 'design'
-                    elif last_phase.phase_type == 'design' and last_phase.verdict in ['accepted', 'accepted_with_revisions']:
-                        phase_type = 'preliminary'
-                    elif last_phase.phase_type == 'preliminary' and last_phase.verdict in ['accepted', 'accepted_with_revisions']:
-                        phase_type = 'final'
-                
-                # Create the new phase if phase_type is valid
-                if phase_type:
-                    ProjectPhase.objects.create(
-                        project=project,
-                        phase_type=phase_type,
-                        verdict='pending',
-                        date=timezone.now()
-                    )
-                else:
-                    logger.error("Invalid phase type determined. No phase created.")
+                # Create the new phase
+                ProjectPhase.objects.create(
+                    project=project,
+                    phase_type=next_phase_type,
+                    verdict='pending',
+                    date=timezone.now()
+                )
 
-                # messages.success(request, "Defense Application submitted Succesfully!")
-                return HttpResponseRedirect('/submit_defense_application?submitted=True') # return to add_project with variable
-        else: # if they did not fill out the form, then (GET)
-                form = CapstoneSubmissionForm(initial={
-                    'adviser' : project.adviser.id if project.adviser else None, 
-                    'project_group' : user_group, 
-                    'project': project, 
-                    'panel': project.panel.all(), # Set the panel field with the panel members
-                    'title': next_phase_type,   # Dynamically set the title based on the phase logic
+                return HttpResponseRedirect('/submit_defense_application?submitted=True')
+        else:
+            form = CapstoneSubmissionForm(initial={
+                'adviser': project.adviser.id if project.adviser else None, 
+                'project_group': user_group, 
+                'project': project, 
+                'panel': project.panel.all(),
+                'title': next_phase_type,
+            })
+            if 'submitted' in request.GET: 
+                submitted = True
 
-            },)  # define the form
-                if 'submitted' in request.GET: 
-                    submitted = True
-
-        return render(request, 'project/submit_defense_application.html',{
-            'last_phase': last_phase, 
+        return render(request, 'project/submit_defense_application.html', {
+            'last_phase': last_completed_phase, 
             'next_phase_type': next_phase_type, 
             'project': project, 
             'group': user_group,
-            'form':form, 
-            'submitted': submitted}) # pass the form 
+            'form': form, 
+            'submitted': submitted
+        })
     else: 
         messages.success(request, "Please Login to view this page")
         return redirect('home')
-
+    
 from django.db.models import Subquery, OuterRef, F
 from django.utils import timezone
 
@@ -474,6 +445,26 @@ def list_defense_applications(request):
     else:
         messages.success(request, "Please Login to view this page")
         return redirect('login')
+    
+def my_defense_application(request):
+    if request.user.role != 'STUDENT':
+        messages.error(request, "You are not a Student. You cannot view this page.")
+        return redirect('home')
+    
+    # Get the project group of the logged-in user
+    project_group = get_user_project_group(request)
+    
+    if not project_group:
+        messages.error(request, "You are not part of any project group.")
+        return redirect('home')
+    
+    # Fetch defense applications for the user's project group
+    defense_applications = Defense_Application.objects.filter(project__proponents=project_group)
+    
+    return render(request, 'project/my_defense_application.html', {
+        'defense_applications': defense_applications
+    })
+
 
 def delete_project_group(request, group_id): 
     if request.user.is_authenticated: 
@@ -546,6 +537,8 @@ def list_project_group(request):
     
 def my_project_group_waitlist(request):
     if request.user.is_authenticated:
+
+        
         # Get all project groups where the current user is a pending proponent
         pending_groups = Project_Group.objects.filter(pending_proponents=request.user)
 

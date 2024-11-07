@@ -9,22 +9,24 @@ from django.utils import timezone
 
 from django.contrib.auth import get_user_model
 
-
-
 # Multiple User types 
 # Users can have 1 role only, (Admin, Coordinator, Faculty, Student)
 # Users cannot change their role (defined at user creation)
 # Students and Teachers require separate profile data 
 
 class AppUserManager(UserManager):
-        
     def _create_user(self, email, password, **extra_fields):
-        # check if user provided email 
+        # Check if user provided email
         if not email:
             raise ValueError('An email is required.')
         if not password:
             raise ValueError("A password is required.")
-        email = self.normalize_email(email) # clean email
+        
+        # Ensure the email is a GBox account
+        if not email.endswith('@gbox.domain'):  # Replace 'gbox.domain' with the actual GBox domain
+            raise ValueError('Only GBox accounts are allowed.')
+
+        email = self.normalize_email(email)  # Clean email
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self.db)
@@ -322,9 +324,9 @@ class Project(models.Model):
 class ProjectPhase(models.Model):
     PHASE_CHOICES = [
         ('proposal', 'Proposal Defense'),
-        ('design', 'Design Defense'),
+        ('design', 'Graded 1 or Design Defense'),
         ('preliminary', 'Preliminary Defense'),
-        ('final', 'Final Defense'),
+        ('final', 'Grade 2 or Final Defense'),
     ]
 
     RESULT_CHOICES = [
@@ -333,7 +335,6 @@ class ProjectPhase(models.Model):
         ('accepted_with_revisions', 'Accepted with Revisions'),
         ('redefense', 'Re-Defense'),
         ('not_accepted', 'Not Accepted'),
-
     ]
 
     project = models.ForeignKey(Project, related_name='phases', on_delete=models.CASCADE)
@@ -341,6 +342,9 @@ class ProjectPhase(models.Model):
     verdict = models.CharField(max_length=50, choices=RESULT_CHOICES, blank=False, default='pending')  # Now defaults to 'pending'
     date = models.DateTimeField(auto_now_add=True)
     
+    # class Meta:
+    #     get_latest_by = 'date'
+
     def __str__(self):
         return f"{self.project.title} - {self.get_phase_type_display()}"
 
@@ -357,13 +361,20 @@ class ApprovedProject(Project):
         proxy = True 
 
 class Defense_Application(models.Model): 
+    TITLE_CHOICES = [
+            ('proposal', 'Proposal Defense'),
+            ('design', 'Graded 1 Defense'),
+            ('preliminary', 'Preliminary Defense'),
+            ('final', 'Graded 2 Defense'),
+        ]
+
     owner = models.IntegerField("Application Owner", blank=True, default=24)
     project_group = models.ForeignKey(ApprovedProjectGroup, null=True, on_delete=models.CASCADE)
-    title = models.CharField(max_length=255,  null=True)
+    title = models.CharField(max_length=255, choices=TITLE_CHOICES, null=True)
     project = models.ForeignKey(ApprovedProject, null=False, blank=False, on_delete=models.CASCADE)
     abstract = models.TextField( null=True) # we dont have to put a description if we do not want to
     adviser = models.ForeignKey(Approved_Adviser, related_name='application_adviser', null=True, on_delete=models.SET_NULL) # If adviser deletes profile, then the projects' adviser will be set to null 
-    panel = models.ManyToManyField(Approved_panel, related_name='application_panel', blank=True)
+    panel = models.ManyToManyField(Approved_panel, related_name='capplication_panel', blank=True)
  
     document = models.FileField(upload_to='submissions/', null=True, blank=True )
     submission_date = models.DateTimeField(auto_now_add=True, null=True)

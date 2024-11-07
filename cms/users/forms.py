@@ -1,4 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError
 # from django.contrib.auth.models import User 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -47,6 +48,12 @@ class RegisterStudentForm(UserCreationForm):
         self.fields['password1'].widget.attrs['class'] = 'form-control'
         self.fields['password2'].widget.attrs['class'] = 'form-control'
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not email.endswith('@gbox.adnu.edu.ph'):  # Replace 'gbox.domain' with the actual GBox domain
+            raise ValidationError('Only GBox accounts are allowed.')
+        return email
+
 class RegisterFacultyForm(UserCreationForm):
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control'}))
     first_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
@@ -57,8 +64,6 @@ class RegisterFacultyForm(UserCreationForm):
         model = User 
         fields = ('email', 'first_name', 'last_name', 
             'password1', 'password2')
-        
-    # tell view use this form
 
     def __init__(self, *args, **kwargs): 
         super(RegisterFacultyForm, self).__init__(*args, **kwargs)
@@ -67,6 +72,13 @@ class RegisterFacultyForm(UserCreationForm):
         self.fields['email'].widget.attrs['class'] = 'form-control'
         self.fields['password1'].widget.attrs['class'] = 'form-control'
         self.fields['password2'].widget.attrs['class'] = 'form-control'
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not email.endswith('@gbox.adnu.edu.ph'):  # only gbox accounts are allowed
+            raise ValidationError('Only GBox accounts are allowed.')
+        return email
+
         
  
 # class RegisterUserForm(UserCreationForm):

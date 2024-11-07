@@ -12,7 +12,6 @@ urlpatterns = [
     path('show_proposal/<project_id>', views.show_proposal, name='show-proposal'),
     path('add_project', views.add_project, name="add-project"),
     
-    
     path('list-faculty', views.list_faculty, name="list-faculty"),
     path('list-student', views.list_student, name="list-student"),
     path('list-student-waitlist', views.list_student_waitlist, name="list-student-waitlist"),
@@ -32,6 +31,7 @@ urlpatterns = [
     path('coordinator_approval_student', views.coordinator_approval_student, name='coordinator-approval-student'),
     path('select_coordinator', views.select_coordinator, name='select-coordinator'),
     
+    path('my_defense_application', views.my_defense_application, name='my-defense-application'),
     path('submit_defense_application', views.submit_defense_application, name='submit-defense-application'),
     path('defense_applications', views.list_defense_applications, name='list-defense-applications'),
     path('submit_verdict/<int:application_id>/', views.submit_verdict, name='submit_verdict'),

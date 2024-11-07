@@ -143,7 +143,26 @@ class VerdictForm(forms.ModelForm):
         widgets = {
             'verdict': forms.Select(choices=ProjectPhase.RESULT_CHOICES, attrs={'class': 'form-select'}),
         }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        project = self.instance.project
 
+        # Count the number of redefense verdicts
+        redefense_count = project.phases.filter(verdict='redefense').count()
+
+        # Fetch the last completed phase, if any
+        last_completed_phase = project.phases.exclude(verdict='pending').order_by('-date').first()
+
+         # Exclude "Redefense" if the project has already had two redefenses or if last phase was redefense
+         # if the last phase was redefense, or if the phase_type is "design" or "final"
+        if (redefense_count >= 2 or 
+            (last_completed_phase and last_completed_phase.verdict == 'redefense') or
+            self.instance.phase_type in ['design', 'final']):
+            self.fields['verdict'].choices = [
+                choice for choice in ProjectPhase.RESULT_CHOICES if choice[0] != 'redefense'
+            ]
+
+  
 class CapstoneSubmissionForm(ModelForm):
     class Meta:
         model = Defense_Application
@@ -159,7 +178,7 @@ class CapstoneSubmissionForm(ModelForm):
         }
 
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Select Type of Defense'}),
+            'title': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Select Type of Defense'}),
             'project': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Enter'}),
             'project_group': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Proponents'}),
             'adviser': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Panel'}),
@@ -168,14 +187,18 @@ class CapstoneSubmissionForm(ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(CapstoneSubmissionForm, self).__init__(*args, **kwargs)
+
+        # Set the choices for the title field to use the human-readable names
+        self.fields['title'].choices = Defense_Application.TITLE_CHOICES
 
         # Disable fields
         self.fields['project_group'].widget.attrs['disabled'] = 'disabled'
         self.fields['adviser'].widget.attrs['disabled'] = 'disabled'
         self.fields['project'].widget.attrs['disabled'] = 'disabled'
         self.fields['panel'].widget.attrs['disabled'] = 'disabled'
-        self.fields['title'].widget.attrs['readonly'] = 'readonly'
+        self.fields['title'].widget.attrs['disabled'] = 'disabled'
+
 
         # Fetch the project from initial data or instance
         project = self.initial.get('project') if 'project' in self.initial else None    
@@ -193,7 +216,7 @@ class CapstoneSubmissionForm(ModelForm):
             # Set the title in the form's initial data
             self.fields['title'].initial = self.initial.get('next_phase_type') 
             
-            # Auto-set the title (phase) based on the last completed phase
+            # # Auto-set the title (phase) based on the last completed phase
             # last_phase = project.phases.order_by('-date').first()
             # next_phase_type = 'Proposal Defense'  # Default for new projects
 

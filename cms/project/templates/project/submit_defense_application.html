@@ -19,7 +19,7 @@
             {% csrf_token %}
             
            <!-- Show last phase and next phase -->
-           <p><strong>Last Phase:</strong> {{ last_phase.phase_type}}  {% if last_phase %} {% else %} None </p> {%endif %}
+           <p><strong>Last Phase:</strong> {{ last_phase.phase_type}} <strong> verdict: </strong>  {{ last_phase.verdict }}  {% if last_phase %} {% else %} None </p> {%endif %}
            <p><strong>Next Phase:</strong> {{ next_phase_type }}</p>
             
             <!-- Render form fields -->
@@ -49,7 +49,7 @@
         document.querySelector('select[name="project_group"]').removeAttribute('disabled');
         document.querySelector('select[name="adviser"]').removeAttribute('disabled');
         document.querySelector('select[name="panel"]').removeAttribute('disabled');
-       
+        document.querySelector('select[name="title"]').removeAttribute('disabled');
     };
 </script>
 

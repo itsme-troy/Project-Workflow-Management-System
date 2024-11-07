@@ -4,7 +4,9 @@
 <div class="hero-section text-center py-5">
     <h1>Welcome to the SP Management System</h1>
     <p>Streamline Your Senior Project Journey</p>
-    <a href="#" class="btn btn-primary mt-3">Get Started</a>
+    {% if not user.is_authenticated %}
+        <a href="{% url 'login' %}" class="btn btn-primary mt-3">Get Started</a>
+    {% endif %}
 </div>
 
 <div class="container mt-5">

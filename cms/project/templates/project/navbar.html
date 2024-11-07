@@ -2,8 +2,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="{% static 'css/custom-navbar.css' %}">
+  {% comment %} <link rel="stylesheet" href="{% static 'css/custom-navbar.css' %}"> {% endcomment %}
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <script src="{% static 'js/custom.js' %}"></script>
 </head>
 
   <body>
@@ -50,11 +51,10 @@
                     <li><a class="dropdown-item" href="{% url 'my-project-group-waitlist' %}"> My Project Group Waitlist </a></li>
                     <li><a class="dropdown-item" href="{% url 'join-group-list' %}">Join a Group</a></li>
                     <li><a class="dropdown-item" href="{% url 'add-project-group' %}"> Register a Project Group  </a></li>
-                  {% endif %}
+                {% endif %}
               
               </ul>
-            </li>
-            {% endif %}
+            </li> {% endif %}
 
           <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -72,13 +72,21 @@
                 
               </ul>
             </li>
-          {% endif %}
-
-          {% if user.is_authenticated %}
+          
             {% if user.role == 'STUDENT' %}
-              <li class="nav-item"> <a class="nav-link" href="{% url 'submit-defense-application' %}"> Submit Defense Application  </a></li>
-            {% endif %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Defense Application
+                </a>
+                <ul class="dropdown-menu">
+                
+                  <li><a class="dropdown-item" href="{% url 'my-defense-application' %}">  My Defense Application </a></li>
+                  <li><a class="dropdown-item" href="{% url 'submit-defense-application' %}"> Submit Defense Application </a></li>
+                  
+                </ul>
+            </li> {% endif %}
             
+
             {% if user.role == 'FACULTY' %}
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -133,11 +141,6 @@
           </a>
         </li>
 
-        <form class="d-flex" method="POST" action="{% url 'search-projects' %}" role="search">
-          {% csrf_token %}
-          <input class="form-control me-2" type="search" placeholder="Search Projects" aria-label="Search" name="searched">
-          <button class="btn btn-outline-primary" type="submit" style="background-color: #ffffff; color: #000000;">Search</button>
-        </form>
       {% else %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'login' %}">
@@ -155,7 +158,12 @@
         </li>
       {% endif %}
     </ul>
-   
+    <form id="searchForm" class="d-flex ms-auto" method="POST" action="{% url 'search-projects' %}" role="search">
+      {% csrf_token %}
+      <input class="form-control me-2" type="search" placeholder="Search Projects" aria-label="Search" name="searched">
+      <button id="searchButton" class="btn btn-outline-primary" type="submit">Search</button>
+    </form>
+  
   </div>
   </div>
   </nav>

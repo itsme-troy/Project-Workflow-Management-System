@@ -1,0 +1,101 @@
+{% extends 'project/base.html' %}
+{% load static %}
+
+{% block styles %}
+<head>
+    {% load custom_filters %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        .table {
+          width: 100%;
+          margin-bottom: 1rem;
+          color: #212529;
+      }
+      .table th,
+      .table td {
+          padding: 0.75rem;
+          vertical-align: top;
+          border-top: 1px solid #dee2e6;
+      }
+      .table thead th {
+          vertical-align: bottom;
+          border-bottom: 2px solid #dee2e6;
+      }
+      .table tbody + tbody {
+          border-top: 2px solid #dee2e6;
+      }
+      .table-hover tbody tr:hover {
+          color: #495057;
+          background-color: rgba(0, 0, 0, 0.075);
+      }
+      .table-striped tbody tr:nth-of-type(odd) {
+          background-color: rgba(0, 0, 0, 0.05);
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.35em 0.5em;  
+        font-size: 85%;
+        font-weight: 700;
+        line-height: 1.2; 
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 0.25rem;
+      }
+      .badge-accepted { background-color: #5cb85c; color: white; }
+      .badge-accepted-with-revisions { background-color: #5cb85c; color: white; }
+      .badge-re-defense { background-color: #d9534f; color: white; }
+      .badge-not-accepted { background-color: #d9534f; color: white; }
+      .badge-not-started { background-color: #777; color: white; }
+      .badge-pending { background-color: #f0ad4e; color: black; } 
+    
+      </style>
+</head>
+{% endblock %}
+{% block content %}
+  
+<h1>My Defense Applications</h1>
+
+{% if defense_applications %}
+    <table class="table table-striped table-hover table-bordered">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Type of Defense</th>
+                <th>Project Name</th>
+                <th>Proponents</th> 
+                <th>Adviser</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+                {% for application in defense_applications %}   
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ application.get_title_display }}</td>
+                    <td><a href="{% url 'show-project' application.project.id %}">{{ application.project.title }}</a></td>
+                    <td> <!--Display Proponents -->
+                        {{ application.project.proponents}} </td>
+                    </td>
+                    <td>{{ application.adviser.get_full_name }}</td>
+                    <td> <!--Ordering Phases in descending order. Use with to access the latest phase-->
+                        {% with latest_phase=application.project.phases.first %}
+                            {% if latest_phase %}
+                                <span class="badge badge-{{ latest_phase.get_verdict_display|lower|slugify_filter }}">
+                                    {{ latest_phase.get_verdict_display }}
+                                </span>
+                            {% else %}
+                                <span class="badge badge-not-started">No verdict available</span>
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                </tr>
+                {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No defense applications found for your project group.</p>
+{% endif %}
+
+{% endblock %}
