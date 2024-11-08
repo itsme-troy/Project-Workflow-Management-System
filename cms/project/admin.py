@@ -10,7 +10,7 @@ from .models import AppUser, Project, Project_Group #, Profile
 from .models import Defense_Application
 from .models import Student, Faculty, Coordinator
 from .models import StudentProfile, FacultyProfile, CoordinatorProfile, ProjectPhase
-from .models import ApprovedProject, ApprovedProjectGroup
+from .models import ApprovedProject, ApprovedProjectGroup, Not_ApprovedProject
 from .models import Approved_Adviser, Approved_panel, Approved_student, Notification
 #admin.site.register(Project_Group)
 admin.site.register(AppUser)
@@ -22,6 +22,7 @@ admin.site.register(ApprovedProject)
 admin.site.register(Approved_student)
 # admin.site.register(ApprovedProjectGroup)
 admin.site.register(Approved_Adviser)
+admin.site.register(Not_ApprovedProject)
 # admin.site.register(ProjectPhase)
 # admin.site.register(Approved_panel)
 #  Mix Profile info into user info

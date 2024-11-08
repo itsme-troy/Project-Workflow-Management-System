@@ -306,6 +306,12 @@ def submit_defense_application(request):
             messages.error(request, "Your project has not been approved yet. You cannot submit a Defense Application.")
             return redirect('home')
         
+        # Check for any two pending project phase
+        pending_phases_count = project.phases.filter(verdict='pending').count()
+        if pending_phases_count >= 2:
+            messages.error(request, "There is already a pending Defense Application for your project group. Please wait for a Verdict to be given.")
+            return redirect('home')
+
         # Fetch the last completed phase, if any
         last_completed_phase = project.phases.exclude(verdict='pending').order_by('-date').first()
 
@@ -366,7 +372,8 @@ def submit_defense_application(request):
                 application.panel.set(panel_members.values_list('id', flat=True))
                 form.save_m2m()
 
-                # Create the new phase
+                # Create the new phase only if there is no pending phase 
+                # if not pending_phase:
                 ProjectPhase.objects.create(
                     project=project,
                     phase_type=next_phase_type,
@@ -445,9 +452,8 @@ def list_defense_applications(request):
     else:
         messages.success(request, "Please Login to view this page")
         return redirect('login')
-    
 def my_defense_application(request):
-    if request.user.role != 'STUDENT':
+    if request.user.is_authenticated and request.user.role != 'STUDENT':
         messages.error(request, "You are not a Student. You cannot view this page.")
         return redirect('home')
     
@@ -458,14 +464,31 @@ def my_defense_application(request):
         messages.error(request, "You are not part of any project group.")
         return redirect('home')
     
-    # Fetch defense applications for the user's project group
-    defense_applications = Defense_Application.objects.filter(project__proponents=project_group)
+    # Subquery to fetch the latest submission date per project
+    latest_application_date_subquery = Defense_Application.objects.filter(
+        project=OuterRef('project')
+    ).order_by('-submission_date').values('submission_date')[:1]
+
+    # Fetch only the latest defense application for the user's project group
+    defense_applications = Defense_Application.objects.annotate(
+        latest_application_date=Subquery(latest_application_date_subquery)
+    ).filter(
+        submission_date=F('latest_application_date'),
+        project__proponents=project_group
+    )
+
+    # Prepare data for each application
+    application_data = []
+    for application in defense_applications:
+        latest_phase = application.project.phases.order_by('-date').first()
+        application_data.append({
+            'application': application,
+            'latest_phase': latest_phase,
+        })
     
     return render(request, 'project/my_defense_application.html', {
-        'defense_applications': defense_applications
+        'application_data': application_data
     })
-
-
 def delete_project_group(request, group_id): 
     if request.user.is_authenticated: 
         project_group = Project_Group.objects.get(pk=group_id)
@@ -537,7 +560,6 @@ def list_project_group(request):
     
 def my_project_group_waitlist(request):
     if request.user.is_authenticated:
-
         
         # Get all project groups where the current user is a pending proponent
         pending_groups = Project_Group.objects.filter(pending_proponents=request.user)
@@ -1286,64 +1308,99 @@ def coordinator_approval_student(request):
         return redirect('home')
        
 def adviser_projects(request):
-    if request.user.is_authenticated: 
-        adviser = request.user.id
-        # Grab the projects from that adviser
-        approved_projects = Project.objects.filter(adviser=adviser, status='approved').order_by('title')
-        
-        approved_paginator = Paginator(approved_projects, 5)  # Show 10 projects per page
-        approved_page_number = request.GET.get('approved_page')
-        approved_page_obj = approved_paginator.get_page(approved_page_number)  
-        approved_nums = "a" * approved_page_obj.paginator.num_pages
-
-
-        # Prepare data for each project with its groups and proponents
-        approved_projects_with_groups = []
-        for project in approved_page_obj:
-            project_group = Project_Group.objects.filter(project=project, approved=True).first()
-            if project_group:
-                proponents = list(project_group.proponents.all())
-                proponents += [None] * (3 - len(proponents))  # Pad to exactly 3 proponents
-                approved_projects_with_groups.append({
-                    'project': project,
-                    'group': project_group,
-                    'proponents': proponents, 
-                    'status': project.status
-                })
-
-        # Paginate not approved projects
-        not_approved_projects = Project.objects.filter(adviser=adviser, status__in=['pending', 'declined']).order_by('title')
-        not_approved_paginator = Paginator(not_approved_projects, 5)  # Show 10 projects per page
-        not_approved_page_number = request.GET.get('not_approved_page')
-        not_approved_page_obj = not_approved_paginator.get_page(not_approved_page_number)
-        not_approved_nums = "a" * not_approved_page_obj.paginator.num_pages
-
-        not_approved_projects_with_groups = []
-        for project in not_approved_page_obj:
-            project_group = Project_Group.objects.filter(project=project, approved=True).first()
-            if project_group:
-                proponents = list(project_group.proponents.all())
-                proponents += [None] * (3 - len(proponents))  # Pad to exactly 3 proponents
-                not_approved_projects_with_groups.append({
-                    'project': project,
-                    'group': project_group,
-                    'proponents': proponents,
-                    'status': project.status
-                })
-
-        return render(request, 'project/adviser_projects.html', {
-            "approved_projects_with_groups": approved_projects_with_groups,
-            "not_approved_projects_with_groups": not_approved_projects_with_groups,
-            "approved_page_obj": approved_page_obj,
-            "not_approved_page_obj": not_approved_page_obj,
-            "approved_nums": approved_nums,
-            "not_approved_nums": not_approved_nums,
-        })
-    else: 
-        messages.success(request, "Please Login to view this page")
+    if not request.user.is_authenticated: 
+        messages.error(request, "Please Login to view this page")
+        return redirect('home')
+    
+    if request.user.role !='FACULTY': 
+        messages.error(request, "You are not authorized to view this page")
         return redirect('home')
 
+    adviser = request.user.id
+    # Grab the projects from that adviser
+    approved_projects = Project.objects.filter(adviser=adviser, status='approved').order_by('title')
     
+    approved_paginator = Paginator(approved_projects, 5)  # Show 10 projects per page
+    approved_page_number = request.GET.get('approved_page')
+    approved_page_obj = approved_paginator.get_page(approved_page_number)  
+    approved_nums = "a" * approved_page_obj.paginator.num_pages
+
+
+    # Prepare data for each project with its groups and proponents
+    approved_projects_with_groups = []
+    for project in approved_page_obj:
+        project_group = Project_Group.objects.filter(project=project, approved=True).first()
+        
+        # Fetch the project where the current group are the proponents
+        project = Project.objects.filter(proponents=project_group, status='approved').first()
+        
+        if project_group and project: 
+            proponents = list(project_group.proponents.all())
+            proponents += [None] * (3 - len(proponents))  # Pad to exactly 3 proponents
+            
+            # Fetch panel members directly from the project_group
+            panel_members = list(project.panel.all())  # Fetch panel members
+            panel_members += [None] * (3 - len(panel_members))  # Pad to exactly 3 panel members
+            
+            approved_projects_with_groups.append({
+                'project': project,
+                'group': project_group,
+                'proponents': proponents, 
+                'panel': panel_members,
+                # 'status': project.status,
+            })
+
+
+    return render(request, 'project/adviser_projects.html', {
+        "approved_projects_with_groups": approved_projects_with_groups,
+        "approved_page_obj": approved_page_obj,
+        "approved_nums": approved_nums,
+    })
+
+def adviser_proposals(request):
+    if not request.user.is_authenticated: 
+        messages.error(request, "Please Login to view this page")
+        return redirect('home')
+    
+    if request.user.role != 'FACULTY': 
+        messages.error(request, "You are not authorized to view this page")
+        return redirect('home')
+
+    adviser = request.user.id
+    # Fetch projects where the adviser is the logged-in user and the status is either pending or declined
+    not_approved_projects = Project.objects.filter(adviser=adviser, status__in=['pending', 'declined']).order_by('title')
+    
+    not_approved_paginator = Paginator(not_approved_projects, 10)  # Show 5 projects per page
+    not_approved_page_number = request.GET.get('not_approved_page')
+    not_approved_page_obj = not_approved_paginator.get_page(not_approved_page_number)
+    not_approved_nums = "a" * not_approved_page_obj.paginator.num_pages
+
+    not_approved_projects_with_groups = []
+    for project in not_approved_page_obj:
+        project_group = project.proponents  # Directly use the project's proponents
+        
+        if project_group: 
+            proponents = list(project_group.proponents.all())
+            proponents += [None] * (3 - len(proponents))  # Pad to exactly 3 proponents
+            
+            # Fetch panel members directly from the project
+            panel_members = list(project.panel.all())  # Fetch panel members
+            panel_members += [None] * (3 - len(panel_members))  # Pad to exactly 3 panel members
+        
+            not_approved_projects_with_groups.append({
+                'project': project,
+                'group': project_group,
+                'proponents': proponents,
+                'panel': panel_members,
+            })
+
+    return render(request, 'project/adviser_proposals.html', {
+        "not_approved_projects_with_groups": not_approved_projects_with_groups,
+        "not_approved_page_obj": not_approved_page_obj,
+        "not_approved_nums": not_approved_nums,
+    })
+
+
 def reject_project(request, project_id):
     # look on projects by ID 
     project = Project.objects.get(pk=project_id)

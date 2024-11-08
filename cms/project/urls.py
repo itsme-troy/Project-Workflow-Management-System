@@ -26,7 +26,9 @@ urlpatterns = [
     path('reject_project/<project_id>', views.reject_project, name='reject-project'),
     
     path('adviser_projects', views.adviser_projects, name='adviser-projects'),
+    path('adviser_proposals', views.adviser_proposals, name='adviser-proposals'),
     
+
     path('coordinator_approval_faculty', views.coordinator_approval_faculty, name='coordinator-approval-faculty'),
     path('coordinator_approval_student', views.coordinator_approval_student, name='coordinator-approval-student'),
     path('select_coordinator', views.select_coordinator, name='select-coordinator'),

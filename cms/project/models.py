@@ -360,6 +360,17 @@ class ApprovedProject(Project):
     class Meta: 
         proxy = True 
 
+class Not_ApprovedProjectManager(BaseUserManager): 
+    def get_queryset(self, *args, **kwargs):
+        results = super().get_queryset(*args, **kwargs)
+        return results.filter(status__in=['pending', 'declined'])
+    
+class Not_ApprovedProject(Project): 
+    not_approved_project = Not_ApprovedProjectManager()
+    
+    class Meta: 
+        proxy = True 
+
 class Defense_Application(models.Model): 
     TITLE_CHOICES = [
             ('proposal', 'Proposal Defense'),

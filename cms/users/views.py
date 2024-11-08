@@ -97,22 +97,24 @@ def register_student(request):
 
 
 def login_user(request): 
-    # if go to the web page and fill out the form, then
     if request.method == "POST": 
-        # grab email and password
         email = request.POST["email"]
         password = request.POST["password"]
-        user = authenticate(request, email=email, password=password) # use authenticate if email and pass are correct
-        if user is not None: # check if user not None
-            login(request, user) # then log them in
-            # Redirect to a success page.
+        
+        # Check if the user exists in the database
+        if not User.objects.filter(email=email).exists():
+            messages.error(request, "User not registered. Please sign up first.")
+            return redirect('login')
+        
+        user = authenticate(request, email=email, password=password)
+        if user is not None:
+            login(request, user)
             return redirect('home')
         else:
-            # Return an 'invalid login' error message.
-            messages.success(request,"There was an Error Loggin In, Try again...")
+            messages.error(request, "There was an error logging in. Please try again.")
             return redirect('login')
 
-    else: # just show the web page
+    else:
         return render(request, 'authenticate/login.html', {})
 
 

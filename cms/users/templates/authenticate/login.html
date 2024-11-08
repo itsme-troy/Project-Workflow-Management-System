@@ -1,6 +1,14 @@
 {% extends 'project/base.html'%} <!-- use the base file -->
 {% load static %}
 
+<!DOCTYPE html>
+<html lang="en">
+{% comment %} <head>
+    {% comment %} <link rel="stylesheet" href="{% static 'css/custom-navbar.css' %}"> {% endcomment %}
+    <link rel="stylesheet" href="{% static 'project/static/css/style.css' %}">
+    <script src="{% static 'project/static/js/custom.js' %}"></script>
+  </head> 
+
 {% block content %} <!-- content of all web pages go -->
 
     <div class="container mt-5">
@@ -23,9 +31,25 @@
                     
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
+                <!-- Add links for registration and system information -->
+                <div class="mt-3 text-center">
+                    <p> Don't have an account? Register using a Gbox Account </p>
+                    <a href="{% url 'register_student' %}" class="btn-link">
+                        <i class="fas fa-user-graduate"></i> Register as Student
+                    </a> </br>
+                    <a href="{% url 'register_faculty' %}" class="btn-link">
+                        <i class="fas fa-chalkboard-teacher"></i> Register as Faculty
+                    </a>
+                    {% comment %} <a href="{% url 'system_info' %}" class="d-block">System Information</a> {% endcomment %}
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Add a footer or additional section for SP Management System -->
+    <footer class="text-center mt-5">
+        <p>SP Management System</p>
+    </footer>
 
     <script src="{% static 'js/custom.js' %}"></script>
 {% endblock %}

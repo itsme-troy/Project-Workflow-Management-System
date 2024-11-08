@@ -15,22 +15,29 @@ class CoordinatorForm(forms.Form):
             widget=forms.Select(attrs={'class': 'form-select', 'size': '10'})
         )
 
-
 class ProjectGroupInviteForm(ModelForm):
     class Meta:
         model = Project_Group
         fields = ['proponents']
         
         labels = {
-            'proponents': 'Select Additional Members: hold "ctrl" button to select multiple',
+            'proponents': 'Select Additional Members',
+        }
+        help_texts = {
+            'proponents': 'Hold "Ctrl" button to select multiple panelists',
         }
         widgets = {
-            'proponents': forms.SelectMultiple(attrs={'class': 'form-select', 'placeholder': 'Select Proponents'}),
+            'proponents': forms.SelectMultiple(attrs={'class': 'form-select', 'placeholder': 'Select Proponents', 'size': '10'}),
         }
         
     def __init__(self, *args, **kwargs):
         group = kwargs.pop('group', None)  # Get the existing group
         super(ProjectGroupInviteForm, self).__init__(*args, **kwargs)
+
+        # Add Bootstrap class to help text
+        for field in self.fields.values():
+            if field.help_text:
+                field.help_text = f'<small class="form-text text-muted">{field.help_text}</small>'
 
         if group:
             # Get all users who are either pending or approved

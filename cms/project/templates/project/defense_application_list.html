@@ -21,6 +21,7 @@
                 <th scope="col"> Project Name </th>
                 <th scope="col"> Proponents </th> <!-- New column for Proponents -->
                 <th scope="col"> Adviser </th>
+                <th scope="col"> Date Submitted </th>
                 <th scope="col"> Verdict </th>
             </tr>
         </thead>
@@ -37,6 +38,8 @@
                     {{ application.project.proponents}} </td>
          
                 <td>{{ application.adviser }}</td>
+                
+                <td>{{ application.submission_date|date:"M j, Y g:i A" }}</td> 
                 <td>
                     {% with form=verdict_forms|get_item:application.id %}
                     {% if form %}

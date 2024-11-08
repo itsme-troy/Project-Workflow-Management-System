@@ -18,6 +18,7 @@
   <thead>
       <tr>
           <th scope="col">Project Name</th>
+          <th scope="col">Proponents</th> 
           <th scope="col">Adviser</th>
           <th scope="col">Proposal Defense</th>
           <th scope="col">Design Defense</th>
@@ -30,6 +31,7 @@
     {% if project_data.project.status == 'approved' %}
         <tr>
             <td>{{ project_data.project }}</td>
+            <td>{{ project_data.project.proponents }}</td>
             <td>{{ project_data.project.adviser }}</td>
             
             <td class="verdict-{{ project_data.defense_results.proposal|lower|slugify_filter }}">
