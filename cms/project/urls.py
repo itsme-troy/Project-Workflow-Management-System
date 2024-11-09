@@ -18,13 +18,16 @@ urlpatterns = [
     
     
     path('search_projects', views.search_projects, name="search-projects"),
-    path('update_project/<project_id>', views.update_project, name='update-project'),
+    path('select_panelist/<project_id>', views.select_panelist, name='select-panelist'),
+    path('select_panelist_coordinator/<project_id>', views.select_panelist_coordinator, name='select-panelist-coordinator'),
+
     path('delete_project/<project_id>', views.delete_project, name='delete-project'),
-    path('update_proposal/<project_id>', views.update_proposal, name='update-proposal'),
+    path('add_comments/<project_id>', views.add_comments, name='add-comments'),
     path('delete_proposal/<project_id>', views.delete_proposal, name='delete-proposal'),
     path('accept_proposal/<project_id>', views.accept_proposal, name='accept-proposal'),
     path('reject_project/<project_id>', views.reject_project, name='reject-project'),
     
+    path('coordinator_projects', views.coordinator_projects, name='coordinator-projects'),
     path('adviser_projects', views.adviser_projects, name='adviser-projects'),
     path('adviser_proposals', views.adviser_proposals, name='adviser-proposals'),
     

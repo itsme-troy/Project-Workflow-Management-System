@@ -1,0 +1,58 @@
+{% extends 'project/base.html'%} <!-- use the base file -->
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/custom.css' %}">
+{% block content %} <!-- content of all web pages go -->
+
+{% if user.is_authenticated %}
+    {% if user.role == 'COORDINATOR' %} 
+        <h1> Select Coordinator chosen Panelist </h1> <br/> 
+        
+        <!-- Display form errors -->
+        {% if form.errors %}
+         <div class="alert alert-danger">
+             <ul>
+                 {% for error in form.non_field_errors %}
+                     <li>{{ error }}</li>
+                 {% endfor %}
+                 {% for field in form %}
+                     {% for error in field.errors %}
+                         <li> Please Fix Errors in {{ field.label }} Field </li>
+                     {% endfor %}
+                 {% endfor %}
+             </ul>
+         </div>
+         {% endif %}
+
+        <form action="" method="POST" id="CoordinatorSelectPanelistForm"> 
+            {% csrf_token %}
+            {{ form.as_p }}
+            <br/> 
+            <input type="submit" value="Update"
+            class="btn btn-secondary"> 
+            <a href="{% url 'coordinator-projects' %}" class="btn btn-outline-danger btn-sm"> Cancel </a>
+        {% else %}
+            <h2> Access Denied! </h2> 
+            <p> Only the Coordinator can update this project...</p>
+         
+           
+        {% endif %}
+{% else %}
+    <h1> Sorry! You must be Logged In to view This Page... </h1> 
+        </br> 
+    <a href="{% url 'login' %}">Login Here! </a> 
+
+{% endif %} 
+
+<script>
+    document.getElementById('CoordinatorSelectPanelistForm').onsubmit = function() {
+        // Enable the proponents and adviser fields before submitting the form
+        document.querySelector('input[name="title"]').removeAttribute('disabled');
+        document.querySelector('select[name="project_type"]').removeAttribute('disabled');
+        document.querySelector('select[name="proponents"]').removeAttribute('disabled');
+        document.querySelector('select[name="adviser"]').removeAttribute('disabled');
+        document.querySelector('textarea[name="description"]').removeAttribute('disabled');
+        document.querySelector('textarea[name="panel"]').removeAttribute('disabled');
+    };
+</script>
+ 
+{% endblock %}

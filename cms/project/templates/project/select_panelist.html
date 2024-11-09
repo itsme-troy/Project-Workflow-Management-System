@@ -5,7 +5,7 @@
 
 {% if user.is_authenticated %}
     {% if user == project.adviser %} 
-        <h1> Update Project Panel and Comments</h1> <br/> 
+        <h1> Select Adviser chosen Panelist </h1> <br/> 
         
         <!--logged in user can be called by
         "user" which is already valid for every page -->
@@ -34,7 +34,7 @@
          </div>
          {% endif %}
 
-        <form action="" method="POST" id="updateProjectForm"> 
+        <form action="" method="POST" id="SelectPanelistForm"> 
             {% csrf_token %}
             {{ form.as_p }}
             <br/> 
@@ -57,7 +57,7 @@
 {% endif %} 
 
 <script>
-    document.getElementById('updateProjectForm').onsubmit = function() {
+    document.getElementById('SelectPanelistForm').onsubmit = function() {
         // Enable the proponents and adviser fields before submitting the form
         document.querySelector('input[name="title"]').removeAttribute('disabled');
         document.querySelector('select[name="project_type"]').removeAttribute('disabled');

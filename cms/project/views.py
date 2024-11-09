@@ -5,8 +5,8 @@ from django.contrib import messages
 from django.conf import settings 
 from django.contrib.auth.decorators import login_required
 # Create your views here.
-from .forms import ProjectForm, CapstoneSubmissionForm, UpdateProjectForm, ProjectGroupForm, ProjectGroupInviteForm
-from .forms import  VerdictForm, CoordinatorForm
+from .forms import ProjectForm, CapstoneSubmissionForm, AddCommentsForm, ProjectGroupForm, ProjectGroupInviteForm
+from .forms import  VerdictForm, CoordinatorForm, SelectPanelistForm, CoordinatorSelectPanelistForm
 from .models import AppUserManager, Defense_Application
 from .models import Student, Faculty, ApprovedProjectGroup,  Project_Group
 from .models import StudentProfile, FacultyProfile, CoordinatorProfile, Coordinator
@@ -1307,6 +1307,56 @@ def coordinator_approval_student(request):
         messages.success(request, "Please Login to view this page")
         return redirect('home')
        
+def coordinator_projects(request):
+    if not request.user.is_authenticated: 
+        messages.error(request, "Please Login to view this page")
+        return redirect('home')
+    
+    if request.user.role !='COORDINATOR': 
+        messages.error(request, "You are not authorized to view this page")
+        return redirect('home')
+
+   
+    # Grab the projects from that adviser
+    approved_projects = Project.objects.filter(status='approved').order_by('title')
+    
+    approved_paginator = Paginator(approved_projects, 5)  # Show 10 projects per page
+    approved_page_number = request.GET.get('approved_page')
+    approved_page_obj = approved_paginator.get_page(approved_page_number)  
+    approved_nums = "a" * approved_page_obj.paginator.num_pages
+
+    # Prepare data for each project with its groups and proponents
+    approved_projects_with_groups = []
+    for project in approved_page_obj:
+        project_group = Project_Group.objects.filter(project=project, approved=True).first()
+        
+        # Fetch the project where the current group are the proponents
+        project = Project.objects.filter(proponents=project_group, status='approved').first()
+        
+        if project_group and project: 
+            proponents = list(project_group.proponents.all())
+            proponents += [None] * (3 - len(proponents))  # Pad to exactly 3 proponents
+            
+            # Fetch panel members directly from the project_group
+            panel_members = list(project.panel.all())  # Fetch panel members
+            panel_members += [None] * (3 - len(panel_members))  # Pad to exactly 3 panel members
+            
+            approved_projects_with_groups.append({
+                'project': project,
+                'group': project_group,
+                'proponents': proponents, 
+                'panel': panel_members,
+                # 'status': project.status,
+            })
+
+
+    return render(request, 'project/coordinator_projects.html', {
+        "approved_projects_with_groups": approved_projects_with_groups,
+        "approved_page_obj": approved_page_obj,
+        "approved_nums": approved_nums,
+    })
+
+
 def adviser_projects(request):
     if not request.user.is_authenticated: 
         messages.error(request, "Please Login to view this page")
@@ -1356,6 +1406,7 @@ def adviser_projects(request):
         "approved_page_obj": approved_page_obj,
         "approved_nums": approved_nums,
     })
+
 
 def adviser_proposals(request):
     if not request.user.is_authenticated: 
@@ -1447,75 +1498,155 @@ def delete_proposal(request, project_id):
         messages.error(request, "You Aren't Authorized to Delete this Proposal!")
         return redirect('adviser-projects')
         
-def update_proposal(request, project_id): 
+def select_panelist(request, project_id): 
+    if not request.user.is_authenticated: 
+        messages.error(request, "Please Login to view this page")
+        return redirect('home')
+    
+    if request.user.role  != 'FACULTY':
+        messages.error(request, "You are not authorized to view this page")
+        return redirect('home')
+
+    # look on projects by ID 
+    project = Project.objects.get(pk=project_id)
+    # if they are gonna post, use this form otherwise, don't use anything. 
+    if request.user == project.adviser: 
+        form = SelectPanelistForm(request.POST or None, instance=project)
+        form.user = request.user # pass the user to the form
+
+    # save data to the database and return somewhere 
+    if form.is_valid():
+        # Handle disabled fields by reassigning their initial values before saving
+        form.instance.title = project.title
+        form.instance.project_type = project.project_type
+        form.instance.proponents = project.proponents
+        form.instance.adviser = project.adviser
+        form.instance.description = project.description
+        form.save()
+
+        messages.success(request, "Project Panel Updated Successfully!")
+        return redirect('adviser-projects')
+      
+    else:
+        form.fields['panel'].initial = form.instance.panel.all()[:1]
+
+    return render(request, 'project/select_panelist.html', {
+        'project': project,
+        'form': form
+    })
+
+def select_panelist_coordinator(request, project_id): 
+    if not request.user.is_authenticated: 
+        messages.error(request, "Please Login to view this page")
+        return redirect('home')
+    
+    if request.user.role != 'COORDINATOR':
+        messages.error(request, "You are not authorized to view this page")
+        return redirect('home')
+
+    # look on projects by ID 
+    project = Project.objects.get(pk=project_id)
+    # if they are gonna post, use this form otherwise, don't use anything. 
+
+     # Check if the project already has two panelists selected
+    if project.panel.count() < 2:
+        messages.error(request, "Please wait until the Project adviser and students have selected their panelists.")
+        return redirect('coordinator-projects')
+
+    form = CoordinatorSelectPanelistForm(request.POST or None, instance=project)
+    form.user = request.user # pass the user to the form
+    # save data to the database and return somewhere 
+    if form.is_valid():
+        # Handle disabled fields by reassigning their initial values before saving
+        form.instance.title = project.title
+        form.instance.project_type = project.project_type
+        form.instance.proponents = project.proponents
+        form.instance.adviser = project.adviser
+        form.instance.description = project.description
+        form.save()
+
+    
+        messages.success(request, "Project Panel Updated Successfully!")
+        return redirect('coordinator-projects')
+    else:
+        form.fields['panel'].initial = form.instance.panel.all()[:2]
+
+    return render(request, 'project/select_panelist_coordinator.html', {
+        'project': project,
+        'form': form
+    })
+
+    
+   
+def add_comments(request, project_id): 
     if request.user.is_authenticated: 
         # look on projects by ID 
         project = Project.objects.get(pk=project_id)
         # if they are gonna post, use this form otherwise, don't use anything. 
         if request.user == project.adviser: 
-            form = UpdateProjectForm(request.POST or None, instance=project)
+            form = AddCommentsForm(request.POST or None, instance=project)
         
         # save data to the database and return somewhere 
         if form.is_valid(): 
             # Handle disabled fields by reassigning their initial values before saving
-            if isinstance(form, UpdateProjectForm):  # Check if using UpdateProjectForm
+            if isinstance(form, AddCommentsForm):  # Check if using UpdateProjectForm
                 form.instance.title = project.title
                 form.instance.project_type = project.project_type
                 form.instance.proponents = project.proponents
                 form.instance.adviser = project.adviser
                 form.instance.description = project.description
+                form.instance.comments = project.comments
             form.save()
-            messages.success(request, "Proposal updated Succesfully!")
-            return redirect('adviser-projects')
+            messages.success(request, "Project Comments Updated Succesfully!")
+            return redirect('adviser-proposals')
         else:
             # Reinitialize the panel with the pre-selected panelist to retain form state
             form.fields['panel'].initial = form.instance.panel.all()[:1]
 
         # pass it to the page using render 
-        return render(request, 'project/update_proposal.html', 
+        return render(request, 'project/add_comments.html', 
         {'project': project, 
         'form': form})
     else: 
         messages.error(request, "You Aren't Authorized to view this page.")
         return redirect('home')
 
-
-def update_project(request, project_id): 
-    if request.user.is_authenticated: 
-        # look on projects by ID 
-        project = Project.objects.get(pk=project_id)
-        # if they are gonna post, use this form otherwise, don't use anything. 
-        if request.user == project.adviser: 
-            form = UpdateProjectForm(request.POST or None, instance=project)
+# def update_project(request, project_id): 
+#     if request.user.is_authenticated: 
+#         # look on projects by ID 
+#         project = Project.objects.get(pk=project_id)
+#         # if they are gonna post, use this form otherwise, don't use anything. 
+#         if request.user == project.adviser: 
+#             form = UpdateProjectForm(request.POST or None, instance=project)
        
-        # save data to the database and return somewhere 
-        if form.is_valid(): 
-             # Handle disabled fields by reassigning their initial values before saving
-            if isinstance(form, UpdateProjectForm):  # Check if using UpdateProjectForm
-                form.instance.title = project.title
-                form.instance.project_type = project.project_type
-                form.instance.proponents = project.proponents
-                form.instance.adviser = project.adviser
-                form.instance.description = project.description
+#         # save data to the database and return somewhere 
+#         if form.is_valid(): 
+#              # Handle disabled fields by reassigning their initial values before saving
+#             if isinstance(form, UpdateProjectForm):  # Check if using UpdateProjectForm
+#                 form.instance.title = project.title
+#                 form.instance.project_type = project.project_type
+#                 form.instance.proponents = project.proponents
+#                 form.instance.adviser = project.adviser
+#                 form.instance.description = project.description
                 
-            form.save()
-            messages.success(request, "Project Updated Succesfully! ")
-            return redirect('adviser-projects')
-        else:
-            # Add error messages from the form validation
-            # for field, errors in form.errors.items():
-            #     for error in errors:
-            #         messages.error(request, f"{field}: {error}")
+#             form.save()
+#             messages.success(request, "Project Updated Succesfully! ")
+#             return redirect('adviser-projects')
+#         else:
+#             # Add error messages from the form validation
+#             # for field, errors in form.errors.items():
+#             #     for error in errors:
+#             #         messages.error(request, f"{field}: {error}")
             
-             # Reinitialize the panel with the pre-selected panelist to retain form state
-            form.fields['panel'].initial = form.instance.panel.all()[:1]
+#              # Reinitialize the panel with the pre-selected panelist to retain form state
+#             form.fields['panel'].initial = form.instance.panel.all()[:1]
 
-        # pass it to the page using render 
-        return render(request, 'project/update_project.html', 
-        {'project': project, 'form': form})
-    else: 
-        messages.error(request, "You Aren't Authorized to view this page.")
-        return redirect('home')
+#         # pass it to the page using render 
+#         return render(request, 'project/update_project.html', 
+#         {'project': project, 'form': form})
+#     else: 
+#         messages.error(request, "You Aren't Authorized to view this page.")
+#         return redirect('home')
     
     # Delete Project
 def delete_project(request, project_id):

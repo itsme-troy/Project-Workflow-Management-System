@@ -9,7 +9,7 @@
 
 {% if user.is_authenticated %}
     {% if user == project.adviser %} 
-        <h1> Update Proposal Panel and Comments </h1> <br/> 
+        <h1> Add Project Comments </h1> <br/> 
         <!--logged in user can be called by
         "user" which is already valid for every page -->
         {% comment %} Logged In user: {{ user }}
@@ -37,7 +37,7 @@
          </div>
          {% endif %}
 
-        <form action="" method="POST" id="updateProposalForm"> 
+        <form action="" method="POST" id="addCommentsForm"> 
             {% csrf_token %}
             {{ form.as_p }}
             
@@ -60,14 +60,14 @@
 {% endif %}
  
 <script>
-    document.getElementById('updateProposalForm').onsubmit = function() {
+    document.getElementById('addCommentsForm').onsubmit = function() {
         // Enable the proponents and adviser fields before submitting the form
         document.querySelector('input[name="title"]').removeAttribute('disabled');
         document.querySelector('select[name="project_type"]').removeAttribute('disabled');
         document.querySelector('select[name="proponents"]').removeAttribute('disabled');
         document.querySelector('select[name="adviser"]').removeAttribute('disabled');
         document.querySelector('textarea[name="description"]').removeAttribute('disabled');
-    
+        document.querySelector('select[name="panel"]').removeAttribute('disabled');
     };
 </script>
 

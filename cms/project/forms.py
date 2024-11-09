@@ -314,7 +314,7 @@ class ProjectForm(ModelForm):
         
         return cleaned_data
     
-class UpdateProjectForm(ModelForm): 
+class SelectPanelistForm(ModelForm): 
     # meta allows to sort of define things in a class
     class Meta: 
         model = Project
@@ -374,6 +374,272 @@ class UpdateProjectForm(ModelForm):
         self.fields['proponents'].widget.attrs['disabled'] = 'disabled'
         self.fields['adviser'].widget.attrs['disabled'] = 'disabled'
         self.fields['description'].widget.attrs['disabled'] = 'disabled'
+
+        # Pre-select the initial panelist and restrict panel selection
+        self.pre_selected_panelist = self.instance.panel.all()[:1]  # Select the first panelist only
+        self.fields['panel'].initial = self.pre_selected_panelist
+        self.fields['panel'].queryset = self.fields['panel'].queryset.exclude(id=self.instance.adviser.id)
+
+    def clean_panel(self):
+        panelists = self.cleaned_data.get('panel')
+        errors = []
+
+        # Ensure the pre-selected panelist is always included
+        missing_panelists = [panelist for panelist in self.pre_selected_panelist if panelist not in panelists]
+        if missing_panelists:
+            missing_names = ', '.join(f"{panelist.first_name} {panelist.last_name}" for panelist in missing_panelists)  # Assuming 'name' is the attribute
+            errors.append(f"The selected panelist(s) of students; {missing_names}, must remain selected.")
+
+        # Allow only one additional panelist beyond the pre-selected one
+        additional_panelists = panelists.exclude(id__in=[p.id for p in self.pre_selected_panelist])
+        if len(additional_panelists) > 1:
+            pre_selected_names = ', '.join(f"{panelist.first_name} {panelist.last_name}" for panelist in self.pre_selected_panelist)
+            errors.append(f"You can only select one additional panelist in addition to the selected panelist(s) of students: {pre_selected_names}.")
+        
+         # Add errors to the form if there are any
+        if errors:
+            for error in errors:
+                self.add_error('panel', error)
+            # Return None so that the form is marked invalid but not break with an exception
+            return None
+        
+        return panelists
+    
+class CoordinatorSelectPanelistForm(ModelForm): 
+    # meta allows to sort of define things in a class
+    class Meta: 
+        model = Project
+     
+        fields =   ('title', 'project_type', 'proponents', 'adviser',
+            'description', 'panel', 'comments') 
+    
+        labels = { 
+            'title':'Title',
+            'project_type': 'Project Type',
+            'proponents':'Proponents',
+            'adviser':'Adviser', 
+            'description': 'Executive Summary',
+            'panel':'Panel', 
+           # 'defense_date':'YYYY-MM-DD HH:MM:SS',
+           'comments': 'Faculty Comments',
+        }
+
+        help_texts = {
+            'panel': 'Hold "Ctrl" button to select multiple panelists',
+        }
+        widgets = { 
+            'title': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Project Title'}),
+            'project_type': forms.Select(choices=[
+                ("Capstone Project", "Capstone Project"),
+                ("Senior Thesis", "Senior Thesis")
+            ], attrs={'class': 'form-select'}),
+            'proponents': forms.Select(attrs={'class':'form-select', 'placeholder': 'Proponents'}), 
+            'adviser': forms.Select(attrs={'class':'form-select', 'placeholder': 'Adviser'}),
+            'description': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Project Description'}),
+            'panel': forms.SelectMultiple(attrs={'class':'form-control', 'placeholder': 'Panel', 'size': '10'}), 
+             #'defense_date': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Defense Date'}),
+            'comments': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Enter Project Comments'}),
+        }   
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Add Bootstrap class to help text
+        for field in self.fields.values():
+            if field.help_text:
+                field.help_text = f'<small class="form-text text-muted">{field.help_text}</small>'
+
+        # Make fields read-only by disabling them
+        for field_name in ['title', 'project_type', 'proponents', 'adviser', 'description']:
+            self.fields[field_name].widget.attrs['disabled'] = 'disabled'
+
+
+        # Pre-select the initial panelist and restrict panel selection
+        self.pre_selected_panelist = self.instance.panel.all()[:2]  # Select the first panelist only
+        self.fields['panel'].initial = self.pre_selected_panelist
+        self.fields['panel'].queryset = self.fields['panel'].queryset.exclude(id=self.instance.adviser.id)
+
+    def clean_panel(self):
+        panelists = self.cleaned_data.get('panel')
+        errors = []
+
+        # Ensure the pre-selected panelists are always included
+        missing_panelists = [panelist for panelist in self.pre_selected_panelist if panelist not in panelists]
+        if missing_panelists:
+            missing_names = ', '.join(f"{panelist.first_name} {panelist.last_name}" for panelist in missing_panelists)
+            pre_selected_names = ', '.join(f"{panelist.first_name} {panelist.last_name}" for panelist in self.pre_selected_panelist)
+            errors.append(f"The selected panelists; {missing_names}, must remain selected. The two pre-selected panelists are: {pre_selected_names}.")
+
+        # Allow only one additional panelist beyond the pre-selected ones
+        additional_panelists = panelists.exclude(id__in=[p.id for p in self.pre_selected_panelist])
+        if len(additional_panelists) > 1:
+            pre_selected_names = ', '.join(f"{panelist.first_name} {panelist.last_name}" for panelist in self.pre_selected_panelist)
+            errors.append(f"You can only select one additional panelist in addition to the pre-selected panelists: {pre_selected_names}.")
+
+        # Add errors to the form if there are any
+        if errors:
+            for error in errors:
+                self.add_error('panel', error)
+            # Return None so that the form is marked invalid but not break with an exception
+            return None
+
+        return panelists
+
+class AddCommentsForm(ModelForm): 
+    # meta allows to sort of define things in a class
+    class Meta: 
+        model = Project
+        project_type_choices = [ 
+            ("Capstone Project", "Capstone Project" ),
+            ("Senior Thesis", "Senior Thesis")
+            #("Other", "Other")
+        ]
+
+        defense_result_choices = [
+            ("-", "Pending"), 
+            ("Accepted", "Accepted"), 
+            ("Accepted with Revisions", "Accepted with Revisions"), 
+            ("Re-defense", "Re-Defense"), 
+            ("Not Accepted", "Not Accepted"), 
+        ]
+
+        fields =   ('title', 'project_type', 'proponents', 'adviser',
+            'description', 'panel', 'comments') 
+    
+        labels = { 
+            'title':'Title',
+            'project_type': 'Project Type',
+            'proponents':'Proponents',
+            'adviser':'Adviser', 
+            'description': 'Executive Summary',
+            'panel':'Panel', 
+           # 'defense_date':'YYYY-MM-DD HH:MM:SS',
+           'comments': 'Faculty Comments',
+        }
+
+        help_texts = {
+            'panel': 'Hold "Ctrl" button to select multiple panelists',
+        }
+        widgets = { 
+            'title': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Project Title'}),
+            'project_type': forms.Select(choices=project_type_choices, attrs={'class':'form-select'}), 
+            'proponents': forms.Select(attrs={'class':'form-select', 'placeholder': 'Proponents'}), 
+            'adviser': forms.Select(attrs={'class':'form-select', 'placeholder': 'Adviser'}),
+            'description': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Project Description'}),
+            'panel': forms.SelectMultiple(attrs={'class':'form-control', 'placeholder': 'Panel', 'size': '10'}), 
+             #'defense_date': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Defense Date'}),
+            'comments': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Enter Project Comments'}),
+        }   
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Add Bootstrap class to help text
+        for field in self.fields.values():
+            if field.help_text:
+                field.help_text = f'<small class="form-text text-muted">{field.help_text}</small>'
+
+        # Make fields read-only by disabling them
+        self.fields['title'].widget.attrs['disabled'] = 'disabled'
+        self.fields['project_type'].widget.attrs['disabled'] = 'disabled'
+        self.fields['proponents'].widget.attrs['disabled'] = 'disabled'
+        self.fields['adviser'].widget.attrs['disabled'] = 'disabled'
+        self.fields['description'].widget.attrs['disabled'] = 'disabled'
+        self.fields['panel'].widget.attrs['disabled'] = 'disabled'  # Disable the panel field
+
+
+        # Pre-select the initial panelist and restrict panel selection
+        self.pre_selected_panelist = self.instance.panel.all()[:1]  # Select the first panelist only
+        self.fields['panel'].initial = self.pre_selected_panelist
+        self.fields['panel'].queryset = self.fields['panel'].queryset.exclude(id=self.instance.adviser.id)
+
+    def clean_panel(self):
+        panelists = self.cleaned_data.get('panel')
+        errors = []
+
+        # Ensure the pre-selected panelist is always included
+        missing_panelists = [panelist for panelist in self.pre_selected_panelist if panelist not in panelists]
+        if missing_panelists:
+            missing_names = ', '.join(f"{panelist.first_name} {panelist.last_name}" for panelist in missing_panelists)  # Assuming 'name' is the attribute
+            errors.append(f"The selected panelist(s) of students; {missing_names}, must remain selected.")
+
+        # Allow only one additional panelist beyond the pre-selected one
+        additional_panelists = panelists.exclude(id__in=[p.id for p in self.pre_selected_panelist])
+        if len(additional_panelists) > 1:
+            pre_selected_names = ', '.join(f"{panelist.first_name} {panelist.last_name}" for panelist in self.pre_selected_panelist)
+            errors.append(f"You can only select one additional panelist in addition to the selected panelist(s) of students: {pre_selected_names}.")
+        
+         # Add errors to the form if there are any
+        if errors:
+            for error in errors:
+                self.add_error('panel', error)
+            # Return None so that the form is marked invalid but not break with an exception
+            return None
+        
+        return panelists
+    
+
+class AddCommentsForm(ModelForm): 
+    # meta allows to sort of define things in a class
+    class Meta: 
+        model = Project
+        project_type_choices = [ 
+            ("Capstone Project", "Capstone Project" ),
+            ("Senior Thesis", "Senior Thesis")
+            #("Other", "Other")
+        ]
+
+        defense_result_choices = [
+            ("-", "Pending"), 
+            ("Accepted", "Accepted"), 
+            ("Accepted with Revisions", "Accepted with Revisions"), 
+            ("Re-defense", "Re-Defense"), 
+            ("Not Accepted", "Not Accepted"), 
+        ]
+
+        fields =   ('title', 'project_type', 'proponents', 'adviser',
+            'description', 'panel', 'comments') 
+    
+        labels = { 
+            'title':'Title',
+            'project_type': 'Project Type',
+            'proponents':'Proponents',
+            'adviser':'Adviser', 
+            'description': 'Executive Summary',
+            'panel':'Panel', 
+           # 'defense_date':'YYYY-MM-DD HH:MM:SS',
+           'comments': 'Faculty Comments',
+        }
+
+        help_texts = {
+            'panel': 'Hold "Ctrl" button to select multiple panelists',
+        }
+        widgets = { 
+            'title': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Project Title'}),
+            'project_type': forms.Select(choices=project_type_choices, attrs={'class':'form-select'}), 
+            'proponents': forms.Select(attrs={'class':'form-select', 'placeholder': 'Proponents'}), 
+            'adviser': forms.Select(attrs={'class':'form-select', 'placeholder': 'Adviser'}),
+            'description': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Project Description'}),
+            'panel': forms.SelectMultiple(attrs={'class':'form-control', 'placeholder': 'Panel', 'size': '10'}), 
+             #'defense_date': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Defense Date'}),
+            'comments': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Enter Project Comments'}),
+        }   
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Add Bootstrap class to help text
+        for field in self.fields.values():
+            if field.help_text:
+                field.help_text = f'<small class="form-text text-muted">{field.help_text}</small>'
+
+        # Make fields read-only by disabling them
+        self.fields['title'].widget.attrs['disabled'] = 'disabled'
+        self.fields['project_type'].widget.attrs['disabled'] = 'disabled'
+        self.fields['proponents'].widget.attrs['disabled'] = 'disabled'
+        self.fields['adviser'].widget.attrs['disabled'] = 'disabled'
+        self.fields['description'].widget.attrs['disabled'] = 'disabled'
+        self.fields['panel'].widget.attrs['disabled'] = 'disabled'
 
         # Pre-select the initial panelist and restrict panel selection
         self.pre_selected_panelist = self.instance.panel.all()[:1]  # Select the first panelist only

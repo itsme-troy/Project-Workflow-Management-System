@@ -84,8 +84,8 @@
                                 class="btn btn-outline-success btn-sm"
                                 onclick="return confirm('Are you sure you want to accept this proposal? Accepting will automatically decline other pending proposals received from this group.');"> Accept Proposal  </a> 
                         
-                                <a href="{% url 'update-proposal' project_data.project.id %}"
-                                    class="btn btn-outline-secondary btn-sm"> Update Proposal </a>   
+                                <a href="{% url 'add-comments' project_data.project.id %}"
+                                    class="btn btn-outline-secondary btn-sm"> Add Comments </a>   
                                 
                                 <a href="{% url 'delete-proposal' project_data.project.id %}"
                                     class="btn btn-outline-danger btn-sm"> Delete Proposal  </a> </div>
