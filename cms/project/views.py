@@ -676,7 +676,7 @@ def approve_group_membership(request, group_id):
             try:
                 Notification.objects.create(
                     recipient=other_group.creator,
-                    notification_type='group_decline',
+                    notification_type='rejected',
                     group=other_group,
                     sender=request.user,
                     message=f"{request.user.get_full_name()} has declined the invitation to join your project group."
@@ -714,7 +714,7 @@ def approve_group_membership(request, group_id):
             try:
                 Notification.objects.create(
                     recipient=group.creator,
-                    notification_type='group_accept',
+                    notification_type='accepted',
                     group=group,
                     sender=request.user,
                     message=f"{request.user.get_full_name()} has accepted the invitation to join your project group. ({approved_students_count}/3 members)"
@@ -744,6 +744,20 @@ def reject_group_membership(request, group_id):
     group.pending_proponents.remove(request.user.id)
     group.declined_proponents.add(request.user.id)
     
+    # Notify all proponents about the decline
+    for proponent in group.proponents.all():
+        try:
+            Notification.objects.create(
+                recipient=proponent,
+                notification_type='rejected',
+                group=group,
+                sender=request.user,
+                message=f"{request.user.get_full_name()} has declined the invitation to join your project group."
+            )
+        except Exception as e:
+            logger.error(f"Failed to create decline notification for {proponent}: {str(e)}")
+
+
     messages.success(request, "Group invitation declined.")
     return redirect('my-project-group-waitlist')
 
@@ -815,6 +829,19 @@ def leave_group(request, group_id):
         group.approved_by_students.remove(request.user.id)
         messages.success(request, "You have left the group.")
     
+    # Create notifications for remaining proponents
+    for member in group.proponents.all():
+        try:
+            Notification.objects.create(
+                recipient=member,
+                notification_type='leave_group',
+                group=group,
+                sender=request.user,
+                message=f"{request.user.get_full_name()} has left the project group."
+            )
+        except Exception as e:
+            logger.error(f"Failed to create notification for {member}: {str(e)}")
+
     group.save()
     return redirect('my-project-group-waitlist')
 
@@ -940,25 +967,41 @@ def invite_more_members(request, group_id):
 
 from django.contrib.auth.decorators import login_required
 
-@login_required
-def get_notifications(request):
-    notifications = Notification.objects.filter(recipient=request.user).order_by('-created_at')[:10]
-    unread_count = notifications.filter(is_read=False).count()
-     # Debugging logs
-    logger.debug(f"Fetching notifications for user: {request.user}")
-    logger.debug(f"Notifications count: {notifications.count()}")
-    logger.debug(f"Unread notifications count: {unread_count}")
+# @login_required
+# def get_notifications(request):
+#     notifications = Notification.objects.filter(recipient=request.user).order_by('-created_at')[:10]
+#     unread_count = notifications.filter(is_read=False).count()
+#      # Debugging logs
+#     logger.debug(f"Fetching notifications for user: {request.user}")
+#     logger.debug(f"Notifications count: {notifications.count()}")
+#     logger.debug(f"Unread notifications count: {unread_count}")
     
-    notifications_data = [{
-        'id': notif.id,
-        'message': notif.message,
-        'is_read': notif.is_read,
-        'created_at': notif.created_at.strftime('%Y-%m-%d %H:%M:%S')
-    } for notif in notifications]
+#     notifications_data = [{
+#         'id': notif.id,
+#         'message': notif.message,
+#         'is_read': notif.is_read,
+#         'created_at': notif.created_at.strftime('%Y-%m-%d %H:%M:%S')
+#     } for notif in notifications]
     
-    return JsonResponse({
-        'notifications': notifications_data,
-        'unread_count': unread_count
+#     return JsonResponse({
+#         'notifications': notifications_data,
+#         'unread_count': unread_count
+#     })
+
+def notifications_view(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "Please login to view your notifications.")
+        return redirect('login')
+
+    # Fetch all notifications for the logged-in user
+    notifications = Notification.objects.filter(recipient=request.user).order_by('-created_at')
+
+
+    # Mark all notifications as read
+    notifications.update(is_read=True)
+
+    return render(request, 'project/notifications.html', {
+        'notifications': notifications
     })
 
 from django.views.decorators.http import require_POST
@@ -1286,6 +1329,8 @@ def coordinator_approval_student(request):
                     User.objects.filter(pk=int(z)).update(eligible=True)
 
                 messages.success(request, "Student Approval Form has been updated")
+                # Create a notification for the student
+                # Update notifications
                 return redirect('coordinator-approval-student')
             else: 
     

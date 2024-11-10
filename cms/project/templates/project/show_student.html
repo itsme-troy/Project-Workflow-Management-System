@@ -2,67 +2,47 @@
 
 {% block content %}
 
-</br> 
-<center> 
-
-<div class="container text-center"> 
-    <div class="row"> 
-        <div class="col-8"> 
-            <h1> {{student.first_name }} {{ student.last_name }}'s Profile </h1> </br> </br> 
-            <h5> First name: {{ student.first_name }} </h5>  
-            <h5> Last Name:  {{ student.last_name }} </h5>  
-            <h5> Course:  {{ student.course }}</h5>  
-            <h5> Email:  {{ student.email }}</h5>  
-            <h5> Contact phone:  {{ student.phone }}</h5>  
-            <h5> test: {{ student.role }} </h5>  
-
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <h1 class="mb-4">{{ student.first_name }} {{ student.last_name }}'s Profile</h1>
+            <div class="list-group">
+                <div class="list-group-item"><strong>First name:</strong> {{ student.first_name }}</div>
+                <div class="list-group-item"><strong>Last Name:</strong> {{ student.last_name }}</div>
+                <div class="list-group-item"><strong>Course:</strong> {{ student.course }}</div>
+                <div class="list-group-item"><strong>Email:</strong> {{ student.email }}</div>
+                <div class="list-group-item"><strong>Contact phone:</strong> {{ student.phone }}</div>
+                <div class="list-group-item"><strong>Role:</strong> {{ student.role }}</div>
+            </div>
         </div>
 
-        <div class="col-4"> 
+        <div class="col-lg-4 text-center">
             {% if student.profile_image %}
-                <img src= "{{ student.profile_image.url }}"
-                width=300 height=300 class="rounded-circle"> <br/> </br>  
-            {% else %} </br> 
-                <img src= "/static/images/default_profile_pic.jpg"> <br/> </br>  
+                <img src="{{ student.profile_image.url }}" class="img-fluid rounded-circle mb-3" alt="Profile Image" style="width: 150px; height: 150px;">
+            {% else %}
+                <img src="/static/images/default_profile_pic.jpg" class="img-fluid rounded-circle mb-3" alt="Default Profile Image" style="width: 150px; height: 150px;">
             {% endif %}
-        </br> 
-
-            {% for group in project_group %}
-
-                <div class="card" style="width: 18rem;">
-                    <div class="card-header">
-                    Adviser: {{ group.adviser }} </br> 
-                   
-                </div>
-                    {% for student in group.proponents.all %}
-    
-                        <ul class="list-group list-group-flush">
-                        <li class="list-group-item"> {{ student }} </br> </li>
-                        </ul>
-                   
-                    {% endfor %}
-                </div>
-            </br> 
-            {% endfor %}
-             
-        </br>   </br> 
-
-        {% if request.user.id == student.id %}
-            <a href="{% url 'update-user' %}" class="btn btn-secondary"> Update Profile</a> </br> </br> 
-        {% endif %}
-        
-        <!-- Add Back Button Here -->
-        <button onclick="window.history.back();" class="btn btn-primary">Back</button> </br> </br>
-        
-        </div>
             
-        <div> 
-               
-        </div> 
-       
+            {% for group in project_group %}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        Adviser: {{ group.adviser }}
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% for student in group.proponents.all %}
+                            <li class="list-group-item">{{ student }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+            
+            {% if request.user.id == student.id %}
+                <a href="{% url 'update-user' %}" class="btn btn-secondary mt-3 w-100">Update Profile</a>
+            {% endif %}
+            
+            <button onclick="window.history.back();" class="btn btn-primary mt-3 w-100">Back</button>
+        </div>
     </div>
 </div>
-        
-</center> 
 
 {% endblock %}

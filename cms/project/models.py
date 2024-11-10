@@ -274,8 +274,10 @@ class Approved_student(Student):
 class Notification(models.Model):
     NOTIFICATION_TYPES = (
         ('invitation', 'Group Invitation'),
-        ('accepted', 'Invitation Accepted'),
-        ('rejected', 'Invitation Rejected'),
+        ('accepted', 'Group Invitation Accepted'),
+        ('rejected', 'Group Invitation Rejected'),
+        ('group_complete', 'Group Update'),
+        ('leave_group', 'Group Update'),
     )
 
     recipient = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='notifications')
@@ -291,13 +293,12 @@ class Notification(models.Model):
 
 class Project(models.Model): 
 
-
     title = models.CharField('Title', max_length=120, null=True) # 120 characters
     project_type = models.CharField('Project Type', null=True, max_length=50 )
     description = models.TextField(null=True) # we dont have to put a description if we do not want to
     comments= models.TextField(null=True, blank=True) # we dont have to put a description if we do not want to
     
-    proponents = models.ForeignKey(Project_Group, null=True, on_delete=models.SET_NULL)   
+    proponents = models.ForeignKey(Project_Group, null=True, on_delete=models.SET_NULL)  
     adviser = models.ForeignKey(Approved_Adviser, null=True, on_delete=models.SET_NULL) # If adviser deletes profile, then the projects' adviser will be set to null 
     panel = models.ManyToManyField(Faculty, related_name='project_panel', blank=True )
 
@@ -306,8 +307,7 @@ class Project(models.Model):
    
     # when somebody adds a project, whatever his ID is the owner of the project
     owner = models.IntegerField("Project Owner", blank=False, default=24)
-    # defense_progress = models.CharField(max_length=50, choices=DEFENSE_PROGRESS, default="topic")
-   
+    # defense_progress = models.CharField(max_length=50, choices=DEFENSE_PROGRESS, default="topic")   
 
     STATUS_CHOICES = [
         ('pending', 'Pending'),
@@ -383,11 +383,15 @@ class Defense_Application(models.Model):
     project_group = models.ForeignKey(ApprovedProjectGroup, null=True, on_delete=models.CASCADE)
     title = models.CharField(max_length=255, choices=TITLE_CHOICES, null=True)
     project = models.ForeignKey(ApprovedProject, null=False, blank=False, on_delete=models.CASCADE)
-    abstract = models.TextField( null=True) # we dont have to put a description if we do not want to
+    abstract = models.TextField( null=True, blank=True) # we dont have to put a description if we do not want to
     adviser = models.ForeignKey(Approved_Adviser, related_name='application_adviser', null=True, on_delete=models.SET_NULL) # If adviser deletes profile, then the projects' adviser will be set to null 
     panel = models.ManyToManyField(Approved_panel, related_name='capplication_panel', blank=True)
  
-    document = models.FileField(upload_to='submissions/', null=True, blank=True )
+    manuscript = models.FileField(upload_to='submissions/manuscript', null=True, blank=True )
+    revision_form = models.FileField(upload_to='submissions/revision_form', null=True, blank=True )
+    payment_receipt = models.ImageField(upload_to='submissions/payment_receipt', null=True, blank=True )
+    adviser_confirmation = models.ImageField(upload_to='submissions/adviser_confirmation', null=True, blank=True )
+    
     submission_date = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):

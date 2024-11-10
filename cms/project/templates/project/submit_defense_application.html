@@ -13,9 +13,30 @@
     <br/> <br/> 
 </center> 
     {% if submitted %}
-        Your Defense Application Was Submitted Successfully!
+
+        <div class="alert alert-success text-center" role="alert">
+            <h3> Your Defense Application Was Submitted Successfully!</h3>
+        </div>
+        
     {% else %}
-        <form action="" method="POST" id="capstonesubmissionForm"> 
+         <!-- Display form errors -->
+         {% if form.errors %}
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li> Please Fix Errors in {{ field.label }} Field </li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+
+        <form action="" method="POST" id="capstonesubmissionForm" enctype="multipart/form-data"> 
             {% csrf_token %}
             
            <!-- Show last phase and next phase -->
@@ -25,18 +46,13 @@
             <!-- Render form fields -->
            {{ form.as_p }}
 
-            {% comment %} <div class="mb-3">
-                <label for="formFile" class="form-label">Manuscript </label>
-                <input class="form-control" type="file" id="formFile">
-              </div> {% endcomment %}
 
             <input type="submit" value="Submit" 
             class="btn btn-secondary">
             <a href="{% url 'list-projects' %}" class="btn btn-danger btn-lg btn-block">Cancel</a> 
         </form> 
     {% endif %}
-    {% comment %} document.querySelector('select[name="title"]').removeAttribute('disabled');
-     {% endcomment %}
+
 {% else %}
         <h1> Sorry. Please Login to view this Page. </h1> 
 

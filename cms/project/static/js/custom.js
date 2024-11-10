@@ -37,3 +37,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Highlight notification on hover
+    const notificationItems = document.querySelectorAll('.notification-item');
+    notificationItems.forEach(item => {
+        item.addEventListener('mouseover', () => {
+            item.style.backgroundColor = '#e9ecef';
+        });
+        item.addEventListener('mouseout', () => {
+            item.style.backgroundColor = '';
+        });
+    });
+});

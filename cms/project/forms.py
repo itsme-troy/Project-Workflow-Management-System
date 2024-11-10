@@ -173,7 +173,8 @@ class VerdictForm(forms.ModelForm):
 class CapstoneSubmissionForm(ModelForm):
     class Meta:
         model = Defense_Application
-        fields = ['title', 'project', 'project_group', 'adviser', 'panel', 'document']
+        fields = ['title', 'project', 'project_group', 'adviser', 'panel', 
+                  'manuscript', 'revision_form', 'payment_receipt', 'adviser_confirmation']
         
         labels = {
             'title': 'Type of Defense',
@@ -181,7 +182,10 @@ class CapstoneSubmissionForm(ModelForm):
             'project_group': 'Project Group',
             'adviser': 'Adviser',
             'panel': 'Panel',
-            'document': 'Manuscript',
+            'manuscript': 'Manuscript',
+            'revision_form': 'Revision Form',
+            'payment_receipt': 'Payment Receipt',
+            'adviser_confirmation': 'Proof of Adviser\'s Confirmation',
         }
 
         widgets = {
@@ -190,11 +194,25 @@ class CapstoneSubmissionForm(ModelForm):
             'project_group': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Proponents'}),
             'adviser': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Panel'}),
             'panel': forms.SelectMultiple(attrs={'class': 'form-control', 'placeholder': 'Panel'}),
-            'document': forms.FileInput(attrs={'class': 'form-control', 'placeholder': 'Title'}),
+            'manuscript': forms.FileInput(attrs={'class': 'form-control', 'placeholder': 'Manuscript'}),
+            'revision_form': forms.FileInput(attrs={'class': 'form-control', 'placeholder': 'Revision Form'}),
+            'payment_receipt': forms.FileInput(attrs={'class': 'form-control', 'placeholder': 'Payment Receipt'}),
+            'adviser_confirmation': forms.FileInput(attrs={'class': 'form-control', 'placeholder': 'Proof of Adviser\'s Confirmation'}),
+        }
+        help_texts = {
+            'manuscript': 'Accepted formats: PDF only',
+            'revision_form': 'Accepted formats: PDF only',
+            'payment_receipt': 'Accepted formats: PNG, JPG',
+            'adviser_confirmation': 'Accepted formats: PNG, JPG',
         }
 
     def __init__(self, *args, **kwargs):
         super(CapstoneSubmissionForm, self).__init__(*args, **kwargs)
+
+        # Add Bootstrap class to help text
+        for field in self.fields.values():
+            if field.help_text:
+                field.help_text = f'<small class="form-text text-muted">{field.help_text}</small>'
 
         # Set the choices for the title field to use the human-readable names
         self.fields['title'].choices = Defense_Application.TITLE_CHOICES
@@ -222,21 +240,31 @@ class CapstoneSubmissionForm(ModelForm):
 
             # Set the title in the form's initial data
             self.fields['title'].initial = self.initial.get('next_phase_type') 
-            
-            # # Auto-set the title (phase) based on the last completed phase
-            # last_phase = project.phases.order_by('-date').first()
-            # next_phase_type = 'Proposal Defense'  # Default for new projects
 
-            # if last_phase:
-            #     if last_phase.phase_type == 'proposal' and last_phase.verdict in ['accepted', 'accepted_with_revisions']:
-            #         next_phase_type = 'Design Defense'
-            #     elif last_phase.phase_type == 'design' and last_phase.verdict in ['accepted', 'accepted_with_revisions']:
-            #         next_phase_type = 'Preliminary Defense'
-            #     elif last_phase.phase_type == 'preliminary' and last_phase.verdict in ['accepted', 'accepted_with_revisions']:
-            #         next_phase_type = 'Final Defense'
-            #     elif last_phase.verdict == 'redefense':
-            #         next_phase_type = last_phase.get_phase_type_display()  # Repeat current phase
+    def clean_manuscript(self):
+        manuscript = self.cleaned_data.get('manuscript')
+        if manuscript and not manuscript.name.endswith('.pdf'):
+            raise ValidationError('The manuscript must be a PDF file.')
+        return manuscript
 
+    def clean_revision_form(self):
+        revision_form = self.cleaned_data.get('revision_form')
+        if revision_form and not revision_form.name.endswith('.pdf'):
+            raise ValidationError('The revision form must be a PDF file.')
+        return revision_form
+    
+    def clean_payment_receipt(self):
+        payment_receipt = self.cleaned_data.get('payment_receipt')
+        if payment_receipt and not (payment_receipt.name.endswith('.jpg') or payment_receipt.name.endswith('.png')):
+            raise ValidationError('The payment receipt must be a JPG or PNG file.')
+        return payment_receipt
+
+    def clean_adviser_confirmation(self):
+        adviser_confirmation = self.cleaned_data.get('adviser_confirmation')
+        if adviser_confirmation and not (adviser_confirmation.name.endswith('.jpg') or adviser_confirmation.name.endswith('.png')):
+            raise ValidationError('The adviser confirmation must be a JPG or PNG file.')
+        return adviser_confirmation
+ 
 # Create a project form 
 class ProjectForm(ModelForm): 
     # meta allows to sort of define things in a class
@@ -264,7 +292,7 @@ class ProjectForm(ModelForm):
         help_texts = {
             'adviser': 'You are not allowed to submit proposals to multiple advisers unless the all the previous proposals are declined first.',
         }
-
+        
         widgets = { 
             'title': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Project Title'}),
             'project_type': forms.Select(choices=project_type_choices, attrs={'class':'form-select'}), 

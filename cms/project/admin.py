@@ -105,7 +105,7 @@ class Project_GroupAdmin(admin.ModelAdmin):
 
 @admin.register(Defense_Application)
 class Defense_ApplicationAdmin(admin.ModelAdmin): 
-    fields = ('project', 'project_group', 'adviser', 'title', 'abstract', 'panel', 'document', 'owner', 'submission_date')
+    fields = ('project', 'project_group', 'adviser', 'title', 'abstract', 'panel', 'manuscript', 'revision_form', 'payment_receipt', 'adviser_confirmation', 'owner', 'submission_date')
     list_display = ('title', 'project', 'project_group', 'adviser' ,'submission_date')
     readonly_fields = ['submission_date', ]
 

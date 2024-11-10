@@ -260,10 +260,20 @@ a:hover {
 }
 
 .notification-item {
-    padding: 8px;
+    padding: 10px;
     border-bottom: 1px solid #eee;
+    transition: background-color 0.3s ease;
+}
+.notification-item.unread {
+    background-color: #f8f9fa;
 }
 
+.notification-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
 /* Style the notification badge */
 .notification-count {
     background-color: #dc3545; /* Red background */
@@ -272,7 +282,10 @@ a:hover {
     padding: 5px 10px; /* Padding for better appearance */
 }
 
-
+.notification-link:hover {
+    background-color: #e9ecef;
+    color: #007bff;
+}
 /* Add a background color to the navbar */
 .custom-navbar-bg {
     background-color: #343a40; /* Dark background */
