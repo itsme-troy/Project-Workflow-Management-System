@@ -29,7 +29,7 @@
             <tbody>
                 {% for faculty in facultys %}
                     {% if faculty.role == 'FACULTY' %}
-                    <tr data-adviser="{{ faculty.adviser_eligible|yesno:'true,false' }}" data-panelist="{{ faculty.panel_eligible|yesno:'true,false' }}">    <!-- <td> <img src="{% static 'images/default_profile_pic.jpg' %}"
+                    <tr data-adviser="{{ faculty.adviser_eligible|yesno:'true,false' }}" data-panelist="{{ faculty.panel_eligible|yesno:'true,false' }}" {% if faculty == user %}class="table-warning"{% endif %}>   <!-- <td> <img src="{% static 'images/default_profile_pic.jpg' %}"
                                     class="img-fluid rounded-start" alt="Profile Image">  </td> -->
                             <td> <strong> {{ forloop.counter }} </strong> </td>
                             <td>{{ faculty.last_name }}</td> 

@@ -71,6 +71,18 @@ def select_coordinator(request):
              # Set the current logged-in user's is_current_coordinator to False
             request.user.is_current_coordinator = False
             request.user.save()
+            
+            # Create a notification for the new coordinator
+            try:
+                Notification.objects.create(
+                    recipient=faculty,
+                    notification_type='ROLE_CHANGE',
+                    group=None,  # Assuming no group is associated with this notification
+                    sender=request.user,
+                    message=f"You have been appointed as the new Coordinator."
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for new coordinator: {str(e)}")
 
 
             messages.success(request, f"{user.get_full_name()} is now a Coordinator.")
@@ -110,6 +122,21 @@ def transfer_creator(request, group_id):
             group.creator = new_creator
             group.save()
             messages.success(request, f"Creator role has been transferred to {new_creator.get_full_name()}.")
+        
+            # Notify all proponents about the change
+            for member in group.proponents.all():
+                try:
+                    Notification.objects.create(
+                        recipient=member,
+                        notification_type='ROLE_TRANSFER',
+                        group=group,
+                        sender=request.user,
+                        message=f"The Leader Role has been transferred to {new_creator.get_full_name()}."
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to create notification for {member}: {str(e)}")
+        
+        
         else:
             messages.error(request, "Selected user is not an approved member of the group.")
 
@@ -120,8 +147,8 @@ def transfer_creator(request, group_id):
         'approved_members': group.proponents.exclude(id=request.user.id)
     })
 
-@login_required
-def accept_join_request(request, group_id, user_id):
+@login_required # Notification: Current members, 
+def accept_join_request(request, group_id, user_id): # Accept Join Request from a Student
     group = get_object_or_404(Project_Group, id=group_id)
     user = get_object_or_404(User, id=user_id)
 
@@ -140,6 +167,33 @@ def accept_join_request(request, group_id, user_id):
         group.pending_proponents.add(user.id)  # Ensure user object is used, not user.id
 
         messages.success(request, f"{user.get_full_name()} has been added to the group.")
+
+        # Notify the user that they have been added to the group
+        try:
+            Notification.objects.create(
+                recipient=user,
+                notification_type='ADDED_TO_GROUP',
+                group=group,
+                sender=request.user,
+                message=f"You have been added to {group.creator.get_full_name()}'s group."
+            )
+
+        except Exception as e:
+            logger.error(f"Failed to create notification for {user}: {str(e)}")
+
+        # Notify all proponents about the change
+        for member in group.proponents.all():
+            try:
+                Notification.objects.create(
+                    recipient=member,
+                    notification_type='NEW_MEMBER',
+                    group=group,
+                    sender=request.user,
+                    message=f"A new member has been added to the group, {user.get_full_name()}."
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for {member}: {str(e)}")
+
     else:
         messages.error(request, "This user has not requested to join the group.")
 
@@ -159,6 +213,32 @@ def decline_join_request(request, group_id, user_id):
         group.join_requests.remove(user.id)
         group.declined_requests.add(user.id)
         messages.success(request, f"{user.get_full_name()}'s join request has been declined.")
+    
+        # Notify the user that they have been declined to join the group
+        try:
+            Notification.objects.create(
+                recipient=user,
+                notification_type='DECLINED_JOIN_REQUEST',
+                group=None,
+                sender=request.user,
+                message=f"Your join request to {group.creator.get_full_name()}'s group has been declined."
+            )   
+        except Exception as e:
+            logger.error(f"Failed to create notification for {user}: {str(e)}")
+    
+        # Notify all proponents about the change
+        for member in group.proponents.all():
+            try:
+                Notification.objects.create(
+                    recipient=member,
+                    notification_type='DECLINED_JOIN_REQUEST',
+                    group=group,
+                    sender=request.user,
+                    message=f"{user.get_full_name()} join request has been declined."
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for {member}: {str(e)}")
+    
     else:
         messages.error(request, "This user has not requested to join the group.")
 
@@ -226,6 +306,19 @@ def request_join_group(request, group_id):
         group.join_requests.add(request.user.id)
         group.requests.add(request.user.id)
 
+         # Notify all current proponents about the join request
+        for proponent in group.proponents.all():
+            try:
+                Notification.objects.create(
+                    recipient=proponent,
+                    notification_type='JOIN_REQUEST',
+                    group=group,
+                    sender=request.user,
+                    message=f"{request.user.get_full_name()} has requested to join your Project Group."
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for {proponent}: {str(e)}")
+
         messages.success(request, 'Join request sent successfully.')
         
         return redirect('join-group-list')
@@ -244,6 +337,20 @@ def cancel_join_request(request, group_id):
         # Remove user from join requests
         group.join_requests.remove(request.user.id)
         group.requests.remove(request.user.id)
+
+        for member in group.proponents.all():
+            # Notify the project proponents that their a join request has been cancelled        
+            try:
+                Notification.objects.create(
+                    recipient=member,
+                    notification_type='JOIN_REQUEST_CANCELLED',
+                    group=group,
+                    sender=request.user,
+                    message=f"{request.user.get_full_name()}'s join request has been cancelled."
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for {request.user}: {str(e)}")
+
         messages.success(request, 'Join request cancelled successfully.')
         
         return redirect('join-group-list')
@@ -277,7 +384,17 @@ def submit_verdict(request, application_id):
             if not phase.phase_type:
                 phase.phase_type = latest_phase.phase_type  # or set to a default value if needed
             phase.save()
-
+            
+             # Create notifications for all proponents
+            for proponent in application.project.proponents.proponents.all():
+                Notification.objects.create(
+                    recipient=proponent,
+                    notification_type='VERDICT',
+                    group=application.project.proponents,
+                    sender=request.user,
+                                       message=f"The verdict for the {phase.get_phase_type_display()} phase of the project '{application.project.title}' is {phase.get_verdict_display()}.",
+                )
+            
             messages.success(request, "Verdict submitted successfully!")
             return redirect('list-defense-applications')
         else:
@@ -380,6 +497,29 @@ def submit_defense_application(request):
                     verdict='pending',
                     date=timezone.now()
                 )
+
+                # Send notifications to all proponents except the logged-in user
+                for proponent in project.proponents.proponents.all().exclude(id=request.user.id):
+                    Notification.objects.create(
+                        recipient=proponent,
+                        notification_type='SUBMITTED_DEFENSE_APPLICATION',
+                        group=project.proponents,
+                        sender=request.user,
+                                                message=f"A new defense application for the '{application.get_title_display()}' has been submitted for the project '{project.title}' by {request.user.get_full_name()}."
+                    )
+                # Send notification to the Coordinator
+            try:
+                coordinator = User.objects.get(is_current_coordinator=True)  # Adjust this query based on your model
+                Notification.objects.create(
+                    recipient=coordinator,
+                    notification_type='SUBMITTED_DEFENSE_APPLICATION',
+                    group=project.proponents,
+                    sender=request.user,
+                    message=f"A new defense application for the project '{project.title}' has been submitted by {request.user.get_full_name()}."
+                )
+            except User.DoesNotExist:
+                logger.error("No current coordinator found to notify.")
+
 
                 return HttpResponseRedirect('/submit_defense_application?submitted=True')
         else:
@@ -489,42 +629,42 @@ def my_defense_application(request):
     return render(request, 'project/my_defense_application.html', {
         'application_data': application_data
     })
-def delete_project_group(request, group_id): 
-    if request.user.is_authenticated: 
-        project_group = Project_Group.objects.get(pk=group_id)
-        if request.user == project_group.adviser: 
-            project_group.delete()
-            messages.success(request, "Project Group Deleted Succesfully! ")
-            return redirect('list-project-group')
-        else:
-            messages.success(request, "You Aren't Authorized to Delete this Group!")
-            return redirect('list-project-group')
-    else:
-        messages.success(request, "You Aren't Authorized to do this action")
-        return redirect('list-project-group')
+# def delete_project_group(request, group_id): 
+#     if request.user.is_authenticated: 
+#         project_group = Project_Group.objects.get(pk=group_id)
+#         if request.user == project_group.adviser: 
+#             project_group.delete()
+#             messages.success(request, "Project Group Deleted Succesfully! ")
+#             return redirect('list-project-group')
+#         else:
+#             messages.success(request, "You Aren't Authorized to Delete this Group!")
+#             return redirect('list-project-group')
+#     else:
+#         messages.success(request, "You Aren't Authorized to do this action")
+#         return redirect('list-project-group')
     
-def reject_project_group(request, group_id): 
-    project_group = Project_Group.objects.get(pk=group_id)
-    if request.user == project_group.adviser: 
-        project_group.approved = False
-        project_group.save()
-        messages.success(request, "Project Group has been rejected Succesfully! ")
-        return redirect('adviser-projects')
-    else:
-        messages.success(request, "You Aren't Authorized to do this action")
-        return redirect('adviser-projects')
+# def reject_project_group(request, group_id): 
+#     project_group = Project_Group.objects.get(pk=group_id)
+#     if request.user == project_group.adviser: 
+#         project_group.approved = False
+#         project_group.save()
+#         messages.success(request, "Project Group has been rejected Succesfully! ")
+#         return redirect('adviser-projects')
+#     else:
+#         messages.success(request, "You Aren't Authorized to do this action")
+#         return redirect('adviser-projects')
 
-def approve_project_group(request, group_id): 
-     # look on projects by ID 
-    project_group = Project_Group.objects.get(pk=group_id)
-    if request.user == project_group.adviser: 
-        project_group.approved = True
-        project_group.save()
-        messages.success(request, "Project Group Accepted Succesfully! ")
-        return redirect('adviser-projects')
-    else:
-        messages.success(request, "You Aren't Authorized to Accept this Proposal!")
-        return redirect('adviser-projects')
+# def approve_project_group(request, group_id): 
+#      # look on projects by ID 
+#     project_group = Project_Group.objects.get(pk=group_id)
+#     if request.user == project_group.adviser: 
+#         project_group.approved = True
+#         project_group.save()
+#         messages.success(request, "Project Group Accepted Succesfully! ")
+#         return redirect('adviser-projects')
+#     else:
+#         messages.success(request, "You Aren't Authorized to Accept this Proposal!")
+#         return redirect('adviser-projects')
 
 def list_project_group(request): 
     if request.user.is_authenticated: 
@@ -700,10 +840,10 @@ def approve_group_membership(request, group_id):
                 try:
                     Notification.objects.create(
                         recipient=member,
-                        notification_type='group_complete',
+                        notification_type='GROUP_COMPLETE',
                         group=group,
                         sender=request.user,
-                        message=f"Your project group '{group.name}' has been automatically approved with 3 members."
+                        message=f"Your Project Group, led by {group.creator.get_full_name()}, has been automatically approved with 3 members."
                     )
                 except Exception as e:
                     logger.error(f"Failed to create notification for {member}: {str(e)}")
@@ -714,7 +854,7 @@ def approve_group_membership(request, group_id):
             try:
                 Notification.objects.create(
                     recipient=group.creator,
-                    notification_type='accepted',
+                    notification_type='ACCEPTED',
                     group=group,
                     sender=request.user,
                     message=f"{request.user.get_full_name()} has accepted the invitation to join your project group. ({approved_students_count}/3 members)"
@@ -749,7 +889,7 @@ def reject_group_membership(request, group_id):
         try:
             Notification.objects.create(
                 recipient=proponent,
-                notification_type='rejected',
+                notification_type='REJECTED',
                 group=group,
                 sender=request.user,
                 message=f"{request.user.get_full_name()} has declined the invitation to join your project group."
@@ -786,7 +926,7 @@ def replace_member(request, group_id, member_id):
                 try:
                     Notification.objects.create(
                         recipient=new_members[0],
-                        notification_type='invitation',
+                        notification_type='INVITATION',
                         group=group,
                         sender=request.user,
                         message=f"{request.user.get_full_name()} has invited you to join the project group."
@@ -834,7 +974,7 @@ def leave_group(request, group_id):
         try:
             Notification.objects.create(
                 recipient=member,
-                notification_type='leave_group',
+                notification_type='LEAVE_GROUP',
                 group=group,
                 sender=request.user,
                 message=f"{request.user.get_full_name()} has left the project group."
@@ -885,6 +1025,19 @@ def finalize_group(request, group_id):
     group.approved = True
     group.save()
     
+    # Notify all current proponents about the group finalization
+    for member in group.proponents.all():
+        try:
+            Notification.objects.create(
+                recipient=member,
+                notification_type='GROUP_FINALIZED',
+                group=group,
+                sender=request.user,
+                message=f"The project group, led by {group.creator.get_full_name()}, has been finalized."
+            )
+        except Exception as e:
+            logger.error(f"Failed to create notification for {member}: {str(e)}")
+
     messages.success(request, "Group has been finalized successfully!")
     return redirect('my-project-group-waitlist')
 
@@ -927,10 +1080,10 @@ def invite_more_members(request, group_id):
                         try:
                             notification = Notification.objects.create(
                                 recipient=member,
-                                notification_type='invitation',
+                                notification_type='INVITATION',
                                 group=group,
                                 sender=request.user,
-                                message=f"{request.user.get_full_name()} has invited you to join the project group '{group.name}'"
+                                message=f"{request.user.get_full_name()} has invited you to join the project group led by'{group.creator}'"
                             )
                             logger.info(f"Successfully created notification {notification.id} for {member.get_full_name()}")
                         except Exception as notif_error:
@@ -1081,7 +1234,7 @@ def add_project_group(request):
                     # Create notification with error handling
                     notification = Notification.objects.create(
                         recipient=proponent,
-                        notification_type='invitation',
+                        notification_type='INVITATION',
                         group=project,
                         sender=student_creator,
                         message=f"{student_creator.get_full_name()} has invited you to join a project group."
@@ -1503,6 +1656,20 @@ def reject_project(request, project_id):
     if request.user == project.adviser: 
         project.status = 'declined'
         project.save()
+
+        # Notify all proponents about the project rejection
+        for proponent in project.proponents.proponents.all():
+            try:
+                Notification.objects.create(
+                    recipient=proponent,
+                    notification_type='PROJECT_REJECTED',
+                    group=project.proponents,
+                    sender=request.user,
+                    message=f"Your project '{project.title}' has been rejected by the adviser: {request.user.get_full_name()}."
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for {proponent}: {str(e)}")
+
         messages.success(request, "Project has been moved to 'Proposals' Succesfully ! ")
         return redirect('adviser-projects')
     else:
@@ -1523,6 +1690,19 @@ def accept_proposal(request, project_id):
         # Approve the current proposal
         project.status = 'approved'
         project.save()
+
+        # Notify all proponents about the project acceptance
+        for proponent in project.proponents.proponents.all():
+            try:
+                Notification.objects.create(
+                    recipient=proponent,
+                    notification_type='PROJECT_ACCEPTED',
+                    group=project.proponents,
+                    sender=request.user,
+                    message=f"Your project '{project.title}' has been accepted by the adviser: {request.user.get_full_name()}."
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for {proponent}: {str(e)}")
         
         messages.success(request, "Proposal Accepted Successfully!")
     else:
@@ -1568,6 +1748,21 @@ def select_panelist(request, project_id):
         form.instance.adviser = project.adviser
         form.instance.description = project.description
         form.save()
+
+        # Create notifications for the selected panelists
+        selected_panelists = form.cleaned_data['panel']
+        for panelist in selected_panelists:
+            try:
+                Notification.objects.create(
+                    recipient=panelist,
+                    notification_type='PANELIST_SELECTED',
+                    group=project.proponents,
+                    sender=request.user,
+                    message=f"You have been selected as a panelist for the project '{project.title}'."
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for {panelist}: {str(e)}")
+
 
         messages.success(request, "Project Panel Updated Successfully!")
         return redirect('adviser-projects')

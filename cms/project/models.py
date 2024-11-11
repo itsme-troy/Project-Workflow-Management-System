@@ -273,16 +273,28 @@ class Approved_student(Student):
 
 class Notification(models.Model):
     NOTIFICATION_TYPES = (
-        ('invitation', 'Group Invitation'),
-        ('accepted', 'Group Invitation Accepted'),
-        ('rejected', 'Group Invitation Rejected'),
-        ('group_complete', 'Group Update'),
-        ('leave_group', 'Group Update'),
-    )
+        ('INVITATION', 'Group Invitation'),
+        ('ACCEPTED', 'Accepted Group Invitation '),
+        ('REJECTED', 'Rejected Group Invitation'),
+        ('GROUP_COMPLETE', 'Group Completion'),
+        ('GROUP_FINALIZED', 'Group Finalization'),
+        ('LEAVE_GROUP', 'Left Group'),
+        ('ROLE_CHANGE', 'New Coordinator'),
+        ('ROLE_TRANSFER', 'Leader Role Transfer'),
+        ('NEW_MEMBER', 'New Member Added'),
+        ('ADDED_TO_GROUP', 'You have been added to a group'),
+        ('DECLINED_JOIN_REQUEST', 'Join Request Declined'),
+        ('JOIN_REQUEST', 'Join Request'),
+        ('JOIN_REQUEST_CANCELLED', 'Join Request Cancelled'),   
+        ('VERDICT', 'Verdict'),
+        ('PROJECT_ACCEPTED', 'Project Accepted'),
+        ('PROJECT_REJECTED', 'Project Rejected'),
+        ('SUBMITTED_DEFENSE_APPLICATION', '[Defense Application]'),
+    )   
 
     recipient = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='notifications')
-    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES)
-    group = models.ForeignKey('Project_Group', on_delete=models.CASCADE)
+    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
+    group = models.ForeignKey('Project_Group', on_delete=models.CASCADE, null=True, blank=True)
     sender = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='sent_notifications')
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

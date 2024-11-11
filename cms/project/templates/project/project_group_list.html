@@ -20,12 +20,10 @@
             </tr>
         </thead>
         <tbody>
-            {% for group_data in project_groups_with_proponents %}
-                <tr>
+            {% for group_data in project_groups_with_proponents %}  
+                <tr {% if user in group_data.proponents %}class="table-warning"{% endif %}>
                     <td> <strong> {{ forloop.counter }} </strong> </td>
                     {% for proponent in group_data.proponents %}
-                        
-
                         <td>
                             {% if proponent %}
                                 {{ proponent.first_name }} {{ proponent.last_name }}

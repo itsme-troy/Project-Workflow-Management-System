@@ -9,23 +9,23 @@
     <script src="{% static 'project/static/js/custom.js' %}"></script>
   </head> 
   
-{% block content %}
-<div class="container mt-5">
-    <h1 class="display-4 text-center">Your Notifications</h1>
-    <hr class="my-4">
-    {% if notifications %}
-        <ul class="list-group">
-            {% for notification in notifications %}
-                <li class="list-group-item notification-item {% if not notification.is_read %}unread{% endif %}">
-                    <a href="{% url 'my-project-group-waitlist' %}" class="notification-link">
-                        <strong>{{ notification.get_notification_type_display }}:</strong> {{ notification.message }}
-                        <small class="text-muted float-right">{{ notification.created_at|date:"F j, Y, g:i a" }}</small>
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p class="text-center">You have no notifications.</p>
-    {% endif %}
-</div>
-{% endblock %}
+    {% block content %}
+    <div class="container mt-5">
+        <h1 class="display-4 text-center">Your Notifications</h1>
+        <hr class="my-4">
+        {% if notifications %}
+            <ul class="list-group">
+                {% for notification in notifications %}
+                    <li class="list-group-item notification-item {% if not notification.is_read %}unread{% endif %}">
+                        <a href="{% url 'my-project-group-waitlist' %}" class="notification-link">
+                            <strong>{{ notification.get_notification_type_display }}:</strong> {{ notification.message }}
+                            <div class="text-muted text-end float-right">{{ notification.created_at|date:"F j, Y, g:i a" }}</div>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-center">You have no notifications.</p>
+        {% endif %}
+    </div>
+    {% endblock %}

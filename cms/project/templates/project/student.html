@@ -26,7 +26,7 @@
             <tbody>
                 {% for student in student_list %}
                     {% if student.role == 'STUDENT' %}
-                    <tr data-eligible="{{ student.eligible|yesno:'true,false' }}">
+                    <tr data-eligible="{{ student.eligible|yesno:'true,false' }}" {% if student == user %}class="table-warning"{% endif %}>
                             <td> <strong> {{ forloop.counter }} </strong> </td>
                             <td>{{ student.last_name }}</td>
                             <td>{{ student.first_name }}</td>

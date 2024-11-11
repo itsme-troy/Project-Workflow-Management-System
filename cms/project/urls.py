@@ -67,13 +67,13 @@ urlpatterns = [
     path('show_faculty/<faculty_id>', views.show_faculty, name='show-faculty'),
     path('update_deficiencies/<student_id>', views.update_deficiencies, name='update_deficiencies'), 
 
-    path('approve_project_group/<group_id>', views.approve_project_group, name='approve-project-group'), 
-    path('reject_project_group/<group_id>', views.reject_project_group, name='reject-project-group'),
-    path('delete_project_group/<group_id>', views.delete_project_group, name='delete-project-group'),
+    # path('approve_project_group/<group_id>', views.approve_project_group, name='approve-project-group'), 
+    # path('reject_project_group/<group_id>', views.reject_project_group, name='reject-project-group'),
+    # path('delete_project_group/<group_id>', views.delete_project_group, name='delete-project-group'),
 
     # path('get_notifications/', views.get_notifications, name='get_notifications'),
     path('mark_notification_read/<int:notification_id>/', views.mark_notification_read, name='mark_notification_read'),
     
     path('notifications/', views.notifications_view, name='notifications'),
-
+    
 ]

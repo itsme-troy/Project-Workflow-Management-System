@@ -25,7 +25,7 @@
       {% for project in projects %}
          {% if project.status == 'approved' %}
 
-            <tr>
+          <tr {% if user in project.proponents.proponents.all %}class="table-warning"{% endif %}>
               <td> <strong> {{ forloop.counter }} </strong> </td>
               <td> <a href ="{% url 'show-project' project.id %}" > {{ project.title}} </a>  </td> 
               <td>  {{ project.adviser}} </td> 
