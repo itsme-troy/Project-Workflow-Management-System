@@ -289,7 +289,15 @@ class Notification(models.Model):
         ('VERDICT', 'Verdict'),
         ('PROJECT_ACCEPTED', 'Project Accepted'),
         ('PROJECT_REJECTED', 'Project Rejected'),
-        ('SUBMITTED_DEFENSE_APPLICATION', '[Defense Application]'),
+        ('SUBMITTED_DEFENSE_APPLICATION', 'Defense Application'),
+        ('PANELIST_SELECTED', 'Panelist Selected'),
+        ('MEMBER_REMOVAL', 'Member Removed'),
+        ('ADVISER_ELIGIBILITY', 'Adviser Eligibility'),
+        ('PANELIST_ELIGIBILITY', 'Panelist Eligibility'),
+        ('COMMENTS_UPDATED', 'Comments Updated'),
+        ('NEW_PROJECT_PROPOSAL', 'New Project Proposal'),
+        ('PANELIST_DECLINE', 'Panelist Decline'), 
+        ('PANELIST_SELECTED', 'Panelist Selected'), 
     )   
 
     recipient = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='notifications')

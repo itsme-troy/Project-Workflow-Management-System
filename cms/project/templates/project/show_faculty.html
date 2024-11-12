@@ -5,7 +5,7 @@
     .card {
         margin-left: 15px; /* Adjust as needed */
     }
-    
+    /* Add any additional styles from show_student.html */
 </style> 
 <body> 
 </br> 
@@ -35,45 +35,32 @@
         </div>
     </div>
 </div>
-        <div class="col-4"> 
-            
-        </br> 
-            <h3> Advisees: </h3> 
-            {% for group in project_group %}
-
-                <div class="card" style="width: 20rem;">
-                    <div class="card-header">
-                    Adviser: {{ group.adviser }} </br> 
-                   
-                </div>
-                    {% for faculty in group.proponents.all %}
-    
-                        <ul class="list-group list-group-flush">
-                        <li class="list-group-item"> {{ faculty }} </br> </li>
-                        </ul>
-                   
-                    {% endfor %}
-                </div>
-            </br> 
+<div class="col-4"> 
+    </br> 
+    <h3> Advisees: </h3> 
+    {% for group in project_group %}
+        <div class="card" style="width: 20rem;">
+            <div class="card-header">
+            Adviser: {{ group.adviser }} </br> 
+            </div>
+            {% for faculty in group.proponents.all %}
+                <ul class="list-group list-group-flush">
+                <li class="list-group-item"> {{ faculty }} </br> </li>
+                </ul>
             {% endfor %}
-             
-            
-        </br>   </br> 
-            <a href="{% url 'update-user' %}" class="btn btn-secondary"> Update Profile</a> </br> </br> 
-                  
         </div>
-            
-        <div> 
-               
-        </div> 
-       
-    </div>
+    </br> 
+    {% endfor %}
+    </br>   </br> 
+    <a href="{% url 'update-user' %}" class="btn btn-secondary"> Update Profile</a> </br> </br> 
 </div>
-        
+<div> 
+</div> 
+</div>
+</div>
 
-
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body> 
-{% endblock %}
+{% endblock %}x

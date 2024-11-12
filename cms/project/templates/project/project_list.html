@@ -28,7 +28,7 @@
           <tr {% if user in project.proponents.proponents.all %}class="table-warning"{% endif %}>
               <td> <strong> {{ forloop.counter }} </strong> </td>
               <td> <a href ="{% url 'show-project' project.id %}" > {{ project.title}} </a>  </td> 
-              <td>  {{ project.adviser}} </td> 
+              <td class="{% if project.adviser == user %}table-warning{% endif %}">  {{ project.adviser}} </td> 
               <td>  {{ project.proponents}} </td>
               <td>  {{ project.project_type}} </td>
               <td><span class="badge 

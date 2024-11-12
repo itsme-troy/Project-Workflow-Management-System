@@ -1,3 +1,19 @@
+.highlight {
+    background-color: #d1e7dd; /* Light green background for highlight */
+    font-weight: bold; /* Bold text for emphasis */
+}
+.btn-danger {
+    background-color: #dc3545; /* Bootstrap's danger color */
+    color: #ffffff; /* White text */
+    border: none; /* Remove border */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #c82333; /* Darker shade on hover */
+    color: #ffffff;
+}
+
 .btn-link {
     display: inline-block;
     color: #007bff;
@@ -256,16 +272,28 @@ a:hover {
 }
 
 .unread {
-    background-color: #f8f9fa;
+    background-color: #e7f3fe; /* Light blue background for unread notifications */
+    font-weight: bold; /* Bold text for unread notifications */
+    border-left: 4px solid #007bff; /* Add a blue border to the left for emphasis */
+}
+
+.notification-list {
+    max-height: 300px; /* Set a maximum height for the notifications list */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 1px solid #dee2e6; /* Optional: Add a border for better visibility */
+    border-radius: 4px; /* Optional: Rounded corners */
+    margin-top: 10px; /* Optional: Space above the list */
+    background-color: #ffffff; /* White background for contrast */
 }
 
 .notification-item {
-    padding: 10px;
+    padding: 15px;
     border-bottom: 1px solid #eee;
     transition: background-color 0.3s ease;
 }
 .notification-item.unread {
-    background-color: #f8f9fa;
+    background-color: #f8f9fa; /* Light gray background for unread notifications */
+    font-weight: bold; /* Bold text for unread notifications */
 }
 
 .notification-link {
@@ -282,9 +310,8 @@ a:hover {
     padding: 5px 10px; /* Padding for better appearance */
 }
 
-.notification-link:hover {
-    background-color: #e9ecef;
-    color: #007bff;
+.notification-item:hover {
+    background-color: #f1f1f1; /* Light gray background on hover */
 }
 /* Add a background color to the navbar */
 .custom-navbar-bg {

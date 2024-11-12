@@ -2,70 +2,44 @@
 
 {% block content %}
 
-</br> 
-<center> 
-
-<div class="container text-center"> 
+<div class="container text-center mt-4"> 
     <div class="row"> 
-        <div class="col-8"> 
-            <h1> {{user.first_name }} {{ user.last_name }}'s Profile </h1> <br></br>
-            <h5> First name: {{ user.first_name }} </h5>  
-            <h5> Last Name:  {{ user.last_name }} </h5> 
-            <h5> Email:  {{ user.email }}</h5> 
-            <h5> Contact phone:  {{ user.phone }}</h5>  
-            <h5> {{ user.email }} </h5> </br> 
-            <h5> {{ user.role }} </h5>   </br> 
-
+        <div class="col-md-8"> 
+            <h1>{{ user.first_name }} {{ user.last_name }}'s Profile</h1>
+            <p>First name: {{ user.first_name }}</p>  
+            <p>Last Name: {{ user.last_name }}</p> 
+            <p>Email: {{ user.email }}</p> 
+            <p>Contact phone: {{ user.phone }}</p>  
+            <p>Role: {{ user.role }}</p>
         </div>
 
-        <div class="col-4"> 
+        <div class="col-md-4"> 
             {% if user.profile_image %}
-                <img src= "{{ user.profile_image.url }}"
-                width=250 height=250 class="rounded-circle"> <br/> </br> 
+                <img src="{{ user.profile_image.url }}" width="300" height="300" class="rounded-circle mb-3" alt="Profile Image">
+            {% else %}
+                <img src="/static/images/default_profile_pic.jpg" width="300" height="300" class="rounded-circle mb-3" alt="Default Profile Image">
+            {% endif %}
             
-            {% else %} </br> 
-                <img src= "/static/images/default_profile_pic.jpg" 
-                width=250 height=250 class="rounded-circle"> <br/> </br>  
-                
-            {% endif %} </br> 
-            
-            <center>
-            <strong>  Advisees </strong>
-         </center> </br>
+            <h3>Advisees</h3>
             
             {% for project in projects %}
                 {% if project.status == 'approved' %}
-                    <div class="card" style="width: 18rem;">
+                    <div class="card mb-3" style="width: 18rem;">
                         <div class="card-header">
-                        Adviser: {{ project.adviser }} </br> 
-                    
-                    </div>
-                        {% for student in project.proponents.proponents.all %}
-        
-                            <ul class="list-group list-group-flush">
-                            <li class="list-group-item"> {{ student }} </br> </li>
-                            </ul>
-                    
-                        {% endfor %}
+                            Adviser: {{ project.adviser }}
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for student in project.proponents.proponents.all %}
+                                <li class="list-group-item">{{ student }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 {% endif %}
-                </br> 
             {% endfor %}
             
-        </br>   </br> 
-            <a href="{% url 'update-user' %}" class="btn btn-secondary"> Update Profile</a> </br> </br> 
-                  
+            <a href="{% url 'update-user' %}" class="btn btn-secondary mt-3">Update Profile</a>
         </div>
-            
-        <div> 
-               
-        </div> 
-       
-      
     </div>
 </div>
-        
-</center> 
-
 
 {% endblock %}

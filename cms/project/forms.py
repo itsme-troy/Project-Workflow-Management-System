@@ -59,7 +59,7 @@ class ProjectGroupInviteForm(ModelForm):
 
             # Set the queryset to exclude existing members and users in approved groups
             self.fields['proponents'].queryset = (
-                Student.objects.filter(role='STUDENT')
+                Student.objects.filter(role='STUDENT', eligible=True)
                 .exclude(id__in=existing_member_ids)
                 .exclude(id__in=users_in_approved_groups)
             )
@@ -119,7 +119,7 @@ class ProjectGroupForm(ModelForm):
                 self.initial['proponents'] = [user.id] + list(initial_proponents)  # Pre-select logged-in user's ID
 
              # Adjust the queryset to exclude users with approved project groups
-            self.fields['proponents'].queryset = self.fields['proponents'].queryset.exclude(id__in=approved_users)
+            self.fields['proponents'].queryset = self.fields['proponents'].queryset.exclude(id__in=approved_users).filter(eligible=True)
 
             # Adjust the queryset to include the logged-in user but prevent them from being deselected
             self.fields['proponents'].queryset = self.fields['proponents'].queryset.exclude(id=user.id) | self.fields['proponents'].queryset.filter(id=user.id)
@@ -168,7 +168,6 @@ class VerdictForm(forms.ModelForm):
             self.fields['verdict'].choices = [
                 choice for choice in ProjectPhase.RESULT_CHOICES if choice[0] != 'redefense'
             ]
-
   
 class CapstoneSubmissionForm(ModelForm):
     class Meta:
@@ -311,6 +310,13 @@ class ProjectForm(ModelForm):
             if field.help_text:
                 field.help_text = f'<small class="form-text text-muted">{field.help_text}</small>'
 
+        # Filter the queryset for the adviser field
+        self.fields['adviser'].queryset = User.objects.filter(adviser_eligible=True)
+
+         # Filter the queryset for the panel field
+        self.fields['panel'].queryset = User.objects.filter(panel_eligible=True)
+
+
         # Disable the proponents field
         self.fields['proponents'].widget.attrs['disabled'] = 'disabled'
 
@@ -418,12 +424,19 @@ class SelectPanelistForm(ModelForm):
             missing_names = ', '.join(f"{panelist.first_name} {panelist.last_name}" for panelist in missing_panelists)  # Assuming 'name' is the attribute
             errors.append(f"The selected panelist(s) of students; {missing_names}, must remain selected.")
 
-        # Allow only one additional panelist beyond the pre-selected one
-        additional_panelists = panelists.exclude(id__in=[p.id for p in self.pre_selected_panelist])
-        if len(additional_panelists) > 1:
-            pre_selected_names = ', '.join(f"{panelist.first_name} {panelist.last_name}" for panelist in self.pre_selected_panelist)
-            errors.append(f"You can only select one additional panelist in addition to the selected panelist(s) of students: {pre_selected_names}.")
-        
+        # Allow up to 2 additional panelists if no pre-selected panelists exist
+        if not self.pre_selected_panelist:
+            # Remove pre-selection if no panelists are selected
+            self.fields['panel'].initial = []  # Clear pre-selection
+            if len(panelists) > 2:
+                errors.append("You can only select up to 2 panelists.")
+        else:
+            # Allow only one additional panelist beyond the pre-selected one
+            additional_panelists = panelists.exclude(id__in=[p.id for p in self.pre_selected_panelist])
+            if len(additional_panelists) > 1:
+                pre_selected_names = ', '.join(f"{panelist.first_name} {panelist.last_name}" for panelist in self.pre_selected_panelist)
+                errors.append(f"You can only select one additional panelist in addition to the selected panelist(s) of students: {pre_selected_names}.")
+            
          # Add errors to the form if there are any
         if errors:
             for error in errors:

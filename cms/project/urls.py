@@ -5,6 +5,9 @@ urlpatterns = [
 #    path('profile_list/', views.profile_list, name='profile_list'),
 #   path('profile/<int:pk>', views.profile, name='profile'),
 
+    path('reject-panel-invitation/<int:project_id>/', views.reject_panel_invitation, name='reject-panel-invitation'),
+
+
     path("", views.home, name="home"),
     path('projects', views.all_projects, name="list-projects"),
     path('proposals', views.all_proposals, name="list-proposals"),
@@ -30,6 +33,7 @@ urlpatterns = [
     path('coordinator_projects', views.coordinator_projects, name='coordinator-projects'),
     path('adviser_projects', views.adviser_projects, name='adviser-projects'),
     path('adviser_proposals', views.adviser_proposals, name='adviser-proposals'),
+    path('panel_projects', views.panel_projects, name='panel-projects'),
     
 
     path('coordinator_approval_faculty', views.coordinator_approval_faculty, name='coordinator-approval-faculty'),
@@ -75,5 +79,5 @@ urlpatterns = [
     path('mark_notification_read/<int:notification_id>/', views.mark_notification_read, name='mark_notification_read'),
     
     path('notifications/', views.notifications_view, name='notifications'),
-    
+    path('delete_notification/<int:notification_id>/', views.delete_notification, name='delete_notification'),
 ]

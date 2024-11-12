@@ -11,7 +11,7 @@ from .models import Defense_Application
 from .models import Student, Faculty, Coordinator
 from .models import StudentProfile, FacultyProfile, CoordinatorProfile, ProjectPhase
 from .models import ApprovedProject, ApprovedProjectGroup, Not_ApprovedProject
-from .models import Approved_Adviser, Approved_panel, Approved_student, Notification
+from .models import Approved_Adviser, Approved_panel, Notification, Approved_student
 #admin.site.register(Project_Group)
 admin.site.register(AppUser)
 admin.site.register(Student)

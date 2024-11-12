@@ -35,6 +35,83 @@ logger = logging.getLogger(__name__)
 from django.contrib.auth import get_user_model 
 User = get_user_model()
 
+
+@login_required
+def reject_panel_invitation(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+
+    # Check if the user is a panelist for the project
+    if request.user in project.panel.all():
+        project.panel.remove(request.user.id)  # Remove the user from the panelists
+        messages.success(request, f"You have successfully declined to serve as a panelist for the Project '{project.title}'.")
+        
+        # notify other users about the rejection
+        for proponent in project.proponents.proponents.all():
+            Notification.objects.create(
+                recipient=proponent,
+                notification_type='PANELIST_DECLINE',
+                group=project.proponents,
+                sender=request.user,
+                message=f"{request.user.get_full_name()} has declined to serve as a Panelist for the project '{project.title}'."
+            )
+        # Notify the project adviser about the rejection
+        if project.adviser:  # Check if there is an adviser assigned
+            Notification.objects.create(
+                recipient=project.adviser,
+                notification_type='PANELIST_DECLINE',
+                group=project.proponents,
+                sender=request.user,
+                message=f"{request.user.get_full_name()} has declined to serve as a Panelist for the project '{project.title}'."
+            )
+    else:
+        messages.error(request, "You are not a panelist for this project.")
+
+    return redirect('panel-projects')  # Redirect to the appropriate page
+
+@login_required
+def notifications_view(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "Please login to view your notifications.")
+        return redirect('login')
+
+    # Fetch all notifications for the logged-in user
+    notifications = Notification.objects.filter(recipient=request.user).order_by('-created_at')
+    unread_notifications = Notification.objects.filter(recipient=request.user, is_read=False)
+    
+    # Mark all notifications as read
+    notifications.update(is_read=True)
+
+    return render(request, 'project/notifications.html', {
+        'notifications': notifications,
+        'unread_notifications': unread_notifications, 
+
+    })
+
+from django.views.decorators.http import require_POST
+
+@require_POST
+@login_required 
+def mark_notification_read(request, notification_id):
+    try:
+        notification = Notification.objects.get(id=notification_id, recipient=request.user)
+        notification.is_read = True
+        notification.save()
+        return JsonResponse({'success': True})
+    except Notification.DoesNotExist:
+        return JsonResponse({'error': 'Notification not found'}, status=404)
+    
+from django.views.decorators.http import require_http_methods
+
+@require_http_methods(["DELETE"])
+@login_required
+def delete_notification(request, notification_id):
+    try:
+        notification = Notification.objects.get(id=notification_id, recipient=request.user)
+        notification.delete()
+        return JsonResponse({'success': True})
+    except Notification.DoesNotExist:
+        return JsonResponse({'error': 'Notification not found'}, status=404)
+
 @login_required
 def select_coordinator(request):
     # Allow access if the user is a superuser or the current coordinator
@@ -245,6 +322,10 @@ def decline_join_request(request, group_id, user_id):
     return redirect('my-project-group-waitlist')
 
 def join_group_list(request):
+    if request.user.is_authenticated and request.user.eligible == False: 
+        messages.error(request, "Only Eligible Students are able to request to join a Project Group. Please Contact Coordinator to for assistance with Eligibility Concerns")
+        return redirect('home')
+    
     # Get all unapproved groups that aren't full
     available_groups = Project_Group.objects.filter(approved=False)
 
@@ -282,6 +363,12 @@ def join_group_list(request):
     return render(request, 'project/join_group.html', context)
 
 def request_join_group(request, group_id):
+    
+
+    if request.user.is_authenticated and request.user.eligible == False: 
+        messages.error(request, "Only Eligible Students are able to request to join a Project Group. Please Contact Coordinator to for assistance with Eligibility Concerns")
+        return redirect('home')
+
     if request.method == 'POST':
         group = get_object_or_404(Project_Group, id=group_id, approved=False)
         
@@ -1004,7 +1091,24 @@ def remove_member(request, group_id, member_id):
     else:
         messages.error(request, "This member is not in the pending or declined list.")
     
+        return redirect('my-project-group-waitlist')
+
+    # Notify all proponents about the removal
+    for proponent in group.proponents.all():
+        try:
+            Notification.objects.create(
+                recipient=proponent,
+                notification_type='MEMBER_REMOVAL',
+                group=group,
+                sender=request.user,
+                message=f"{member.get_full_name()} has been removed from the project group."
+            )
+        except Exception as e:
+            logger.error(f"Failed to create notification for {proponent}: {str(e)}")
+    
     return redirect('my-project-group-waitlist')
+
+
 
 @login_required
 def finalize_group(request, group_id):
@@ -1141,40 +1245,14 @@ from django.contrib.auth.decorators import login_required
 #         'unread_count': unread_count
 #     })
 
-def notifications_view(request):
-    if not request.user.is_authenticated:
-        messages.error(request, "Please login to view your notifications.")
-        return redirect('login')
-
-    # Fetch all notifications for the logged-in user
-    notifications = Notification.objects.filter(recipient=request.user).order_by('-created_at')
-
-
-    # Mark all notifications as read
-    notifications.update(is_read=True)
-
-    return render(request, 'project/notifications.html', {
-        'notifications': notifications
-    })
-
-from django.views.decorators.http import require_POST
-
-@require_POST
-@login_required 
-def mark_notification_read(request, notification_id):
-    try:
-        notification = Notification.objects.get(id=notification_id, recipient=request.user)
-        notification.is_read = True
-        notification.save()
-        return JsonResponse({'success': True})
-    except Notification.DoesNotExist:
-        return JsonResponse({'error': 'Notification not found'}, status=404)
-    
 def add_project_group(request): 
     if not request.user.is_authenticated or request.user.role != 'STUDENT':
         messages.error(request, "Please login as a student to perform this action")
         return redirect('home')
 
+    if request.user.is_authenticated and request.user.eligible == False: 
+        messages.error(request, "Only Eligible Students are able to register a Project Group. Please Contact Coordinator to for assistance with Eligibility Concerns")
+        return redirect('home')
     # Check for existing approved groups 
     approved_groups = Project_Group.objects.filter(proponents=request.user, approved=True)
     
@@ -1426,6 +1504,15 @@ def coordinator_approval_faculty(request):
                 for x in id_list: 
                     User.objects.filter(pk=int(x)).update(adviser_eligible=True)
                 
+                    # try:
+                    #     Notification.objects.create(
+                    #         recipient=User.objects.get(pk=int(x)),
+                    #         notification_type='ADVISER_ELIGIBILITY',
+                    #         message="You have been marked as eligible to be an adviser."
+                    #     )
+                    # except Exception as e:
+                    #     logger.error(f"Failed to create notification for adviser eligibility: {str(e)}")
+
                 panel_id_list = request.POST.getlist('box')
                 
                 # Unchecked all users 
@@ -1648,7 +1735,53 @@ def adviser_proposals(request):
         "not_approved_page_obj": not_approved_page_obj,
         "not_approved_nums": not_approved_nums,
     })
+def panel_projects(request): 
+    if not request.user.is_authenticated: 
+        messages.error(request, "Please Login to view this page")
+        return redirect('home')
+    
+    if request.user.role != 'FACULTY': 
+        messages.error(request, "You are not authorized to view this page")
+        return redirect('home')
 
+    # Instead of filtering by adviser, filter by panel members
+    approved_projects = Project.objects.filter(panel=request.user, status='approved').order_by('title')
+    
+    approved_paginator = Paginator(approved_projects, 5)  # Show 10 projects per page
+    approved_page_number = request.GET.get('approved_page')
+    approved_page_obj = approved_paginator.get_page(approved_page_number)  
+    approved_nums = "a" * approved_page_obj.paginator.num_pages
+
+    # Prepare data for each project with its groups and proponents
+    approved_projects_with_groups = []
+    for project in approved_page_obj:
+        project_group = Project_Group.objects.filter(project=project, approved=True).first()
+        
+        # Fetch the project where the current group are the proponents
+        # This line is no longer necessary since we already have the project
+        # project = Project.objects.filter(proponents=project_group, status='approved').first()
+        
+        if project_group: 
+            proponents = list(project_group.proponents.all())
+            proponents += [None] * (3 - len(proponents))  # Pad to exactly 3 proponents
+            
+            # Fetch panel members directly from the project_group
+            panel_members = list(project.panel.all())  # Fetch panel members
+            panel_members += [None] * (3 - len(panel_members))  # Pad to exactly 3 panel members
+            
+            approved_projects_with_groups.append({
+                'project': project,
+                'group': project_group,
+                'proponents': proponents, 
+                'panel': panel_members,
+                # 'status': project.status,
+            })
+
+    return render(request, 'project/panel_projects.html', {
+        "approved_projects_with_groups": approved_projects_with_groups,
+        "approved_page_obj": approved_page_obj,
+        "approved_nums": approved_nums,
+    })
 
 def reject_project(request, project_id):
     # look on projects by ID 
@@ -1739,6 +1872,9 @@ def select_panelist(request, project_id):
         form = SelectPanelistForm(request.POST or None, instance=project)
         form.user = request.user # pass the user to the form
 
+        # Capture the initial panelists
+        # initial_panelists = set(project.panel.all())
+
     # save data to the database and return somewhere 
     if form.is_valid():
         # Handle disabled fields by reassigning their initial values before saving
@@ -1749,8 +1885,10 @@ def select_panelist(request, project_id):
         form.instance.description = project.description
         form.save()
 
-        # Create notifications for the selected panelists
-        selected_panelists = form.cleaned_data['panel']
+        # Get the newly selected panelists
+        selected_panelists = set(form.cleaned_data['panel'])
+        # new_panelists = selected_panelists - initial_panelists
+
         for panelist in selected_panelists:
             try:
                 Notification.objects.create(
@@ -1758,10 +1896,35 @@ def select_panelist(request, project_id):
                     notification_type='PANELIST_SELECTED',
                     group=project.proponents,
                     sender=request.user,
-                    message=f"You have been selected as a panelist for the project '{project.title}'."
+                    message=f"You have been selected as a panelist for the project '{project.title}' with the Adviser: {request.user.get_full_name()}."
                 )
             except Exception as e:
                 logger.error(f"Failed to create notification for {panelist}: {str(e)}")
+
+         # Notify all proponents about the panelist selection
+        for proponent in project.proponents.proponents.all():  # Changed from selected_panelists to project.proponents.proponents.all()
+            try:
+                Notification.objects.create(
+                    recipient=proponent,
+                    notification_type='PANELIST_SELECTED',
+                    group=project.proponents,
+                    sender=request.user,
+                    message=f"The Panel for the project '{project.title}' has been updated. Panelists: {', '.join([panelist.get_full_name() for panelist in selected_panelists])}."
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for {proponent}: {str(e)}")
+
+        try:
+            coordinator = User.objects.get(is_current_coordinator=True)  # Adjust this query based on your model
+            Notification.objects.create(
+                recipient=coordinator,
+                notification_type='PANELIST_SELECTED',
+                group=project.proponents,
+                sender=request.user,
+                message=f"The Panel for the project '{project.title}' has been updated. New panelists: {', '.join([panelist.get_full_name() for panelist in selected_panelists])}."
+            )
+        except User.DoesNotExist:
+            logger.error("No current coordinator found to notify.")
 
 
         messages.success(request, "Project Panel Updated Successfully!")
@@ -1796,6 +1959,10 @@ def select_panelist_coordinator(request, project_id):
     form = CoordinatorSelectPanelistForm(request.POST or None, instance=project)
     form.user = request.user # pass the user to the form
     # save data to the database and return somewhere 
+    
+    # Capture the initial panelists
+    initial_panelists = set(project.panel.all())
+    
     if form.is_valid():
         # Handle disabled fields by reassigning their initial values before saving
         form.instance.title = project.title
@@ -1805,7 +1972,49 @@ def select_panelist_coordinator(request, project_id):
         form.instance.description = project.description
         form.save()
 
-    
+        # Get the newly selected panelists
+        selected_panelists = set(form.cleaned_data['panel'])
+        new_panelists = selected_panelists - initial_panelists
+
+        for panelist in new_panelists:
+            try:
+                Notification.objects.create(
+                    recipient=panelist,
+                    notification_type='PANELIST_SELECTED',
+                    group=project.proponents,
+                    sender=request.user,
+                    message=f"You have been selected as a panelist for the project '{project.title}' by coordinator {request.user.get_full_name()}."
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for {panelist}: {str(e)}")
+
+        # Notify the project adviser about the panelist selection
+        try:
+            Notification.objects.create(
+                recipient=project.adviser,
+                notification_type='PANELIST_SELECTED',
+                group=project.proponents,
+                sender=request.user,
+                message=f"The Panel for the project '{project.title}' has been updated. New panelists: {', '.join([panelist.get_full_name() for panelist in selected_panelists])}."
+            )
+        except Exception as e:
+            logger.error(f"Failed to create notification for adviser {project.adviser}: {str(e)}")
+
+
+        # Notify all proponents about the panelist selection
+        for proponent in project.proponents.proponents.all():  # Changed from selected_panelists to project.proponents.proponents.all()
+            try:
+                Notification.objects.create(
+                    recipient=proponent,
+                    notification_type='PANELIST_SELECTED',
+                    group=project.proponents,
+                    sender=request.user,
+                    message=f"The Panel for the project '{project.title}' has been updated. Panelists: {', '.join([panelist.get_full_name() for panelist in selected_panelists])}."
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for {proponent}: {str(e)}")
+
+
         messages.success(request, "Project Panel Updated Successfully!")
         return redirect('coordinator-projects')
     else:
@@ -1816,8 +2025,6 @@ def select_panelist_coordinator(request, project_id):
         'form': form
     })
 
-    
-   
 def add_comments(request, project_id): 
     if request.user.is_authenticated: 
         # look on projects by ID 
@@ -1837,6 +2044,20 @@ def add_comments(request, project_id):
                 form.instance.description = project.description
                 form.instance.comments = project.comments
             form.save()
+
+            # Send notifications to all proponents
+            for proponent in project.proponents.proponents.all():
+                try:
+                    Notification.objects.create(
+                        recipient=proponent,
+                        notification_type='COMMENTS_UPDATED',
+                        group=project.proponents,
+                        sender=request.user,
+                        message=f"Comments have been updated for the project '{project.title}'."
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to create notification for {proponent}: {str(e)}")
+
             messages.success(request, "Project Comments Updated Succesfully!")
             return redirect('adviser-proposals')
         else:
@@ -2014,6 +2235,38 @@ def add_project(request):
                     project.project_group = group
                     project.save()
                     form.save_m2m()
+                    
+                    # Send notifications to the adviser selected in the form and proponents excluding the logged-in user
+                    selected_adviser = form.cleaned_data['adviser']  # Get the adviser from the form
+
+                    # Send notifications to the adviser and proponents excluding the logged-in user
+                    try:
+                        # Notify the adviser
+                        Notification.objects.create(
+                            recipient=selected_adviser,
+                            notification_type='NEW_PROJECT_PROPOSAL',
+                            group=project.proponents,
+                            sender=request.user,
+                            message=f"A new project '{project.title}' has been submitted by {request.user.get_full_name()}."
+                        )
+                    except Exception as e:
+                        logger.error(f"Failed to create notification for adviser: {str(e)}")
+
+                    # Notify all proponents excluding the logged-in user
+                    for proponent in project.proponents.proponents.all():
+                        if proponent != request.user:  # Exclude the logged-in user
+                            try:
+                                Notification.objects.create(
+                                    recipient=proponent,
+                                    notification_type='NEW_PROJECT_PROPOSAL',
+                                    group=project.proponents,
+                                    sender=request.user,
+                                    message=f"A new project '{project.title}' has been submitted by {request.user.get_full_name()}."
+                                )
+                            except Exception as e:
+                                logger.error(f"Failed to create notification for proponent {proponent}: {str(e)}")
+                    
+                    
                     return HttpResponseRedirect('/add_project?submitted=True')
                 else:
                     # Add a general error message
