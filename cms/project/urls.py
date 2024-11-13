@@ -5,16 +5,14 @@ urlpatterns = [
 #    path('profile_list/', views.profile_list, name='profile_list'),
 #   path('profile/<int:pk>', views.profile, name='profile'),
 
-    path('reject-panel-invitation/<int:project_id>/', views.reject_panel_invitation, name='reject-panel-invitation'),
-
-
     path("", views.home, name="home"),
     path('projects', views.all_projects, name="list-projects"),
     path('proposals', views.all_proposals, name="list-proposals"),
     path('show_project/<project_id>', views.show_project, name='show-project'),
     path('show_proposal/<project_id>', views.show_proposal, name='show-proposal'),
     path('add_project', views.add_project, name="add-project"),
-    
+    path('my_project', views.my_project, name='my-project'), 
+
     path('list-faculty', views.list_faculty, name="list-faculty"),
     path('list-student', views.list_student, name="list-student"),
     path('list-student-waitlist', views.list_student_waitlist, name="list-student-waitlist"),
@@ -27,6 +25,8 @@ urlpatterns = [
     path('delete_project/<project_id>', views.delete_project, name='delete-project'),
     path('add_comments/<project_id>', views.add_comments, name='add-comments'),
     path('delete_proposal/<project_id>', views.delete_proposal, name='delete-proposal'),
+    path('delete_proposal/<project_id>', views.student_delete_proposal, name='student-delete-proposal'),
+    
     path('accept_proposal/<project_id>', views.accept_proposal, name='accept-proposal'),
     path('reject_project/<project_id>', views.reject_project, name='reject-project'),
     
@@ -80,4 +80,11 @@ urlpatterns = [
     
     path('notifications/', views.notifications_view, name='notifications'),
     path('delete_notification/<int:notification_id>/', views.delete_notification, name='delete_notification'),
+
+    path('reject-panel-invitation/<int:project_id>/', views.reject_panel_invitation, name='reject-panel-invitation'),
+
+    path('submit_project_idea', views.submit_project_idea, name='submit-project-idea'), 
+    path('all_project_ideas', views.all_project_ideas, name='all-project-ideas'), 
+    path('show_project_idea/<project_idea_id>', views.show_project_idea, name='show-project-idea'), 
+
 ]

@@ -10,6 +10,9 @@ from .forms import  VerdictForm, CoordinatorForm, SelectPanelistForm, Coordinato
 from .models import AppUserManager, Defense_Application
 from .models import Student, Faculty, ApprovedProjectGroup,  Project_Group
 from .models import StudentProfile, FacultyProfile, CoordinatorProfile, Coordinator
+from .models import Project_Idea
+from .forms import ProjectIdeaForm
+
 # from .models import Event
 from django.utils import timezone
 from datetime import timedelta
@@ -28,13 +31,66 @@ from django.conf import settings
 from .models import Notification
 from django.http import JsonResponse
 from django.core.paginator import Paginator
-
+from django.urls import reverse
 logger = logging.getLogger(__name__)
 
 # Import user model 
 from django.contrib.auth import get_user_model 
 User = get_user_model()
 
+def my_project(request): 
+    if not request.user.is_authenticated: 
+        messages.error(request, "Please Login to view this page")
+        return redirect('home')
+    
+    if request.user.role != 'STUDENT': 
+        messages.error(request, "Only Students can view this page")
+        return redirect('home')
+   
+    user_group = get_user_project_group(request)
+    if user_group is None:
+            messages.success(request, "You are not a member of any Project Group. Please Register a Project Group First.")
+            return redirect('home')
+    
+    project = Project.objects.filter(proponents=user_group, status='approved').first()
+
+    return render(request, 'project/my_project.html', {'project': project })
+
+def all_project_ideas(request): 
+    if request.user.is_authenticated: 
+        # Create a Paginator object with the project_ideas list and specify the number of items per page
+        p = Paginator(Project_Idea.objects.order_by('title'), 10) 
+        page = request.GET.get('page')
+        project_ideas = p.get_page(page)
+        nums = "a" * project_ideas.paginator.num_pages
+
+        return render(request, 'project/all_project_ideas.html', {
+         'project_ideas': project_ideas, 
+        'nums': nums})
+    else: 
+        messages.success(request, "Please Login to view this page")
+        return redirect('home')
+
+def submit_project_idea(request):
+    if not request.user.is_authenticated: 
+        messages.error(request, "Please Login to view this page" )
+        return redirect('home')
+    
+    if request.user.role != 'FACULTY': 
+        messages.error(request, "Only Faculty are able to submit Project Ideas." )    
+        return redirect('home')
+        
+    if request.method == 'POST':
+        form = ProjectIdeaForm(request.POST, user=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('all-project-ideas')  # Redirect to the same page after submission
+    else:
+        form = ProjectIdeaForm(initial={'faculty': request.user, }, user=request.user)
+
+    ideas = Project_Idea.objects.all()  # Retrieve all submitted ideas
+    return render(request, 'project/submit_project_idea.html', {
+        'form': form, 'ideas': ideas})
 
 @login_required
 def reject_panel_invitation(request, project_id):
@@ -52,7 +108,8 @@ def reject_panel_invitation(request, project_id):
                 notification_type='PANELIST_DECLINE',
                 group=project.proponents,
                 sender=request.user,
-                message=f"{request.user.get_full_name()} has declined to serve as a Panelist for the project '{project.title}'."
+                message=f"{request.user.get_full_name()} has declined to serve as a Panelist for the project '{project.title}'.",
+                redirect_url = reverse('my-project') 
             )
         # Notify the project adviser about the rejection
         if project.adviser:  # Check if there is an adviser assigned
@@ -61,7 +118,8 @@ def reject_panel_invitation(request, project_id):
                 notification_type='PANELIST_DECLINE',
                 group=project.proponents,
                 sender=request.user,
-                message=f"{request.user.get_full_name()} has declined to serve as a Panelist for the project '{project.title}'."
+                message=f"{request.user.get_full_name()} has declined to serve as a Panelist for the project '{project.title}'. Please Select Another Panelist",
+                redirect_url = reverse('adviser-projects') 
             )
     else:
         messages.error(request, "You are not a panelist for this project.")
@@ -156,7 +214,8 @@ def select_coordinator(request):
                     notification_type='ROLE_CHANGE',
                     group=None,  # Assuming no group is associated with this notification
                     sender=request.user,
-                    message=f"You have been appointed as the new Coordinator."
+                    message=f"You have been appointed as the new Coordinator.",
+                    redirect_url = reverse('coordinator-projects') 
                 )
             except Exception as e:
                 logger.error(f"Failed to create notification for new coordinator: {str(e)}")
@@ -208,7 +267,8 @@ def transfer_creator(request, group_id):
                         notification_type='ROLE_TRANSFER',
                         group=group,
                         sender=request.user,
-                        message=f"The Leader Role has been transferred to {new_creator.get_full_name()}."
+                        message=f"The Leader Role has been transferred to {new_creator.get_full_name()}.",
+                        redirect_url = reverse('my-project-group-waitlist') 
                     )
                 except Exception as e:
                     logger.error(f"Failed to create notification for {member}: {str(e)}")
@@ -252,7 +312,8 @@ def accept_join_request(request, group_id, user_id): # Accept Join Request from 
                 notification_type='ADDED_TO_GROUP',
                 group=group,
                 sender=request.user,
-                message=f"You have been added to {group.creator.get_full_name()}'s group."
+                message=f"You have been added to {group.creator.get_full_name()}'s group.",
+                redirect_url = reverse('my-project-group-waitlist')
             )
 
         except Exception as e:
@@ -266,7 +327,8 @@ def accept_join_request(request, group_id, user_id): # Accept Join Request from 
                     notification_type='NEW_MEMBER',
                     group=group,
                     sender=request.user,
-                    message=f"A new member has been added to the group, {user.get_full_name()}."
+                    message=f"A new member has been added to the group, {user.get_full_name()}.",
+                    redirect_url = reverse('my-project-group-waitlist')
                 )
             except Exception as e:
                 logger.error(f"Failed to create notification for {member}: {str(e)}")
@@ -364,7 +426,6 @@ def join_group_list(request):
 
 def request_join_group(request, group_id):
     
-
     if request.user.is_authenticated and request.user.eligible == False: 
         messages.error(request, "Only Eligible Students are able to request to join a Project Group. Please Contact Coordinator to for assistance with Eligibility Concerns")
         return redirect('home')
@@ -906,7 +967,8 @@ def approve_group_membership(request, group_id):
                     notification_type='rejected',
                     group=other_group,
                     sender=request.user,
-                    message=f"{request.user.get_full_name()} has declined the invitation to join your project group."
+                    message=f"{request.user.get_full_name()} has declined the invitation to join your project group.",
+                    redirect_url = reverse('my-project-group-waitlist')
                 )
             except Exception as e:
                 logger.error(f"Failed to create decline notification: {str(e)}")
@@ -930,24 +992,27 @@ def approve_group_membership(request, group_id):
                         notification_type='GROUP_COMPLETE',
                         group=group,
                         sender=request.user,
-                        message=f"Your Project Group, led by {group.creator.get_full_name()}, has been automatically approved with 3 members."
+                        message=f"Your Project Group, led by {group.creator.get_full_name()}, has been automatically approved with 3 members.",
+                        redirect_url = reverse('my-project-group-waitlist')
                     )
                 except Exception as e:
                     logger.error(f"Failed to create notification for {member}: {str(e)}")
             
             messages.success(request, "You have joined the group and it has been automatically approved with 3 members.")
         elif approved_students_count < 3:
-            # Create notification just for the group creator about the acceptance
-            try:
-                Notification.objects.create(
-                    recipient=group.creator,
-                    notification_type='ACCEPTED',
-                    group=group,
-                    sender=request.user,
-                    message=f"{request.user.get_full_name()} has accepted the invitation to join your project group. ({approved_students_count}/3 members)"
-                )
-            except Exception as e:
-                logger.error(f"Failed to create notification: {str(e)}")
+             # Notify all proponents about the acceptance
+            for proponent in group.proponents.all():
+                try:
+                    Notification.objects.create(
+                        recipient=proponent,
+                        notification_type='ACCEPTED',
+                        group=group,
+                        sender=request.user,
+                        message=f"{request.user.get_full_name()} has accepted the invitation to join your project group. ({approved_students_count}/3 members)",
+                        redirect_url=reverse('my-project-group-waitlist')
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to create notification for {proponent}: {str(e)}")
             
             messages.success(request, f"You have successfully joined the group. {3 - approved_students_count} more member(s) needed for automatic approval.")
         else:
@@ -979,7 +1044,8 @@ def reject_group_membership(request, group_id):
                 notification_type='REJECTED',
                 group=group,
                 sender=request.user,
-                message=f"{request.user.get_full_name()} has declined the invitation to join your project group."
+                message=f"{request.user.get_full_name()} has declined the invitation to join your project group.",
+                redirect_url=reverse('my-project-group-waitlist')
             )
         except Exception as e:
             logger.error(f"Failed to create decline notification for {proponent}: {str(e)}")
@@ -1064,7 +1130,8 @@ def leave_group(request, group_id):
                 notification_type='LEAVE_GROUP',
                 group=group,
                 sender=request.user,
-                message=f"{request.user.get_full_name()} has left the project group."
+                message=f"{request.user.get_full_name()} has left the project group.",
+                redirect_url=reverse('my-project-group-waitlist')
             )
         except Exception as e:
             logger.error(f"Failed to create notification for {member}: {str(e)}")
@@ -1101,7 +1168,8 @@ def remove_member(request, group_id, member_id):
                 notification_type='MEMBER_REMOVAL',
                 group=group,
                 sender=request.user,
-                message=f"{member.get_full_name()} has been removed from the project group."
+                message=f"{member.get_full_name()} has been removed from the project group.", 
+                redirect_url=reverse('my-project-group-waitlist')
             )
         except Exception as e:
             logger.error(f"Failed to create notification for {proponent}: {str(e)}")
@@ -1137,7 +1205,8 @@ def finalize_group(request, group_id):
                 notification_type='GROUP_FINALIZED',
                 group=group,
                 sender=request.user,
-                message=f"The project group, led by {group.creator.get_full_name()}, has been finalized."
+                message=f"The project group, led by {group.creator.get_full_name()}, has been finalized.",
+                redirect_url=reverse('my-project-group-waitlist')
             )
         except Exception as e:
             logger.error(f"Failed to create notification for {member}: {str(e)}")
@@ -1187,7 +1256,8 @@ def invite_more_members(request, group_id):
                                 notification_type='INVITATION',
                                 group=group,
                                 sender=request.user,
-                                message=f"{request.user.get_full_name()} has invited you to join the project group led by'{group.creator}'"
+                                message=f"{request.user.get_full_name()} has invited you to join the project group led by'{group.creator}'",
+                                redirect_url = reverse('my-project-group-waitlist')
                             )
                             logger.info(f"Successfully created notification {notification.id} for {member.get_full_name()}")
                         except Exception as notif_error:
@@ -1315,7 +1385,9 @@ def add_project_group(request):
                         notification_type='INVITATION',
                         group=project,
                         sender=student_creator,
-                        message=f"{student_creator.get_full_name()} has invited you to join a project group."
+                        message=f"{student_creator.get_full_name()} has invited you to join a project group.",
+                        redirect_url=reverse('my-project-group-waitlist')
+                    
                     )
                     logger.debug(f"Created notification {notification.id} for {proponent}")
                 except Exception as e:
@@ -1548,7 +1620,6 @@ def coordinator_approval_faculty(request):
         messages.success(request, "Please Login to view this page")
         return redirect('home')
     
-
 def coordinator_approval_student(request): 
     if request.user.is_authenticated: 
         # Get counts 
@@ -1798,7 +1869,8 @@ def reject_project(request, project_id):
                     notification_type='PROJECT_REJECTED',
                     group=project.proponents,
                     sender=request.user,
-                    message=f"Your project '{project.title}' has been rejected by the adviser: {request.user.get_full_name()}."
+                    message=f"Your project '{project.title}' has been rejected by the adviser: {request.user.get_full_name()}.",
+                    redirect_url=reverse('list-proposals')
                 )
             except Exception as e:
                 logger.error(f"Failed to create notification for {proponent}: {str(e)}")
@@ -1832,7 +1904,8 @@ def accept_proposal(request, project_id):
                     notification_type='PROJECT_ACCEPTED',
                     group=project.proponents,
                     sender=request.user,
-                    message=f"Your project '{project.title}' has been accepted by the adviser: {request.user.get_full_name()}."
+                    message=f"Your project '{project.title}' has been accepted by the adviser: {request.user.get_full_name()}.",
+                    redirect_url=reverse('list-projects'),
                 )
             except Exception as e:
                 logger.error(f"Failed to create notification for {proponent}: {str(e)}")
@@ -1842,7 +1915,6 @@ def accept_proposal(request, project_id):
         messages.success(request, "You Aren't Authorized to Accept this Proposal!")
     
     return redirect('adviser-projects')
-
 
 # Delete Project
 def delete_proposal(request, project_id): 
@@ -1855,6 +1927,17 @@ def delete_proposal(request, project_id):
     else:
         messages.error(request, "You Aren't Authorized to Delete this Proposal!")
         return redirect('adviser-projects')
+        
+def student_delete_proposal(request, project_id): 
+    # look on projects by ID 
+    project = Project.objects.get(pk=project_id)
+    if request.user in project.proponents.proponents.all:   
+        project.delete()
+        messages.success(request, "Proposal Deleted Succesfully ! ")
+        return redirect('list-proposals')
+    else:
+        messages.error(request, "You Aren't Authorized to Delete this Proposal!")
+        return redirect('home')
         
 def select_panelist(request, project_id): 
     if not request.user.is_authenticated: 
@@ -1896,7 +1979,8 @@ def select_panelist(request, project_id):
                     notification_type='PANELIST_SELECTED',
                     group=project.proponents,
                     sender=request.user,
-                    message=f"You have been selected as a panelist for the project '{project.title}' with the Adviser: {request.user.get_full_name()}."
+                    message=f"You have been selected as a panelist for the project '{project.title}' with the Adviser: {request.user.get_full_name()}.",
+                    redirect_url=reverse('panel-projects'),
                 )
             except Exception as e:
                 logger.error(f"Failed to create notification for {panelist}: {str(e)}")
@@ -1909,7 +1993,8 @@ def select_panelist(request, project_id):
                     notification_type='PANELIST_SELECTED',
                     group=project.proponents,
                     sender=request.user,
-                    message=f"The Panel for the project '{project.title}' has been updated. Panelists: {', '.join([panelist.get_full_name() for panelist in selected_panelists])}."
+                    message=f"The Panel for the project '{project.title}' has been updated. Panelists: {', '.join([panelist.get_full_name() for panelist in selected_panelists])}.",
+                    redirect_url=reverse('my-project'),
                 )
             except Exception as e:
                 logger.error(f"Failed to create notification for {proponent}: {str(e)}")
@@ -1921,7 +2006,8 @@ def select_panelist(request, project_id):
                 notification_type='PANELIST_SELECTED',
                 group=project.proponents,
                 sender=request.user,
-                message=f"The Panel for the project '{project.title}' has been updated. New panelists: {', '.join([panelist.get_full_name() for panelist in selected_panelists])}."
+                message=f"The Panel for the project '{project.title}' has been updated. New panelists: {', '.join([panelist.get_full_name() for panelist in selected_panelists])}.",
+                redirect_url=reverse('coordinator-projects'),
             )
         except User.DoesNotExist:
             logger.error("No current coordinator found to notify.")
@@ -1977,13 +2063,14 @@ def select_panelist_coordinator(request, project_id):
         new_panelists = selected_panelists - initial_panelists
 
         for panelist in new_panelists:
-            try:
+            try: # inform panelist 
                 Notification.objects.create(
                     recipient=panelist,
                     notification_type='PANELIST_SELECTED',
                     group=project.proponents,
                     sender=request.user,
-                    message=f"You have been selected as a panelist for the project '{project.title}' by coordinator {request.user.get_full_name()}."
+                    message=f"You have been selected as a panelist for the project '{project.title}' by coordinator {request.user.get_full_name()}.",
+                    redirect_url=reverse('panel-projects'),
                 )
             except Exception as e:
                 logger.error(f"Failed to create notification for {panelist}: {str(e)}")
@@ -1995,7 +2082,8 @@ def select_panelist_coordinator(request, project_id):
                 notification_type='PANELIST_SELECTED',
                 group=project.proponents,
                 sender=request.user,
-                message=f"The Panel for the project '{project.title}' has been updated. New panelists: {', '.join([panelist.get_full_name() for panelist in selected_panelists])}."
+                message=f"The Panel for the project '{project.title}' has been updated. New panelists: {', '.join([panelist.get_full_name() for panelist in selected_panelists])}.",
+                redirect_url=reverse('adviser-projects'),
             )
         except Exception as e:
             logger.error(f"Failed to create notification for adviser {project.adviser}: {str(e)}")
@@ -2009,7 +2097,9 @@ def select_panelist_coordinator(request, project_id):
                     notification_type='PANELIST_SELECTED',
                     group=project.proponents,
                     sender=request.user,
-                    message=f"The Panel for the project '{project.title}' has been updated. Panelists: {', '.join([panelist.get_full_name() for panelist in selected_panelists])}."
+                    message=f"The Panel for the project '{project.title}' has been updated. Panelists: {', '.join([panelist.get_full_name() for panelist in selected_panelists])}.",
+                    redirect_url=reverse('my-project'),
+                
                 )
             except Exception as e:
                 logger.error(f"Failed to create notification for {proponent}: {str(e)}")
@@ -2053,7 +2143,8 @@ def add_comments(request, project_id):
                         notification_type='COMMENTS_UPDATED',
                         group=project.proponents,
                         sender=request.user,
-                        message=f"Comments have been updated for the project '{project.title}'."
+                        message=f"Comments have been updated for the project '{project.title}'.",
+                        redirect_url=reverse('list-proposals'),
                     )
                 except Exception as e:
                     logger.error(f"Failed to create notification for {proponent}: {str(e)}")
@@ -2234,20 +2325,31 @@ def add_project(request):
                     project.owner = request.user.id
                     project.project_group = group
                     project.save()
+                
+                    # Save the many-to-many relationships (e.g., panel members, proponents)
                     form.save_m2m()
-                    
                     # Send notifications to the adviser selected in the form and proponents excluding the logged-in user
                     selected_adviser = form.cleaned_data['adviser']  # Get the adviser from the form
+
+                    
+                    # Fetch the adviser instance
+                    try:
+                        adviser_instance = User.objects.get(id=selected_adviser.id)  # Assuming User is the model for advisers
+                    except User.DoesNotExist:
+                        logger.error(f"Adviser with ID {selected_adviser.id} does not exist.")
+                        messages.error(request, "The selected adviser does not exist.")
+                        return redirect('add_project')
 
                     # Send notifications to the adviser and proponents excluding the logged-in user
                     try:
                         # Notify the adviser
                         Notification.objects.create(
-                            recipient=selected_adviser,
+                            recipient=adviser_instance, 
                             notification_type='NEW_PROJECT_PROPOSAL',
                             group=project.proponents,
                             sender=request.user,
-                            message=f"A new project '{project.title}' has been submitted by {request.user.get_full_name()}."
+                            message=f"A new project '{project.title}' has been submitted by {request.user.get_full_name()}.", 
+                            redirect_url = reverse('adviser-proposals') 
                         )
                     except Exception as e:
                         logger.error(f"Failed to create notification for adviser: {str(e)}")
@@ -2261,7 +2363,8 @@ def add_project(request):
                                     notification_type='NEW_PROJECT_PROPOSAL',
                                     group=project.proponents,
                                     sender=request.user,
-                                    message=f"A new project '{project.title}' has been submitted by {request.user.get_full_name()}."
+                                    message=f"A new project '{project.title}' has been submitted by {request.user.get_full_name()}.",
+                                    redirect_url = reverse('list-proposals') 
                                 )
                             except Exception as e:
                                 logger.error(f"Failed to create notification for proponent {proponent}: {str(e)}")
@@ -2350,6 +2453,20 @@ def show_project(request, project_id):
         return render(request, 'project/show_project.html', 
         {'project': project, 
         'project_owner': project_owner})
+    else: 
+        messages.success(request, "Please Login to view this page")
+        return redirect('home')
+    
+def show_project_idea(request, project_idea_id): 
+    if request.user.is_authenticated: 
+        # look on faculty by ID 
+        project_idea = Project_Idea.objects.get(pk=project_idea_id)
+        # project_owner = User.objects.get(pk=project.owner)
+        
+        # pass it to the page using render
+        return render(request, 'project/show_project_idea.html', 
+        {'project_idea': project_idea})
+    
     else: 
         messages.success(request, "Please Login to view this page")
         return redirect('home')

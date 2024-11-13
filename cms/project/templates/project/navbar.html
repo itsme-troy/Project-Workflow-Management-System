@@ -65,6 +65,7 @@
                 
                 {% if user.is_authenticated %}
                   {% if user.role == 'STUDENT' %}
+                    <li><a class="dropdown-item" href="{% url 'my-project' %}"> My Project  </a></li> 
                     <li><a class="dropdown-item" href="{% url 'list-proposals' %}"> All Proposals  </a></li> 
                     <li><a class="dropdown-item" href="{% url 'add-project' %}"> Add Proposal  </a></li>
                   {% endif %}
@@ -119,6 +120,20 @@
                   <li><a class="dropdown-item" href="{% url 'list-defense-applications' %}"> All Defense Applications </a></li>
                   <li><a class="dropdown-item" href="{% url 'common-sched-calendar' %}"> View Common Available Schedule   </a></li>
                   <li><a class="dropdown-item" href="{% url 'select-coordinator' %}"> Select New Coordinator </a></li>
+              </ul>
+          </li>
+            {% endif %}
+
+            {% if request.user.is_authenticated %}
+            
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Project Ideas 
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'all-project-ideas' %}"> All Project Ideas   </a></li>
+                {% if request.user.role == 'FACULTY'%}
+                  <li><a class="dropdown-item" href="{% url 'submit-project-idea' %}"> Submit Project Idea </a></li>  {% endif %}
               </ul>
           </li>
             {% endif %}

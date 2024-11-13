@@ -307,6 +307,7 @@ class Notification(models.Model):
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
+    redirect_url = models.URLField(max_length=200, null=True, blank=True)
 
     class Meta:
         ordering = ['-created_at']
@@ -319,7 +320,7 @@ class Project(models.Model):
     comments= models.TextField(null=True, blank=True) # we dont have to put a description if we do not want to
     
     proponents = models.ForeignKey(Project_Group, null=True, on_delete=models.SET_NULL)  
-    adviser = models.ForeignKey(Approved_Adviser, null=True, on_delete=models.SET_NULL) # If adviser deletes profile, then the projects' adviser will be set to null 
+    adviser = models.ForeignKey(Faculty, null=True, on_delete=models.SET_NULL) # If adviser deletes profile, then the projects' adviser will be set to null 
     panel = models.ManyToManyField(Faculty, related_name='project_panel', blank=True )
 
     # start_date = models.DateTimeField('Start date', null=True,  blank=True)
@@ -340,6 +341,18 @@ class Project(models.Model):
     # allows to use model in admin area.
     def __str__(self):
         return str(self.title) if self.title else "No Project"
+    
+    @property
+    def panel1(self):
+        return self.panel.all()[0] if self.panel.count() > 0 else None
+
+    @property
+    def panel2(self):
+        return self.panel.all()[1] if self.panel.count() > 1 else None
+
+    @property
+    def panel3(self):
+        return self.panel.all()[2] if self.panel.count() > 2 else None
     
 class ProjectPhase(models.Model):
     PHASE_CHOICES = [
@@ -425,3 +438,11 @@ class Defense_Application(models.Model):
     #panel_recommendation = 
     #adviser_acknowledgment_to_defend = 
 
+class Project_Idea(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    faculty = models.ForeignKey(Faculty, null=True, on_delete=models.SET_NULL) # 
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title

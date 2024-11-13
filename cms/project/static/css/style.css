@@ -1,3 +1,26 @@
+/* Add styles for the Add Proposal button */
+.btn-add-proposal {
+    background-color: #28a745; /* Green background */
+    color: #ffffff; /* White text */
+    border: none; /* Remove border */
+    padding: 10px 20px; /* Add padding */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
+    font-size: 1em; /* Increase font size */
+}
+
+.btn-add-proposal:hover {
+    background-color: #218838; /* Darker green on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+/* Add a container for the button to position it */
+.button-container {
+    display: flex; /* Use flexbox */
+    justify-content: flex-end; /* Align to the right */
+    margin-bottom: 20px; /* Space below the button */
+}
+
 .highlight {
     background-color: #d1e7dd; /* Light green background for highlight */
     font-weight: bold; /* Bold text for emphasis */
@@ -404,6 +427,18 @@ body {
 .card-header, .card-footer, .card-body {
     padding: 20px;
 }
+/* Increase font size for card text */
+.card-text {
+    font-size: 1.2em; /* Increased font size for card text */
+}
+.card-title {
+    font-size: 1.5em; /* Increased font size for card title */
+}
+/* Increase font size for list items */
+.card-text li {
+    font-size: 1.1em; /* Increased font size for list items */
+}
+
 
 .container {
     background-color: #fff; /* White background for content */

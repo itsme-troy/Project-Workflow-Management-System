@@ -1,0 +1,55 @@
+{% extends 'project/base.html'%} <!-- use the base file -->
+
+{% block content %} <!-- content of all web pages go -->
+
+    <h1> Senior Project Ideas</h1>
+
+    <ul class="list-group"> <!-- List of project ideas -->
+        {% for idea in project_ideas %}
+            <li class="list-group-item">
+                <span>{{ forloop.counter }}. </span> <!-- Add loop counter -->
+                <a href="{% url 'show-project-idea' idea.id %}" > {{ idea.title }}</a> 
+            </li>
+        {% endfor %}
+    </ul> <hr/> 
+
+
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+
+  {% if project_ideas.has_previous %}
+      <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
+      <li class="page-item"><a class="page-link" href="?page={{project_ideas.previous_page_number}}">Previous</a></li>
+  {% endif %}
+
+
+  {% for i in nums %}
+  <li class="page-item {% if forloop.counter == project_ideas.number %}disabled{% endif %}">
+  <a class="page-link" href="?page={{forloop.counter}}">{{ forloop.counter }}</a>
+</li>
+  {% endfor %}
+  {% if project_ideas.has_next %}
+      <li class="page-item"> <a class="page-link" href="?page={{project_ideas.next_page_number}}">Next</a></li>
+      <li class="page-item"> <a class="page-link" href="?page={{project_ideas.paginator.num_pages}}">Last &raquo;</a></li>
+  {% endif %}
+  
+  <li class="page-item ml-auto disabled"><a href="#" class="page-link"> Page {{ project_ideas.number }} of {{ students.paginator.num_pages }} </a></li>
+
+</ul>
+</nav> 
+
+{% comment %} <script>
+    document.querySelectorAll('.idea-link').forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            const idea = JSON.parse(this.getAttribute('data-idea'));
+            document.getElementById('idea-title').innerText = idea.title;
+            document.getElementById('idea-description').innerText = idea.description;
+            document.getElementById('idea-faculty').innerText = 'Faculty: ' + idea.faculty;
+            document.getElementById('idea-details').style.display = 'block'; // Show the card
+        });
+    });
+</script> {% endcomment %}
+
+{% endblock %}
+

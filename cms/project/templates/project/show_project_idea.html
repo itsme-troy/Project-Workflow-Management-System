@@ -1,0 +1,25 @@
+{% extends 'project/base.html'%} <!-- use the base file -->
+{% load static %}
+{% block content %} <!-- content of all web pages go -->
+
+<center> 
+<h1 class="display-4"> Show Project Idea </h1> <!-- Improved heading style -->
+</center> 
+
+<div class="card mt-4 shadow-lg border border-light"> <!-- Added border for definition -->
+    <div class="card-header bg-secondary text-white"> <!-- Changed header color -->
+        <h5 class="card-title">{{ project_idea.title }}</h5> <!-- Added title -->
+        {% comment %} <a href="{% url 'edit-project' project_idea.id %}" class="btn btn-light float-right">Edit</a> <!-- Action button added --> {% endcomment %}
+    </div>
+    <div class="card-body">
+        <p class="card-text"> 
+            <ul>
+                <li><strong>Description:</strong> <br/> {{ project_idea.description }}</li>
+                <li><strong>Faculty:</strong> {{ project_idea.faculty }}</li> 
+                <li><strong>Created At:</strong> {{ project_idea.created_at }}</li> 
+            </ul> 
+        </p>
+    </div>
+</div>
+
+{% endblock %}

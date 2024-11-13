@@ -1,11 +1,37 @@
 from django import forms 
 from django.forms import ModelForm 
 from .models import Project, Defense_Application, Project_Group, StudentProfile, Student
-from .models import Faculty, ProjectPhase
+from .models import Faculty, ProjectPhase, Project_Idea
 from django.core.exceptions import ValidationError
 
 from django.contrib.auth import get_user_model 
 User = get_user_model()
+
+class ProjectIdeaForm(forms.ModelForm):
+    class Meta:
+        model = Project_Idea
+        fields = ['title','description', 'faculty']
+        
+        labels = {
+            'title': 'Title', 
+            'description' : 'Description'
+        }
+
+        widgets = {
+            'title': forms.TextInput(attrs={'class':'form-control', 'placeholder': 'Project Title'}),
+            'description': forms.Textarea(attrs={'class':'form-control', 'placeholder':'Short Description of the Project Idea'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Get the logged-in user
+        super(ProjectIdeaForm, self).__init__(*args, **kwargs)
+
+        if user:
+            # Set the initial value of the faculty field to the logged-in user
+            self.initial['faculty'] = user
+        
+        # Disable the proponents field
+        self.fields['faculty'].widget.attrs['disabled'] = 'disabled'
 
 
 class CoordinatorForm(forms.Form):
@@ -311,10 +337,10 @@ class ProjectForm(ModelForm):
                 field.help_text = f'<small class="form-text text-muted">{field.help_text}</small>'
 
         # Filter the queryset for the adviser field
-        self.fields['adviser'].queryset = User.objects.filter(adviser_eligible=True)
+        self.fields['adviser'].queryset = Faculty.objects.filter(adviser_eligible=True)
 
          # Filter the queryset for the panel field
-        self.fields['panel'].queryset = User.objects.filter(panel_eligible=True)
+        self.fields['panel'].queryset = Faculty.objects.filter(panel_eligible=True)
 
 
         # Disable the proponents field
@@ -411,7 +437,7 @@ class SelectPanelistForm(ModelForm):
 
         # Pre-select the initial panelist and restrict panel selection
         self.pre_selected_panelist = self.instance.panel.all()[:1]  # Select the first panelist only
-        self.fields['panel'].initial = self.pre_selected_panelist
+        self.fields['panel'].initial = [panelist.id for panelist in self.pre_selected_panelist]  # Use IDs
         self.fields['panel'].queryset = self.fields['panel'].queryset.exclude(id=self.instance.adviser.id)
 
     def clean_panel(self):

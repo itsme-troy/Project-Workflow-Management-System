@@ -1,9 +1,17 @@
 {% extends 'project/base.html' %} <!-- use the base file -->
+{% load static %}
 
 {% block content %} <!-- content of all web pages go -->
 
     <h1> My Submitted Proposals </h1>
     <br/>
+        <!-- Add Proposal Button -->
+        <div class="button-container">
+            <a href="{% url 'add-project' %}" class="btn btn-add-proposal">
+                <i class="fas fa-plus"></i> Add Proposal
+            </a>
+        </div>
+    
     <table class="table table-striped table-hover table-bordered table">
         <thead>
             <tr>
@@ -12,18 +20,27 @@
                 <th scope="col"> Adviser </th>
                 <th scope="col"> Project Group </th>
                 <th scope="col"> Project Type </th>
+                <th scope="col"> Actions </th>
                 <th scope="col"> Status </th>
             </tr>
         </thead>
         <tbody>
             {% for project in projects %}
                 
-                <tr>
+                <tr onclick="toggleActions(this)">
                     <td> <strong> {{ forloop.counter }} </strong> </td>
                     <td> <a href="{% url 'show-proposal' project.id %}"> {{ project.title }} </a> </td>
                     <td> {{ project.adviser }} </td>
                     <td> {{ project.proponents }} </td>
                     <td> {{ project.project_type }} </td>
+                    <td> 
+                        <span class="hint-button">Click row to show actions</span>
+                        <div class="action-buttons"> <!-- Hide by default -->
+                            <a href="{% url 'student-delete-proposal' project.id %}" 
+                            class="btn btn-outline-danger btn-sm" 
+                            onclick="return confirm('Are you sure you want to delete this proposal?');"> Delete Proposal </a> </div>
+                    </td>
+
                     <td><span class="badge 
                                 {% if project.status == 'approved' %}
                                     bg-success
@@ -43,20 +60,16 @@
 <br/> <hr/> <br/>
     <!-- Pagination controls -->
 
-
     <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-center">
-    
         {% if projects.has_previous %}
             <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
             <li class="page-item"><a class="page-link" href="?page={{projects.previous_page_number}}">Previous</a></li>
         {% endif %}
-    
-     
         {% for i in nums %}
         <li class="page-item {% if forloop.counter == projects.number %}disabled{% endif %}">
         <a class="page-link" href="?page={{forloop.counter}}">{{ forloop.counter }}</a>
-    </li>
+        </li>
         {% endfor %}
         {% if projects.has_next %}
             <li class="page-item"> <a class="page-link" href="?page={{projects.next_page_number}}">Next</a></li>
@@ -64,8 +77,23 @@
         {% endif %}
         
         <li class="page-item ml-auto disabled"><a href="#" class="page-link"> Page {{ projects.number }} of {{ students.paginator.num_pages }} </a></li>
-    
-    </ul>
+        </ul>
     </nav>
 
+
+<script>
+    function toggleActions(row) {
+        // Remove active class from all rows
+        document.querySelectorAll('tr').forEach(tr => tr.classList.remove('active'));
+        // Add active class to clicked row
+        row.classList.add('active');
+    }
+
+    // Add click handler to close rows when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('tr')) {
+            document.querySelectorAll('tr').forEach(tr => tr.classList.remove('active'));
+        }
+    });
+</script>
 {% endblock %}

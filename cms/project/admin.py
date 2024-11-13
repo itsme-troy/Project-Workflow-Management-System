@@ -7,7 +7,7 @@ User = settings.AUTH_USER_MODEL
 admin.site.unregister(Group)
 
 from .models import AppUser, Project, Project_Group #, Profile
-from .models import Defense_Application
+from .models import Defense_Application, Project_Idea
 from .models import Student, Faculty, Coordinator
 from .models import StudentProfile, FacultyProfile, CoordinatorProfile, ProjectPhase
 from .models import ApprovedProject, ApprovedProjectGroup, Not_ApprovedProject
@@ -23,6 +23,7 @@ admin.site.register(Approved_student)
 # admin.site.register(ApprovedProjectGroup)
 admin.site.register(Approved_Adviser)
 admin.site.register(Not_ApprovedProject)
+
 # admin.site.register(ProjectPhase)
 # admin.site.register(Approved_panel)
 #  Mix Profile info into user info
@@ -73,13 +74,19 @@ admin.site.unregister(Coordinator)
 # Reregister User 
 admin.site.register(Coordinator, CoordinatorAdmin)
 
+@admin.register(Project_Idea)
+class Project_IdeaAdmin(admin.ModelAdmin):
+    fields = 'title', 'description', 'faculty'
+    display = 'title', 'faculty'
+    readonly_fields = ['created_at',]
 
-@admin.register(Notification) #  'project_type',
+
+@admin.register(Notification) 
 class NotificationAdmin(admin.ModelAdmin): #project_type'
-    fields = ('sender', 'recipient','notification_type','group', 'message', 'created_at', 'is_read')
+    fields = ('sender', 'recipient','notification_type','group', 'message', 'redirect_url', 'created_at', 'is_read')
     list_display = ('sender', 'recipient', 'notification_type', 'created_at')
     readonly_fields = ['created_at', ]
-    ordering = ('created_at', )
+    ordering = ('-created_at', )
    
 @admin.register(Project) #  'project_type',
 class ProjectAdmin(admin.ModelAdmin): #project_type'
