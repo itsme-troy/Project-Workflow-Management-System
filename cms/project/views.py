@@ -360,7 +360,8 @@ def decline_join_request(request, group_id, user_id):
                 notification_type='DECLINED_JOIN_REQUEST',
                 group=None,
                 sender=request.user,
-                message=f"Your join request to {group.creator.get_full_name()}'s group has been declined."
+                message=f"You have declined to join {group.creator.get_full_name()}'s group.",
+                redirect_url = reverse('my-project-group-waitlist')
             )   
         except Exception as e:
             logger.error(f"Failed to create notification for {user}: {str(e)}")
@@ -373,7 +374,8 @@ def decline_join_request(request, group_id, user_id):
                     notification_type='DECLINED_JOIN_REQUEST',
                     group=group,
                     sender=request.user,
-                    message=f"{user.get_full_name()} join request has been declined."
+                    message=f"{user.get_full_name()} has declined to join the group.",
+                    redirect_url = reverse('my-project-group-waitlist')
                 )
             except Exception as e:
                 logger.error(f"Failed to create notification for {member}: {str(e)}")
@@ -462,7 +464,8 @@ def request_join_group(request, group_id):
                     notification_type='JOIN_REQUEST',
                     group=group,
                     sender=request.user,
-                    message=f"{request.user.get_full_name()} has requested to join your Project Group."
+                    message=f"{request.user.get_full_name()} has requested to join your Project Group.",
+                    redirect_url = reverse('my-project-group-waitlist')
                 )
             except Exception as e:
                 logger.error(f"Failed to create notification for {proponent}: {str(e)}")
@@ -494,7 +497,8 @@ def cancel_join_request(request, group_id):
                     notification_type='JOIN_REQUEST_CANCELLED',
                     group=group,
                     sender=request.user,
-                    message=f"{request.user.get_full_name()}'s join request has been cancelled."
+                    message=f"{request.user.get_full_name()}'s join request has been cancelled.",
+                    redirect_url = reverse('my-project-group-waitlist')
                 )
             except Exception as e:
                 logger.error(f"Failed to create notification for {request.user}: {str(e)}")
@@ -540,9 +544,19 @@ def submit_verdict(request, application_id):
                     notification_type='VERDICT',
                     group=application.project.proponents,
                     sender=request.user,
-                                       message=f"The verdict for the {phase.get_phase_type_display()} phase of the project '{application.project.title}' is {phase.get_verdict_display()}.",
+                    message=f"The verdict for the {phase.get_phase_type_display()} phase of the project '{application.project.title}' is {phase.get_verdict_display()}.",
+                    redirect_url = reverse('my-defense-application')
                 )
-            
+            if application.project.adviser:  # Check if there is an adviser assigned
+                Notification.objects.create(
+                    recipient=application.project.adviser,
+                    notification_type='VERDICT',
+                    group=application.project.proponents,
+                    sender=request.user,
+                    message=f"The verdict for the {phase.get_phase_type_display()} phase of the project '{application.project.title}' is {phase.get_verdict_display()}.",
+                    redirect_url=reverse('generate-report')  
+                )
+
             messages.success(request, "Verdict submitted successfully!")
             return redirect('list-defense-applications')
         else:
@@ -653,7 +667,8 @@ def submit_defense_application(request):
                         notification_type='SUBMITTED_DEFENSE_APPLICATION',
                         group=project.proponents,
                         sender=request.user,
-                                                message=f"A new defense application for the '{application.get_title_display()}' has been submitted for the project '{project.title}' by {request.user.get_full_name()}."
+                        message=f"A new defense application for the '{application.get_title_display()}' has been submitted for the project '{project.title}' by {request.user.get_full_name()}."
+                        
                     )
                 # Send notification to the Coordinator
             try:
@@ -663,7 +678,8 @@ def submit_defense_application(request):
                     notification_type='SUBMITTED_DEFENSE_APPLICATION',
                     group=project.proponents,
                     sender=request.user,
-                    message=f"A new defense application for the project '{project.title}' has been submitted by {request.user.get_full_name()}."
+                    message=f"A new defense application for the project '{project.title}' has been submitted by {request.user.get_full_name()}.",
+                    redirect_url = reverse('my-defense-application')
                 )
             except User.DoesNotExist:
                 logger.error("No current coordinator found to notify.")
@@ -1674,7 +1690,7 @@ def coordinator_projects(request):
 
    
     # Grab the projects from that adviser
-    approved_projects = Project.objects.filter(status='approved').order_by('title')
+    approved_projects = Project.objects.filter(status='approved', is_archived=False).order_by('title')
     
     approved_paginator = Paginator(approved_projects, 5)  # Show 10 projects per page
     approved_page_number = request.GET.get('approved_page')
@@ -1875,12 +1891,167 @@ def reject_project(request, project_id):
             except Exception as e:
                 logger.error(f"Failed to create notification for {proponent}: {str(e)}")
 
-        messages.success(request, "Project has been moved to 'Proposals' Succesfully ! ")
+        messages.success(request, f"Project '{project.title}' has been moved to 'Proposal list' Succesfully ! ")
         return redirect('adviser-projects')
     else:
         messages.success(request, "You Aren't Authorized to Accept this Proposal!")
         return redirect('adviser-projects')
+    
+def reject_proposal(request, project_id):
+    # look on projects by ID 
+    project = Project.objects.get(pk=project_id)
+    if request.user == project.adviser: 
+        project.status = 'declined'
+        project.save()
 
+        # Notify all proponents about the project rejection
+        for proponent in project.proponents.proponents.all():
+            try:
+                Notification.objects.create(
+                    recipient=proponent,
+                    notification_type='PROJECT_REJECTED',
+                    group=project.proponents,
+                    sender=request.user,
+                    message=f"Your project '{project.title}' has been rejected by the adviser: {request.user.get_full_name()}.",
+                    redirect_url=reverse('list-proposals')
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for {proponent}: {str(e)}")
+
+        messages.success(request, f"Project '{project.title}' has been Rejected Succesfully ! ")
+        return redirect('adviser-proposals')
+    else:
+        messages.success(request, "You Aren't Authorized to Accept this Proposal!")
+        return redirect('adviser-proposals')
+
+def archive_project(request, project_id):
+    if not request.user.is_authenticated: 
+        messages.error(request, "You Aren't Authorized to archive this Project.")
+        return redirect('home')
+
+    # look on projects by ID 
+    if request.user.is_current_coordinator: 
+        project = Project.objects.get(pk=project_id)
+        project.is_archived = True
+        project.save()
+
+        messages.success(request, f"Project '{project.title}' has been Archived Succesfully! ")
+        return redirect('coordinator-projects')
+    else:
+        messages.success(request, "You Aren't Authorized to Archive this Project!")
+        return redirect('home')
+
+def unarchive_project(request, project_id):
+    if not request.user.is_authenticated: 
+        messages.error(request, "You Aren't Authorized to Unarchive this Project.")
+        return redirect('home')
+    
+    # look on projects by ID 
+    if request.user.is_current_coordinator:  
+        project = Project.objects.get(pk=project_id)
+        project.is_archived = False
+        project.save()
+
+        messages.success(request, f"Project '{project.title}' has been Unarchived Succesfully! ")
+        return redirect('list-archived-projects')
+    
+    else:
+        messages.success(request, "You Aren't Authorized to Archive this Project!")
+        return redirect('home')
+
+def list_archived_projects(request): 
+
+    if not request.user.is_authenticated: 
+        messages.error(request, "Please Login to view this page")
+        return redirect('home')
+    
+    if request.user.role !='COORDINATOR' or not request.user.is_current_coordinator: 
+        messages.error(request, "You are not authorized to view this page")
+        return redirect('home')
+
+   
+    # Grab the projects from that adviser
+    archived_projects = Project.objects.filter(status='approved', is_archived=True).order_by('title')
+    
+    approved_paginator = Paginator(archived_projects, 5)  # Show 10 projects per page
+    approved_page_number = request.GET.get('approved_page')
+    approved_page_obj = approved_paginator.get_page(approved_page_number)  
+    approved_nums = "a" * approved_page_obj.paginator.num_pages
+
+    # Prepare data for each project with its groups and proponents
+    archived_projects_with_groups = []
+    for project in approved_page_obj:
+        project_group = Project_Group.objects.filter(project=project, approved=True).first()
+        
+        # Fetch the project where the current group are the proponents
+        project = Project.objects.filter(proponents=project_group, status='approved').first()
+        
+        if project_group and project: 
+            proponents = list(project_group.proponents.all())
+            proponents += [None] * (3 - len(proponents))  # Pad to exactly 3 proponents
+            
+            # Fetch panel members directly from the project_group
+            panel_members = list(project.panel.all())  # Fetch panel members
+            panel_members += [None] * (3 - len(panel_members))  # Pad to exactly 3 panel members
+            
+            archived_projects_with_groups.append({
+                'project': project,
+                'group': project_group,
+                'proponents': proponents, 
+                'panel': panel_members,
+                # 'status': project.status,
+            })
+
+
+    return render(request, 'project/archived_projects.html', {
+        "archived_projects_with_groups": archived_projects_with_groups,
+        "approved_page_obj": approved_page_obj,
+        "approved_nums": approved_nums,
+    })
+
+    return render(request, 'project/archived_projects.html', {})
+ 
+# def archive_proposal(request, project_id):
+#     # look on projects by ID 
+#     project = Project.objects.get(pk=project_id)
+#     if request.user == project.adviser: 
+#         project.is_archived = 'True'
+#         project.save()
+
+#         messages.success(request, f"Project '{project.title}' has been Archived Succesfully! ")
+#         return redirect('adviser-proposals')
+#     else:
+#         messages.success(request, "You Aren't Authorized to Archive this Project!")
+#         return redirect('adviser-proposals')
+    
+    
+# def unarchive_proposal(request, project_id):
+#     # look on projects by ID 
+#     project = Project.objects.get(pk=project_id)
+#     if request.user == project.adviser: 
+#         project.is_archived = False
+#         project.save()
+
+#         messages.success(request, f"Project '{project.title}' has been Archived Succesfully! ")
+#         return redirect('adviser-proposals')
+#     else:
+#         messages.success(request, "You Aren't Authorized to Archive this Project!")
+#         return redirect('adviser-proposals')
+
+
+# def archive_project(request, project_id):
+#     # look on projects by ID 
+#     project = Project.objects.get(pk=project_id)
+#     if request.user == project.adviser: 
+#         project.archive = 'True'
+#         project.save()
+
+#         messages.success(request, f"Project '{project.title}' has been Archived Succesfully! ")
+#         return redirect('adviser-projects')
+#     else:
+#         messages.success(request, "You Aren't Authorized to Archive this Project!")
+#         return redirect('adviser-projects')
+    
 # Accept Project
 def accept_proposal(request, project_id): 
     # look on projects by ID 
@@ -1921,23 +2092,67 @@ def delete_proposal(request, project_id):
     # look on projects by ID 
     project = Project.objects.get(pk=project_id)
     if request.user == project.adviser:   
+        for proponent in project.proponents.proponents.all():
+            try:
+                Notification.objects.create(
+                    recipient=proponent,
+                    notification_type='PROPOSAL_DELETED',
+                    group=project.proponents,
+                    sender=request.user,
+                    message=f"The proposal entitled '{project.title}' has been deleted by the adviser: {request.user.get_full_name()}.",
+                    redirect_url=reverse('list-proposals')
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for {proponent}: {str(e)}")
         project.delete()
         messages.success(request, "Proposal Deleted Succesfully ! ")
-        return redirect('adviser-projects')
-    else:
-        messages.error(request, "You Aren't Authorized to Delete this Proposal!")
-        return redirect('adviser-projects')
-        
-def student_delete_proposal(request, project_id): 
-    # look on projects by ID 
-    project = Project.objects.get(pk=project_id)
-    if request.user in project.proponents.proponents.all:   
-        project.delete()
-        messages.success(request, "Proposal Deleted Succesfully ! ")
-        return redirect('list-proposals')
+        return redirect('adviser-proposals')
     else:
         messages.error(request, "You Aren't Authorized to Delete this Proposal!")
         return redirect('home')
+
+        
+def student_delete_proposal(request, project_id): 
+    if not request.user.is_authenticated: 
+        messages.error(request, "You Aren't Authorized to Delete this Proposal!")
+        return redirect('home')
+    # look on projects by ID 
+    try:
+        project = Project.objects.get(pk=project_id)
+    except Project.DoesNotExist:
+        messages.error(request, "The project does not exist.")
+        return redirect('list-proposals')
+
+    if request.user in project.proponents.proponents.all():   
+        for proponent in project.proponents.proponents.all():
+            try:
+                Notification.objects.create(
+                    recipient=proponent,
+                    notification_type='PROPOSAL_DELETED',
+                    group=project.proponents,
+                    sender=request.user,
+                    message=f"The project '{project.title}' has been deleted by a student, {request.user.get_full_name()}.",
+                    redirect_url=reverse('list-proposals')
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for {proponent}: {str(e)}")
+        
+        # Notify the adviser about the project deletion
+        try:
+            Notification.objects.create(
+                recipient=project.adviser,  # Assuming adviser is a User instance
+                notification_type='PROPOSAL_DELETED',
+                group=project.proponents,
+                sender=request.user,
+                message=f"The project proposal '{project.title}' has been deleted by a student, {request.user.get_full_name()}.",
+                redirect_url=reverse('adviser-proposals')
+            )
+        except Exception as e:
+            logger.error(f"Failed to create notification for adviser {project.adviser}: {str(e)}")
+        project.delete()
+        messages.success(request, "Proposal Deleted Succesfully ! ")
+        return redirect('list-proposals')
+  
         
 def select_panelist(request, project_id): 
     if not request.user.is_authenticated: 
@@ -2207,6 +2422,20 @@ def delete_project(request, project_id):
         # look on projects by ID 
         project = Project.objects.get(pk=project_id)
         if request.user == project.adviser: 
+
+            for proponent in project.proponents.proponents.all():
+                try:
+                    Notification.objects.create(
+                        recipient=proponent,
+                        notification_type='PROJECT_DELETED',
+                        group=project.proponents,
+                        sender=request.user,
+                        message=f"The Project entitled '{project.title}' has been deleted by {request.user.get_full_name()}.",
+                        redirect_url=reverse('my-project')
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to create notification for {proponent}: {str(e)}")
+
             project.delete()
             messages.success(request, "Project Deleted Succesfully ! ")
             return JsonResponse({'success': True})
@@ -2215,7 +2444,6 @@ def delete_project(request, project_id):
             messages.error(request, "You Aren't Authorized to Delete this Project!")
             return JsonResponse({'success': False, 'error': 'Unauthorized'})
     return JsonResponse({'success': False, 'error': 'Invalid request'})
-
 
 def search_projects(request): 
     # determine whether some has gone to the page 
@@ -2348,7 +2576,7 @@ def add_project(request):
                             notification_type='NEW_PROJECT_PROPOSAL',
                             group=project.proponents,
                             sender=request.user,
-                            message=f"A new project '{project.title}' has been submitted by {request.user.get_full_name()}.", 
+                            message=f"A new Project Proposal entitled '{project.title}' has been submitted by {request.user.get_full_name()}.", 
                             redirect_url = reverse('adviser-proposals') 
                         )
                     except Exception as e:
@@ -2363,7 +2591,7 @@ def add_project(request):
                                     notification_type='NEW_PROJECT_PROPOSAL',
                                     group=project.proponents,
                                     sender=request.user,
-                                    message=f"A new project '{project.title}' has been submitted by {request.user.get_full_name()}.",
+                                    message=f"A new Project Proposal '{project.title}' has been submitted by {request.user.get_full_name()}.",
                                     redirect_url = reverse('list-proposals') 
                                 )
                             except Exception as e:
@@ -2484,4 +2712,4 @@ def show_proposal(request, project_id):
     else: 
         messages.success(request, "Please Login to view this page")
         return redirect('home')
-        
+

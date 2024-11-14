@@ -12,10 +12,17 @@ urlpatterns = [
     path('show_proposal/<project_id>', views.show_proposal, name='show-proposal'),
     path('add_project', views.add_project, name="add-project"),
     path('my_project', views.my_project, name='my-project'), 
+  
 
     path('list-faculty', views.list_faculty, name="list-faculty"),
     path('list-student', views.list_student, name="list-student"),
     path('list-student-waitlist', views.list_student_waitlist, name="list-student-waitlist"),
+    
+    path('archived_projects', views.list_archived_projects, name='list-archived-projects'), 
+    path('archive_project/<project_id>/', views.archive_project, name='archive-project'),
+    # path('project/archive/<int:project_id>/', views.archive_proposal, name='archive-proposal'),
+    path('unarchive_project/<project_id>/', views.unarchive_project, name='unarchive-project'),
+    # path('project/archive/<int:project_id>/', views.unarchive_proposal, name='unarchive-proposal'),
     
     
     path('search_projects', views.search_projects, name="search-projects"),
@@ -29,7 +36,9 @@ urlpatterns = [
     
     path('accept_proposal/<project_id>', views.accept_proposal, name='accept-proposal'),
     path('reject_project/<project_id>', views.reject_project, name='reject-project'),
+    path('reject_proposal/<project_id>', views.reject_proposal, name='reject-proposal'),
     
+
     path('coordinator_projects', views.coordinator_projects, name='coordinator-projects'),
     path('adviser_projects', views.adviser_projects, name='adviser-projects'),
     path('adviser_proposals', views.adviser_proposals, name='adviser-proposals'),

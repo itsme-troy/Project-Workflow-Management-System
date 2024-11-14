@@ -298,6 +298,8 @@ class Notification(models.Model):
         ('NEW_PROJECT_PROPOSAL', 'New Project Proposal'),
         ('PANELIST_DECLINE', 'Panelist Decline'), 
         ('PANELIST_SELECTED', 'Panelist Selected'), 
+        ('PROJECT_DELETED', 'Project Deleted'), 
+        ('PROPOSAL_DELETED', 'Proposal Deleted'), 
     )   
 
     recipient = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='notifications')
@@ -321,7 +323,8 @@ class Project(models.Model):
     
     proponents = models.ForeignKey(Project_Group, null=True, on_delete=models.SET_NULL)  
     adviser = models.ForeignKey(Faculty, null=True, on_delete=models.SET_NULL) # If adviser deletes profile, then the projects' adviser will be set to null 
-    panel = models.ManyToManyField(Faculty, related_name='project_panel', blank=True )
+    panel = models.ManyToManyField(Faculty, related_name='project_panel', blank=True )    
+
 
     # start_date = models.DateTimeField('Start date', null=True,  blank=True)
     # end_date =  models.DateTimeField('End Date', null=True, blank=True)
@@ -337,7 +340,8 @@ class Project(models.Model):
     ]
     # determines whether a project is a approved project or a proposal 
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
-
+    is_archived = models.BooleanField(default=False)
+    
     # allows to use model in admin area.
     def __str__(self):
         return str(self.title) if self.title else "No Project"
