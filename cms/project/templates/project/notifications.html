@@ -6,11 +6,12 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <script src="{% static 'js/custom.js' %}"></script>
+    <script src="{% static 'js/notification.js' %}"></script>
     
+
 </head>{% block content %}
 <div class="container mt-5">
-    <h1 class="display-4 text-center">Your Notifications</h1>
+    <h1 class="text-center">Your Notifications</h1>
     <hr class="my-4">
     {% if notifications %}
         <div class="notification-list">

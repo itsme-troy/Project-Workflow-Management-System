@@ -361,9 +361,9 @@ class Project(models.Model):
 class ProjectPhase(models.Model):
     PHASE_CHOICES = [
         ('proposal', 'Proposal Defense'),
-        ('design', 'Graded 1 or Design Defense'),
+        ('design', 'Graded Defense 1'),
         ('preliminary', 'Preliminary Defense'),
-        ('final', 'Grade 2 or Final Defense'),
+        ('final', 'Graded Final Defense'),
     ]
 
     RESULT_CHOICES = [

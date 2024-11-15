@@ -8,7 +8,18 @@
 </head>
 {% endblock %}
 {% block content %}
-<h1>My Submitted Defense Application</h1>
+
+<div style="display: flex; justify-content: space-between; align-items: center;"> <!-- Flex container for header and button -->
+    <h1 style="display: inline-block;">My Submitted Defense Application</h1> <!-- Keep the title inline -->
+    {% comment %} {% if request.user.is_authenticated and user_group and project and project.status == 'approved' and not pending_phases_count >= 1 %}
+        <!-- Add Proposal Button --> {% endcomment %}
+        <div class="button-container"> <!-- Button container -->
+            <a href="{% url 'submit-defense-application' %}" class="btn btn-add-proposal">
+                <i class="fas fa-plus"></i> Submit Defense Application
+            </a>
+        </div>
+    {% comment %} {% endif %} {% endcomment %}
+</div>
 
 {% if application_data %}
     <table class="table table-striped table-hover table-bordered">
@@ -48,7 +59,10 @@
         </tbody>
     </table>
 {% else %}
-    <p>No defense applications found for your project group.</p>
+    <div class="alert alert-danger text-center" role="alert">
+        <h2>  No defense applications found for your project group. </h2>
+    </div>
+
 {% endif %}
 
 {% endblock %}

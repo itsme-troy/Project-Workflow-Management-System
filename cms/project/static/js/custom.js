@@ -49,6 +49,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 item.style.backgroundColor = '';
             });
         });
+
+    const projectIdeas = document.querySelectorAll('.list-group-item');
+    projectIdeas.forEach(item => {
+        item.addEventListener('mouseover', () => {
+            item.style.backgroundColor = '#e9ecef'; // Change background color on hover
+            item.style.transform = 'scale(1.02)'; // Slightly enlarge the item
+            item.style.transition = 'transform 0.2s'; // Smooth transition
+        });
+        item.addEventListener('mouseout', () => {
+            item.style.backgroundColor = ''; // Reset background color
+            item.style.transform = 'scale(1)'; // Reset size
+        });
+    });
+        
 });
 
 // function dismissNotification(button) {

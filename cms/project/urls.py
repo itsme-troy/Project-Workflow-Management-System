@@ -32,7 +32,7 @@ urlpatterns = [
     path('delete_project/<project_id>', views.delete_project, name='delete-project'),
     path('add_comments/<project_id>', views.add_comments, name='add-comments'),
     path('delete_proposal/<project_id>', views.delete_proposal, name='delete-proposal'),
-    path('delete_proposal/<project_id>', views.student_delete_proposal, name='student-delete-proposal'),
+    path('student_delete_proposal/<project_id>', views.student_delete_proposal, name='student-delete-proposal'),
     
     path('accept_proposal/<project_id>', views.accept_proposal, name='accept-proposal'),
     path('reject_project/<project_id>', views.reject_project, name='reject-project'),
@@ -95,5 +95,7 @@ urlpatterns = [
     path('submit_project_idea', views.submit_project_idea, name='submit-project-idea'), 
     path('all_project_ideas', views.all_project_ideas, name='all-project-ideas'), 
     path('show_project_idea/<project_idea_id>', views.show_project_idea, name='show-project-idea'), 
+    path('delete_project_idea/<project_id>', views.delete_project_idea, name='delete-project-idea'),
+    path('update_project_idea/<project_id>', views.update_project_idea, name='update-project-idea'),
 
 ]

@@ -3,38 +3,6 @@
 
 {% block styles %}
 
-<style>
-
-    .small-btn {
-        font-size: 0.7em; /* Small font size */
-        padding: 2px 4px; /* Small padding */
-        margin: 1px; /* Adjust margin */
-    }
-    .action-buttons {
-        display: none;
-        font-size: 0.9em; /* Smaller font size */
-        padding: 2px 4px;  /* Smaller padding */
-        margin: 1px;  
-    }
-    /* Update display property to flex instead of inline-block for better alignment */
-    tr.active .action-buttons {
-        display: flex;
-        gap: 0.25rem;  /* Add spacing between buttons */
-    }
-    .hint-button {
-        color: #6c757d;
-        background: none;
-        border: none;
-        padding: 0.2rem 0.4rem;
-        font-size: 0.8rem;
-        cursor: pointer;
-    }
-    .hint-button::before {
-        content: "↗";  /* or you could use a FontAwesome icon if you have it */
-        margin-right: 0.25rem;
-    }
-
-</style>
 {% endblock %}
 
 {% block content %} <!-- content of all web pages go -->

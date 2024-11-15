@@ -1,23 +1,28 @@
 {% extends 'project/base.html'%} <!-- use the base file -->
 {% load static %}
+
 {% block content %} <!-- content of all web pages go -->
 
 <center> 
-<h1 class="display-4"> Show Project Idea </h1> <!-- Improved heading style -->
+<h1 class="display-4" style="font-size: 2.5em;" > Show Project Idea </h1> <!-- Improved heading style -->
 </center> 
 
-<div class="card mt-4 shadow-lg border border-light"> <!-- Added border for definition -->
-    <div class="card-header bg-secondary text-white"> <!-- Changed header color -->
-        <h5 class="card-title">{{ project_idea.title }}</h5> <!-- Added title -->
+<div class="card border-dark mt-4 shadow-lg border border-light"> <!-- Added border for definition -->
+    <div class="card-header bg-secondary text-white text-center"> <!-- Changed header color -->
+        <h5 class="card-title" style="font-size: 2em;">{{ project_idea.title }}</h5> <!-- Added title -->
         {% comment %} <a href="{% url 'edit-project' project_idea.id %}" class="btn btn-light float-right">Edit</a> <!-- Action button added --> {% endcomment %}
     </div>
-    <div class="card-body">
-        <p class="card-text"> 
-            <ul>
-                <li><strong>Description:</strong> <br/> {{ project_idea.description }}</li>
-                <li><strong>Faculty:</strong> {{ project_idea.faculty }}</li> 
-                <li><strong>Created At:</strong> {{ project_idea.created_at }}</li> 
-            </ul> 
+    <div class="card-body p-4">
+        <p class="card-text" style="font-size: 1.1em;">   
+            <ul class="list-unstyled">
+                <li style="font-size: 1.1em"><strong>Description:</strong> <br/>
+                    <span class="description-space" style="display: block; min-height: 7em;"> <!-- Added min-height for consistency -->
+                     {{ project_idea.description }}</span></li>
+            </ul>  
+                <div class="card-footer d-flex justify-content-between"> 
+                    <div><strong>Submitted by Faculty:</strong> <span style="margin-left: 10px;"> {{ project_idea.faculty }} </span></div>  
+                    <div>    <strong style="margin-left: 20px">Created At:</strong> <span style="margin-left: 10px;"> {{ project_idea.created_at }} </span> </div>     
+                </div>     
         </p>
     </div>
 </div>

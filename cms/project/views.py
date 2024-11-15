@@ -529,6 +529,11 @@ def submit_verdict(request, application_id):
         form = VerdictForm(request.POST, instance=latest_phase)
 
         if form.is_valid():
+            # Check if the selected verdict is 'pending'
+            if form.cleaned_data['verdict'] == 'pending':
+                messages.error(request, "Verdict cannot be pending.")
+                return redirect('list-defense-applications')  # Redirect to avoid showing success message
+            
             # Save the verdict for the latest phase
             phase = form.save(commit=False)
 
@@ -544,7 +549,7 @@ def submit_verdict(request, application_id):
                     notification_type='VERDICT',
                     group=application.project.proponents,
                     sender=request.user,
-                    message=f"The verdict for the {phase.get_phase_type_display()} phase of the project '{application.project.title}' is {phase.get_verdict_display()}.",
+                    message=f"The verdict for the {phase.get_phase_type_display()} of the project '{application.project.title}' is {phase.get_verdict_display()}.",
                     redirect_url = reverse('my-defense-application')
                 )
             if application.project.adviser:  # Check if there is an adviser assigned
@@ -553,7 +558,7 @@ def submit_verdict(request, application_id):
                     notification_type='VERDICT',
                     group=application.project.proponents,
                     sender=request.user,
-                    message=f"The verdict for the {phase.get_phase_type_display()} phase of the project '{application.project.title}' is {phase.get_verdict_display()}.",
+                    message=f"The verdict for the {phase.get_phase_type_display()} of the project '{application.project.title}' is {phase.get_verdict_display()}.",
                     redirect_url=reverse('generate-report')  
                 )
 
@@ -561,35 +566,36 @@ def submit_verdict(request, application_id):
             return redirect('list-defense-applications')
         else:
             messages.error(request, "There was an error with the form submission.")
-            return render(request, 'project/submit_verdict.html', {'form': form, 'application': application})
+            return render(request, 'project/home')
 
     else:
         messages.error(request, "Invalid request method or you are not logged in.")
         return redirect('home')
 
 def submit_defense_application(request):
+
     if request.user.is_authenticated: 
         user_group = get_user_project_group(request)
         
         if user_group is None:
             messages.warning(request, "You are not a member of any Project Group. Please Register a Project Group First.")
-            return redirect('home')
+            return redirect('my-defense-application')
             
-        project = Project.objects.filter(proponents=user_group, status='approved').first()
+        project = Project.objects.filter(proponents=user_group, status='approved', is_archived=False).first()
 
         if project is None:
             messages.error(request, "No project found for your group. Please submit a project first and wait for approval from an Adviser.")
-            return redirect('home')
+            return redirect('my-defense-application')
 
         elif project.status == 'pending':
             messages.error(request, "Your project has not been approved yet. You cannot submit a Defense Application.")
-            return redirect('home')
+            return redirect('my-defense-application')
         
         # Check for any two pending project phase
         pending_phases_count = project.phases.filter(verdict='pending').count()
-        if pending_phases_count >= 2:
+        if pending_phases_count >= 1:
             messages.error(request, "There is already a pending Defense Application for your project group. Please wait for a Verdict to be given.")
-            return redirect('home')
+            return redirect('my-defense-application')
 
         # Fetch the last completed phase, if any
         last_completed_phase = project.phases.exclude(verdict='pending').order_by('-date').first()
@@ -597,14 +603,14 @@ def submit_defense_application(request):
         # Check if the last completed phase has a verdict of "Not Accepted"
         if last_completed_phase and last_completed_phase.verdict == 'not_accepted':
             messages.error(request, "The Verdict of the recent Defense was Not-Accepted. Please Contact the Coordinator if you think this is a mistake.")
-            return redirect('home')
+            return redirect('my-defense-application')
 
         # Determine the next phase type
         next_phase_type = 'proposal'  # Default phase for new projects
         if last_completed_phase:
             if last_completed_phase.phase_type == 'final' and last_completed_phase.verdict in ['accepted', 'accepted_with_revisions']:
                 messages.error(request, "You have already passed the Final Defense. No more defense applications are needed. Congratulations!")
-                return redirect('home')
+                return redirect('my-defense-application')
             
             if last_completed_phase.verdict == 'redefense':
                 next_phase_type = last_completed_phase.phase_type
@@ -616,6 +622,7 @@ def submit_defense_application(request):
                 next_phase_type = 'final'
         
         submitted = False
+
         if request.method == 'POST': 
             form = CapstoneSubmissionForm(request.POST, request.FILES)
             if form.is_valid():
@@ -637,8 +644,11 @@ def submit_defense_application(request):
                     })
                 
                 application.save()
+                # Set submitted to True after saving the application
+                submitted = True
 
                 panel_members = project.panel.all()
+
                 if not panel_members:
                     messages.error(request, "No panel members found for this project.")
                     return render(request, 'project/submit_defense_application.html', {
@@ -684,7 +694,6 @@ def submit_defense_application(request):
             except User.DoesNotExist:
                 logger.error("No current coordinator found to notify.")
 
-
                 return HttpResponseRedirect('/submit_defense_application?submitted=True')
         else:
             form = CapstoneSubmissionForm(initial={
@@ -706,12 +715,12 @@ def submit_defense_application(request):
             'submitted': submitted
         })
     else: 
-        messages.success(request, "Please Login to view this page")
+        messages.error(request, "Please Login to view this page")
         return redirect('home')
     
 from django.db.models import Subquery, OuterRef, F
 from django.utils import timezone
-
+    
 def list_defense_applications(request):
     if request.user.is_authenticated:
         # Subquery to fetch the latest submission date per project
@@ -789,9 +798,13 @@ def my_defense_application(request):
             'application': application,
             'latest_phase': latest_phase,
         })
+
+    # Define the list of verdicts
+    verdicts = ['redefense', 'accepted', 'accepted_with_revisions']
     
     return render(request, 'project/my_defense_application.html', {
-        'application_data': application_data
+        'application_data': application_data,
+         'verdicts': verdicts,  # Pass the verdicts list to the template
     })
 # def delete_project_group(request, group_id): 
 #     if request.user.is_authenticated: 
@@ -2089,8 +2102,17 @@ def accept_proposal(request, project_id):
 
 # Delete Project
 def delete_proposal(request, project_id): 
+    if not request.user.is_authenticated: 
+        messages.error(request, "You Aren't Authorized to Delete this Proposal!")
+        return redirect('home')
+
     # look on projects by ID 
-    project = Project.objects.get(pk=project_id)
+    try:
+        project = Project.objects.get(pk=project_id)
+    except Project.DoesNotExist:
+        messages.error(request, "The project does not exist.")
+        return redirect('adviser-proposals')
+
     if request.user == project.adviser:   
         for proponent in project.proponents.proponents.all():
             try:
@@ -2239,6 +2261,47 @@ def select_panelist(request, project_id):
         'form': form
     })
 
+def update_project_idea(request, project_id): 
+    if not request.user.is_authenticated: 
+        messages.error(request, "Please Login to view this page")
+        return redirect('home')
+    
+    if request.user.role  != 'FACULTY':
+        messages.error(request, "You are not authorized to view this page")
+        return redirect('home')
+
+     # Attempt to look up the project by ID
+    try:
+        project = Project_Idea.objects.get(pk=project_id)
+    except Project_Idea.DoesNotExist:
+        messages.error(request, "The project idea does not exist.")
+        return redirect('all-project-ideas')
+    
+    # if they are gonna post, use this form otherwise, don't use anything. 
+    if request.user == project.faculty: 
+        form = ProjectIdeaForm(request.POST or None, instance=project)
+
+    if form.is_valid(): 
+        # Handle disabled fields by reassigning their initial values before saving
+        if isinstance(form, ProjectIdeaForm):  # Check if using UpdateProjectForm
+            form.instance.title = project.title
+            form.instance.description = project.description
+            form.instance.faculty = project.faculty
+        
+        form.save()
+
+        messages.success(request, "Project Idea Updated Successfully!")
+        return redirect('all-project-ideas')
+    
+    # else:
+    #     messages.error(request, "You are not authorized to update this project idea.")
+    #     return redirect('all-project-ideas')
+
+    return render(request, 'project/update_project_idea.html', {
+        'project': project,
+        'form': form
+    })
+
 def select_panelist_coordinator(request, project_id): 
     if not request.user.is_authenticated: 
         messages.error(request, "Please Login to view this page")
@@ -2331,52 +2394,58 @@ def select_panelist_coordinator(request, project_id):
     })
 
 def add_comments(request, project_id): 
-    if request.user.is_authenticated: 
-        # look on projects by ID 
-        project = Project.objects.get(pk=project_id)
-        # if they are gonna post, use this form otherwise, don't use anything. 
-        if request.user == project.adviser: 
-            form = AddCommentsForm(request.POST or None, instance=project)
-        
-        # save data to the database and return somewhere 
-        if form.is_valid(): 
-            # Handle disabled fields by reassigning their initial values before saving
-            if isinstance(form, AddCommentsForm):  # Check if using UpdateProjectForm
-                form.instance.title = project.title
-                form.instance.project_type = project.project_type
-                form.instance.proponents = project.proponents
-                form.instance.adviser = project.adviser
-                form.instance.description = project.description
-                form.instance.comments = project.comments
-            form.save()
-
-            # Send notifications to all proponents
-            for proponent in project.proponents.proponents.all():
-                try:
-                    Notification.objects.create(
-                        recipient=proponent,
-                        notification_type='COMMENTS_UPDATED',
-                        group=project.proponents,
-                        sender=request.user,
-                        message=f"Comments have been updated for the project '{project.title}'.",
-                        redirect_url=reverse('list-proposals'),
-                    )
-                except Exception as e:
-                    logger.error(f"Failed to create notification for {proponent}: {str(e)}")
-
-            messages.success(request, "Project Comments Updated Succesfully!")
-            return redirect('adviser-proposals')
-        else:
-            # Reinitialize the panel with the pre-selected panelist to retain form state
-            form.fields['panel'].initial = form.instance.panel.all()[:1]
-
-        # pass it to the page using render 
-        return render(request, 'project/add_comments.html', 
-        {'project': project, 
-        'form': form})
-    else: 
-        messages.error(request, "You Aren't Authorized to view this page.")
+    if not request.user.is_authenticated: 
+        messages.error(request, "Please Login to view this page")
         return redirect('home')
+        
+     # Attempt to look up the project by ID
+    try:
+        project = Project.objects.get(pk=project_id)
+    except Project.DoesNotExist:
+        messages.error(request, "The project does not exist.")
+        return redirect('home')
+    
+    # if they are gonna post, use this form otherwise, don't use anything. 
+    if request.user == project.adviser: 
+        form = AddCommentsForm(request.POST or None, instance=project)
+    
+    # save data to the database and return somewhere 
+    if form.is_valid(): 
+        # Handle disabled fields by reassigning their initial values before saving
+        if isinstance(form, AddCommentsForm):  # Check if using UpdateProjectForm
+            form.instance.title = project.title
+            form.instance.project_type = project.project_type
+            form.instance.proponents = project.proponents
+            form.instance.adviser = project.adviser
+            form.instance.description = project.description
+            form.instance.comments = project.comments
+        form.save()
+
+        # Send notifications to all proponents
+        for proponent in project.proponents.proponents.all():
+            try:
+                Notification.objects.create(
+                    recipient=proponent,
+                    notification_type='COMMENTS_UPDATED',
+                    group=project.proponents,
+                    sender=request.user,
+                    message=f"Comments have been updated for the project '{project.title}'.",
+                    redirect_url=reverse('list-proposals'),
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for {proponent}: {str(e)}")
+
+        messages.success(request, "Project Comments Updated Succesfully!")
+        return redirect('adviser-proposals')
+    else:
+        # Reinitialize the panel with the pre-selected panelist to retain form state
+        form.fields['panel'].initial = form.instance.panel.all()[:1]
+
+    # pass it to the page using render 
+    return render(request, 'project/add_comments.html', 
+    {'project': project, 
+    'form': form})
+   
 
 # def update_project(request, project_id): 
 #     if request.user.is_authenticated: 
@@ -2445,6 +2514,26 @@ def delete_project(request, project_id):
             return JsonResponse({'success': False, 'error': 'Unauthorized'})
     return JsonResponse({'success': False, 'error': 'Invalid request'})
 
+def delete_project_idea(request, project_id):
+    if not request.user.is_authenticated: 
+        messages.error(request, "You Aren't Authorized to Delete this Project Idea!")
+        return redirect('home')
+
+    # Look for the project idea by ID
+    try:
+        project = Project_Idea.objects.get(pk=project_id)
+    except Project_Idea.DoesNotExist:
+        messages.error(request, "The project idea does not exist.")
+        return redirect('all-project-ideas')
+
+    if request.user == project.faculty: 
+        project.delete()
+        messages.success(request, "Project Idea Deleted Successfully!")
+        return redirect('all-project-ideas')
+    else:
+        messages.error(request, "You Aren't Authorized to Delete this Project Idea!")
+        return redirect('home')
+        
 def search_projects(request): 
     # determine whether some has gone to the page 
     # or has fillout and posted to the page. 
@@ -2508,7 +2597,7 @@ def list_faculty(request):
         {'facultys': facultys, 
         'nums': nums})
     else: 
-        messages.success(request, "Please Login to view this page.")
+        messages.error(request, "Please Login to view this page.")
         return redirect('home')
 
 def add_project(request): 
@@ -2633,7 +2722,7 @@ def home(request):
 def all_projects(request):
     if request.user.is_authenticated: 
         # Create a Paginator object with the project list and specify the number of items per page
-        p = Paginator(Project.objects.filter(status='approved').order_by('title'), 5) 
+        p = Paginator(Project.objects.filter(status='approved', is_archived=False).order_by('title'), 5) 
         page = request.GET.get('page')
         projects = p.get_page(page)
         nums = "a" * projects.paginator.num_pages

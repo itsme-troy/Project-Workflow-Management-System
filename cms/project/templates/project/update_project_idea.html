@@ -1,0 +1,64 @@
+{% extends 'project/base.html'%} <!-- use the base file -->
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% block content %} <!-- content of all web pages go -->
+
+{% if user.is_authenticated %}
+    {% if user == project.faculty %} 
+        <center> <h1 style="display: inline-block;"> Update Project Idea </h1> 
+            <div class="button-container" style="float: right;">
+                <a href="javascript:history.back()" class="btn btn-outline-danger btn-sm" 
+                style="float: right;"> Cancel </a> 
+            </div> </center> 
+            <br/>
+
+        <!-- Display form errors -->
+        {% if form.errors %}
+        <div class="alert alert-danger" aria-live="assertive">
+            <ul>
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li> <!-- Improved error message display -->
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+
+        <form action="" method="POST" id="ProjectIdeaForm"> 
+            {% csrf_token %}
+            {{ form.as_p }}
+            <br/> 
+            <input type="submit" value="Update Project "
+            class="btn btn-secondary"> 
+        
+        {% else %}
+            <div class="alert alert-error">  <!-- Added alert-error class -->
+                <h2> Access Denied! </h2> 
+                <p> Only the Creator of this Project Idea can update this project...</p>
+                Logged In user: {{ user }}
+                <br/>   
+                Adviser : {{ project.faculty }}
+            </div>  
+        {% endif %}
+{% else %}
+    <div class="alert alert-error"> 
+        <h1> Sorry! You must be Logged In to view This Page... </h1> 
+            </br> 
+        <a href="{% url 'login' %}">Login Here! </a> 
+        </div> 
+
+{% endif %} 
+
+<script>
+    document.getElementById('ProjectIdeaForm').onsubmit = function() {
+        // Enable the proponents and adviser fields before submitting the form
+        document.querySelector('select[name="faculty"]').removeAttribute('disabled');
+    };
+</script>
+ 
+{% endblock %}

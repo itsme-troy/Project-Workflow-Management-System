@@ -6,14 +6,15 @@
     {% endblock %}
 {% block content %} <!-- content of all web pages go -->
 
-</br> 
-  
     {% if user.is_authenticated %}
-        <center> 
-            <h1> Submit A Project Proposal </h1> 
-            <br/> <br/> 
-        </center>  
-    
+            
+        <center> <h1 style="display: inline-block;"> Submit A Project Proposal </h1> 
+            <div class="button-container" style="float: right;">
+                <a href="javascript:history.back()" class="btn btn-outline-danger btn-sm" 
+                style="float: right;"> Cancel </a> 
+            </div> </center> 
+            <br/>
+            
         {% if submitted %}
             <div class="alert alert-success text-center" role="alert">
                 <h3> Your Proposal Was Submitted Successfully!</h3>
@@ -39,7 +40,7 @@
                     
                     {{ form.as_p }} <!-- Render form fields and errors as paragraphs -->
                     <button type="submit" class="btn btn-primary">Submit</button>
-                    <a href="{% url 'adviser-projects' %}" class="btn btn-outline-danger btn-sm"> Cancel </a>
+                   
                 </form>
 
         {% endif %}

@@ -1,24 +1,29 @@
 {% extends 'project/base.html' %}
-
+{% load static %}
 {% block content %}
 
-</br> 
 
- Logged in User: {{ request.user.id}} 
- 
 {% if user.is_authenticated %}
-<center> 
-    <h1> Submit Defense Application </h1> </br> 
+    <center> <h1 style="display: inline-block;"> Submit Defense Application </h1>
+        {% if not submitted %} 
+        <div class="button-container" style="float: right;">
+            <a href="javascript:history.back()" class="btn btn-danger btn-lg btn-block" 
+            style="float: right;"> Cancel </a> 
+        </div> 
+        {% endif %}
+    </center> 
+        <br/>
 
-    <br/> <br/> 
-</center> 
     {% if submitted %}
 
         <div class="alert alert-success text-center" role="alert">
-            <h3> Your Defense Application Was Submitted Successfully!</h3>
+            <h3> Your Defense Application Was Submitted Successfully!</h3> </br>
+            <a href="{% url 'my-defense-application' %}" class="btn btn-primary">Go to My Defense Application</a>
+
         </div>
         
     {% else %}
+        
          <!-- Display form errors -->
          {% if form.errors %}
             <div class="alert alert-danger">
@@ -36,21 +41,19 @@
             {% endif %}
 
 
-        <form action="" method="POST" id="capstonesubmissionForm" enctype="multipart/form-data"> 
-            {% csrf_token %}
-            
-           <!-- Show last phase and next phase -->
-           <p><strong>Last Phase:</strong> {{ last_phase.phase_type}} <strong> verdict: </strong>  {{ last_phase.verdict }}  {% if last_phase %} {% else %} None </p> {%endif %}
-           <p><strong>Next Phase:</strong> {{ next_phase_type }}</p>
-            
-            <!-- Render form fields -->
-           {{ form.as_p }}
+            <form action="" method="POST" id="capstonesubmissionForm" enctype="multipart/form-data"> 
+                {% csrf_token %}
+                
+            <!-- Show last phase and next phase -->
+            <p><strong>Last Phase:</strong> {{ last_phase.phase_type}} <strong> verdict: </strong>  {{ last_phase.verdict }}  {% if last_phase %} {% else %} None </p> {%endif %}
+            <p><strong>Next Phase:</strong> {{ next_phase_type }}</p>
+                
+                <!-- Render form fields -->
+            {{ form.as_p }}
 
-
-            <input type="submit" value="Submit" 
-            class="btn btn-secondary">
-            <a href="{% url 'list-projects' %}" class="btn btn-danger btn-lg btn-block">Cancel</a> 
-        </form> 
+                <input type="submit" value="Submit" 
+                class="btn btn-secondary">
+            </form> 
     {% endif %}
 
 {% else %}
