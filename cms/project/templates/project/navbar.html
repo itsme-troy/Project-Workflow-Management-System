@@ -112,15 +112,14 @@
                 Coordinator Tab
               </a>
               <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}"> Approved Projects  </a></li>
-                  <li><a class="dropdown-item" href="{% url 'generate-report' %}"> Report Generation  </a></li>
-                  <li><a class="dropdown-item" href="{% url 'coordinator-approval-student' %}"> Student Approval Form  </a></li>
-                  <li><a class="dropdown-item" href="{% url 'coordinator-approval-faculty' %}"> Faculty Approval Form </a></li>
-                  
-                  <li><a class="dropdown-item" href="{% url 'list-defense-applications' %}"> All Defense Applications </a></li>
-                  <li><a class="dropdown-item" href="{% url 'common-sched-calendar' %}"> View Common Available Schedule   </a></li>
-                  <li><a class="dropdown-item" href="{% url 'select-coordinator' %}"> Select New Coordinator </a></li>
-                  <li><a class="dropdown-item" href="{% url 'list-archived-projects' %}"> Archived Projects  </a></li>
+                  <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}"><i class="fas fa-check-circle"></i> Approved Projects</a></li>
+                  <li><a class="dropdown-item" href="{% url 'generate-report' %}"><i class="fas fa-file-alt"></i> Report Generation</a></li>
+                  <li><a class="dropdown-item" href="{% url 'coordinator-approval-student' %}"><i class="fas fa-user-check"></i> Student Approval Form</a></li>
+                  <li><a class="dropdown-item" href="{% url 'coordinator-approval-faculty' %}"><i class="fas fa-user-tie"></i> Faculty Approval Form</a></li>
+                  <li><a class="dropdown-item" href="{% url 'list-defense-applications' %}"><i class="fas fa-file-invoice"></i> All Defense Applications</a></li>
+                  <li><a class="dropdown-item" href="{% url 'common-sched-calendar' %}"><i class="fas fa-calendar-alt"></i> View Common Available Schedule</a></li>
+                  <li><a class="dropdown-item" href="{% url 'select-coordinator' %}"><i class="fas fa-user-plus"></i> Select New Coordinator</a></li>
+                  <li><a class="dropdown-item" href="{% url 'list-archived-projects' %}"><i class="fas fa-archive"></i> Archived Projects</a></li>
                 </ul>
           </li>
             {% endif %}
