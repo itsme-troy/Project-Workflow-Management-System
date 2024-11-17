@@ -358,6 +358,17 @@ class Project(models.Model):
     def panel3(self):
         return self.panel.all()[2] if self.panel.count() > 2 else None
     
+class CustomProjectPhase(models.Model): 
+    project=models.ForeignKey(Project, related_name="custom_phases", on_delete=models.CASCADE)
+    phase_type = models.CharField(max_length=50)
+    order = models.IntegerField()  # To define the order of phases
+    
+    class Meta:
+        ordering = ['order']  # phases are ordered by the 'order' field
+
+    def __str__(self):
+        return f"{self.phase_type} for {self.project.title}"
+ 
 class ProjectPhase(models.Model):
     PHASE_CHOICES = [
         ('proposal', 'Proposal Defense'),

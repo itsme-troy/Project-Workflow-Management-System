@@ -1,11 +1,11 @@
 {% extends 'project/base.html' %}
 
 {% block content %}
-<div class="hero-section text-center py-5">
+<div class="hero-section text-center py-2">
     <h1>Welcome to the SP Management System</h1>
     <p>Streamline Your Senior Project Journey</p>
     {% if not user.is_authenticated %}
-        <a href="{% url 'login' %}" class="btn btn-primary mt-3">Get Started</a>
+        <a href="{% url 'login' %}" class="btn btn-primary mt-2">Get Started</a>
     {% endif %}
 </div>
 
@@ -33,21 +33,21 @@
     <h2 class="text-center">User Role-Specific Information</h2>
     <div class="row">
         <div class="col-md-4">
-            <h4>For Students</h4>
+            <h4><i class="fas fa-user-graduate"></i> For Students</h4>  <!-- Added icon for Students -->
             <ul>
                 <li>Join or create a project group</li>
                 <li>Submit a defense application</li>
             </ul>
         </div>
         <div class="col-md-4">
-            <h4>For Faculty</h4>
+            <h4><i class="fas fa-chalkboard-teacher"></i> For Faculty</h4>  <!-- Added icon for Faculty -->
             <ul>
                 <li>Manage advisory projects</li>
                 <li>Generate insightful reports</li>
             </ul>
         </div>
         <div class="col-md-4">
-            <h4>For Coordinators</h4>
+            <h4><i class="fas fa-user-tie"></i> For Coordinators</h4>  <!-- Added icon for Coordinators -->
             <ul>
                 <li>System management features</li>
                 <li>Approval forms and scheduling tools</li>

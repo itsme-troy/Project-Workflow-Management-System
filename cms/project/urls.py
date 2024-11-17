@@ -13,6 +13,7 @@ urlpatterns = [
     path('add_project', views.add_project, name="add-project"),
     path('my_project', views.my_project, name='my-project'), 
   
+    path('delet_user/<user_id>', views.delete_user, name='delete-user'), 
 
     path('list-faculty', views.list_faculty, name="list-faculty"),
     path('list-student', views.list_student, name="list-student"),
@@ -23,7 +24,6 @@ urlpatterns = [
     # path('project/archive/<int:project_id>/', views.archive_proposal, name='archive-proposal'),
     path('unarchive_project/<project_id>/', views.unarchive_project, name='unarchive-project'),
     # path('project/archive/<int:project_id>/', views.unarchive_proposal, name='unarchive-proposal'),
-    
     
     path('search_projects', views.search_projects, name="search-projects"),
     path('select_panelist/<project_id>', views.select_panelist, name='select-panelist'),
@@ -37,14 +37,12 @@ urlpatterns = [
     path('accept_proposal/<project_id>', views.accept_proposal, name='accept-proposal'),
     path('reject_project/<project_id>', views.reject_project, name='reject-project'),
     path('reject_proposal/<project_id>', views.reject_proposal, name='reject-proposal'),
-    
 
     path('coordinator_projects', views.coordinator_projects, name='coordinator-projects'),
     path('adviser_projects', views.adviser_projects, name='adviser-projects'),
     path('adviser_proposals', views.adviser_proposals, name='adviser-proposals'),
     path('panel_projects', views.panel_projects, name='panel-projects'),
     
-
     path('coordinator_approval_faculty', views.coordinator_approval_faculty, name='coordinator-approval-faculty'),
     path('coordinator_approval_student', views.coordinator_approval_student, name='coordinator-approval-student'),
     path('select_coordinator', views.select_coordinator, name='select-coordinator'),
@@ -97,5 +95,11 @@ urlpatterns = [
     path('show_project_idea/<project_idea_id>', views.show_project_idea, name='show-project-idea'), 
     path('delete_project_idea/<project_id>', views.delete_project_idea, name='delete-project-idea'),
     path('update_project_idea/<project_id>', views.update_project_idea, name='update-project-idea'),
+
+    path('dashboard', views.coordinator_dashboard, name='coordinator-dashboard'), 
+    path('create_custom_phase', views.create_custom_phase, name='create-custom-phase'), 
+
+
+
 
 ]

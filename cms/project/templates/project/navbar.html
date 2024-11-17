@@ -105,6 +105,12 @@
             </li>
             {% endif %}
 
+            {% if request.user.role == 'COORDINATOR' %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'coordinator-dashboard' %}"> Coordinator Dashboard</a>
+            </li>
+            {% endif %}
+
             {% if request.user.role == 'COORDINATOR' and request.user.is_current_coordinator or request.user.is_superuser %}
             
             <li class="nav-item dropdown">
@@ -113,13 +119,15 @@
               </a>
               <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}"><i class="fas fa-check-circle"></i> Approved Projects</a></li>
-                  <li><a class="dropdown-item" href="{% url 'generate-report' %}"><i class="fas fa-file-alt"></i> Report Generation</a></li>
                   <li><a class="dropdown-item" href="{% url 'coordinator-approval-student' %}"><i class="fas fa-user-check"></i> Student Approval Form</a></li>
                   <li><a class="dropdown-item" href="{% url 'coordinator-approval-faculty' %}"><i class="fas fa-user-tie"></i> Faculty Approval Form</a></li>
                   <li><a class="dropdown-item" href="{% url 'list-defense-applications' %}"><i class="fas fa-file-invoice"></i> All Defense Applications</a></li>
                   <li><a class="dropdown-item" href="{% url 'common-sched-calendar' %}"><i class="fas fa-calendar-alt"></i> View Common Available Schedule</a></li>
                   <li><a class="dropdown-item" href="{% url 'select-coordinator' %}"><i class="fas fa-user-plus"></i> Select New Coordinator</a></li>
                   <li><a class="dropdown-item" href="{% url 'list-archived-projects' %}"><i class="fas fa-archive"></i> Archived Projects</a></li>
+                  <li><a class="dropdown-item" href="{% url 'generate-report' %}"><i class="fas fa-file-alt"></i> Report Generation</a></li>
+                  <li><a class="dropdown-item" href="{% url 'create-custom-phase' %}"><i class="fas fa-file-alt"></i> Create Custom Phase </a></li>
+                  
                 </ul>
           </li>
             {% endif %}
@@ -165,7 +173,14 @@
             <i class="fas fa-sign-in-alt"></i> Login
           </a>
         </li>
-        <li class="nav-item dropdown">
+        
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'select-registration' %}">
+            <i class="fas fa-user-plus"></i> Register
+          </a>
+        </li>
+
+        {% comment %} <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="fas fa-user-plus"></i> Register
           </a>
@@ -173,7 +188,7 @@
             <li><a class="dropdown-item" href="{% url 'register_student' %}">Register as Student</a></li>
             <li><a class="dropdown-item" href="{% url 'register_faculty' %}">Register as Faculty</a></li>
           </ul>
-        </li>
+        </li> {% endcomment %}
       {% endif %}
     </ul>
     <form id="searchForm" class="d-flex ms-auto" method="POST" action="{% url 'search-projects' %}" role="search">

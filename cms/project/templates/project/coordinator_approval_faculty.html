@@ -1,10 +1,6 @@
 {% extends 'project/base.html'%} <!-- use the base file -->
-
+{% load static %}
 {% block content %} <!-- content of all web pages go -->
-
-<center> 
-<h1> Faculty Approval Form </h1> 
-</center> </br>     
 
 {% comment %} <div class="card">
     <div class="card-header">
@@ -18,13 +14,19 @@
    
     </div>
   </div> </br> </br>  {% endcomment %}
-
+  <a href="{% url 'coordinator-approval-student' %}" class="btn btn-primary">
+    <i class="fas fa-user-graduate"></i> Go to Student Approval
+</a> 
 <form action="" method=POST> 
     {% csrf_token %} 
- 
-    <div class="text-end">
+
+    <center>
+    <h1 style="display: inline-block;"> Faculty Eligibility Approval Form </h1> 
+    <div class="text-end" style="margin-left: 20px; float: right;"> <!-- Changed to float right -->
+        
         <button class="btn btn-success" type="submit">Save All Changes</button>
-    </div> </br> 
+    </div> </center> 
+
     
 <table class="table table-striped table-hover table-bordered">  
     <thead> 
@@ -32,12 +34,13 @@
             <th scope="col"> # </th> 
             <th scope="col"> Last Name </th> 
             <th scope="col"> First Name </th> 
-            <th scope="col" onclick="toggleCheckboxes('adviser-column')"> Adviser Eligibility 
+            <th scope="col" onclick="toggleCheckboxes('adviser-column')"> Adviser
                 <span class="hint-button" title="Click to toggle eligibility checkboxes">?</span>
-            </th> 
-            <th scope="col" onclick="toggleCheckboxes('panel-column')"> Panel Eligibility 
+                 </th> 
+            <th scope="col" onclick="toggleCheckboxes('panel-column')"> Panelist
                 <span class="hint-button" title="Click to toggle eligibility checkboxes">?</span>
-            </th> 
+                </th> 
+            <th> Actions </th>
         </tr> 
     </thead>  
     <tbody>
@@ -67,6 +70,8 @@
                             name="box">
                     </div> 
                 </td>
+                <td>     <a href="{% url 'delete-user' adviser.id %}" onclick="return confirm('Are you sure you want to delete this account?');">
+                    <button type="button" class="btn btn-outline-danger btn-sm">Delete </button> </a>  </td>
             </tr> 
         {% endfor %}
     </tbody> 
@@ -103,6 +108,13 @@
 </script>
 
 <style>
+    
+    .table {
+        width: 100%; /* Change this to a specific width like '800px' if needed */
+        max-width: 1200px; /* Optional: Set a maximum width */
+        margin: auto; /* Center the table */
+    }
+
     body {
         font-family: Arial, sans-serif;
         margin: 0;

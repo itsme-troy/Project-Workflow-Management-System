@@ -1,0 +1,45 @@
+{% extends 'project/base.html'%} <!-- use the base file -->
+
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/custom.js' %}"></script>
+
+    <title>Coordinator Dashboard</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light shadow-sm">
+        <!-- Include your existing navbar code here -->
+    </nav>
+
+    <div class="container">
+        <h1>Coordinator Dashboard</h1>
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Pending Approvals</h2>
+                <ul>
+                    <li><a href="{% url 'coordinator-approval-student' %}">Student Approvals</a></li>
+                    <li><a href="{% url 'coordinator-approval-faculty' %}">Faculty Approvals</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h2>Project Overview</h2>
+                <ul>
+                    <li><a href="{% url 'coordinator-projects' %}">View Projects</a></li>
+                    <li><a href="{% url 'list-defense-applications' %}">Defense Applications</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h2>Reports</h2>
+                <ul>
+                    <li><a href="{% url 'generate-report' %}">Generate Report</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}

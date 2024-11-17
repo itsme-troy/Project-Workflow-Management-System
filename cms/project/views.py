@@ -11,7 +11,7 @@ from .models import AppUserManager, Defense_Application
 from .models import Student, Faculty, ApprovedProjectGroup,  Project_Group
 from .models import StudentProfile, FacultyProfile, CoordinatorProfile, Coordinator
 from .models import Project_Idea
-from .forms import ProjectIdeaForm
+from .forms import ProjectIdeaForm, CustomProjectPhaseForm
 
 # from .models import Event
 from django.utils import timezone
@@ -37,6 +37,84 @@ logger = logging.getLogger(__name__)
 # Import user model 
 from django.contrib.auth import get_user_model 
 User = get_user_model()
+
+def create_custom_phase(request): 
+    if request.method == 'POST':
+        form = CustomProjectPhaseForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')  # Redirect to a relevant view
+    else:
+        form = CustomProjectPhaseForm()
+    return render(request, 'project/create_custom_phase.html', {'form': form})
+
+
+def coordinator_dashboard(request): 
+    if not request.user.is_authenticated: 
+        messages.error(request, "Please login to view this page")
+        return redirect('home')    
+
+
+    if request.user.role != 'COORDINATOR':
+        messages.error(request, "You're not authorized to view this page")
+        return redirect('home')    
+
+    return render(request, 'project/coordinator_dashboard.html', {})
+
+
+def show_proposal(request, project_id): 
+    if request.user.is_authenticated: 
+        # look on faculty by ID 
+        project = Project.objects.get(pk=project_id)
+        project_owner = User.objects.get(pk=project.owner)
+        
+        # pass it to the page using render
+        return render(request, 'project/show_proposal.html', 
+        {'project': project, 
+        'project_owner': project_owner})
+    else: 
+        messages.success(request, "Please Login to view this page")
+        return redirect('home')
+
+
+@login_required
+def delete_user(request, user_id): 
+    if not request.user.is_authenticated: 
+        messages.error(request, "You're not authorized to perform this Action")
+        return redirect('home')
+    
+    if request.user.role != 'COORDINATOR': 
+        messages.error(request, "You're not authorized to perform this Action")
+        return redirect('home')
+    
+    try:
+        user_to_delete = User.objects.get(pk=user_id)
+        role = user_to_delete.role 
+
+        if request.user == user_to_delete:  # Prevent users from deleting themselves
+            messages.error(request, "You cannot delete your own account.")
+            return redirect('home')
+        
+        user_to_delete.delete()
+
+        # Redirect based on the role of the user
+        if role == 'STUDENT':
+            messages.success(request, "Student account deleted successfully!")
+            return redirect('coordinator-approval-student')  # Redirect to the student list
+        elif role == 'FACULTY':
+            messages.success(request, "Faculty account deleted successfully!")
+            return redirect('coordinator-approval-faculty')  # Redirect to the faculty list
+        elif role == 'COORDINATOR': 
+            messages.success(request, "Coordinator account deleted successfully!")
+            return redirect('coordinator-approval-faculty') 
+        else: 
+            messages.success(request, "User account deleted successfully!")
+            return redirect('coordinator-approval-faculty')
+        
+    except User.DoesNotExist:
+        messages.error(request, "User does not exist.")
+        return redirect('user-list')  # Redirect to a user list or appropriate page
+
 
 def my_project(request): 
     if not request.user.is_authenticated: 
@@ -605,8 +683,13 @@ def submit_defense_application(request):
             messages.error(request, "The Verdict of the recent Defense was Not-Accepted. Please Contact the Coordinator if you think this is a mistake.")
             return redirect('my-defense-application')
 
-        # Determine the next phase type
-        next_phase_type = 'proposal'  # Default phase for new projects
+        # Fetch custom phases if they exist
+        custom_phases = project.custom_phases.all()
+        if custom_phases.exists():
+            next_phase_type = custom_phases.first().phase_type  # Get the first custom phase
+        else:
+            next_phase_type = 'proposal'  # Default phase if no custom phases exist
+
         if last_completed_phase:
             if last_completed_phase.phase_type == 'final' and last_completed_phase.verdict in ['accepted', 'accepted_with_revisions']:
                 messages.error(request, "You have already passed the Final Defense. No more defense applications are needed. Congratulations!")

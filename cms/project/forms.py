@@ -1,11 +1,16 @@
 from django import forms 
 from django.forms import ModelForm 
 from .models import Project, Defense_Application, Project_Group, StudentProfile, Student
-from .models import Faculty, ProjectPhase, Project_Idea
+from .models import Faculty, ProjectPhase, Project_Idea, CustomProjectPhase
 from django.core.exceptions import ValidationError
 
 from django.contrib.auth import get_user_model 
 User = get_user_model()
+
+class CustomProjectPhaseForm(forms.ModelForm):
+    class Meta:
+        model = CustomProjectPhase
+        fields = ['project', 'phase_type', 'order']
 
 class ProjectIdeaForm(forms.ModelForm):
     class Meta:

@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 def update_user(request): 
     if request.user.is_authenticated:
         current_user = User.objects.get(id=request.user.id)
@@ -33,6 +34,10 @@ def update_user(request):
     else: 
         messages.error(request, "Please login to view this page!")
         return redirect('home')
+
+def select_registration(request): 
+    return render(request, 'authenticate/select_registration.html', {
+        })
 
 def register_faculty(request): 
     if request.method == "POST": 
