@@ -1,5 +1,5 @@
 {% extends 'project/base.html'%} <!-- use the base file -->
-
+{% load static %}
 {% block content %} <!-- content of all web pages go -->
 
 
@@ -49,7 +49,7 @@
 
     {% for student in student_list %} 
 
-         <tr> 
+        <tr onclick="toggleActions(this)">
             <td><strong> {{ forloop.counter }} </strong></td>
             <td> {{ student.last_name }} </td> 
             <td> {{ student.first_name }} </td>
@@ -62,9 +62,14 @@
                         name="student_box">
                 </div> 
             </td>
-            <td>     <a href="{% url 'delete-user' student.id %}" onclick="return confirm('Are you sure you want to delete this account?');">
-                <button type="button" class="btn btn-outline-danger btn-sm">Delete </button> </a>  </td>
-            {% comment %} <td> {{ student.eligibilty_deficiencies }}</td> 
+            <td>  
+                <span class="hint-button" onclick="showActions(this)">Click row to show actions</span>   
+                <div class="action-buttons small-btn" style="display: none;">
+
+                    <a href="{% url 'delete-user' student.id %}" onclick="return confirm('Are you sure you want to delete this account?');">
+                    <button type="button" class="btn btn-outline-danger btn-sm">Delete </button> </a>  </td>
+                </div> 
+                    {% comment %} <td> {{ student.eligibilty_deficiencies }}</td> 
             <td> <a href="{% url 'update_deficiencies' 'student.id' %}" > Update </a>  </td>  {% endcomment %}
         </tr>
        
@@ -75,6 +80,7 @@
 
 
 <script>
+    
     function toggleAllCheckboxes() {
         const checkboxDivs = document.querySelectorAll('.form-check');
         checkboxDivs.forEach(div => {
@@ -100,7 +106,43 @@
             alert('Please select at least one student.');
         }
     });
+
+    function toggleActions(row) {
+        // Remove active class from all rows
+        document.querySelectorAll('tr').forEach(tr => tr.classList.remove('active'));
+        // Add active class to clicked row
+        row.classList.add('active');
+    }
+
+    function showActions(hintButton) {
+        // Hide all hint buttons and show action buttons
+        document.querySelectorAll('.hint-button').forEach(btn => btn.style.display = 'inline');
+        document.querySelectorAll('.action-buttons').forEach(btns => btns.style.display = 'none');
+
+        // Show the action buttons for the clicked row and hide the hint button
+        hintButton.style.display = 'none';
+        hintButton.nextElementSibling.style.display = 'block'; // Show action buttons
+    }
+
+    // Add click handler to close rows when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('tr')) {
+            document.querySelectorAll('tr').forEach(tr => tr.classList.remove('active'));
+            // Reset hint buttons and action buttons
+            document.querySelectorAll('.hint-button').forEach(btn => btn.style.display = 'inline');
+            document.querySelectorAll('.action-buttons').forEach(btns => btns.style.display = 'none');
+        }
+    });
+
 </script><style>
+    table {
+        min-height: 500px; /* Ensures a minimum height */
+    }
+    table td {
+        padding: 20px; /* Increase cell spacing */
+    }
+
+    
     body {
         font-family: Arial, sans-serif;
         margin: 0;

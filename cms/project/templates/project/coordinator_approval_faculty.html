@@ -47,7 +47,7 @@
 
        {% for adviser in faculty_list %}
     
-            <tr> 
+            <tr onclick="toggleActions(this)">
                 <td><strong> {{ forloop.counter }} </strong></td>
                 <td> {{ adviser.last_name }}    </td>
                 <td> {{ adviser.first_name }} </td>
@@ -70,8 +70,13 @@
                             name="box">
                     </div> 
                 </td>
-                <td>     <a href="{% url 'delete-user' adviser.id %}" onclick="return confirm('Are you sure you want to delete this account?');">
-                    <button type="button" class="btn btn-outline-danger btn-sm">Delete </button> </a>  </td>
+                <td> 
+                    <span class="hint-button" onclick="showActions(this)">Click row to show actions</span>   
+                    <div class="action-buttons small-btn" style="display: none;">
+                        
+                        <a href="{% url 'delete-user' adviser.id %}" onclick="return confirm('Are you sure you want to delete this account?');">
+                            <button type="button" class="btn btn-outline-danger btn-sm">Delete </button> </a>  
+                    </div> </td>
             </tr> 
         {% endfor %}
     </tbody> 
@@ -103,6 +108,32 @@
         if (checkboxes.length === 0) {
             e.preventDefault();
             alert('Please select at least one faculty member.');
+        }
+    });
+    function toggleActions(row) {
+        // Remove active class from all rows
+        document.querySelectorAll('tr').forEach(tr => tr.classList.remove('active'));
+        // Add active class to clicked row
+        row.classList.add('active');
+    }
+
+    function showActions(hintButton) {
+        // Hide all hint buttons and show action buttons
+        document.querySelectorAll('.hint-button').forEach(btn => btn.style.display = 'inline');
+        document.querySelectorAll('.action-buttons').forEach(btns => btns.style.display = 'none');
+
+        // Show the action buttons for the clicked row and hide the hint button
+        hintButton.style.display = 'none';
+        hintButton.nextElementSibling.style.display = 'block'; // Show action buttons
+    }
+
+    // Add click handler to close rows when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('tr')) {
+            document.querySelectorAll('tr').forEach(tr => tr.classList.remove('active'));
+            // Reset hint buttons and action buttons
+            document.querySelectorAll('.hint-button').forEach(btn => btn.style.display = 'inline');
+            document.querySelectorAll('.action-buttons').forEach(btns => btns.style.display = 'none');
         }
     });
 </script>

@@ -1,16 +1,36 @@
 from django import forms 
 from django.forms import ModelForm 
 from .models import Project, Defense_Application, Project_Group, StudentProfile, Student
-from .models import Faculty, ProjectPhase, Project_Idea, CustomProjectPhase
+from .models import Faculty, ProjectPhase, Project_Idea
+from .models import CustomProjectPhase
 from django.core.exceptions import ValidationError
 
 from django.contrib.auth import get_user_model 
 User = get_user_model()
 
+# class CustomPhaseForm(forms.ModelForm):
+#     class Meta:
+#         model = Custom_Phase
+#         fields = ['project', 'phases', 'name', 'description']
+
+#     def __init__(self, *args, **kwargs):
+#         project = kwargs.get('initial', {}).get('project', None)
+#         super().__init__(*args, **kwargs)
+#         if project:
+#             # Limit the phases to the project-specific ones
+#             self.fields['phases'].queryset = ProjectPhase.objects.filter(project=project)
+
 class CustomProjectPhaseForm(forms.ModelForm):
     class Meta:
         model = CustomProjectPhase
-        fields = ['project', 'phase_type', 'order']
+        fields = ['project', 'phases', 'name', 'description']
+
+    def __init__(self, *args, **kwargs):
+        project = kwargs.get('initial', {}).get('project', None)
+        super().__init__(*args, **kwargs)
+        if project:
+            # Limit the phases to the project-specific ones
+            self.fields['phases'].queryset = ProjectPhase.objects.filter(project=project)
 
 class ProjectIdeaForm(forms.ModelForm):
     class Meta:

@@ -95,11 +95,11 @@ urlpatterns = [
     path('show_project_idea/<project_idea_id>', views.show_project_idea, name='show-project-idea'), 
     path('delete_project_idea/<project_id>', views.delete_project_idea, name='delete-project-idea'),
     path('update_project_idea/<project_id>', views.update_project_idea, name='update-project-idea'),
-
     path('dashboard', views.coordinator_dashboard, name='coordinator-dashboard'), 
-    path('create_custom_phase', views.create_custom_phase, name='create-custom-phase'), 
-
-
-
+    # path('create_custom_phase/<project_id>', views.create_custom_phase, name='create-custom-phase'),  
+    path('create_custom_phases', views.create_custom_phases, name='create-custom-phases'),  
+ 
+    path('settings', views.coordinator_settings, name = 'coordinator-settings'),
+    path('defense_settings', views.defense_settings, name = 'defense-settings'),
 
 ]

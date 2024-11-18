@@ -12,31 +12,69 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light shadow-sm">
-        <!-- Include your existing navbar code here -->
+        
     </nav>
 
-    <div class="container">
-        <h1>Coordinator Dashboard</h1>
+    <div class="container mt-4">
+        <h1 class="text-center">Coordinator Dashboard</h1>
         <div class="row">
             <div class="col-md-4">
-                <h2>Pending Approvals</h2>
-                <ul>
-                    <li><a href="{% url 'coordinator-approval-student' %}">Student Approvals</a></li>
-                    <li><a href="{% url 'coordinator-approval-faculty' %}">Faculty Approvals</a></li>
-                </ul>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h2>Pending Approvals</h2>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'coordinator-approval-student' %}">
+                                    <i class="fas fa-user-check"></i> Student Approvals
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'coordinator-approval-faculty' %}">
+                                    <i class="fas fa-user-tie"></i> Faculty Approvals
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="col-md-4">
-                <h2>Project Overview</h2>
-                <ul>
-                    <li><a href="{% url 'coordinator-projects' %}">View Projects</a></li>
-                    <li><a href="{% url 'list-defense-applications' %}">Defense Applications</a></li>
-                </ul>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h2>Project Overview</h2>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'coordinator-projects' %}">
+                                    <i class="fas fa-project-diagram"></i> View Projects
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'list-defense-applications' %}">
+                                    <i class="fas fa-file-invoice"></i> Defense Applications
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="col-md-4">
-                <h2>Reports</h2>
-                <ul>
-                    <li><a href="{% url 'generate-report' %}">Generate Report</a></li>
-                </ul>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h2>Settings</h2>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="{% url 'coordinator-settings' %}">
+                                    <i class="fas fa-cog"></i> Settings
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

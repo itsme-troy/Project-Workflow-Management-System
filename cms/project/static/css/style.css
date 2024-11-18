@@ -83,11 +83,12 @@ tr.active .action-buttons {
     margin-right: 0.25rem;
 }
 
-
 .table {
     width: 100%;
     margin-bottom: 1rem;
     color: #212529;
+    overflow: auto;
+    min-height: 500px;
 }
 .table th,
 .table td {

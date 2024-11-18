@@ -87,7 +87,6 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
     panel_eligible = models.BooleanField('Eligible as Panelist', default=False)
     is_current_coordinator = models.BooleanField('Current Coordinator', default=False)
 
-
     USERNAME_FIELD = "email" # user will login using their email
     EMAIL_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -325,7 +324,6 @@ class Project(models.Model):
     adviser = models.ForeignKey(Faculty, null=True, on_delete=models.SET_NULL) # If adviser deletes profile, then the projects' adviser will be set to null 
     panel = models.ManyToManyField(Faculty, related_name='project_panel', blank=True )    
 
-
     # start_date = models.DateTimeField('Start date', null=True,  blank=True)
     # end_date =  models.DateTimeField('End Date', null=True, blank=True)
    
@@ -358,17 +356,6 @@ class Project(models.Model):
     def panel3(self):
         return self.panel.all()[2] if self.panel.count() > 2 else None
     
-class CustomProjectPhase(models.Model): 
-    project=models.ForeignKey(Project, related_name="custom_phases", on_delete=models.CASCADE)
-    phase_type = models.CharField(max_length=50)
-    order = models.IntegerField()  # To define the order of phases
-    
-    class Meta:
-        ordering = ['order']  # phases are ordered by the 'order' field
-
-    def __str__(self):
-        return f"{self.phase_type} for {self.project.title}"
- 
 class ProjectPhase(models.Model):
     PHASE_CHOICES = [
         ('proposal', 'Proposal Defense'),
@@ -396,6 +383,40 @@ class ProjectPhase(models.Model):
     def __str__(self):
         return f"{self.project.title} - {self.get_phase_type_display()}"
 
+# class Custom_Phase(models.Model): 
+#     project = models.ForeignKey(Project, related_name="custom_phases", on_delete=models.CASCADE)
+#     # phases allow a project to have a combination of phases
+#     phases = models.ManyToManyField(ProjectPhase, related_name='custom_sets', blank=True)  # Many-to-many to ProjectPhase 
+#     # phase_type = models.CharField(max_length=50)
+#     # order = models.IntegerField()  # To define the order of phases
+    
+#     name = models.CharField(max_length=100, blank=False, default='Custom Defense Set')  # You can name the custom phase set
+#     description = models.TextField(blank=True, null=True)  # Optional description for the custom set
+#     # phase_order = models.IntegerField(default=0)  # Add an order field to manage the sequence
+
+#     def __str__(self):
+#         return f"Custom Phases for {self.project.title} ({self.name})"
+
+    # class Meta:
+    #     ordering = ['phase_order']  # Ensures that phases are ordered correctly
+
+class CustomProjectPhase(models.Model): 
+    project=models.ForeignKey(Project, related_name="custom_phases", on_delete=models.CASCADE)
+    
+    # phases allow a project to have a combination of phases
+    phases = models.ManyToManyField(ProjectPhase, related_name='custom_sets', blank=True)  # Many-to-many to ProjectPhase 
+    # phase_type = models.CharField(max_length=50)
+    # order = models.IntegerField()  # To define the order of phases
+    
+    name = models.CharField(max_length=100, blank=False, default='Custom Defense Set')  # You can name the custom phase set
+    description = models.TextField(blank=True, null=True)  # Optional description for the custom set
+    phase_order = models.IntegerField(default=0)  # Add an order field to manage the sequence
+
+    def __str__(self):
+        return f"Custom Phases for {self.project.title} ({self.name})"
+
+    class Meta:
+        ordering = ['phase_order']  # Ensures that phases are ordered correctly
 
 class ProjectManager(BaseUserManager): 
     def get_queryset(self, *args, **kwargs):

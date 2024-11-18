@@ -11,7 +11,8 @@ from .models import AppUserManager, Defense_Application
 from .models import Student, Faculty, ApprovedProjectGroup,  Project_Group
 from .models import StudentProfile, FacultyProfile, CoordinatorProfile, Coordinator
 from .models import Project_Idea
-from .forms import ProjectIdeaForm, CustomProjectPhaseForm
+from .forms import ProjectIdeaForm
+from .forms import CustomProjectPhaseForm
 
 # from .models import Event
 from django.utils import timezone
@@ -38,16 +39,51 @@ logger = logging.getLogger(__name__)
 from django.contrib.auth import get_user_model 
 User = get_user_model()
 
-def create_custom_phase(request): 
-    if request.method == 'POST':
-        form = CustomProjectPhaseForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('home')  # Redirect to a relevant view
-    else:
-        form = CustomProjectPhaseForm()
-    return render(request, 'project/create_custom_phase.html', {'form': form})
+def defense_settings(request): 
+    return render(request, 'project/setting_defenses.html', {})
 
+
+def coordinator_settings(request): 
+
+    return render(request, 'project/coordinator_settings.html', {} )
+
+# def create_phases(request): 
+
+#     project = Project.objects.get(id=project_id)
+
+#     if not request.user.is_authenticated: 
+#         messages.error(request, "Please login to view this page")
+#         return redirect('home')
+    
+#     if not request.user.is_current_coordinator: 
+#         messages.error(request, "You are not authorized to view this page")
+#         return redirect('home')
+    
+#     return render(request, 'project/create_phases.html', {})
+
+def create_custom_phases(request):
+    # project = Project.objects.get(id=project_id)
+    if not request.user.is_authenticated: 
+        messages.error(request, "Please login to view this page")
+        return redirect('home')
+    
+    if not request.user.is_current_coordinator: 
+        messages.error(request, "You are not authorized to view this page")
+        return redirect('home')
+    
+    # if  request.method == 'POST':
+    #     form = CustomProjectPhaseForm(request.POST)
+    #     if form.is_valid():
+    #         custom_phase = form.save(commit=False)
+    #         # custom_phase.project = project
+    #         custom_phase.save()
+    #         form.save_m2m()  # Save the ManyToMany relation
+    #         messages.success(request, 'Custom phases have been saved successfully!')
+    #         return redirect('project_detail', project_id=project.id)
+    # else:
+    #     form = CustomProjectPhaseForm(initial={'project': project})
+
+    return render(request, 'project/create_custom_phases.html', {})
 
 def coordinator_dashboard(request): 
     if not request.user.is_authenticated: 
@@ -685,7 +721,10 @@ def submit_defense_application(request):
 
         # Fetch custom phases if they exist
         custom_phases = project.custom_phases.all()
+
         if custom_phases.exists():
+            # Allow the user to select from the custom phases instead of fixed ones
+            # You can render a dropdown of custom phases or the available phases for the defense
             next_phase_type = custom_phases.first().phase_type  # Get the first custom phase
         else:
             next_phase_type = 'proposal'  # Default phase if no custom phases exist
