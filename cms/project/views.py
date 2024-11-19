@@ -11,7 +11,7 @@ from .models import AppUserManager, Defense_Application
 from .models import Student, Faculty, ApprovedProjectGroup,  Project_Group
 from .models import StudentProfile, FacultyProfile, CoordinatorProfile, Coordinator
 from .models import Project_Idea
-from .forms import ProjectIdeaForm
+from .forms import ProjectIdeaForm, UpdateDeficienciesForm
 from .forms import CustomProjectPhaseForm
 
 # from .models import Event
@@ -1035,11 +1035,26 @@ def my_project_group_waitlist(request):
     
     
 def update_deficiencies(request, student_id): 
-    if request.user.is_authenticated: 
-        return render(request, 'project/update_deficiencies.html', {})
-    else:
-        messages.success(request, "Please Login to view this page")
+    if not request.user.is_authenticated: 
+        messages.error(request, "Please Login to view this page")
         return redirect('home')
+    
+    if not request.user.is_current_coordinator:
+        messages.error(request, "You are not authorized to perform this action")
+        return redirect('home')
+    
+    try: 
+        student = Student.objects.get(pk=student_id)
+
+    except Student.DoesNotExist: 
+        messages.error(request, "User does not exist.")
+        return redirect('coordinator-approval-student')  # Redirect to a user list or appropriate page
+
+    if request.user.is_current_coordinator: 
+        form = UpdateDeficienciesForm
+
+    return render(request, 'project/update_deficiencies.html', {})
+  
     
 def get_user_ids_with_group(request): 
     # Get all approved project groups

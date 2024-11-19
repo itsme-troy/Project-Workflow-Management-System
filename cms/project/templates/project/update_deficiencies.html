@@ -1,40 +1,33 @@
 {% extends 'project/base.html'%} <!-- use the base file -->
 
 {% block content %} <!-- content of all web pages go -->
-    {% if user.is_superuser %}
+{% if user.is_current_coordinator %}
 
         <center> 
         <h1> Update Deficiencies Form </h1> <br/> 
         </center> 
         <!--logged in user can be called by
         "user" which is already valid for every page -->
-        {% comment %} Logged In user: {{ user }}
+       {% comment %} Logged In user: {{ user }} {% endcomment %}
             
-        <br/>   
-        Adviser : {{ project.adviser }} {% endcomment %}
+        {% comment %} <br/>   
+        Adviser : {{ project.adviser }}  {% endcomment %}
         <!-- use form rendered from views -->
         
         <!-- put the data from the form.
         solution is put an instance of project-->
-        {% comment %} <form action="" method=POST> 
+       <form action="" method=POST> 
             {% csrf_token %}
             {{ form.as_p }}
             <br/> 
             <input type="submit" value="Update"
             class="btn btn-secondary"> 
-        {% else %}
-            <h2> Access Denied! </h2> 
-            <p> Only the Project's Adviser can update this project...</p>
-            Logged In user: {{ user }}
-                
-            <br/>   
-            Adviser : {{ project.adviser }}
-        {% endif %}
+       
 {% else %}
     <h1> Sorry! You must be Logged In to view This Page... </h1> 
         </br> 
     <a href="{% url 'login' %}">Login Here! </a> 
-{% endcomment %}
+
     {% endif %}  
  
 {% endblock %}

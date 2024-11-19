@@ -36,9 +36,8 @@
                             <td>{{ faculty.first_name }}</td> 
                             <td>{{ faculty.email }}</td> 
                             <td>
-                                <a href="{% url 'show-faculty' faculty.id %}">  
-                                    <button type="button" class="btn btn-outline-primary btn-sm">View Profile</button>
-                                </a>
+                                <a href="{% url 'show-faculty' faculty.id %}" class="btn btn-outline-primary btn-sm">View Profile</a>
+
                             </td>
                         </tr> 
                     {% endif %}

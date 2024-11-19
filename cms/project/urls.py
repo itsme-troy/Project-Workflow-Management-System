@@ -76,7 +76,7 @@ urlpatterns = [
     # path('my_student_profile/<profile_id>', views.my_student_profile, name="my-student-profile"), 
     path('my_profile/<profile_id>', views.my_profile, name="my-profile"), 
     path('show_faculty/<faculty_id>', views.show_faculty, name='show-faculty'),
-    path('update_deficiencies/<student_id>', views.update_deficiencies, name='update_deficiencies'), 
+    path('update_deficiencies/<student_id>', views.update_deficiencies, name='update-deficiencies'), 
 
     # path('approve_project_group/<group_id>', views.approve_project_group, name='approve-project-group'), 
     # path('reject_project_group/<group_id>', views.reject_project_group, name='reject-project-group'),

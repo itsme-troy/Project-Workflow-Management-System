@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
             item.style.transform = 'scale(1)'; // Reset size
         });
     });
-        
+    
 
 });
 

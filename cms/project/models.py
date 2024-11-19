@@ -82,7 +82,7 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
     date_joined = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(blank=True, null=True)    
     eligible = models.BooleanField('Eligible as Student', default=False)
-    eligility_deficiencies = models.CharField('Eligibility Deficiencies', max_length=500, blank=True)
+    deficiencies = models.CharField('Eligibility Deficiencies', max_length=500, blank=True)
     adviser_eligible = models.BooleanField('Eligible as Adviser', default=False)
     panel_eligible = models.BooleanField('Eligible as Panelist', default=False)
     is_current_coordinator = models.BooleanField('Current Coordinator', default=False)
@@ -314,7 +314,6 @@ class Notification(models.Model):
         ordering = ['-created_at']
 
 class Project(models.Model): 
-
     title = models.CharField('Title', max_length=120, null=True) # 120 characters
     project_type = models.CharField('Project Type', null=True, max_length=50 )
     description = models.TextField(null=True) # we dont have to put a description if we do not want to
