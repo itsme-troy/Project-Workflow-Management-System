@@ -9,11 +9,13 @@
 
         <h1>Official Project Group List</h1>
 
-        {% if not project_groups_with_proponents %} <!-- Check if projects list is empty -->
-            <div class="alert alert-danger text-center" role="alert">
-                <h2> No Project Groups Available. </h2>
-            </div>
-        {% endif %}
+{% if project_groups_with_proponents %} <!-- Check if projects list is empty -->
+    <center>
+        <div class="alert alert-danger text-center" role="alert">
+            <h4> No Project Groups Available at the moment. </h4>
+        </div>
+    </center>
+{% else %}
 
     <table class="table table-hover table-bordered">
         <thead class="thead-dark">
@@ -41,6 +43,7 @@
             {% endfor %}
         </tbody>
     </table>
+{% endif %}  
     <hr/>
 
 <nav aria-label="Page navigation example">

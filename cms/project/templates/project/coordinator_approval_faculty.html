@@ -14,9 +14,13 @@
    
     </div>
   </div> </br> </br>  {% endcomment %}
-  <a href="{% url 'coordinator-approval-student' %}" class="btn btn-primary">
-    <i class="fas fa-user-graduate"></i> Go to Student Approval
-</a> 
+
+<div class="text-start">
+    <a href="{% url 'coordinator-approval-student' %}" class="btn btn-primary">
+        <i class="fas fa-user-graduate"></i> Go to Student Approval
+    </a> 
+</div> </br>
+
 <form action="" method=POST> 
     {% csrf_token %} 
 
@@ -24,7 +28,7 @@
     <h1 style="display: inline-block;"> Faculty Eligibility Approval Form </h1> 
     <div class="text-end" style="margin-left: 20px; float: right;"> <!-- Changed to float right -->
         
-        <button class="btn btn-success" type="submit">Save All Changes</button>
+        <button class="btn btn-success mb-3" type="submit">Save All Changes</button>
     </div> </center> 
 
     
@@ -71,7 +75,7 @@
                     </div> 
                 </td>
                 <td> 
-                    <span class="hint-button" onclick="showActions(this)">Click row to show actions</span>   
+                    <span class="hint-button" onclick="showActions(this)">Click to show actions</span>   
                     <div class="action-buttons small-btn" style="display: none;">
                         
                         <a href="{% url 'delete-user' adviser.id %}" onclick="return confirm('Are you sure you want to delete this account?');">
@@ -137,87 +141,4 @@
     });
 </script>
 
-<style>
-    
-    .table {
-        width: 100%; /* Change this to a specific width like '800px' if needed */
-        max-width: 1200px; /* Optional: Set a maximum width */
-        margin: auto; /* Center the table */
-    }
-
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    .btn-success {
-        background-color: #28a745;
-        border: none;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .btn-success:hover {
-        background-color: #218838;
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: #f1f1f1;
-    }
-
-    .table-striped tbody tr:nth-of-type(odd) {
-        background-color: #f9f9f9;
-    }
-
-    .card {
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        margin: 20px;
-        padding: 20px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .card-header {
-        font-weight: bold;
-        font-size: 18px;
-        margin-bottom: 10px;
-    }
-
-    .hint-button {
-        display: inline-block;
-        padding: 5px 10px;
-        background-color: #f0f0f0;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .hint-button:hover {
-        background-color: #e0e0e0;
-    }
-
-    .help-text {
-        margin-top: 10px;
-        font-size: 14px;
-        color: #555;
-    }
-
-    @media (max-width: 768px) {
-        .table {
-            width: 100%;
-            overflow-x: auto;
-            display: block;
-        }
-    }
-</style>
 {% endblock %}

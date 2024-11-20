@@ -309,6 +309,7 @@ class Notification(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
     redirect_url = models.URLField(max_length=200, null=True, blank=True)
+    verdict = models.CharField('Verdict', null=True, max_length=50 )
 
     class Meta:
         ordering = ['-created_at']

@@ -6,71 +6,83 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
   </head>
 {% endblock %}
+
 {% block content %}
 
-</br>
+
 <center>
-    <h1> Report Generation and Projects Defense Progress </h1> </br>
+    <h1> Report Generation and Projects Defense Progress </h1> 
+</center> 
 
-</center> </br>
+{% if not projects_with_phases %}
+  <center> 
+    <div class="alert alert-danger" role="alert">
+      <h4> No projects Available at the moment. </h4> 
+    </div> 
+  </center> 
 
-<div class="d-flex justify-content-end"> 
-  <a href="{% url 'create-custom-phases' %}"
-    class="btn btn-primary">
-      <i class="bi bi-plus-circle"></i> Create Custom Phases
-  </a> 
+{% else %}
+  
+  {% if user.is_current_coordinator %}
+    <div class="d-flex justify-content-end"> 
+        <a href="{% url 'create-custom-phases' %}"
+          class="btn btn-primary mb-3">
+            <i class="bi bi-plus-circle"></i> Create Custom Phases
+        </a> 
+    </div> 
+  {% endif %}
 
-</div> 
-
-<table class="table table-hover table-bordered">
-  <thead>
-      <tr>
-          <th scope="col">Project Name</th>
-          <th scope="col">Proponents</th> 
-          <th scope="col">Adviser</th>
-          <th scope="col">Proposal Defense</th>
-          <th scope="col">Design Defense</th>
-          <th scope="col">Preliminary Defense</th>
-          <th scope="col">Final Defense</th>
-      </tr>
-  </thead>
-  <tbody>
-    {% for project_data in projects_with_phases %}
-    {% if project_data.project.status == 'approved' %}
+  <table class="table table-hover table-bordered">
+    <thead>
         <tr>
-            <td>{{ project_data.project }}</td>
-            <td>{{ project_data.project.proponents }}</td>
-            <td>{{ project_data.project.adviser }}</td>
-            
-            <td class="verdict-{{ project_data.defense_results.proposal|lower|slugify_filter }}">
-                <span class="badge badge-{{ project_data.defense_results.proposal|lower|slugify_filter }}">
-                    {{ project_data.defense_results.proposal }}
-                </span>
-                <!-- Debugging  tool -->
-                {% comment %} <small>Class: badge-{{ project_data.defense_results.proposal|lower|slugify_filter }}</small> {% endcomment %}
-            </td>
-            <td class="verdict-{{ project_data.defense_results.design|lower|slugify_filter }}">
-                <span class="badge badge-{{ project_data.defense_results.design|lower|slugify_filter }}">
-                    {{ project_data.defense_results.design }}
-                </span>
-            </td>
-            <td class="verdict-{{ project_data.defense_results.preliminary|lower|slugify_filter }}">
-                <span class="badge badge-{{ project_data.defense_results.preliminary|lower|slugify_filter }}">
-                    {{ project_data.defense_results.preliminary }}
-                </span>
-                <!-- Debugging  tool -->
-                {% comment %} <small>Class: badge-{{ project_data.defense_results.preliminary|lower|slugify_filter }}</small> {% endcomment %}
-            </td>
-            <td class="verdict-{{ project_data.defense_results.final|lower|slugify_filter }}">
-                <span class="badge badge-{{ project_data.defense_results.final|lower|slugify_filter }}">
-                    {{ project_data.defense_results.final }}
-                </span>
-            </td>
+            <th scope="col">Project Name</th>
+            <th scope="col">Proponents</th> 
+            <th scope="col">Adviser</th>
+            <th scope="col">Proposal Defense</th>
+            <th scope="col">Design Defense</th>
+            <th scope="col">Preliminary Defense</th>
+            <th scope="col">Final Defense</th>
         </tr>
-    {% endif %}
-    {% endfor %}
-  </tbody>
-</table>  <hr/> </br>
+    </thead>
+    <tbody>
+      {% for project_data in projects_with_phases %}
+      {% if project_data.project.status == 'approved' %}
+          <tr>
+              <td>{{ project_data.project }}</td>
+              <td>{{ project_data.project.proponents }}</td>
+              <td>{{ project_data.project.adviser }}</td>
+              
+              <td class="verdict-{{ project_data.defense_results.proposal|lower|slugify_filter }}">
+                  <span class="badge badge-{{ project_data.defense_results.proposal|lower|slugify_filter }}">
+                      {{ project_data.defense_results.proposal }}
+                  </span>
+                  <!-- Debugging  tool -->
+                  {% comment %} <small>Class: badge-{{ project_data.defense_results.proposal|lower|slugify_filter }}</small> {% endcomment %}
+              </td>
+              <td class="verdict-{{ project_data.defense_results.design|lower|slugify_filter }}">
+                  <span class="badge badge-{{ project_data.defense_results.design|lower|slugify_filter }}">
+                      {{ project_data.defense_results.design }}
+                  </span>
+              </td>
+              <td class="verdict-{{ project_data.defense_results.preliminary|lower|slugify_filter }}">
+                  <span class="badge badge-{{ project_data.defense_results.preliminary|lower|slugify_filter }}">
+                      {{ project_data.defense_results.preliminary }}
+                  </span>
+                  <!-- Debugging  tool -->
+                  {% comment %} <small>Class: badge-{{ project_data.defense_results.preliminary|lower|slugify_filter }}</small> {% endcomment %}
+              </td>
+              <td class="verdict-{{ project_data.defense_results.final|lower|slugify_filter }}">
+                  <span class="badge badge-{{ project_data.defense_results.final|lower|slugify_filter }}">
+                      {{ project_data.defense_results.final }}
+                  </span>
+              </td>
+          </tr>
+      {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>  <hr/> </br>
+{% endif %}
+
 
 <div class="row">
   <div class="col-sm-6 mb-3 mb-sm-0">

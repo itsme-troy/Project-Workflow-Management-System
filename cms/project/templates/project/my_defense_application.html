@@ -20,49 +20,53 @@
         </div>
     {% comment %} {% endif %} {% endcomment %}
 </div>
-
-{% if application_data %}
-    <table class="table table-striped table-hover table-bordered">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Type of Defense</th>
-                <th>Project Name</th>
-                <th>Proponents</th> 
-                <th>Adviser</th>
-                <th>Date Submitted</th> <!-- column for submission date -->
-                <th>Status</th>
-                <th>Status Updated On</th> <!-- Column for status update date -->
-            </tr>
-        </thead>
-        <tbody>
-            {% for data in application_data %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ data.application.get_title_display }}</td>
-                <td><a href="{% url 'show-project' data.application.project.id %}">{{ data.application.project.title }}</a></td>
-                <td>
-                    {{ data.application.project.proponents}} 
-                </td>
-                <td>{{ data.application.adviser.get_full_name }}</td>
-                <td>{{ data.application.submission_date|date:"M j, Y g:i A" }}</td> <!-- Display submission date -->
-                <td>
-                    <span class="badge badge-{{ data.latest_phase.get_verdict_display|lower|slugify_filter }}">
-                        {{ data.latest_phase.get_verdict_display }}
-                    </span>
-                </td>
-                <td>
-                    {{ data.latest_phase.date|date:"M j, Y g:i A" }}
-                </td> <!-- Display status update date -->
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+{% if not application_data %}
+    <center>
+        <div class="alert alert-danger" role="alert">
+            <h4> No defense applications found for your project group. </h4> 
+        </div> 
+    </center>
 {% else %}
-    <div class="alert alert-danger text-center" role="alert">
-        <h2>  No defense applications found for your project group. </h2>
-    </div>
 
+    {% if application_data %}
+        <table class="table table-striped table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Type of Defense</th>
+                    <th>Project Name</th>
+                    <th>Proponents</th> 
+                    <th>Adviser</th>
+                    <th>Date Submitted</th> <!-- column for submission date -->
+                    <th>Status</th>
+                    <th>Status Updated On</th> <!-- Column for status update date -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in application_data %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ data.application.get_title_display }}</td>
+                    <td><a href="{% url 'show-project' data.application.project.id %}">{{ data.application.project.title }}</a></td>
+                    <td>
+                        {{ data.application.project.proponents}} 
+                    </td>
+                    <td>{{ data.application.adviser.get_full_name }}</td>
+                    <td>{{ data.application.submission_date|date:"M j, Y g:i A" }}</td> <!-- Display submission date -->
+                    <td>
+                        <span class="badge badge-{{ data.latest_phase.get_verdict_display|lower|slugify_filter }}">
+                            {{ data.latest_phase.get_verdict_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {{ data.latest_phase.date|date:"M j, Y g:i A" }}
+                    </td> <!-- Display status update date -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
 {% endif %}
+
 
 {% endblock %}

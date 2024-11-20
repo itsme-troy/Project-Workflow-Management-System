@@ -658,12 +658,14 @@ def submit_verdict(request, application_id):
             
              # Create notifications for all proponents
             for proponent in application.project.proponents.proponents.all():
+                verdict = phase.get_verdict_display()  # Get the verdict description
                 Notification.objects.create(
                     recipient=proponent,
                     notification_type='VERDICT',
                     group=application.project.proponents,
                     sender=request.user,
-                    message=f"The verdict for the {phase.get_phase_type_display()} of the project '{application.project.title}' is {phase.get_verdict_display()}.",
+                    message=f"The verdict for the {phase.get_phase_type_display()} of the project '{application.project.title}' is",
+                    verdict=verdict, # Store the verdict for later use in template
                     redirect_url = reverse('my-defense-application')
                 )
             if application.project.adviser:  # Check if there is an adviser assigned
@@ -672,7 +674,7 @@ def submit_verdict(request, application_id):
                     notification_type='VERDICT',
                     group=application.project.proponents,
                     sender=request.user,
-                    message=f"The verdict for the {phase.get_phase_type_display()} of the project '{application.project.title}' is {phase.get_verdict_display()}.",
+                    message=f"The verdict for the {phase.get_phase_type_display()} of the project '{application.project.title}' is.",
                     redirect_url=reverse('generate-report')  
                 )
 

@@ -7,72 +7,79 @@
 
 {% block content %} <!-- content of all web pages go -->
 <h1> Projects I serve as a Panelist </h1>
-<table class="table table-hover table-bordered">
-    <thead>
-        <tr>
-            <th scope="col"> # </th>
-            <th scope="col">Project Name</th>
-            <th scope="col">Proponents</th>
-            <th scope="col">Adviser</th>
-            <th scope="col">Panel 1</th>
-            <th scope="col">Panel 2</th>
-            <th scope="col">Panel 3</th>
-            <th scope="col"> Actions</th>
-            <th scope="col">Status </th>
-        </tr>
-    </thead>
-    <tbody>
-        {% if approved_projects_with_groups %}
-            {% for project_data in approved_projects_with_groups %}
-                <tr onclick="toggleActions(this)">
-                    <td> <strong> {{ forloop.counter }} </strong> </td>
-                    <td> <a href="{% url 'show-project' project_data.project.id %}">{{ project_data.project }}</a>  </td>
-                    <td>{{ project_data.project.proponents }}</td>
-                    <td>{{ project_data.project.adviser }}</td>
-                    {% for panelist in project_data.panel %}
-                    <td class="{% if panelist and user == panelist %}table-warning {% endif %}">
-                        {% if panelist %}
-                            {{ panelist.first_name }} {{ panelist.last_name }}  <!-- Corrected to access panelist directly -->
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    {% endfor %}
-                    
-                    <td> 
-                        {% if user in project_data.panel %}  <!-- Check if user is in the panelists -->
-                            <span class="hint-button" onclick="showActions(this)">Click row to show actions</span>
-                            <div class="action-buttons small-btn" style="display: none;">
-                                <a href="{% url 'reject-panel-invitation' project_data.project.id %}"
-                                   class="btn btn-outline-danger btn-sm"
-                                   onclick="return confirm('Are you sure you want to Reject Panel invitation to this Project?');"> Reject Panelist Role </a> 
-                            </div> 
-                        {% endif %} 
-                    </td> 
 
-                    <td>
-                        <span class="badge 
-                            {% if project_data.project.status == 'approved' %}
-                                bg-success
-                            {% elif project_data.project.status == 'pending' %}
-                                bg-warning text-dark
-                            {% elif project_data.project.status == 'declined' %}
-                                bg-danger
+{% if not approved_projects_with_groups %}
+    <center>
+        <div class="alert alert-danger" role="alert">
+            <h4> You have no projects you serve as a Panelist yet. </h4> 
+        </div> </center
+
+{% else %}
+    <table class="table table-hover table-bordered">
+        <thead>
+            <tr>
+                <th scope="col"> # </th>
+                <th scope="col">Project Name</th>
+                <th scope="col">Proponents</th>
+                <th scope="col">Adviser</th>
+                <th scope="col">Panel 1</th>
+                <th scope="col">Panel 2</th>
+                <th scope="col">Panel 3</th>
+                <th scope="col"> Actions</th>
+                <th scope="col">Status </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if approved_projects_with_groups %}
+                {% for project_data in approved_projects_with_groups %}
+                    <tr onclick="toggleActions(this)">
+                        <td> <strong> {{ forloop.counter }} </strong> </td>
+                        <td> <a href="{% url 'show-project' project_data.project.id %}">{{ project_data.project }}</a>  </td>
+                        <td>{{ project_data.project.proponents }}</td>
+                        <td>{{ project_data.project.adviser }}</td>
+                        {% for panelist in project_data.panel %}
+                        <td class="{% if panelist and user == panelist %}table-warning {% endif %}">
+                            {% if panelist %}
+                                {{ panelist.first_name }} {{ panelist.last_name }}  <!-- Corrected to access panelist directly -->
                             {% else %}
-                                bg-secondary
+                                -
                             {% endif %}
-                        "> {{ project_data.project.status }}
-                        </span>  
-                    </td>
-                </tr>
-            {% endfor %}
-        {% else %}
-            <div class="alert alert-info" role="alert" style="font-size: 1.2em;"> <!-- Added alert class -->
-                <p>You have no Projects that you serve as a Panelist yet.</p>
-            </div> 
-        {% endif %}
-    </tbody>
-</table>  
+                        </td>
+                        {% endfor %}
+                        
+                        <td> 
+                            {% if user in project_data.panel %}  <!-- Check if user is in the panelists -->
+                                <span class="hint-button" onclick="showActions(this)">Click row to show actions</span>
+                                <div class="action-buttons small-btn" style="display: none;">
+                                    <a href="{% url 'reject-panel-invitation' project_data.project.id %}"
+                                    class="btn btn-outline-danger btn-sm"
+                                    onclick="return confirm('Are you sure you want to Reject Panel invitation to this Project?');"> Reject Panelist Role </a> 
+                                </div> 
+                            {% endif %} 
+                        </td> 
+
+                        <td>
+                            <span class="badge 
+                                {% if project_data.project.status == 'approved' %}
+                                    bg-success
+                                {% elif project_data.project.status == 'pending' %}
+                                    bg-warning text-dark
+                                {% elif project_data.project.status == 'declined' %}
+                                    bg-danger
+                                {% else %}
+                                    bg-secondary
+                                {% endif %}
+                            "> {{ project_data.project.status }}
+                            </span>  
+                        </td>
+                    </tr>
+                {% endfor %}
+            
+            {% endif %}
+        </tbody>
+    </table>  
+
+{% endif %}
 <hr/> 
 <nav aria-label="Approved Projects Pagination">
     <ul class="pagination justify-content-center">

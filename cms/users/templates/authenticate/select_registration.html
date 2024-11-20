@@ -3,19 +3,16 @@
 
 {% block content %} <!-- content of all web pages go -->
 
-    <center>
-        <h1>Select Registration Type</h1>
-    </center>
-    <br/>
+    <h1 class="text-center" style="margin-bottom: 150px;">Select Registration Type</h1>
 
-    <div class="d-flex justify-content-around">
-        <div class="card-option" onclick="location.href='{% url 'register_student' %}'" title="Register as a student" style="text-align: center;"> <!-- Centered content -->
-            <i class="fas fa-user-graduate fa-4x"></i> <!-- Changed icon size to 4x -->
-            <h2 style="margin-top: 20px;">Register as Student</h2> <!-- Moved label below icon -->
+    <div class="options-container">
+        <div class="card-option" onclick="location.href='{% url 'register_student' %}'" title="Register as a student">
+            <i class="fas fa-user-graduate fa-5x"></i>
+            <h2>Register as Student</h2>
         </div>
-        <div class="card-option" onclick="location.href='{% url 'register_faculty' %}'" title="Register as a faculty member" style="text-align: center;"> <!-- Centered content -->
-            <i class="fas fa-chalkboard-teacher fa-4x"></i> <!-- Changed icon size to 4x -->
-            <h2 style="margin-top: 20px;">Register as Faculty</h2> <!-- Moved label below icon -->
+        <div class="card-option" onclick="location.href='{% url 'register_faculty' %}'" title="Register as a faculty member">
+            <i class="fas fa-chalkboard-teacher fa-5x"></i>
+            <h2>Register as Faculty</h2>
         </div>
     </div>
 

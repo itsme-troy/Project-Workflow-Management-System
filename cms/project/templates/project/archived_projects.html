@@ -4,8 +4,17 @@
 
 {% block content %} <!-- content of all web pages go -->
 
-    <h1 class="text-center my-4"> Archived Projects </h1> 
+<h1 class="text-center my-4"> Archived Projects </h1> 
 
+
+{% if not archived_projects_with_groups %}
+ 
+    <div class="alert alert-danger" role="alert">
+        <h4> No Archived Projects  at the moment. </h4> 
+    </div>
+
+{% else %}        
+  
     <table class="table table-hover table-bordered">
     <thead>
         <tr>
@@ -18,7 +27,7 @@
             <th scope="col">Panel 3</th>
             <th scope="col"> Actions</th>
             <th scope="col">Status </th>
-           
+        
         </tr>
     </thead>
     <tbody>
@@ -70,13 +79,13 @@
                                 "> {{ project_data.project.status }}
                                 </span>  </td>
                     
-                </tr>
-            {% endfor %}
-        {% else %}
-        </br> <p>There are no Archived Projects yet.</p>
-    {% endif %}
-    </tbody>
-</table>  <hr/> 
+                    </tr>
+                {% endfor %}
+            
+        {% endif %}
+        </tbody>
+    </table>  <hr/> 
+{% endif %}
     <nav aria-label="Approved Projects Pagination">
         <ul class="pagination justify-content-center">
             {% if approved_page_obj.has_previous %}

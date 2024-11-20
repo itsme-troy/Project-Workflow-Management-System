@@ -16,6 +16,7 @@
     text-align: left; /* Align text to left */
     border-bottom: 2px solid #dee2e6;
     font-weight: bold;
+    text-align: center;
 }
 
 /* Table Body Styling */
@@ -23,6 +24,7 @@
     padding: 1rem;
     vertical-align: middle; /* Center content vertically */
     border-top: 1px solid #dee2e6;
+    text-align: center;
 }
 
 /* Table Row Hover Effect */
@@ -52,14 +54,19 @@
 
 /* Form Styling */
 form {
-    max-width: 600px; /* Limit form width */
+    max-width: 800%; /* Limit form width */
     margin: 0 auto;
     padding: 20px;
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rg   ba(0, 0, 0, 0.1);
+    background-color: #f8f9fa;
 }
-
+/* Style form labels and fields */
+.form-label {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
 /* Form Field Grouping */
 .form-group {
     margin-bottom: 1.5rem; /* Increase spacing between form fields */
@@ -72,31 +79,23 @@ label {
     margin-bottom: 0.5rem;
     font-size: 1.1em;
     color: #495057;
+    text-align: left;
 }
 
-/* Input and Select Fields */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-select,
-
-textarea {
+input[type="text"], input[type="email"], input[type="password"], select, textarea {
     width: 100%;
-    padding: 12px;
-    border-radius: 4px;
+    padding: 10px;
+    margin: 5px 0 10px;
     border: 1px solid #ced4da;
-    font-size: 1em;
-    color: #495057;
-    transition: border-color 0.3s ease;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border 0.3s ease;
 }
 
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus,
-select:focus,
-textarea:focus {
+/* Focus effect for input fields */
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, select:focus, textarea:focus {
     border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
 }
 
 /* Button styling */
@@ -135,7 +134,7 @@ textarea {
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition for both color and scale */
     padding: 10px 20px;
-    font-size: 1em;
+    font-size: 1.1rem;
 }
 
 /* Hover effect */
@@ -378,6 +377,7 @@ tr:not(.active) .hint-button {
     white-space: nowrap;
     vertical-align: baseline;
     border-radius: 0.25rem;
+    text-transform: capitalize;  /* Ensure text is capitalized */
 }
 .badge-accepted { background-color: #5cb85c; color: white; }
 .badge-accepted-with-revisions { background-color: #5cb85c; color: white; }
@@ -385,6 +385,7 @@ tr:not(.active) .hint-button {
 .badge-not-accepted { background-color: #d9534f; color: white; }
 .badge-not-started { background-color: #777; color: white; }
 .badge-pending { background-color: #ffc107; color: black; }
+
 
 
 .compact-form {
@@ -409,10 +410,48 @@ tr:not(.active) .hint-button {
     font-size: 12px;
 }
 
+/* Flex container for the options */
+.options-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+
+/* Card Option Styling */
+.card-option {
+    border: 2px solid #007bff; /* Blue border */
+    background-color: #fff;
+    padding: 30px;
+    width: 250px;
+    text-align: center;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    color: #333;
+    text-decoration: none;
+}
+.card-option:hover {
+    transform: scale(1.05); /* Slightly enlarge the card on hover */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+/* Icon Size */
+.card-option i {
+    color: #007bff;
+}
+/* Title styling */
+.card-option h2 {
+    font-size: 1.5em;
+    margin-top: 20px;
+    color: #333;
+}
+
 h1 {
     font-size: 2.5em;
-    color: #343a40; /* Dark color for contrast */
-    margin-bottom: 0.6em;
+    color: #333; /* Dark color for contrast */
+    margin-bottom: 30px;
     font-family: 'Roboto', sans-serif;
 }
 h2 {
@@ -457,6 +496,11 @@ a:hover {
     transition: background-color 0.3s ease; */
 }
 
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    color: white;
+}
 .btn-primary:hover {
     background-color: #0056b3; /* Darker blue on hover */
     transform: scale(1.05);
@@ -528,23 +572,73 @@ a:hover {
 }
 
 .notification-list {
-    max-height: 300px; /* Set a maximum height for the notifications list */
+    max-height: 500px; /* Set a maximum height for the notifications list */
     overflow-y: auto; /* Enable vertical scrolling */
     border: 1px solid #dee2e6; /* Optional: Add a border for better visibility */
     border-radius: 4px; /* Optional: Rounded corners */
     margin-top: 10px; /* Optional: Space above the list */
     background-color: #ffffff; /* White background for contrast */
+} 
+.no-notifications {
+    text-align: center;
+}
+.no-notifications h4 {
+    font-size: 1.5em;
+    color: #6c757d;
 }
 
 .notification-item {
-    padding: 15px;
+    padding: 20px;
     border-bottom: 1px solid #eee;
-    transition: background-color 0.3s ease, transform 0.2s ease; 
+    transition: background-color 0.3s ease;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-size: 0.95em;
 }
+.notification-item .d-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.notification-item .text-muted {
+    font-size: 0.9em;
+}
+.dropdown-menu {
+    min-width: 150px;
+}
+
 .notification-item.unread {
-    background-color: #f8f9fa; /* Light gray background for unread notifications */
+    background-color: #e3f2fd; /* Light gray background for unread notifications */
     font-weight: bold; /* Bold text for unread notifications */
 }
+@media (max-width: 768px) {
+    .notification-list {
+        max-height: 400px; /* Adjust for smaller screens */
+    }
+    .options-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .card-option {
+        width: 80%;
+        margin-bottom: 20px;
+    }
+    form {
+        max-width: 100%;
+        padding: 15px;
+    }
+    label {
+        font-size: 1rem;  /* Adjust font size on smaller screens */
+    }
+    input[type="text"], input[type="email"], input[type="password"], select, textarea {
+        font-size: 1rem;  /* Ensure form fields are sized appropriately */
+    }
+
+
+}
+
 
 .notification-link {
     text-decoration: none;
@@ -563,7 +657,8 @@ a:hover {
 .notification-item:hover {
     background-color: #f1f1f1; /* Light gray background on hover */
     transform: translateY(-2px); /* Slightly lift the item */
-}
+    cursor: pointer;
+}   
 /* Add a background color to the navbar */
 .custom-navbar-bg {
     background-color: #343a40; /* Dark background */
@@ -695,6 +790,8 @@ body {
     margin: 20px auto;
     max-width: 1200px;
     max-width: 80%;
+    text-align: center;
+    padding: 50px 20px; 
 }
 .card {
     max-width: 100%; /* Allow the card to use full width */
@@ -779,17 +876,23 @@ body {
         padding: 5px;
         font-size: 0.9em; /* Adjust font size */
     }
+    h1 {
+        font-size: 2em;
+    }
+    .card-option h2 {
+        font-size: 1.2em;
+    }
 }
-.form-error {
-    color: #dc3545; /* Red color for error text */
-    font-size: 0.9em; /* Adjust font size */
-    margin-top: 0.5em; /* Space above the error message */
-    padding: 5px; /* Padding around the error message */
-    background-color: #f8d7da; /* Light red background */
-    border: 1px solid #f5c6cb; /* Light red border */
-    border-radius: 4px; /* Rounded corners */
-}
+/* Make the form responsive */
+@media (max-width: 576px) {
+    .container {
+        padding: 10px;
+    }
 
+    .btn {
+        width: 100%;
+    }
+}
 
 
 #searchForm {

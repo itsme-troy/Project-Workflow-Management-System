@@ -11,30 +11,29 @@
     </div>
 {% endif %}
 
-<div class="shadow p-4 mb-5 bg-body rounded">
-    <center>
-        <h1>Register as Student</h1>
-    </center>
+
+<div class="container shadow-lg p-4 mb-5 bg-body rounded">
+    <h1 class="text-center mb-4"> Register as Student </h1> 
+   
     <br/>
 
     <form action="{% url 'register_student' %}" method="POST">
         {% csrf_token %}
 
         {% for field in form %}
-            <div class="form-group">
-                {{ field.label_tag }}
+            <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
                 {{ field }}
                 {% if field.errors %}
-                    <div class="form-error">
+                    <div class="form-error text-danger">
                         {{ field.errors|striptags }}
                     </div>
                 {% endif %}
             </div>
         {% endfor %}
-
-        <br/>
-
-        <input type="submit" value="Submit" class="btn btn-secondary">
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+        </div>
     </form>
 </div>
 

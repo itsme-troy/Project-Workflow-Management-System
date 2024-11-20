@@ -22,6 +22,8 @@ function fetchNotifications() {
         data.notifications.forEach(notification => {
             const notifItem = document.createElement('div');
             notifItem.className = `dropdown-item ${notification.is_read ? 'read' : 'unread'}`;
+            notifItem.setAttribute('role', 'button'); // Add ARIA role
+            notifItem.setAttribute('tabindex', '0'); // Make it focusable
             notifItem.innerHTML = `
                 <div class="d-flex align-items-center notification-item">
                     <div class="flex-grow-1">
@@ -37,10 +39,19 @@ function fetchNotifications() {
                 </div>
             `;
             notificationsList.appendChild(notifItem);
+
+            // Add hover effect for notification items
+            notifItem.addEventListener('mouseover', () => {
+                notifItem.style.backgroundColor = '#e9ecef'; // Change background on hover
+            });
+            notifItem.addEventListener('mouseout', () => {
+                notifItem.style.backgroundColor = ''; // Reset background
+            });
         });
     })
     .catch(error => console.error('Error fetching notifications:', error));
 }
+
 function markAsRead(notificationId, button) {
     fetch(`/mark_notification_read/${notificationId}/`, {
         method: 'POST',
@@ -52,6 +63,7 @@ function markAsRead(notificationId, button) {
     .then(data => {
         if (data.success) {
             fetchNotifications();
+            alert('Notification marked as read.'); // Feedback on success
         }
     })
     .catch(error => console.error('Error marking notification as read:', error));
