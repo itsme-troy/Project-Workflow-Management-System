@@ -32,19 +32,22 @@
     </div> </center> 
 
     
-<table class="table table-striped table-hover table-bordered">  
+<table class="table table-hover table-bordered">  
     <thead> 
         <tr> 
             <th scope="col"> # </th> 
             <th scope="col"> Last Name </th> 
             <th scope="col"> First Name </th> 
-            <th scope="col" onclick="toggleCheckboxes('adviser-column')"> Adviser
-                <span class="hint-button" title="Click to toggle eligibility checkboxes">?</span>
-                 </th> 
-            <th scope="col" onclick="toggleCheckboxes('panel-column')"> Panelist
-                <span class="hint-button" title="Click to toggle eligibility checkboxes">?</span>
-                </th> 
-            <th> Actions </th>
+
+            <th scope="col" style="width: 100px;" onclick="toggleCheckboxes('adviser-column')"> Adviser
+                <span class="hint-button" title="Click to toggle eligibility checkboxes">?</span>  </th> 
+
+            <th scope="col" style="width: 100px;" onclick="toggleCheckboxes('panel-column')"> Panelist
+                <span class="hint-button" title="Click to toggle eligibility checkboxes">?</span> </th> 
+
+            <th scope="col" class="deficiencies-column" >
+                Deficiencies </th>
+            <th scope="col" style="width: 300px;"> Actions </th>
         </tr> 
     </thead>  
     <tbody>
@@ -74,10 +77,22 @@
                             name="box">
                     </div> 
                 </td>
+                <td class="deficiencies-cell">
+                    <div style="overflow-x: auto; white-space: nowrap;">
+                        {% if adviser.deficiencies %}
+                                {{ adviser.deficiencies }}
+                        {% else %}
+                            <span class="text-muted">No deficiencies</span>
+                        {% endif %}
+                    </div>  </td>
+
                 <td> 
                     <span class="hint-button" onclick="showActions(this)">Click to show actions</span>   
                     <div class="action-buttons small-btn" style="display: none;">
                         
+                        <a href="{% url 'update-deficiencies' adviser.id %}" class="btn btn-outline-secondary btn-sm mb-1">
+                            Update Deficiencies </a> 
+
                         <a href="{% url 'delete-user' adviser.id %}" onclick="return confirm('Are you sure you want to delete this account?');">
                             <button type="button" class="btn btn-outline-danger btn-sm">Delete User </button> </a>  
                     </div> </td>

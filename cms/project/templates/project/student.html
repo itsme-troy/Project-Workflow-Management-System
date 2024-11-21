@@ -4,7 +4,13 @@
 
 {% block content %} <!-- content of all web pages go -->
 
-        <h1 class="text-center my-4">Student List</h1> <br/>
+<div class="text-start">
+    <a href="{% url 'list-faculty' %}" class="btn btn-primary">
+        <i class="fas fa-chalkboard-teacher"></i> View Faculty List
+    </a>
+</div>
+
+        <h1 class="text-center">Student List</h1> 
 
         <div class="btn-group" role="group" aria-label="Student Filter">
             <button type="button" class="btn btn-secondary" onclick="filterStudents('all')">All Students</button>
@@ -21,6 +27,9 @@
                     <th scope="col">Last Name</th>
                     <th scope="col">First Name</th>
                     <th scope="col">Email</th>
+                    <th scope="col" class="deficiencies-column" >
+                        Deficiencies
+                    </th>        
                     <th>Action</th>
                 </tr>
             </thead>
@@ -32,6 +41,16 @@
                             <td>{{ student.last_name }}</td>
                             <td>{{ student.first_name }}</td>
                             <td>{{ student.email }}</td>
+                            <td class="deficiencies-cell">
+                                <div style="overflow-x: auto; white-space: nowrap;">
+                                    {% if student.deficiencies %}
+                                            {{ student.deficiencies }}
+                                    {% else %}
+                                        <span class="text-muted">No deficiencies</span>
+                                    {% endif %}
+                                </div> 
+                            </td>
+                            
                             <td>
                                 <a href="{% url 'show-student' student.id %}" class="btn btn-outline-primary btn-sm">View Profile</a>
                             </td>

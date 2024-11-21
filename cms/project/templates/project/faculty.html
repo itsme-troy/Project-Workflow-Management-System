@@ -4,7 +4,13 @@
 
 {% block content %} <!-- content of all web pages go -->
 
-    <h1 class="text-center my-4"> Faculty List </h1> 
+<div class="text-start">
+    <a href="{% url 'list-student' %}" class="btn btn-primary">
+        <i class="fas fa-users"></i> View Student List
+    </a> 
+</div> 
+
+    <h1 class="text-center"> Faculty List </h1> 
 
     <div class="btn-group" role="group" aria-label="Faculty Filter">
         <button type="button" class="btn btn-secondary" onclick="filterFaculty('all')">All Faculty</button>
@@ -13,7 +19,7 @@
     </div> 
     
     <div class="table-responsive"> <br/> 
-        <table class="table table-striped table-hover table-bordered"> 
+        <table class="table table-hover table-bordered"> 
             <caption class="text-center">Faculty List</caption>
      
             <thead class="thead-dark"> 
@@ -23,6 +29,9 @@
                     <th scope="col"> Last Name  </th> 
                     <th scope="col"> First Name </th> 
                     <th scope="col"> Email </th> 
+                    <th scope="col" class="deficiencies-column" >
+                        Deficiencies
+                    </th>     
                     <th scope="col"> Action </th> 
                 </tr> 
             </thead>  
@@ -35,6 +44,15 @@
                             <td>{{ faculty.last_name }}</td> 
                             <td>{{ faculty.first_name }}</td> 
                             <td>{{ faculty.email }}</td> 
+                            <td class="deficiencies-cell">
+                                <div style="overflow-x: auto; white-space: nowrap;">
+                                    {% if student.deficiencies %}
+                                            {{ student.deficiencies }}
+                                    {% else %}
+                                        <span class="text-muted">No deficiencies</span>
+                                    {% endif %}
+                                </div> 
+                            </td>
                             <td>
                                 <a href="{% url 'show-faculty' faculty.id %}" class="btn btn-outline-primary btn-sm">View Profile</a>
 

@@ -4,7 +4,7 @@
 {% block content %} <!-- content of all web pages go -->
 
 {% if user.is_authenticated %}
-    {% if user.role == 'COORDINATOR' %} 
+    {% if user.is_current_coordinator %} 
         <h1> Select Coordinator chosen Panelist </h1> <br/> 
         
         <!-- Display form errors -->

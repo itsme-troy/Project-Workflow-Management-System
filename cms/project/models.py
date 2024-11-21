@@ -71,7 +71,7 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
     phone = models.CharField('Contact Phone', max_length=25, blank=True, null=True)
     course = models.CharField('Course', max_length=100, null=True, blank=True )
     profile_image = models.ImageField(null=True, blank=True, default='static/images/default_profile_pic.jpg',upload_to="images/")
-    
+    student_id = models.CharField(max_length=255, blank=True)
    
     #available_schedule = models.ManyToManyField(Available_schedule, related_name='Faculty_available', blank=True )
 
@@ -299,6 +299,7 @@ class Notification(models.Model):
         ('PANELIST_SELECTED', 'Panelist Selected'), 
         ('PROJECT_DELETED', 'Project Deleted'), 
         ('PROPOSAL_DELETED', 'Proposal Deleted'), 
+        ('DEFICIENCIES', 'Deficiencies Updated'), 
     )   
 
     recipient = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='notifications')

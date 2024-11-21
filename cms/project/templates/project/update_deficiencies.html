@@ -1,33 +1,68 @@
 {% extends 'project/base.html'%} <!-- use the base file -->
 
 {% block content %} <!-- content of all web pages go -->
-{% if user.is_current_coordinator %}
+
 
         <center> 
         <h1> Update Deficiencies Form </h1> <br/> 
         </center> 
-        <!--logged in user can be called by
-        "user" which is already valid for every page -->
-       {% comment %} Logged In user: {{ user }} {% endcomment %}
-            
-        {% comment %} <br/>   
-        Adviser : {{ project.adviser }}  {% endcomment %}
-        <!-- use form rendered from views -->
-        
-        <!-- put the data from the form.
-        solution is put an instance of project-->
-       <form action="" method=POST> 
+
+{% if request.user.is_authenticated %}
+    {% if request.user.is_current_coordinator %}
+
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            <ul>
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li> Please Fix Errors in {{ field.label }} Field </li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form action="" method="POST" id="updateDeficienciesForm"> 
+            <!-- put the data from the form.
+            solution is put an instance of project-->
             {% csrf_token %}
             {{ form.as_p }}
             <br/> 
             <input type="submit" value="Update"
             class="btn btn-secondary"> 
-       
+            <a href="{% url 'coordinator-approval-student' %}" class="btn btn-outline-danger btn-sm"> Cancel </a>
+        
+    {% else %}
+        <center> 
+            <div class="alert alert-danger text-center" role="alert">
+                <h4> Sorry! You are not authorized to view this page  </h4>
+            </div>
+        </center> 
+        
+    {% endif %}  
 {% else %}
-    <h1> Sorry! You must be Logged In to view This Page... </h1> 
-        </br> 
+    <center> 
+        <div class="alert alert-danger text-center" role="alert">
+            <h4>  Please login to view this page </h4>
+        </div>
+    </center> 
     <a href="{% url 'login' %}">Login Here! </a> 
 
-    {% endif %}  
- 
+{% endif %}
+    
+
+<script>
+    document.getElementById('updateDeficienciesForm').onsubmit = function() {
+        // Enable the proponents and adviser fields before submitting the form
+        document.querySelector('input[name="first_name"]').removeAttribute('disabled');
+        document.querySelector('input[name="last_name"]').removeAttribute('disabled');
+        document.querySelector('input[name="email"]').removeAttribute('disabled');
+        document.querySelector('input[name="student_id"]').removeAttribute('disabled');
+        document.querySelector('select[name="course"]').removeAttribute('disabled');
+    };
+</script>
+
 {% endblock %}

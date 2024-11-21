@@ -11,7 +11,7 @@ from .models import AppUserManager, Defense_Application
 from .models import Student, Faculty, ApprovedProjectGroup,  Project_Group
 from .models import StudentProfile, FacultyProfile, CoordinatorProfile, Coordinator
 from .models import Project_Idea
-from .forms import ProjectIdeaForm, UpdateDeficienciesForm
+from .forms import ProjectIdeaForm, UpdateDeficienciesForm, UpdateDeficienciesFacultyForm
 from .forms import CustomProjectPhaseForm
 
 # from .models import Event
@@ -198,6 +198,7 @@ def submit_project_idea(request):
         form = ProjectIdeaForm(request.POST, user=request.user)
         if form.is_valid():
             form.save()
+            messages.success(request, "Project Idea succesfully submitted")
             return redirect('all-project-ideas')  # Redirect to the same page after submission
     else:
         form = ProjectIdeaForm(initial={'faculty': request.user, }, user=request.user)
@@ -813,7 +814,7 @@ def submit_defense_application(request):
                     group=project.proponents,
                     sender=request.user,
                     message=f"A new defense application for the project '{project.title}' has been submitted by {request.user.get_full_name()}.",
-                    redirect_url = reverse('my-defense-application')
+                    redirect_url = reverse('list-defense-applications')
                 )
             except User.DoesNotExist:
                 logger.error("No current coordinator found to notify.")
@@ -1036,7 +1037,8 @@ def my_project_group_waitlist(request):
         return redirect('home')
     
     
-def update_deficiencies(request, student_id): 
+def update_deficiencies(request, user_id ): 
+    # Authentication and permissions check
     if not request.user.is_authenticated: 
         messages.error(request, "Please Login to view this page")
         return redirect('home')
@@ -1046,16 +1048,68 @@ def update_deficiencies(request, student_id):
         return redirect('home')
     
     try: 
-        student = Student.objects.get(pk=student_id)
-
-    except Student.DoesNotExist: 
+        selected_user = User.objects.get(pk=user_id)
+            
+    except User.DoesNotExist: 
         messages.error(request, "User does not exist.")
-        return redirect('coordinator-approval-student')  # Redirect to a user list or appropriate page
+        return redirect('home')  # Redirect to a user list or appropriate page
 
-    if request.user.is_current_coordinator: 
-        form = UpdateDeficienciesForm
+    # Determine form based on user role
+    if selected_user.role == 'STUDENT':
+        form = UpdateDeficienciesForm(request.POST or None, instance=selected_user)
+    # Initialize the form
+    elif selected_user.role == 'FACULTY':
+        form = UpdateDeficienciesFacultyForm(request.POST or None, instance=selected_user)
+    
+    if request.method == 'POST':
+            if form.is_valid():
+                  # Manually set disabled fields' values from the instance
+                form.cleaned_data['first_name'] = selected_user.first_name
+                form.cleaned_data['last_name'] = selected_user.last_name
+                form.cleaned_data['email'] = selected_user.email
+                
+                if selected_user.role == 'STUDENT':
+                    form.cleaned_data['student_id'] = selected_user.student_id
+                    form.cleaned_data['course'] = selected_user.course
+                
+                form.save()
 
-    return render(request, 'project/update_deficiencies.html', {})
+                try: 
+                     # Determine the redirect URL based on the user's role
+                    if selected_user.role == 'STUDENT':
+                        redirect_url = reverse('list-student')
+                    else:
+                        redirect_url = reverse('list-faculty')
+
+                    Notification.objects.create(
+                    recipient=selected_user,
+                    notification_type='DEFICIENCIES',
+                    sender=request.user,
+                    message=f"Your Eligibility Deficiencies has been updated.",
+                    redirect_url=redirect_url  
+
+                    )
+                except Exception as e: 
+                    logger.error(f"Failed to create notification for {selected_user}: {str(e)}")
+
+                messages.success(request, "User's deficiencies updated successfully!")
+
+                if selected_user.role == 'STUDENT':
+                    return redirect('coordinator-approval-student')
+                else: 
+                    return redirect('coordinator-approval-faculty')
+            else:
+                # Add error feedback for invalid forms
+                messages.error(request, "Please correct the errors below.")
+
+     # Compute deficiencies_list for template display
+    deficiencies_list = [d.strip() for d in selected_user.deficiencies.split(',')] if selected_user.deficiencies else []
+
+    return render(request, 'project/update_deficiencies.html', {
+        'user': selected_user,
+        'form': form, 
+        'deficiencies_list': deficiencies_list,
+    })
   
     
 def get_user_ids_with_group(request): 
@@ -2870,7 +2924,7 @@ def all_projects(request):
         {'projects': projects, 
         'nums': nums})
     else: 
-        messages.success(request, "Please Login to view this page")
+        messages.error(request, "Please Login to view this page")
         return redirect('home')
     
         

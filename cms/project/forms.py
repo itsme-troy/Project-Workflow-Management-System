@@ -20,23 +20,72 @@ User = get_user_model()
 #             # Limit the phases to the project-specific ones
 #             self.fields['phases'].queryset = ProjectPhase.objects.filter(project=project)
 
-class UpdateDeficienciesForm(forms.ModelForm): 
-    course_choices = [
-        ("BS Information Technology", "BS Information Technology"), 
-        ("BS Computer Science", "BS Computer Science"), 
-        ("BS Information Systems" , "BS Information Systems"), 
-    ]
-    
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control'}))
-    first_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
-    last_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
-    student_id = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
-    course = forms.CharField(max_length=50, widget=forms.Select(choices=course_choices, attrs={'class':'form-select'}))
-    
+class UpdateDeficienciesForm(forms.ModelForm):  
+
     class Meta: 
-        model = User
-        fields = ('first_name', 'last_name', 'student_id', 'course', 'email',
-            'deficiencies')
+        model = User  # Ensure 'User' is the correct model you are using
+        
+        fields = ('first_name', 'last_name', 'email', 'student_id', 'course', 'deficiencies')
+
+        course_choices = [
+            ("BS Information Technology", "BS Information Technology"), 
+            ("BS Computer Science", "BS Computer Science"), 
+            ("BS Information Systems", "BS Information Systems"), 
+        ]
+        
+        widgets = { 
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last name'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+            'student_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Student ID'}),
+            'course': forms.Select(choices=course_choices, attrs={'class': 'form-select'}),
+            'deficiencies': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 5,  # Adjust rows as needed
+                'placeholder': 'Enter deficiencies or requirements for the student here...'
+            }),
+        }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+         # Add Bootstrap class to help text
+        for field in self.fields.values():
+            if field.help_text:
+                field.help_text = f'<small class="form-text text-muted">{field.help_text}</small>'
+
+         # Make fields read-only by disabling them
+        for field_name in ['first_name', 'last_name', 'email', 'student_id', 'course']:
+            self.fields[field_name].widget.attrs['disabled'] = 'disabled'
+
+class UpdateDeficienciesFacultyForm(forms.ModelForm):  
+
+    class Meta: 
+        model = User  # Ensure 'User' is the correct model you are using
+        
+        fields = ('first_name', 'last_name', 'email', 'deficiencies')
+        
+        widgets = { 
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last name'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+            'deficiencies': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 5,  # Adjust rows as needed
+                'placeholder': 'Enter deficiencies or requirements for the Faculty here...'
+            }),
+        }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+         # Add Bootstrap class to help text
+        for field in self.fields.values():
+            if field.help_text:
+                field.help_text = f'<small class="form-text text-muted">{field.help_text}</small>'
+
+         # Make fields read-only by disabling them
+        for field_name in ['first_name', 'last_name', 'email']:
+            self.fields[field_name].widget.attrs['disabled'] = 'disabled'
+
 
 class CustomProjectPhaseForm(forms.ModelForm):
     class Meta:

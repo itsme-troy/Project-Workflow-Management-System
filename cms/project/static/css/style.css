@@ -7,16 +7,45 @@
     border-collapse: collapse; /* Avoid border collapse */
     font-size: 1rem; /* Make font size more readable */
 }
+/* Centering the checkbox inside the td */
+.table td.checkbox-cell {
+    text-align: center; /* Horizontally center the content inside the td */
+    vertical-align: middle; /* Vertically center the content inside the td */
+    padding: 0.5rem; /* Optional: Add padding for better spacing */
+}
+/* Optionally, you can make the form-check div also centered */
+.form-check {
+    display: flex;  /* Use flexbox to align items */
+    justify-content: center;  /* Horizontally center the checkbox */
+    align-items: center;  /* Vertically center the checkbox */
+    margin: 0; /* Remove any margin that may exist by default */
+}
+
+/* Style the Deficiencies Column */
+.table td.deficiencies-cell {
+    max-width: 600px; /* Set max-width for the column */
+    overflow-x: auto; /* Allow horizontal scrolling if content overflows */
+    white-space: nowrap; /* Prevent text from wrapping */
+    text-overflow: ellipsis; /* Optionally, show an ellipsis when text overflows */
+    padding: 0.5rem; /* Add padding for better spacing */
+    height: auto; /* Optional: Limit the height to keep things tidy */
+}
+
+/* Apply styles to the Deficiencies column specifically */
+.table th.deficiencies-column {
+    max-width: 500px; /* Set max-width to 500px */
+    word-wrap: break-word; /* Allow text to wrap inside the cell */
+    text-align: center; /* Align text to the center */
+}
 
 /* Table Header Styling */
 .table th {
     padding: 1rem;
     background-color: #343a40; /* Dark background for header */
     color: white; /* White text */
-    text-align: left; /* Align text to left */
+    text-align: center; /* Align text to center */
     border-bottom: 2px solid #dee2e6;
     font-weight: bold;
-    text-align: center;
 }
 
 /* Table Body Styling */
@@ -124,17 +153,27 @@ textarea {
 .btn {
     display: inline-block;
     color: white;
-    padding: 10px 20px;
+    padding: 12px 24px;
     border: 2px solid #007bff; /* Border to match the background */
     border-radius: 4px;
     text-align: center;
     text-decoration: none; /* Remove underline from links */
-    font-size: 1em;
+    font-size: 1.2rem;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition for both color and scale */
-    padding: 10px 20px;
-    font-size: 1.1rem;
+}
+
+.btn-outline-success {
+    color: #28a745; /* Green color for success */
+    background-color: transparent; /* Transparent background for outline */
+    border: 2px solid #28a745; /* Green border */
+}
+.btn-outline-success:hover {
+    background-color: #28a745; /* Green background on hover */
+    color: white; /* White text on hover */
+    border-color: #28a745; /* Maintain green border */
+    transform: scale(1.05); /* Optional: Slight grow effect */
 }
 
 /* Hover effect */
@@ -152,8 +191,8 @@ textarea {
 
 /* Small button size styling */
 .btn-sm {
-    padding: 6px 12px; /* Smaller padding for sm class */
-    font-size: 0.875em; /* Smaller text size for sm class */
+    padding: 10px 20px; /* Smaller padding for sm class */
+    font-size: 1rem; /* Smaller text size for sm class */
 }
 
 /* Outline style for btn-outline-primary */
@@ -315,6 +354,9 @@ tr.active .action-buttons {
     color: #6c757d;
     border: 1px solid #6c757d;
 }
+
+/* Specific button color classes */
+
 
 .btn-outline-info {
     color: #17a2b8;
@@ -500,6 +542,7 @@ a:hover {
     background-color: #007bff;
     border: none;
     color: white;
+    border-color: #007bff;
 }
 .btn-primary:hover {
     background-color: #0056b3; /* Darker blue on hover */
@@ -578,6 +621,7 @@ a:hover {
     border-radius: 4px; /* Optional: Rounded corners */
     margin-top: 10px; /* Optional: Space above the list */
     background-color: #ffffff; /* White background for contrast */
+    
 } 
 .no-notifications {
     text-align: center;
@@ -604,6 +648,7 @@ a:hover {
 }
 .notification-item .text-muted {
     font-size: 0.9em;
+    color: #6c757d; /* Muted gray text */
 }
 .dropdown-menu {
     min-width: 150px;
