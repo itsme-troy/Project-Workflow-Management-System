@@ -1,6 +1,7 @@
 {% extends 'project/base.html' %}
 {% load static %}
 
+
 {% block content %}
 <div class="container mt-5">
 
@@ -10,9 +11,11 @@
     {% if user.is_authenticated %}
 
         {% if submitted %}
-            <div class="alert alert-success text-center" role="alert">
-                <h3> Your Proposal Was Submitted Successfully!</h3>
+            <div class="alert alert-dismissible fade show alert-success" role="alert">
+                 Your Project Idea Submitted Successfully
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
+            
         {% else %}
                 {% if form.errors %}
                     <div class="alert alert-danger">

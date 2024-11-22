@@ -18,6 +18,8 @@
 <table class ="table table-striped table-hover table-bordered table"> 
     <thead> 
       <tr> 
+        
+          <th scope="col"> # </th> 
           <th scope="col"> Project Name  </th> 
           <th scope="col"> Adviser </th> 
           <th scope="col"> Project Group </th>
@@ -32,6 +34,7 @@
 
     {% if project %} 
             <tr>
+                <td> <strong> 1 </strong>  </td> 
                 <td> <a href ="{% url 'show-project' project.id %}" > {{ project.title}} </a>  </td> 
                 <td class="{% if project.adviser == user %}table-warning{% endif %}">  {{ project.adviser}} </td> 
                 <td>  {{ project.proponents}} </td>
@@ -72,7 +75,7 @@
         
     {% else %}
 
-    <div class="alert alert-success text-center" role="alert">
+    <div class="alert alert-error text-center" role="alert">
         <h2> You Have No Approved Project yet. </h2>
     </div>
     {% endif %}

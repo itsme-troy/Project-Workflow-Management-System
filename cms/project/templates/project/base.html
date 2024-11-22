@@ -10,6 +10,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{% static 'js/custom.js' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     
     <script src="{% static 'js/custom.js' %}"></script>
     
@@ -41,14 +42,12 @@
            
       {% if messages %}
         <div class="alert-container">
-            {% for message in messages %}
-
-                <div class="alert alert-dismissible fade show role="alert" {% if message.tags %} alert-{{ message.tags }}{% endif %}">
-                  {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-
-            {% endfor %}
+          {% for message in messages %}
+            <div class="alert alert-dismissible fade show {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
         </div> 
       {% endif %}
     

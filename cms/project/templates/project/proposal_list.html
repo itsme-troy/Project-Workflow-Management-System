@@ -35,7 +35,9 @@
             {% for project in projects %}
                 
                 <tr onclick="toggleActions(this)">
-                    <td> <strong> {{ forloop.counter }} </strong> </td>
+                          
+                    <td><strong>{{ forloop.counter0|add:projects.start_index }}</strong></td> <!-- Continuous counter -->
+                    
                     <td> <a href="{% url 'show-proposal' project.id %}"> {{ project.title }} </a> </td>
                     <td> {{ project.adviser }} </td>
                     <td> {{ project.proponents }} </td>

@@ -12,7 +12,7 @@
     </center> 
 
     <br/> 
-{% else %}
+{% else %} 
     <div class="table-container"> 
         <table class ="table table-hover table-bordered table"> 
         <thead> 
@@ -32,7 +32,9 @@
             {% if project.status == 'approved' %}
 
             <tr {% if user in project.proponents.proponents.all %}class="table-warning"{% endif %}>
-                <td> <strong> {{ forloop.counter }} </strong> </td>
+                
+                <td><strong>{{ forloop.counter0|add:projects.start_index }}</strong></td> <!-- Continuous counter -->
+
                 <td> <a href ="{% url 'show-project' project.id %}" > {{ project.title}} </a>  </td> 
                 <td class="{% if project.adviser == user %}table-warning{% endif %}">  {{ project.adviser}} </td> 
                 <td>  {{ project.proponents}} </td>

@@ -30,6 +30,15 @@
     padding: 0.5rem; /* Add padding for better spacing */
     height: auto; /* Optional: Limit the height to keep things tidy */
 }
+/* Style the Deficiencies Column */
+.table td.description-cell {
+    max-width: 600px; /* Set max-width for the column */
+    overflow-x: auto; /* Allow horizontal scrolling if content overflows */
+    white-space: nowrap; /* Prevent text from wrapping */
+    text-overflow: ellipsis; /* Optionally, show an ellipsis when text overflows */
+    padding: 0.5rem; /* Add padding for better spacing */
+    height: auto; /* Optional: Limit the height to keep things tidy */
+}
 
 /* Apply styles to the Deficiencies column specifically */
 .table th.deficiencies-column {
@@ -37,6 +46,13 @@
     word-wrap: break-word; /* Allow text to wrap inside the cell */
     text-align: center; /* Align text to the center */
 }
+/* Apply styles to the Deficiencies column specifically */
+.table th.description-column {
+    max-width: 500px; /* Set max-width to 500px */
+    word-wrap: break-word; /* Allow text to wrap inside the cell */
+    text-align: center; /* Align text to the center */
+}
+
 
 /* Table Header Styling */
 .table th {
@@ -71,6 +87,13 @@
 .table td, .table th {
     border: 1px solid #dee2e6;
 }
+ /* Target the first th element (which corresponds to # column) */
+ .table th:nth-child(1),
+ .table td:nth-child(1) {
+     width: 50px;  /* Set a fixed width for the # column */
+     text-align: center;  /* Optional: center-align the text */
+ }
+
 
 /* Responsive Adjustments for Tables */
 @media (max-width: 768px) {
@@ -746,59 +769,101 @@ a:hover {
     background-color: #007bff; /* Blue background on hover */
 }
 
-
-/* Style the alert messages */
+/* General Alert Styling */
 .alert {
-    background-color: #f8d7da; /* Light red background */
-    color: #721c24; /* Dark red text */
-    border-color: #f5c6cb; /* Light red border */
-}
-.alert-info {
-    background-color: #d9edf7;
-    color: #31708f;
-    padding: 15px;
-    border-radius: 4px;
+    padding: 15px 20px;
+    margin-top: 20px;
     margin-bottom: 20px;
+    border-radius: 8px;
+    font-family: 'Arial', sans-serif;
+    font-size: 1em;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between icon and text */
+    border: 1px solid transparent;
 }
-.alert-warning {
-    background-color: #fcf8e3;
-    color: #8a6d3b;
-    padding: 15px;
-    border-radius: 4px;
-    margin-bottom: 20px;
-}
-/* Style for success messages */
+
+/* Success Alerts */
 .alert-success {
-    background-color: #d4edda; /* Light green background */
-    color: #155724; /* Dark green text */
-    border-color: #c3e6cb; /* Light green border */
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    font-size: 0.9em;
-    margin-bottom: 20px;
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+.alert-success::before {
+    content: "✔";
+    font-size: 1.5em;
+    color: #28a745;
+}
+.alert-success:hover {
+    background-color: #c3e6cb;
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
 }
 
-/* Style for error messages */
+/* Error Alerts */
 .alert-error {
-    background-color: #f8d7da; /* Light red background */
-    color: #721c24; /* Dark red text */
-    border-color: #f5c6cb; /* Light red border */
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    font-size: 0.9em;
-    margin-bottom: 20px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+.alert-error::before {
+    content: "✘"; /* Cross icon for error */
+    font-size: 1.5em;
+    color: #dc3545; /* Red */
+}
+.alert-error:hover {
+    background-color: #f5c6cb;
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
 }
 
-
-/* Add custom styles for buttons */
-.btn-close {
-    color: #721c24; /* Dark red close button */
+/* Info Alerts */
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-color: #bee5eb;
+}
+.alert-info::before {
+    content: "ℹ"; /* Info icon */
+    font-size: 1.5em;
+    color: #17a2b8; /* Blue */
+}
+.alert-info:hover {
+    background-color: #bee5eb;
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
 }
 
+/* Warning Alerts */
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-color: #ffeeba;
+}
+.alert-warning::before {
+    content: "⚠"; /* Warning icon */
+    font-size: 1.5em;
+    color: #ffc107; /* Yellow */
+}
+.alert-warning:hover {
+    background-color: #ffeeba;
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+}
+
+/* Close Button Styling */
+.alert .btn-close {
+    background-color: transparent;
+    border: none;
+    font-size: 1.2em;
+    color: inherit; /* Match alert text color */
+    cursor: pointer;
+    margin-left: auto;
+}
+.alert .btn-close:hover {
+    opacity: 0.7; /* Subtle hover effect */
+}
 /* Add any additional styles you need */
 
 body {
@@ -826,7 +891,6 @@ body {
 .card-text li {
     font-size: 1.1em; /* Increased font size for list items */
 }
-
 
 .container {
     background-color: #fff; /* White background for content */

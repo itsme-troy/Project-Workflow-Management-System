@@ -178,9 +178,15 @@ def all_project_ideas(request):
         project_ideas = p.get_page(page)
         nums = "a" * project_ideas.paginator.num_pages
 
+        # Calculate the start index for the current page
+        start_index = (project_ideas.number - 1) * project_ideas.paginator.per_page
+
+
         return render(request, 'project/all_project_ideas.html', {
-         'project_ideas': project_ideas, 
-        'nums': nums})
+            'project_ideas': project_ideas, 
+            'nums': nums, 
+            'start_index': start_index  # Add start_index to context
+        })
     else: 
         messages.success(request, "Please Login to view this page")
         return redirect('home')
@@ -986,14 +992,19 @@ def list_project_group(request):
             })
 
         # Paginate the project groups
-        p = Paginator(project_groups_with_proponents, 6)  # Show 6 project groups per page
+        p = Paginator(project_groups_with_proponents, 8)  # Show 6 project groups per page
         page = request.GET.get('page')
         paginated_groups = p.get_page(page)
         nums = "a" * paginated_groups.paginator.num_pages
 
+           # Calculate the start index for the current page
+        start_index = (paginated_groups.number - 1) * paginated_groups.paginator.per_page
+
+
         return render(request, 'project/project_group_list.html', {
             'project_groups_with_proponents': paginated_groups,
-            'nums': nums
+            'nums': nums, 
+            'start_index': start_index, 
         })
     else:
         messages.success(request, "Please Login to view this page")
@@ -1948,11 +1959,13 @@ def adviser_projects(request):
     # Grab the projects from that adviser
     approved_projects = Project.objects.filter(adviser=adviser, status='approved').order_by('title')
     
-    approved_paginator = Paginator(approved_projects, 5)  # Show 10 projects per page
+    approved_paginator = Paginator(approved_projects, 2)  # Show 10 projects per page
     approved_page_number = request.GET.get('approved_page')
     approved_page_obj = approved_paginator.get_page(approved_page_number)  
     approved_nums = "a" * approved_page_obj.paginator.num_pages
 
+    # Calculate the start index for the current page
+    start_index = (approved_page_obj.number - 1) * approved_page_obj.paginator.per_page
 
     # Prepare data for each project with its groups and proponents
     approved_projects_with_groups = []
@@ -1983,6 +1996,7 @@ def adviser_projects(request):
         "approved_projects_with_groups": approved_projects_with_groups,
         "approved_page_obj": approved_page_obj,
         "approved_nums": approved_nums,
+        'start_index': start_index, 
     })
 
 
@@ -2915,14 +2929,19 @@ def home(request):
 def all_projects(request):
     if request.user.is_authenticated: 
         # Create a Paginator object with the project list and specify the number of items per page
-        p = Paginator(Project.objects.filter(status='approved', is_archived=False).order_by('title'), 5) 
+        p = Paginator(Project.objects.filter(status='approved', is_archived=False).order_by('title'), 8) 
         page = request.GET.get('page')
         projects = p.get_page(page)
         nums = "a" * projects.paginator.num_pages
 
-        return render(request, 'project/project_list.html', 
-        {'projects': projects, 
-        'nums': nums})
+        # Calculate the start index for the current page
+        start_index = (projects.number - 1) * projects.paginator.per_page
+
+        return render(request, 'project/project_list.html', {
+            'projects': projects, 
+            'nums': nums, 
+            'start_index':  start_index,
+        })
     else: 
         messages.error(request, "Please Login to view this page")
         return redirect('home')
@@ -2940,14 +2959,19 @@ def all_proposals(request):
 
         
         # Create a Paginator object with the project list and specify the number of items per page
-        p = Paginator(project_list, 5)  # Show 5 proposals per page
+        p = Paginator(project_list, 8)  # Show 8 proposals per page
         page = request.GET.get('page')
         projects = p.get_page(page)
         nums = "a" * projects.paginator.num_pages
 
+        # Calculate the start index for the current page
+        start_index = (projects.number - 1) * projects.paginator.per_page
+
+
         return render(request, 'project/proposal_list.html', {
             'projects': projects,
-            'nums': nums
+            'nums': nums,
+            'start_index': start_index,
         })
     else:
         messages.success(request, "Please Login to view this page")

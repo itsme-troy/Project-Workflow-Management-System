@@ -19,11 +19,16 @@
                     </div>
                     
                     <!-- Password Input with Icon -->
-                    <div class="mb-3 input-group">
+                   <!-- Password Input with Icon -->
+                   <div class="mb-3 input-group">
                         <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                        <input type="password" class="form-control" name="password" placeholder="Password" required>
+                        <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
+                        <!-- Eye Icon to toggle password visibility -->
+                        <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
+                            <i class="fas fa-eye" id="eyeIcon"></i>
+                        </span>
                     </div>
-                    
+                        
                       <!-- Submit Button -->
                 <input type="submit" value="Login" class="btn btn-primary w-100 mt-3">
             </form>
@@ -46,4 +51,20 @@
     </footer>
 
     <script src="{% static 'js/custom.js' %}"></script>
+    <script>
+        // JavaScript to toggle the visibility of the password
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordField = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        togglePassword.addEventListener('click', function () {
+            // Toggle the password field type
+            const type = passwordField.type === 'password' ? 'text' : 'password';
+            passwordField.type = type;
+
+            // Toggle the eye icon
+            eyeIcon.classList.toggle('fa-eye-slash');
+        });
+    </script>
+    
 {% endblock %}

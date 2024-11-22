@@ -30,23 +30,42 @@
             <tr>
                 <th>#</th> <!-- Loop counter -->
                 <th>Project Title</th> <!-- Project title header -->
-                <th> </th> 
+                <th scope="col" class="description-column"> Description </th> 
+                
+                {% if request.user.role == 'FACULTY' %}
+                    <th> Action </th> 
+                {% endif %}
+                
             </tr>
         </thead>
         <tbody>
             {% for idea in project_ideas %}
                 <tr onclick="toggleActions(this)">
-                    <td>{{ forloop.counter }}</td> <!-- Add loop counter -->
+                    
+                    <td><strong>{{ forloop.counter0|add:project_ideas.start_index }}</strong></td> <!-- Continuous counter -->
+                    
                     <td><a href="{% url 'show-project-idea' idea.id %}">{{ idea.title }}</a></td> <!-- Project title link -->
-                    <td>
-                        {% if user == idea.faculty %}
-                            <span class="hint-button" onclick="showActions(this)"> Click row to show actions </span>
-                            <div class="action-buttons small-btn" style="display: none;">
-                                <a href="{% url 'update-project-idea' idea.id %}" class="btn btn-outline-secondary btn-sm"> Update Idea </a> 
-                                <a href="{% url 'delete-project-idea' idea.id %}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete this project?');">Delete Idea </a> 
-                            </div> 
-                        {% endif %} 
-                    </td> 
+                    <td class="description-cell">
+                        <div style="overflow-x: auto; white-space: nowrap;"> 
+                            {% if idea.description %}
+                                {{ idea.description }}
+                            {% else %}
+                                <span class="text-muted">No description </span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    
+                    {% if request.user.role == 'FACULTY' %}
+                        <td>
+                            {% if user == idea.faculty %}
+                                <span class="hint-button" onclick="showActions(this)"> Click row to show actions </span>
+                                <div class="action-buttons small-btn" style="display: none;">
+                                    <a href="{% url 'update-project-idea' idea.id %}" class="btn btn-outline-secondary btn-sm"> Update Idea </a> 
+                                    <a href="{% url 'delete-project-idea' idea.id %}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete this project?');">Delete Idea </a> 
+                                </div> 
+                            {% endif %} 
+                        </td> 
+                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>
@@ -54,7 +73,6 @@
 {% endif %} <!-- End of project ideas check -->
 
 <hr/> 
-
 
 <nav aria-label="Page navigation example">
   <ul class="pagination justify-content-center">
