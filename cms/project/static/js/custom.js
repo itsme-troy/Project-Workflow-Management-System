@@ -1,4 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
+    
+
+    
+    const alerts = document.querySelectorAll('.alert'); // Select all alerts
+
+    alerts.forEach(function(alert) {
+        // Set a timeout to remove the alert after 10 seconds
+        setTimeout(function() {
+            alert.style.transition = "opacity 0.5s ease-out"; // Optional: Fade out effect
+            alert.style.opacity = "0"; // Make alert fade out
+
+            // After fade out, remove the alert from the DOM
+            setTimeout(function() {
+                alert.remove();
+            }, 500); // Wait for fade-out transition to complete
+        }, 5000); // 5 seconds
+    });
+
     // Smooth scroll to form on page load
     const form = document.getElementById('selectCoordinatorForm');
     if (form) {

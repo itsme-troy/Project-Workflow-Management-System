@@ -384,7 +384,7 @@ class ProjectPhase(models.Model):
     def __str__(self):
         return f"{self.project.title} - {self.get_phase_type_display()}"
 
-# class Custom_Phase(models.Model): 
+# class Custom_PhaseSequence(models.Model): 
 #     project = models.ForeignKey(Project, related_name="custom_phases", on_delete=models.CASCADE)
 #     # phases allow a project to have a combination of phases
 #     phases = models.ManyToManyField(ProjectPhase, related_name='custom_sets', blank=True)  # Many-to-many to ProjectPhase 
@@ -401,7 +401,7 @@ class ProjectPhase(models.Model):
     # class Meta:
     #     ordering = ['phase_order']  # Ensures that phases are ordered correctly
 
-class CustomProjectPhase(models.Model): 
+class CustomPhaseGroup(models.Model): 
     project=models.ForeignKey(Project, related_name="custom_phases", on_delete=models.CASCADE)
     
     # phases allow a project to have a combination of phases

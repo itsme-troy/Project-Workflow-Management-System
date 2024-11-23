@@ -50,7 +50,7 @@
                     
                         <td> 
                             {% if user.role == 'COORDINATOR' %}
-                                <span class="hint-button">Click row to show actions</span>
+                            <span class="hint-button" onclick="showActions(this)">Click to show actions</span>
                                 <div class="action-buttons small-btn">
                                     {% comment %} <a href="{% url 'select-panelist-coordinator' project_data.project.id %}"
                                        class="btn btn-outline-secondary btn-sm">Select Panelist</a> 
@@ -115,10 +115,23 @@
             row.classList.add('active');
         }
     
+        function showActions(hintButton) {
+            // Hide all hint buttons and show action buttons
+            document.querySelectorAll('.hint-button').forEach(btn => btn.style.display = 'inline');
+            document.querySelectorAll('.action-buttons').forEach(btns => btns.style.display = 'none');
+    
+            // Show the action buttons for the clicked row and hide the hint button
+            hintButton.style.display = 'none';
+            hintButton.nextElementSibling.style.display = 'block'; // Show action buttons
+        }
+    
         // Add click handler to close rows when clicking outside
         document.addEventListener('click', function(event) {
             if (!event.target.closest('tr')) {
                 document.querySelectorAll('tr').forEach(tr => tr.classList.remove('active'));
+                // Reset hint buttons and action buttons
+                document.querySelectorAll('.hint-button').forEach(btn => btn.style.display = 'inline');
+                document.querySelectorAll('.action-buttons').forEach(btns => btns.style.display = 'none');
             }
         });
     </script>

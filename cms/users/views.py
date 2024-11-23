@@ -100,7 +100,6 @@ def register_student(request):
 #         'form':form, 
 #         })
 
-
 def login_user(request): 
     if request.method == "POST": 
         email = request.POST["email"]
@@ -112,9 +111,13 @@ def login_user(request):
             return redirect('login')
         
         user = authenticate(request, email=email, password=password)
+    
         if user is not None:
             login(request, user)
+            # Personalize the success message with the user's name
+            messages.success(request, f"Login Success! Welcome back, {user.first_name}!")
             return redirect('home')
+        
         else:
             messages.error(request, "There was an error logging in. Please try again.")
             return redirect('login')

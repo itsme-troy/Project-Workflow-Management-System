@@ -53,6 +53,26 @@
     text-align: center; /* Align text to the center */
 }
 
+/* Apply styles to the Deficiencies column specifically */
+.table th.action-column {
+    width: 200px;
+    max-width: 300px; /* Set max-width to 500px */
+    word-wrap: break-word; /* Allow text to wrap inside the cell */
+    text-align: center; /* Align text to the center */
+    word-wrap: break-word; /* Allow word wrapping */
+}
+
+/* Style the Deficiencies Column */
+.table td.action-cell {
+    width: 200px; /* Fixed width for the cell */
+    max-width: 300px; /* Set max-width for the column */
+    overflow-x: auto; /* Allow horizontal scrolling if content overflows */
+    white-space: nowrap; /* Prevent text from wrapping */
+    text-overflow: ellipsis; /* Optionally, show an ellipsis when text overflows */
+    padding: 0.5rem; /* Add padding for better spacing */
+    height: auto; /* Optional: Limit the height to keep things tidy */
+}
+
 
 /* Table Header Styling */
 .table th {
@@ -583,16 +603,6 @@ a:hover {
     transform: scale(1.05);
 }
 
-/* Style the alert messages */
-.alert {
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    font-size: 0.9em;
-    margin-bottom: 20px;
-}
-
 /* Center the content */
 /* Center content styling */
 .center-content {
@@ -772,7 +782,7 @@ a:hover {
 /* General Alert Styling */
 .alert {
     padding: 15px 20px;
-    margin-top: 20px;
+    margin-top: 10px;
     margin-bottom: 20px;
     border-radius: 8px;
     font-family: 'Arial', sans-serif;
@@ -782,6 +792,7 @@ a:hover {
     align-items: center;
     gap: 10px; /* Space between icon and text */
     border: 1px solid transparent;
+    transition: opacity 0.5s ease-out; /* Smooth fade-out transition */
 }
 
 /* Success Alerts */

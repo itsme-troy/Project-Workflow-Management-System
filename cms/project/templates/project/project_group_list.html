@@ -24,11 +24,15 @@
                 <th scope="col">Proponent 1</th>
                 <th scope="col">Proponent 2</th>
                 <th scope="col">Proponent 3</th>
+                {% if user.is_current_coordinator %}
+                    <th scope="col" class="action-column"> Action </th> 
+                {% endif %}
+
             </tr>
         </thead>
         <tbody>
             {% for group_data in project_groups_with_proponents %}  
-                <tr {% if user in group_data.proponents %}class="table-warning"{% endif %}>
+                <tr onclick="toggleActions(this)" {% if user in group_data.proponents %}class="table-warning"{% endif %}>
                     <td><strong>{{ forloop.counter0|add:project_groups_with_proponents.start_index }}</strong></td> <!-- Continuous counter -->
                     {% for proponent in group_data.proponents %}
                         <td>
@@ -39,6 +43,18 @@
                             {% endif %}
                         </td>
                     {% endfor %}
+                    {% if user.is_current_coordinator %}
+                        <td class="action-cell">
+                            <span class="hint-button" onclick="showActions(this)">Click to show actions</span>
+                            <div class="action-buttons small-btn" style="display: none;">
+
+                                <a href="{% url 'delete-project-group' group_data.group.id %}"
+                                class="btn btn-outline-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this Project Group?');">Delete Group </a> 
+                            </div> 
+                        
+                        </td> 
+                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>
@@ -69,5 +85,37 @@
 
 </ul>
 </nav>
+
+
+<script>
+    function toggleActions(row) {
+        // Remove active class from all rows
+        document.querySelectorAll('tr').forEach(tr => tr.classList.remove('active'));
+        // Add active class to clicked row
+        row.classList.add('active');
+    }
+
+    function showActions(hintButton) {
+        // Hide all hint buttons and show action buttons
+        document.querySelectorAll('.hint-button').forEach(btn => btn.style.display = 'inline');
+        document.querySelectorAll('.action-buttons').forEach(btns => btns.style.display = 'none');
+
+        // Show the action buttons for the clicked row and hide the hint button
+        hintButton.style.display = 'none';
+        hintButton.nextElementSibling.style.display = 'block'; // Show action buttons
+    }
+
+    // Add click handler to close rows when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('tr')) {
+            document.querySelectorAll('tr').forEach(tr => tr.classList.remove('active'));
+            // Reset hint buttons and action buttons
+            document.querySelectorAll('.hint-button').forEach(btn => btn.style.display = 'inline');
+            document.querySelectorAll('.action-buttons').forEach(btns => btns.style.display = 'none');
+        }
+    });
+</script>
+
+
 
 {% endblock %}

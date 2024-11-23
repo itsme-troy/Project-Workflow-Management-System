@@ -14,8 +14,6 @@
     {% endif %}
 </div>
 
-<br/>   
-
 {% if not project_ideas %} <!-- Check if there are no project ideas -->
         
     <center>
@@ -32,8 +30,8 @@
                 <th>Project Title</th> <!-- Project title header -->
                 <th scope="col" class="description-column"> Description </th> 
                 
-                {% if request.user.role == 'FACULTY' %}
-                    <th> Action </th> 
+                {% if request.user.role == 'FACULTY' or request.user.is_current_coordinator %}
+                    <th scope="col" class="action-column"> Action </th> 
                 {% endif %}
                 
             </tr>
@@ -55,12 +53,15 @@
                         </div>
                     </td>
                     
-                    {% if request.user.role == 'FACULTY' %}
-                        <td>
-                            {% if user == idea.faculty %}
+                    {% if request.user.role == 'FACULTY' or request.user.is_current_coordinator %}
+                        <td class="action-cell">
+                            {% if user == idea.faculty or user.is_current_coordinator%}
                                 <span class="hint-button" onclick="showActions(this)"> Click row to show actions </span>
                                 <div class="action-buttons small-btn" style="display: none;">
+                                    {% if not request.user.is_current_coordinator%}
                                     <a href="{% url 'update-project-idea' idea.id %}" class="btn btn-outline-secondary btn-sm"> Update Idea </a> 
+                                    {% endif %}
+                                    
                                     <a href="{% url 'delete-project-idea' idea.id %}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete this project?');">Delete Idea </a> 
                                 </div> 
                             {% endif %} 

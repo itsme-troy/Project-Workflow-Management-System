@@ -40,7 +40,7 @@
 
                    
                 <!-- Continuous row counter calculation -->
-                <td><strong>{{ forloop.counter0|add:start_index}}</strong></td>
+                <td><strong>{{ forloop.counter }} </strong></td>
                         
                         <td> <a href="{% url 'show-project' project_data.project.id %}">{{ project_data.project }}</a>  </td>
                         <td>{{ project_data.project.proponents }}</td>

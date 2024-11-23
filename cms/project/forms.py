@@ -2,7 +2,7 @@ from django import forms
 from django.forms import ModelForm 
 from .models import Project, Defense_Application, Project_Group, StudentProfile, Student
 from .models import Faculty, ProjectPhase, Project_Idea
-from .models import CustomProjectPhase
+from .models import CustomPhaseGroup
 from django.core.exceptions import ValidationError
 
 from django.contrib.auth import get_user_model 
@@ -87,17 +87,17 @@ class UpdateDeficienciesFacultyForm(forms.ModelForm):
             self.fields[field_name].widget.attrs['disabled'] = 'disabled'
 
 
-class CustomProjectPhaseForm(forms.ModelForm):
-    class Meta:
-        model = CustomProjectPhase
-        fields = ['project', 'phases', 'name', 'description']
+# class CustomProjectPhaseForm(forms.ModelForm):
+#     class Meta:
+#         model = CustomProjectPhase
+#         fields = ['project', 'phases', 'name', 'description']
 
-    def __init__(self, *args, **kwargs):
-        project = kwargs.get('initial', {}).get('project', None)
-        super().__init__(*args, **kwargs)
-        if project:
-            # Limit the phases to the project-specific ones
-            self.fields['phases'].queryset = ProjectPhase.objects.filter(project=project)
+#     def __init__(self, *args, **kwargs):
+#         project = kwargs.get('initial', {}).get('project', None)
+#         super().__init__(*args, **kwargs)
+#         if project:
+#             # Limit the phases to the project-specific ones
+#             self.fields['phases'].queryset = ProjectPhase.objects.filter(project=project)
 
 class ProjectIdeaForm(forms.ModelForm):
     class Meta:
@@ -132,6 +132,12 @@ class CoordinatorForm(forms.Form):
             label="Select Coordinator",
             widget=forms.Select(attrs={'class': 'form-select', 'size': '10'})
         )
+
+        def clean_user(self):
+            user = self.cleaned_data.get('user')
+            if not user:
+                raise forms.ValidationError("You must select a coordinator.")
+            return user
 
 class ProjectGroupInviteForm(ModelForm):
     class Meta:

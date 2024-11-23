@@ -12,7 +12,7 @@ from .models import Student, Faculty, ApprovedProjectGroup,  Project_Group
 from .models import StudentProfile, FacultyProfile, CoordinatorProfile, Coordinator
 from .models import Project_Idea
 from .forms import ProjectIdeaForm, UpdateDeficienciesForm, UpdateDeficienciesFacultyForm
-from .forms import CustomProjectPhaseForm
+# from .forms import CustomProjectPhaseForm
 
 # from .models import Event
 from django.utils import timezone
@@ -291,8 +291,11 @@ def delete_notification(request, notification_id):
     except Notification.DoesNotExist:
         return JsonResponse({'error': 'Notification not found'}, status=404)
 
-@login_required
 def select_coordinator(request):
+    if not request.user.is_authenticated: 
+        messages.error(request, "You are not authorized to view this page ")
+        return redirect('home')
+    
     # Allow access if the user is a superuser or the current coordinator
     if not request.user.is_superuser and not User.objects.filter(id=request.user.id, is_current_coordinator=True, role='COORDINATOR').exists():
         messages.error(request, "You are not authorized to view this page ")
@@ -354,6 +357,7 @@ def select_coordinator(request):
 
         if 'submitted' in request.GET:
             submitted = True
+            
 
 
     return render(request, 'project/select_coordinator.html', {
@@ -937,20 +941,24 @@ def my_defense_application(request):
         'application_data': application_data,
          'verdicts': verdicts,  # Pass the verdicts list to the template
     })
-# def delete_project_group(request, group_id): 
-#     if request.user.is_authenticated: 
-#         project_group = Project_Group.objects.get(pk=group_id)
-#         if request.user == project_group.adviser: 
-#             project_group.delete()
-#             messages.success(request, "Project Group Deleted Succesfully! ")
-#             return redirect('list-project-group')
-#         else:
-#             messages.success(request, "You Aren't Authorized to Delete this Group!")
-#             return redirect('list-project-group')
-#     else:
-#         messages.success(request, "You Aren't Authorized to do this action")
-#         return redirect('list-project-group')
+
+def delete_project_group(request, group_id): 
+    if not request.user.is_authenticated or not request.user.is_current_coordinator: 
+        messages.error(request, "You Aren't Authorized to perform this action")
+        return redirect('home')
     
+    try:
+        project_group = Project_Group.objects.get(pk=group_id)
+        project_group.delete()
+        messages.success(request, "Project Group Deleted Successfully!")
+    except Project_Group.DoesNotExist:
+        messages.error(request, "Project Group not found!")
+    except Exception as e:
+        messages.error(request, f"An error occurred: {str(e)}")
+
+    return redirect('list-project-group')
+    
+
 # def reject_project_group(request, group_id): 
 #     project_group = Project_Group.objects.get(pk=group_id)
 #     if request.user == project_group.adviser: 
@@ -1847,10 +1855,10 @@ def coordinator_approval_faculty(request):
                   
                 })    
         else: 
-            messages.success(request, "You aren't authorized to view this Page ")
+            messages.error(request, "You aren't authorized to view this Page ")
             return redirect('home')
     else: 
-        messages.success(request, "Please Login to view this page")
+        messages.error(request, "Please Login to view this page")
         return redirect('home')
     
 def coordinator_approval_student(request): 
@@ -1890,10 +1898,10 @@ def coordinator_approval_student(request):
                     
                 })    
         else: 
-            messages.success(request, "You aren' authorized to view this Page ")
+            messages.error(request, "You aren' authorized to view this Page ")
             return redirect('home')
     else: 
-        messages.success(request, "Please Login to view this page")
+        messages.error(request, "Please Login to view this page")
         return redirect('home')
        
 def coordinator_projects(request):
@@ -2473,7 +2481,7 @@ def update_project_idea(request, project_id):
         messages.error(request, "Please Login to view this page")
         return redirect('home')
     
-    if request.user.role  != 'FACULTY':
+    if request.user.role == 'FACULTY' :
         messages.error(request, "You are not authorized to view this page")
         return redirect('home')
 
@@ -2485,7 +2493,7 @@ def update_project_idea(request, project_id):
         return redirect('all-project-ideas')
     
     # if they are gonna post, use this form otherwise, don't use anything. 
-    if request.user == project.faculty: 
+    if request.user == project.faculty or request.user.is_current_coordinator: 
         form = ProjectIdeaForm(request.POST or None, instance=project)
 
     if form.is_valid(): 
@@ -2733,7 +2741,7 @@ def delete_project_idea(request, project_id):
         messages.error(request, "The project idea does not exist.")
         return redirect('all-project-ideas')
 
-    if request.user == project.faculty: 
+    if request.user == project.faculty or request.user.is_current_coordinator: 
         project.delete()
         messages.success(request, "Project Idea Deleted Successfully!")
         return redirect('all-project-ideas')
