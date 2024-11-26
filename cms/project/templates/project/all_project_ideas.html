@@ -56,7 +56,7 @@
                     {% if request.user.role == 'FACULTY' or request.user.is_current_coordinator %}
                         <td class="action-cell">
                             {% if user == idea.faculty or user.is_current_coordinator%}
-                                <span class="hint-button" onclick="showActions(this)"> Click row to show actions </span>
+                                <span class="hint-button" onclick="showActions(this)"> Click to show actions </span>
                                 <div class="action-buttons small-btn" style="display: none;">
                                     {% if not request.user.is_current_coordinator%}
                                     <a href="{% url 'update-project-idea' idea.id %}" class="btn btn-outline-secondary btn-sm"> Update Idea </a> 

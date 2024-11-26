@@ -2,8 +2,10 @@ from django import forms
 from django.forms import ModelForm 
 from .models import Project, Defense_Application, Project_Group, StudentProfile, Student
 from .models import Faculty, ProjectPhase, Project_Idea
-from .models import CustomPhaseGroup
+# from .models import CustomPhaseGroup, Defense_order
 from django.core.exceptions import ValidationError
+# from .models import CustomPhase
+from .models import PHASE_CHOICES, RESULT_CHOICES
 
 from django.contrib.auth import get_user_model 
 User = get_user_model()
@@ -19,6 +21,7 @@ User = get_user_model()
 #         if project:
 #             # Limit the phases to the project-specific ones
 #             self.fields['phases'].queryset = ProjectPhase.objects.filter(project=project)
+
 
 class UpdateDeficienciesForm(forms.ModelForm):  
 
@@ -86,18 +89,6 @@ class UpdateDeficienciesFacultyForm(forms.ModelForm):
         for field_name in ['first_name', 'last_name', 'email']:
             self.fields[field_name].widget.attrs['disabled'] = 'disabled'
 
-
-# class CustomProjectPhaseForm(forms.ModelForm):
-#     class Meta:
-#         model = CustomProjectPhase
-#         fields = ['project', 'phases', 'name', 'description']
-
-#     def __init__(self, *args, **kwargs):
-#         project = kwargs.get('initial', {}).get('project', None)
-#         super().__init__(*args, **kwargs)
-#         if project:
-#             # Limit the phases to the project-specific ones
-#             self.fields['phases'].queryset = ProjectPhase.objects.filter(project=project)
 
 class ProjectIdeaForm(forms.ModelForm):
     class Meta:
@@ -423,8 +414,10 @@ class ProjectForm(ModelForm):
             'adviser': forms.Select(attrs={'class':'form-select', 'placeholder': 'Select an Adviser'}),
             'description': forms.Textarea(attrs={'class':'form-control', 'placeholder':'Please provide a brief description of the project'}),
             'panel': forms.SelectMultiple(attrs={'class':'form-control', 'placeholder': 'Panel', 'size': '10'}), 
-            'comments': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Comments'}),
-        }
+            'comments': forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Comments'}),   
+            }
+        
+    # defense_order = forms.ModelChoiceField(queryset=Defense_order.objects.all(), empty_label="Select Defense Order")
     
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -447,6 +440,7 @@ class ProjectForm(ModelForm):
         # Hide the comments field if the user is a student
         if user and user.role == 'STUDENT':
             self.fields.pop('comments', None)
+
 
     def clean(self):
         cleaned_data = super().clean()
@@ -471,6 +465,11 @@ class ProjectForm(ModelForm):
             return None
         
         return cleaned_data
+    
+# class ProjectDefenseOrderForm(forms.ModelForm): 
+#     class Meta: 
+#         model = Project
+#         fields = ['']
     
 class SelectPanelistForm(ModelForm): 
     # meta allows to sort of define things in a class
@@ -743,3 +742,9 @@ class AddCommentsForm(ModelForm):
         
         return panelists
     
+
+# Allows users to add custom phases
+# class CustomPhaseForm(forms.ModelForm):
+#     class Meta:
+#         model = CustomPhase
+#         fields = ['phase_name', 'phase_order']

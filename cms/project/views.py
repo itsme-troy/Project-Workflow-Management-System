@@ -34,11 +34,36 @@ from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.urls import reverse
 logger = logging.getLogger(__name__)
+# from .forms import PhaseForm
+# from .models import CustomPhase
+# from .forms import CustomPhaseForm
 
 # Import user model 
 from django.contrib.auth import get_user_model 
 User = get_user_model()
 
+
+# def add_custom_phase(request, project_id):
+#     project = Project.objects.get(id=project_id)
+
+#     # Ensure the logged-in user has permission to modify the project
+#     if project.proponents.filter(id=request.user.id).exists():  # Check if the user is part of the project
+#         if request.method == 'POST':
+#             form = CustomPhaseForm(request.POST)
+#             if form.is_valid():
+#                 custom_phase = form.save(commit=False)
+#                 custom_phase.project = project  # Associate phase with project
+#                 custom_phase.save()
+#                 messages.success(request, "Custom phase added successfully!")
+#                 return redirect('project-detail', project_id=project.id)
+#         else:
+#             form = CustomPhaseForm()
+
+#         return render(request, 'project/add_custom_phase.html', {'form': form, 'project': project})
+#     else:
+#         messages.error(request, "You don't have permission to add phases to this project.")
+#         return redirect('project-list')  # Redirect to a different page if the user doesn't have permission
+    
 def defense_settings(request): 
     return render(request, 'project/setting_defenses.html', {})
 
@@ -46,6 +71,7 @@ def defense_settings(request):
 def coordinator_settings(request): 
 
     return render(request, 'project/coordinator_settings.html', {} )
+
 
 # def create_phases(request): 
 
@@ -61,34 +87,34 @@ def coordinator_settings(request):
     
 #     return render(request, 'project/create_phases.html', {})
 
-def create_custom_phases(request):
-    # project = Project.objects.get(id=project_id)
-    if not request.user.is_authenticated: 
-        messages.error(request, "Please login to view this page")
-        return redirect('home')
+# def create_custom_phases(request):
+#     # project = Project.objects.get(id=project_id)
+#     if not request.user.is_authenticated: 
+#         messages.error(request, "Please login to view this page")
+#         return redirect('home')
     
-    if not request.user.is_current_coordinator: 
-        messages.error(request, "You are not authorized to view this page")
-        return redirect('home')
+#     if not request.user.is_current_coordinator: 
+#         messages.error(request, "You are not authorized to view this page")
+#         return redirect('home')
     
-    # if  request.method == 'POST':
-    #     form = CustomProjectPhaseForm(request.POST)
-    #     if form.is_valid():
-    #         custom_phase = form.save(commit=False)
-    #         # custom_phase.project = project
-    #         custom_phase.save()
-    #         form.save_m2m()  # Save the ManyToMany relation
-    #         messages.success(request, 'Custom phases have been saved successfully!')
-    #         return redirect('project_detail', project_id=project.id)
-    # else:
-    #     form = CustomProjectPhaseForm(initial={'project': project})
+#     # if  request.method == 'POST':
+#     #     form = CustomProjectPhaseForm(request.POST)
+#     #     if form.is_valid():
+#     #         custom_phase = form.save(commit=False)
+#     #         # custom_phase.project = project
+#     #         custom_phase.save()
+#     #         form.save_m2m()  # Save the ManyToMany relation
+#     #         messages.success(request, 'Custom phases have been saved successfully!')
+#     #         return redirect('project_detail', project_id=project.id)
+#     # else:
+#     #     form = CustomProjectPhaseForm(initial={'project': project})
 
-    return render(request, 'project/create_custom_phases.html', {})
+#     return render(request, 'project/create_custom_phases.html', {})
 
 def coordinator_dashboard(request): 
     if not request.user.is_authenticated: 
         messages.error(request, "Please login to view this page")
-        return redirect('home')    
+        return redirect('login')    
 
 
     if request.user.role != 'COORDINATOR':
@@ -109,11 +135,10 @@ def show_proposal(request, project_id):
         {'project': project, 
         'project_owner': project_owner})
     else: 
-        messages.success(request, "Please Login to view this page")
+        messages.error(request, "Please Login to view this page")
         return redirect('home')
 
 
-@login_required
 def delete_user(request, user_id): 
     if not request.user.is_authenticated: 
         messages.error(request, "You're not authorized to perform this Action")
@@ -171,25 +196,26 @@ def my_project(request):
     return render(request, 'project/my_project.html', {'project': project })
 
 def all_project_ideas(request): 
-    if request.user.is_authenticated: 
-        # Create a Paginator object with the project_ideas list and specify the number of items per page
-        p = Paginator(Project_Idea.objects.order_by('title'), 10) 
-        page = request.GET.get('page')
-        project_ideas = p.get_page(page)
-        nums = "a" * project_ideas.paginator.num_pages
+    if not request.user.is_authenticated:
+        messages.error(request, "Please login to view your notifications.")
+        return redirect('login')
+    
+    # Create a Paginator object with the project_ideas list and specify the number of items per page
+    p = Paginator(Project_Idea.objects.order_by('title'), 10) 
+    page = request.GET.get('page')
+    project_ideas = p.get_page(page)
+    nums = "a" * project_ideas.paginator.num_pages
 
-        # Calculate the start index for the current page
-        start_index = (project_ideas.number - 1) * project_ideas.paginator.per_page
+    # Calculate the start index for the current page
+    start_index = (project_ideas.number - 1) * project_ideas.paginator.per_page
 
 
-        return render(request, 'project/all_project_ideas.html', {
-            'project_ideas': project_ideas, 
-            'nums': nums, 
-            'start_index': start_index  # Add start_index to context
-        })
-    else: 
-        messages.success(request, "Please Login to view this page")
-        return redirect('home')
+    return render(request, 'project/all_project_ideas.html', {
+        'project_ideas': project_ideas, 
+        'nums': nums, 
+        'start_index': start_index  # Add start_index to context
+    })
+
 
 def submit_project_idea(request):
     if not request.user.is_authenticated: 
@@ -213,8 +239,11 @@ def submit_project_idea(request):
     return render(request, 'project/submit_project_idea.html', {
         'form': form, 'ideas': ideas})
 
-@login_required
 def reject_panel_invitation(request, project_id):
+    if not request.user.is_authenticated:
+        messages.error(request, "Please login to view your notifications.")
+        return redirect('login')
+    
     project = get_object_or_404(Project, id=project_id)
 
     # Check if the user is a panelist for the project
@@ -247,7 +276,6 @@ def reject_panel_invitation(request, project_id):
 
     return redirect('panel-projects')  # Redirect to the appropriate page
 
-@login_required
 def notifications_view(request):
     if not request.user.is_authenticated:
         messages.error(request, "Please login to view your notifications.")
@@ -367,7 +395,6 @@ def select_coordinator(request):
         })
 
 
-@login_required
 def transfer_creator(request, group_id):
     group = get_object_or_404(Project_Group, id=group_id)
 
@@ -409,7 +436,6 @@ def transfer_creator(request, group_id):
         'approved_members': group.proponents.exclude(id=request.user.id)
     })
 
-@login_required # Notification: Current members, 
 def accept_join_request(request, group_id, user_id): # Accept Join Request from a Student
     group = get_object_or_404(Project_Group, id=group_id)
     user = get_object_or_404(User, id=user_id)
@@ -464,7 +490,6 @@ def accept_join_request(request, group_id, user_id): # Accept Join Request from 
     group.requests.remove(user.id)  # Ensure user object is used, not user.id
     return redirect('my-project-group-waitlist')
 
-@login_required
 def decline_join_request(request, group_id, user_id):
     group = get_object_or_404(Project_Group, id=group_id)
     user = get_object_or_404(User, id=user_id)
@@ -724,6 +749,16 @@ def submit_defense_application(request):
             messages.error(request, "There is already a pending Defense Application for your project group. Please wait for a Verdict to be given.")
             return redirect('my-defense-application')
 
+        # Fetch custom phases if they exist
+        # custom_phases = project.custom_phases.all()
+        # if custom_phases.exists():
+        #     # Allow the user to select from the custom phases instead of fixed ones
+        #     # You can render a dropdown of custom phases or the available phases for the defense
+        #     next_phase_type = custom_phases.first().phase_type  # Get the first custom phase
+        # else:
+        
+        next_phase_type = 'proposal'  # Default phase if no custom phases exist
+
         # Fetch the last completed phase, if any
         last_completed_phase = project.phases.exclude(verdict='pending').order_by('-date').first()
 
@@ -731,17 +766,7 @@ def submit_defense_application(request):
         if last_completed_phase and last_completed_phase.verdict == 'not_accepted':
             messages.error(request, "The Verdict of the recent Defense was Not-Accepted. Please Contact the Coordinator if you think this is a mistake.")
             return redirect('my-defense-application')
-
-        # Fetch custom phases if they exist
-        custom_phases = project.custom_phases.all()
-
-        if custom_phases.exists():
-            # Allow the user to select from the custom phases instead of fixed ones
-            # You can render a dropdown of custom phases or the available phases for the defense
-            next_phase_type = custom_phases.first().phase_type  # Get the first custom phase
-        else:
-            next_phase_type = 'proposal'  # Default phase if no custom phases exist
-
+   
         if last_completed_phase:
             if last_completed_phase.phase_type == 'final' and last_completed_phase.verdict in ['accepted', 'accepted_with_revisions']:
                 messages.error(request, "You have already passed the Final Defense. No more defense applications are needed. Congratulations!")
@@ -1339,7 +1364,6 @@ def replace_member(request, group_id, member_id):
         'member': member
     })
 
-@login_required
 def leave_group(request, group_id):
     group = get_object_or_404(Project_Group, id=group_id)
     
@@ -1380,7 +1404,6 @@ def leave_group(request, group_id):
     group.save()
     return redirect('my-project-group-waitlist')
 
-@login_required
 def remove_member(request, group_id, member_id):
     group = get_object_or_404(Project_Group, id=group_id)
     member = get_object_or_404(Student, id=member_id)
@@ -1419,7 +1442,6 @@ def remove_member(request, group_id, member_id):
 
 
 
-@login_required
 def finalize_group(request, group_id):
     group = get_object_or_404(Project_Group, id=group_id)
     
@@ -1455,7 +1477,6 @@ def finalize_group(request, group_id):
     messages.success(request, "Group has been finalized successfully!")
     return redirect('my-project-group-waitlist')
 
-@login_required
 def invite_more_members(request, group_id):
     group = get_object_or_404(Project_Group, id=group_id)
     
@@ -1559,7 +1580,7 @@ from django.contrib.auth.decorators import login_required
 def add_project_group(request): 
     if not request.user.is_authenticated or request.user.role != 'STUDENT':
         messages.error(request, "Please login as a student to perform this action")
-        return redirect('home')
+        return redirect('login')
 
     if request.user.is_authenticated and request.user.eligible == False: 
         messages.error(request, "Only Eligible Students are able to register a Project Group. Please Contact Coordinator to for assistance with Eligibility Concerns")
@@ -1674,7 +1695,7 @@ def my_profile(request, profile_id):
             })
         
     else: 
-        messages.success(request, "Please Login to view this page")
+        messages.error(request, "Please Login to view this page")
         return redirect('home')
     
 def show_student(request, student_id): 
@@ -1689,8 +1710,8 @@ def show_student(request, student_id):
          'project_group': project_group}) 
     
     else: 
-        messages.success(request, "Please Login to view this page")
-        return redirect('home')
+        messages.error(request, "Please Login to view this page")
+        return redirect('error')
 
 def show_faculty(request, faculty_id): 
     if request.user.is_authenticated: 
@@ -1704,8 +1725,8 @@ def show_faculty(request, faculty_id):
         #  'project_group': project_group}) 
     
     else: 
-        messages.success(request, "Please Login to view this page")
-        return redirect('home')
+        messages.error(request, "Please Login to view this page")
+        return redirect('login')
     
 def generate_report(request):
     if request.user.is_authenticated: 
@@ -1771,8 +1792,8 @@ def generate_report(request):
         'projects_with_phases': projects_with_phases,
         })
     else: 
-        messages.success(request, "Please Login to view this page")
-        return redirect('home')
+        messages.error(request, "Please Login to view this page")
+        return redirect('login')
 
 
 def get_user_project_group(request):
@@ -1859,7 +1880,7 @@ def coordinator_approval_faculty(request):
             return redirect('home')
     else: 
         messages.error(request, "Please Login to view this page")
-        return redirect('home')
+        return redirect('login')
     
 def coordinator_approval_student(request): 
     if request.user.is_authenticated: 
@@ -1902,7 +1923,7 @@ def coordinator_approval_student(request):
             return redirect('home')
     else: 
         messages.error(request, "Please Login to view this page")
-        return redirect('home')
+        return redirect('login')
        
 def coordinator_projects(request):
     if not request.user.is_authenticated: 
@@ -1911,7 +1932,7 @@ def coordinator_projects(request):
     
     if request.user.role !='COORDINATOR': 
         messages.error(request, "You are not authorized to view this page")
-        return redirect('home')
+        return redirect('login')
 
    
     # Grab the projects from that adviser
@@ -1957,7 +1978,7 @@ def coordinator_projects(request):
 def adviser_projects(request):
     if not request.user.is_authenticated: 
         messages.error(request, "Please Login to view this page")
-        return redirect('home')
+        return redirect('login')
     
     if request.user.role !='FACULTY': 
         messages.error(request, "You are not authorized to view this page")
@@ -2011,7 +2032,7 @@ def adviser_projects(request):
 def adviser_proposals(request):
     if not request.user.is_authenticated: 
         messages.error(request, "Please Login to view this page")
-        return redirect('home')
+        return redirect('login')
     
     if request.user.role != 'FACULTY': 
         messages.error(request, "You are not authorized to view this page")
@@ -2053,7 +2074,7 @@ def adviser_proposals(request):
 def panel_projects(request): 
     if not request.user.is_authenticated: 
         messages.error(request, "Please Login to view this page")
-        return redirect('home')
+        return redirect('login')
     
     if request.user.role != 'FACULTY': 
         messages.error(request, "You are not authorized to view this page")
@@ -2122,7 +2143,7 @@ def reject_project(request, project_id):
         messages.success(request, f"Project '{project.title}' has been moved to 'Proposal list' Succesfully ! ")
         return redirect('adviser-projects')
     else:
-        messages.success(request, "You Aren't Authorized to Accept this Proposal!")
+        messages.error(request, "You Aren't Authorized to Accept this Proposal!")
         return redirect('adviser-projects')
     
 def reject_proposal(request, project_id):
@@ -2149,13 +2170,13 @@ def reject_proposal(request, project_id):
         messages.success(request, f"Project '{project.title}' has been Rejected Succesfully ! ")
         return redirect('adviser-proposals')
     else:
-        messages.success(request, "You Aren't Authorized to Accept this Proposal!")
+        messages.error(request, "You Aren't Authorized to Accept this Proposal!")
         return redirect('adviser-proposals')
 
 def archive_project(request, project_id):
     if not request.user.is_authenticated: 
         messages.error(request, "You Aren't Authorized to archive this Project.")
-        return redirect('home')
+        return redirect('login')
 
     # look on projects by ID 
     if request.user.is_current_coordinator: 
@@ -2166,7 +2187,7 @@ def archive_project(request, project_id):
         messages.success(request, f"Project '{project.title}' has been Archived Succesfully! ")
         return redirect('coordinator-projects')
     else:
-        messages.success(request, "You Aren't Authorized to Archive this Project!")
+        messages.error(request, "You Aren't Authorized to Archive this Project!")
         return redirect('home')
 
 def unarchive_project(request, project_id):
@@ -2184,14 +2205,14 @@ def unarchive_project(request, project_id):
         return redirect('list-archived-projects')
     
     else:
-        messages.success(request, "You Aren't Authorized to Archive this Project!")
+        messages.error(request, "You Aren't Authorized to Archive this Project!")
         return redirect('home')
 
 def list_archived_projects(request): 
 
     if not request.user.is_authenticated: 
         messages.error(request, "Please Login to view this page")
-        return redirect('home')
+        return redirect('login')
     
     if request.user.role !='COORDINATOR' or not request.user.is_current_coordinator: 
         messages.error(request, "You are not authorized to view this page")
@@ -2237,8 +2258,6 @@ def list_archived_projects(request):
         "approved_nums": approved_nums,
     })
 
-    return render(request, 'project/archived_projects.html', {})
- 
 # def archive_proposal(request, project_id):
 #     # look on projects by ID 
 #     project = Project.objects.get(pk=project_id)
@@ -2311,7 +2330,7 @@ def accept_proposal(request, project_id):
         
         messages.success(request, "Proposal Accepted Successfully!")
     else:
-        messages.success(request, "You Aren't Authorized to Accept this Proposal!")
+        messages.error(request, "You Aren't Authorized to Accept this Proposal!")
     
     return redirect('adviser-projects')
 
@@ -2319,7 +2338,7 @@ def accept_proposal(request, project_id):
 def delete_proposal(request, project_id): 
     if not request.user.is_authenticated: 
         messages.error(request, "You Aren't Authorized to Delete this Proposal!")
-        return redirect('home')
+        return redirect('login')
 
     # look on projects by ID 
     try:
@@ -2394,7 +2413,7 @@ def student_delete_proposal(request, project_id):
 def select_panelist(request, project_id): 
     if not request.user.is_authenticated: 
         messages.error(request, "Please Login to view this page")
-        return redirect('home')
+        return redirect('login')
     
     if request.user.role  != 'FACULTY':
         messages.error(request, "You are not authorized to view this page")
@@ -2479,7 +2498,7 @@ def select_panelist(request, project_id):
 def update_project_idea(request, project_id): 
     if not request.user.is_authenticated: 
         messages.error(request, "Please Login to view this page")
-        return redirect('home')
+        return redirect('login')
     
     if request.user.role == 'FACULTY' :
         messages.error(request, "You are not authorized to view this page")
@@ -2508,9 +2527,6 @@ def update_project_idea(request, project_id):
         messages.success(request, "Project Idea Updated Successfully!")
         return redirect('all-project-ideas')
     
-    # else:
-    #     messages.error(request, "You are not authorized to update this project idea.")
-    #     return redirect('all-project-ideas')
 
     return render(request, 'project/update_project_idea.html', {
         'project': project,
@@ -2522,7 +2538,7 @@ def select_panelist_coordinator(request, project_id):
         messages.error(request, "Please Login to view this page")
         return redirect('home')
     
-    if request.user.role != 'COORDINATOR':
+    if not request.user.is_current_coordinator: 
         messages.error(request, "You are not authorized to view this page")
         return redirect('home')
 
@@ -2608,10 +2624,46 @@ def select_panelist_coordinator(request, project_id):
         'form': form
     })
 
+
+# def select_defense_phases(request, project_id): 
+#     if not request.user.is_authenticated: 
+#         messages.error(request, "Please Login to view this page")
+#         return redirect('home')
+    
+#     if request.user.role != 'COORDINATOR' or not request.user.is_current_coordinator:
+#         messages.error(request, "You are not authorized to view this page")
+#         return redirect('home')
+
+#     # look on projects by ID 
+#     project = Project.objects.get(pk=project_id)
+#     # if they are gonna post, use this form otherwise, don't use anything. 
+
+#     form = CoordinatorSelectPanelistForm(request.POST or None, instance=project)
+#     form.user = request.user # pass the user to the form
+#     # save data to the database and return somewhere 
+
+#     if form.is_valid():
+#         # Handle disabled fields by reassigning their initial values before saving
+#         form.instance.title = project.title
+#         form.instance.project_type = project.project_type
+#         form.instance.proponents = project.proponents
+#         form.instance.adviser = project.adviser
+#         form.instance.description = project.description
+#         form.save()
+
+#         messages.success(request, "Project Phases Updated Successfully!")
+#         return redirect('coordinator-projects')
+
+
+#     return render(request, 'project/select_defense_phases.html', {
+#         'project': project,
+#         'form': form
+#     })
+
 def add_comments(request, project_id): 
     if not request.user.is_authenticated: 
         messages.error(request, "Please Login to view this page")
-        return redirect('home')
+        return redirect('login')
         
      # Attempt to look up the project by ID
     try:
@@ -2701,38 +2753,114 @@ def add_comments(request, project_id):
     
     # Delete Project
 def delete_project(request, project_id):
+    if not request.user.is_authenticated: 
+        messages.error(request, "You Aren't Authorized to Delete this Project!")
+        return redirect('home')
 
-    if request.method == 'POST':
-        # look on projects by ID 
+    try:
         project = Project.objects.get(pk=project_id)
-        if request.user == project.adviser: 
+    except Project.DoesNotExist:
+        messages.error(request, "The project does not exist.")
+        return redirect('home')
+    
+    if request.user == project.adviser or request.user.is_current_coordinator:    
 
-            for proponent in project.proponents.proponents.all():
-                try:
-                    Notification.objects.create(
-                        recipient=proponent,
-                        notification_type='PROJECT_DELETED',
-                        group=project.proponents,
-                        sender=request.user,
-                        message=f"The Project entitled '{project.title}' has been deleted by {request.user.get_full_name()}.",
-                        redirect_url=reverse('my-project')
-                    )
-                except Exception as e:
-                    logger.error(f"Failed to create notification for {proponent}: {str(e)}")
+        for proponent in project.proponents.proponents.all():
+            try:
+                Notification.objects.create(
+                    recipient=proponent,
+                    notification_type='PROJECT_DELETED',
+                    group=project.proponents,
+                    sender=request.user,
+                    message=f"The Project entitled '{project.title}' has been deleted by {request.user.get_full_name()}.",
+                    redirect_url=reverse('my-project')
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for {proponent}: {str(e)}")
 
-            project.delete()
-            messages.success(request, "Project Deleted Succesfully ! ")
-            return JsonResponse({'success': True})
-            # return redirect('list-projects')
+        if request.user.is_current_coordinator: 
+            try:
+                Notification.objects.create(
+                    recipient=project.adviser,
+                    notification_type='PROJECT_DELETED',
+                    group=project.proponents,
+                    sender=request.user,
+                    message=f"The Project entitled '{project.title}' has been deleted by {request.user.get_full_name()}.",
+                    redirect_url=reverse('adviser-projects')
+                )
+
+            except Exception as e:
+                logger.error(f"Failed to create notification for {project.adviser}: {str(e)}")
+
+        project.delete()
+        messages.success(request, "Project Deleted Succesfully ! ")
+        
+        role = request.user.role
+        if role == 'FACULTY': 
+            return redirect('adviser-projects')
         else:
-            messages.error(request, "You Aren't Authorized to Delete this Project!")
-            return JsonResponse({'success': False, 'error': 'Unauthorized'})
-    return JsonResponse({'success': False, 'error': 'Invalid request'})
+            return redirect('coordinator-projects')
+
+    else: 
+        messages.error(request, "You Aren't Authorized to Delete this Project!")
+        return redirect('home')
+
+
+# def delete_project_coordinator(request, project_id):
+
+#     #  if not request.user.is_authenticated: 
+#     #     messages.error(request, "You Aren't Authorized to Delete this Project Idea!")
+#     #     return redirect('home')
+
+#     # # Look for the project idea by ID
+#     # try:
+#     #     project = Project_Idea.objects.get(pk=project_id)
+#     # except Project_Idea.DoesNotExist:
+#     #     messages.error(request, "The project idea does not exist.")
+#     #     return redirect('all-project-ideas')
+
+#     # if request.user == project.faculty or request.user.is_current_coordinator: 
+#     #     project.delete()
+#     #     messages.success(request, "Project Idea Deleted Successfully!")
+#     #     return redirect('all-project-ideas')
+#     # else:
+#     #     messages.error(request, "You Aren't Authorized to Delete this Project Idea!")
+#     #     return redirect('home')
+
+#     if not request.user.is_current_coordinator: 
+#         messages.error(request, "You Aren't Authorized to Delete this Project!")
+#         return redirect('home')
+
+#         # look on projects by ID 
+#     try:     
+#         project = Project.objects.get(pk=project_id)
+#     except Project.DoesNotExist:
+#         messages.error(request, "The project does not exist.")
+#         return redirect('home')
+    
+     
+#     for proponent in project.proponents.proponents.all():
+#         try:
+#             Notification.objects.create(
+#                 recipient=proponent,
+#                 notification_type='PROJECT_DELETED',
+#                 group=project.proponents,
+#                 sender=request.user,
+#                 message=f"The Project entitled '{project.title}' has been deleted by {request.user.get_full_name()}.",
+#                 redirect_url=reverse('my-project')
+#             )
+#         except Exception as e:
+#             logger.error(f"Failed to create notification for {proponent}: {str(e)}")
+
+#     project.delete()
+#     messages.success(request, "Project Deleted Succesfully ! ")
+
 
 def delete_project_idea(request, project_id):
     if not request.user.is_authenticated: 
         messages.error(request, "You Aren't Authorized to Delete this Project Idea!")
         return redirect('home')
+
 
     # Look for the project idea by ID
     try:
@@ -2740,9 +2868,23 @@ def delete_project_idea(request, project_id):
     except Project_Idea.DoesNotExist:
         messages.error(request, "The project idea does not exist.")
         return redirect('all-project-ideas')
-
+    
     if request.user == project.faculty or request.user.is_current_coordinator: 
+    
         project.delete()
+        if request.user.is_current_coordinator: 
+            try:
+                Notification.objects.create(
+                    recipient=project.faculty,
+                    notification_type='PROJECT_DELETED',
+                    sender=request.user,
+                    message=f"The Project entitled '{project.title}' has been deleted by {request.user.get_full_name()}.",
+                    redirect_url=reverse('all-project-ideas')
+                )
+            except Exception as e:
+                logger.error(f"Failed to create notification for {project.faculty}: {str(e)}")
+
+        
         messages.success(request, "Project Idea Deleted Successfully!")
         return redirect('all-project-ideas')
     else:
@@ -2777,8 +2919,8 @@ def list_student(request):
         # {'students': students, 
         # 'nums': nums})
     else: 
-        messages.success(request, "You Aren't Authorized to view this page.")
-        return redirect('home')
+        messages.error(request, "You Aren't Authorized to view this page.")
+        return redirect('login')
     
 
 def list_student_waitlist(request): 
@@ -2795,8 +2937,8 @@ def list_student_waitlist(request):
         {'students': students, 
         'nums': nums})
     else: 
-        messages.success(request, "You Aren't Authorized to view this page.")
-        return redirect('home')
+        messages.error(request, "You Aren't Authorized to view this page.")
+        return redirect('login')
 
     
 def list_faculty(request): 
@@ -2813,7 +2955,7 @@ def list_faculty(request):
         'nums': nums})
     else: 
         messages.error(request, "Please Login to view this page.")
-        return redirect('home')
+        return redirect('login')
 
 def add_project(request): 
     if request.user.is_authenticated: 
@@ -2929,7 +3071,7 @@ def add_project(request):
             return redirect('home')
     else: 
         messages.error(request, "Please Login to view this page")
-        return redirect('home')
+        return redirect('login')
 
 def home(request):
     return render(request, "project/home.html", {})
@@ -2952,7 +3094,7 @@ def all_projects(request):
         })
     else: 
         messages.error(request, "Please Login to view this page")
-        return redirect('home')
+        return redirect('login')
     
         
 def all_proposals(request):
@@ -2982,8 +3124,8 @@ def all_proposals(request):
             'start_index': start_index,
         })
     else:
-        messages.success(request, "Please Login to view this page")
-        return redirect('home')
+        messages.error(request, "Please Login to view this page")
+        return redirect('login')
 
 def show_project(request, project_id): 
     if request.user.is_authenticated: 
@@ -2996,8 +3138,8 @@ def show_project(request, project_id):
         {'project': project, 
         'project_owner': project_owner})
     else: 
-        messages.success(request, "Please Login to view this page")
-        return redirect('home')
+        messages.error(request, "Please Login to view this page")
+        return redirect('login')
     
 def show_project_idea(request, project_idea_id): 
     if request.user.is_authenticated: 
@@ -3010,8 +3152,8 @@ def show_project_idea(request, project_idea_id):
         {'project_idea': project_idea})
     
     else: 
-        messages.success(request, "Please Login to view this page")
-        return redirect('home')
+        messages.error(request, "Please Login to view this page")
+        return redirect('login')
     
 def show_proposal(request, project_id): 
     if request.user.is_authenticated: 
@@ -3024,6 +3166,7 @@ def show_proposal(request, project_id):
         {'project': project, 
         'project_owner': project_owner})
     else: 
-        messages.success(request, "Please Login to view this page")
-        return redirect('home')
+        messages.error(request, "Please Login to view this page")
+        return redirect('login')
+
 

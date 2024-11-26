@@ -12,10 +12,10 @@ from .models import Student, Faculty, Coordinator
 from .models import StudentProfile, FacultyProfile, CoordinatorProfile, ProjectPhase
 from .models import ApprovedProject, ApprovedProjectGroup, Not_ApprovedProject
 from .models import Approved_Adviser, Approved_panel, Notification, Approved_student
-from .models import CustomPhaseGroup 
-
+# from .models import CustomPhaseGroup, Defense_order, Phase
+# from .models import CustomPhase
 #admin.site.register(Project_Group)
-admin.site.register(CustomPhaseGroup)
+# admin.site.register(CustomPhaseGroup)
 admin.site.register(AppUser)
 admin.site.register(Student)
 admin.site.register(Faculty)
@@ -26,6 +26,8 @@ admin.site.register(Approved_student)
 # admin.site.register(ApprovedProjectGroup)
 admin.site.register(Approved_Adviser)
 admin.site.register(Not_ApprovedProject)
+# admin.site.register(Defense_order)
+# admin.site.register(CustomPhase)
 
 # admin.site.register(ProjectPhase)
 # admin.site.register(Approved_panel)
@@ -93,7 +95,7 @@ class NotificationAdmin(admin.ModelAdmin): #project_type'
    
 @admin.register(Project) #  'project_type',
 class ProjectAdmin(admin.ModelAdmin): #project_type'
-    fields = ('title', 'adviser','description','proponents', 'panel', 'owner', 'status', 'is_archived')
+    fields = ('title', 'adviser','description','proponents', 'panel', 'owner', 'status', 'defense_order', 'is_archived')
     list_display = ('title', 'adviser', 'description')
     ordering = ('title', )
     search_fields = ('title', 'description', 'adviser')

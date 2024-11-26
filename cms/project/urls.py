@@ -28,6 +28,8 @@ urlpatterns = [
     path('search_projects', views.search_projects, name="search-projects"),
     path('select_panelist/<project_id>', views.select_panelist, name='select-panelist'),
     path('select_panelist_coordinator/<project_id>', views.select_panelist_coordinator, name='select-panelist-coordinator'),
+    # path('select_defense_phases/<project_id>', views.select_defense_phases, name='select-defense-phases'),
+    
 
     path('delete_project/<project_id>', views.delete_project, name='delete-project'),
     path('add_comments/<project_id>', views.add_comments, name='add-comments'),
@@ -97,7 +99,7 @@ urlpatterns = [
     path('update_project_idea/<project_id>', views.update_project_idea, name='update-project-idea'),
     path('dashboard', views.coordinator_dashboard, name='coordinator-dashboard'), 
     # path('create_custom_phase/<project_id>', views.create_custom_phase, name='create-custom-phase'),  
-    path('create_custom_phases', views.create_custom_phases, name='create-custom-phases'),  
+    # path('create_custom_phases', views.create_custom_phases, name='create-custom-phases'),  
  
     path('settings', views.coordinator_settings, name = 'coordinator-settings'),
     path('defense_settings', views.defense_settings, name = 'defense-settings'),

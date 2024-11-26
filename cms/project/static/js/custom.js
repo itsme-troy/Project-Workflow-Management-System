@@ -1,6 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
-    
-
+document.addEventListener('DOMContentLoaded', function() {
     
     const alerts = document.querySelectorAll('.alert'); // Select all alerts
 

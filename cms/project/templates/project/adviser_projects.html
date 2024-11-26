@@ -17,6 +17,17 @@
     </div> </center> 
 
 {% else %}
+    <!-- Toggle Button to Show/Hide Links -->
+    <button id="toggleButton" onclick="toggleLinks()">Toggle Links</button>
+
+    <!-- Links Section (Initially hidden) -->
+    <div id="linksSection" style="display:none;">
+        <ul>
+            <li><a href="{% url 'adviser-projects' %}">Adviser Projects</a></li>
+            <li><a href="{% url 'adviser-proposals' %}">Adviser Proposals</a></li>
+            <li><a href="{% url 'panel-projects' %}">Panel Projects</a></li>
+        </ul>
+    </div>
 
     <table class="table table-hover table-bordered">
         <thead>
@@ -141,5 +152,18 @@
                 document.querySelectorAll('.action-buttons').forEach(btns => btns.style.display = 'none');
             }
         });
+
+        function toggleLinks() {
+            var linksSection = document.getElementById("linksSection");
+            var button = document.getElementById("toggleButton");
+    
+            if (linksSection.style.display === "none") {
+                linksSection.style.display = "block";
+                button.innerText = "Hide Links";  // Change button text when links are visible
+            } else {
+                linksSection.style.display = "none";
+                button.innerText = "Show Links";  // Change button text when links are hidden
+            }
+        }
     </script>
 {% endblock %}
