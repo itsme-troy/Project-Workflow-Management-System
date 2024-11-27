@@ -1,18 +1,41 @@
-{% extends 'project/base.html' %}
-{% load static %}
-{% block styles %}
-    <!-- Include styles specific to the calendar -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css" />
-    <link rel="stylesheet" href="{% static 'project/css/style.css' %}">
-    <link rel="stylesheet" href="{% static 'project/css/custom-navbar.css' %}">
-    <!-- Add any additional CSS specific to this page here -->
-    {{ block.super }}
-{% endblock %}
 
-{% block content %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head> 
+
+    <title>CMS | Available Schedule Calendar </title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
+   
+    <link rel="stylesheet" href="{% static 'project/css/style.css' %}">
+    
+    <script src="{% static 'project/js/custom.js' %}"></script>
+    <style>
+        /* Change navbar font color to white */
+        .navbar, .navbar a {
+            color: white !important; /* Ensures navbar links are white */
+        }
+        .navbar-nav .nav-link {
+            color: white !important; /* Ensures individual links are white */
+        }
+    </style>
+</head> 
+<body class="custom-sky-blue-bg"> 
+    {% include 'project/navbar.html' %}
+
     <div class="container">
         <div class="row">
             <h4>Available Schedule</h4> 
+            {% block content %}
+            
+            {% endblock %}
             <div id="calendar"></div>  <!-- This will render the FullCalendar -->
         </div>
     </div>
@@ -34,28 +57,35 @@
                 select: function (start, end, allDay) {
                     var title = prompt("Enter Event Title");
                     if (title) {
-                        var start = $.fullCalendar.formatDate(start, "Y-MM-DD HH:mm:ss");
-                        var end = $.fullCalendar.formatDate(end, "Y-MM-DD HH:mm:ss");
+                         // Convert start and end to UTC and format the date
+                        var startUTC = start.utc().format("YYYY-MM-DDTHH:mm:ss[Z]");
+                        var endUTC = end.utc().format("YYYY-MM-DDTHH:mm:ss[Z]");
+
                         $.ajax({
                             type: "GET",
-                            url: 'add_sched',
-                            data: {'title': title, 'start': start, 'end': end},
+                            url: 'add_sched',  // Use Django's URL tag
+                            data: { 'title': title, 'start': startUTC, 'end': endUTC },
                             dataType: "json",
                             success: function (data) {
-                                calendar.fullCalendar('refetchEvents');
-                                alert("Added Successfully");
+                                if (data.status === 'success') {
+                                    calendar.fullCalendar('refetchEvents');
+                                    alert("Added Successfully");
+                                } else {
+                                    alert(data.message);
+                                }
                             },
-                            error: function (data) {
-                                alert('There is a problem!!!');
+                            error: function () {
+                                alert('There was a problem!');
                             }
                         });
                     }
                 },
                 eventResize: function (event) {
-                    var start = $.fullCalendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
-                    var end = $.fullCalendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
+                    var start = $.fullCalendar.formatDate(event.start, "Y-MM-DD[T]HH:mm:ss[Z]");
+                    var end = $.fullCalendar.formatDate(event.end, "Y-MM-DD[T]HH:mm:ss[Z]"); var title = event.title;
                     var title = event.title;
                     var id = event.id;
+
                     $.ajax({
                         type: "GET",
                         url: 'update_sched',
@@ -111,13 +141,5 @@
                 },
             });
         });
-        
-    </script>
-{% endblock %}
-
-{% block scripts %}
-    <!-- Include any additional scripts here, like custom notifications or JS logic -->
-    <script src="{% static 'project/js/notifications.js' %}"></script>
-    {{ block.super }}
     
-{% endblock %}
+    </script>

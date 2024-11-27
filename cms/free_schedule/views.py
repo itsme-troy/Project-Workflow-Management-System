@@ -3,6 +3,9 @@ from django.shortcuts import render
 from django.contrib import messages
 from .models import Available_schedule
 from django.http import JsonResponse
+from datetime import timezone
+from django.utils import timezone
+from datetime import datetime
 
 # def find_common_schedule 
 def find_common_schedule(request): 
@@ -49,16 +52,32 @@ def all_sched(request):
         })                                                                                                                                                                                                                                
     return JsonResponse(out, safe=False) 
  
+
 def add_sched(request):
     start = request.GET.get("start", None)
     end = request.GET.get("end", None)
     title = request.GET.get("title", None)
 
-    event = Available_schedule(title=str(title), start=start, end=end, faculty = request.user)
+    if start and end and title:
+        try:
+            # Convert start and end times to naive datetime objects
+            start = datetime.strptime(start, "%Y-%m-%dT%H:%M:%SZ")
+            end = datetime.strptime(end, "%Y-%m-%dT%H:%M:%SZ")
 
-    event.save()
-    data = {}
-    return JsonResponse(data)
+            # Make sure to convert to UTC timezone (make it "aware")
+            start = timezone.make_aware(start, timezone=timezone.utc)
+            end = timezone.make_aware(end, timezone=timezone.utc)
+
+            # Create and save the event
+            event = Available_schedule(title=title, start=start, end=end, faculty=request.user)
+            event.save()
+
+            return JsonResponse({'status': 'success', 'message': 'Event added successfully'})
+
+        except ValueError as e:
+            return JsonResponse({'status': 'error', 'message': 'Invalid datetime format: ' + str(e)})
+
+    return JsonResponse({'status': 'error', 'message': 'Missing parameters'})
 
 def update_sched(request):
     start = request.GET.get("start", None)

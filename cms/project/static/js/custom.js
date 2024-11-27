@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {
                 alert.remove();
             }, 500); // Wait for fade-out transition to complete
-        }, 5000); // 5 seconds
+        }, 10000); // 5 seconds
     });
 
     // Smooth scroll to form on page load
