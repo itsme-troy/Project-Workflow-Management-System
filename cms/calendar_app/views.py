@@ -8,7 +8,11 @@ from .forms import EventForm
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
+from django.views.generic import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
+
+from .models import Event
 
 def show_calendar(request): # index 
     if request.user.is_authenticated: 

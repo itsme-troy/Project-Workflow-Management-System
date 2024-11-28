@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "free_schedule", 
     "common_schedule", 
     "google_calendar",
+    # "calendarapp.apps.CalendarappConfig",
  
 ]
 
@@ -105,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'Asia/Manila'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 

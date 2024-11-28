@@ -31,12 +31,12 @@
     {% include 'project/navbar.html' %}
 
     <div class="container">
+        <div id="calendar"></div>  <!-- This will render the FullCalendar -->
         <div class="row">
+
             <h4>Available Schedule</h4> 
-            {% block content %}
-            
-            {% endblock %}
-            <div id="calendar"></div>  <!-- This will render the FullCalendar -->
+            {% block content %}  {% endblock %}
+
         </div>
     </div>
 
@@ -58,9 +58,9 @@
                     var title = prompt("Enter Event Title");
                     if (title) {
                          // Convert start and end to UTC and format the date
-                        var startUTC = start.utc().format("YYYY-MM-DDTHH:mm:ss[Z]");
-                        var endUTC = end.utc().format("YYYY-MM-DDTHH:mm:ss[Z]");
-
+                         $('#id_start').val(moment(start).format('YYYY-MM-DDTHH:mm'));
+                         $('#id_end').val(moment(end).format('YYYY-MM-DDTHH:mm'));
+                         
                         $.ajax({
                             type: "GET",
                             url: 'add_sched',  // Use Django's URL tag

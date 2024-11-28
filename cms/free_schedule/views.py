@@ -60,24 +60,27 @@ def add_sched(request):
 
     if start and end and title:
         try:
-            # Convert start and end times to naive datetime objects
+            # Convert to naive datetime objects
             start = datetime.strptime(start, "%Y-%m-%dT%H:%M:%SZ")
             end = datetime.strptime(end, "%Y-%m-%dT%H:%M:%SZ")
 
-            # Make sure to convert to UTC timezone (make it "aware")
+            # Make timezone-aware
             start = timezone.make_aware(start, timezone=timezone.utc)
             end = timezone.make_aware(end, timezone=timezone.utc)
 
-            # Create and save the event
+            # Save event
             event = Available_schedule(title=title, start=start, end=end, faculty=request.user)
             event.save()
 
             return JsonResponse({'status': 'success', 'message': 'Event added successfully'})
 
         except ValueError as e:
+            # Log the error for debugging
+            print(f"Error parsing datetime: {start}, {end} - {e}")
             return JsonResponse({'status': 'error', 'message': 'Invalid datetime format: ' + str(e)})
 
     return JsonResponse({'status': 'error', 'message': 'Missing parameters'})
+
 
 def update_sched(request):
     start = request.GET.get("start", None)
