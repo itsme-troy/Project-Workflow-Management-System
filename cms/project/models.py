@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 from django.contrib.auth import get_user_model
 
@@ -429,15 +430,22 @@ class ProjectPhase(models.Model):
     ]
 
     project = models.ForeignKey(Project, related_name='phases', on_delete=models.CASCADE)
-    phase_type = models.CharField(max_length=20, choices=PHASE_CHOICES, blank=False, default='proposal')
-    verdict = models.CharField(max_length=50, choices=RESULT_CHOICES, blank=False, default='pending')  # Now defaults to 'pending'
-    date = models.DateTimeField(auto_now_add=True)
+    phase_type = models.CharField(max_length=20, choices=PHASE_CHOICES,  default='proposal')
+    verdict = models.CharField(max_length=50, choices=RESULT_CHOICES, default='pending')  # Now defaults to 'pending'
+    date = models.DateTimeField(auto_now_add=False)
+    first_phase = models.BooleanField(default=False)
     
     # class Meta:
     #     get_latest_by = 'date'
 
     def __str__(self):
         return f"{self.project.title} - {self.get_phase_type_display()}"
+    
+    def clean(self):
+        if self.first_phase:
+            existing_first_phase = ProjectPhase.objects.filter(project=self.project, first_phase=True).exclude(id=self.id)
+            if existing_first_phase.exists():
+                raise ValidationError('A project can only have one first phase.')
 
 # class Custom_PhaseSequence(models.Model): 
 #     project = models.ForeignKey(Project, related_name="custom_phases", on_delete=models.CASCADE)

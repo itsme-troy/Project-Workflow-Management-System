@@ -3,16 +3,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const alerts = document.querySelectorAll('.alert'); // Select all alerts
 
     alerts.forEach(function(alert) {
-        // Set a timeout to remove the alert after 10 seconds
-        setTimeout(function() {
-            alert.style.transition = "opacity 0.5s ease-out"; // Optional: Fade out effect
-            alert.style.opacity = "0"; // Make alert fade out
+        // Check if the alert does NOT have the 'no-timeout-alert' class
+        if (!alert.classList.contains('no-timeout-alert')) {
+            // Check if the alert has either 'custom-success-alert' or 'custom-error-alert'
+            if (alert.classList.contains('custom-success-alert') || alert.classList.contains('custom-error-alert')) {
+                // Set a timeout to remove the alert after 10 seconds
+                setTimeout(function() {
+                    alert.style.transition = "opacity 0.5s ease-out"; // Optional: Fade out effect
+                    alert.style.opacity = "0"; // Make alert fade out
 
-            // After fade out, remove the alert from the DOM
-            setTimeout(function() {
-                alert.remove();
-            }, 500); // Wait for fade-out transition to complete
-        }, 10000); // 5 seconds
+                    // After fade out, remove the alert from the DOM
+                    setTimeout(function() {
+                        alert.remove();
+                    }, 500); // Wait for fade-out transition to complete
+                }, 10000); // 10 seconds
+            }
+        }
     });
 
     // Smooth scroll to form on page load

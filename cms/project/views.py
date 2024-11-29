@@ -726,120 +726,129 @@ def submit_verdict(request, application_id):
 
 def submit_defense_application(request):
 
-    if request.user.is_authenticated: 
-        user_group = get_user_project_group(request)
+    if not request.user.is_authenticated: 
+        messages.error(request, "You are not authorized to view this page. Please login")
+        return redirect('home')
+    
+    user_group = get_user_project_group(request)
+    
+    if user_group is None:
+        messages.error(request, "You are not a member of any Project Group. Please Register a Project Group First.")
+        return redirect('my-defense-application')
         
-        if user_group is None:
-            messages.warning(request, "You are not a member of any Project Group. Please Register a Project Group First.")
+    project = Project.objects.filter(proponents=user_group, status='approved', is_archived=False).first()
+
+    if project is None:
+        messages.error(request, "No project found for your group. Please submit a project first and wait for approval from an Adviser.")
+        return redirect('my-defense-application')
+
+    elif project.status == 'pending':
+        messages.error(request, "Your project has not been approved yet. You cannot submit a Defense Application.")
+        return redirect('my-defense-application')
+    
+    # Check for pending phases
+    # pending_phases = project.phases.filter(verdict='pending').exclude(first_phase=True)
+    # if pending_phases.exists():
+    #     messages.error(request, "There is already a pending Defense Application for your project group. Please wait for a Verdict to be given.")
+    #     return redirect('my-defense-application')
+        
+    
+    # Check for any two pending project phase
+    pending_phases_count = project.phases.filter(verdict='pending').count()
+    if pending_phases_count >= 2:
+        messages.error(request, "There is already a pending Defense Application for your project group. Please wait for a Verdict to be given.")
+        return redirect('my-defense-application')
+
+    # Fetch custom phases if they exist
+    # custom_phases = project.custom_phases.all()
+    # if custom_phases.exists():
+    #     # Allow the user to select from the custom phases instead of fixed ones
+    #     # You can render a dropdown of custom phases or the available phases for the defense
+    #     next_phase_type = custom_phases.first().phase_type  # Get the first custom phase
+    # else:
+    
+    # Fetch the last completed phase, if any
+    last_completed_phase = project.phases.exclude(verdict='pending').order_by('-date').first()
+
+    # Check if the last completed phase has a verdict of "Not Accepted"
+    if last_completed_phase and last_completed_phase.verdict == 'not_accepted':
+        messages.error(request, "The Verdict of the recent Defense was Not-Accepted. Please Contact the Coordinator if you think this is a mistake.")
+        return redirect('my-defense-application')
+
+    next_phase_type = 'proposal'  # Default phase if no custom phases exist
+
+    if last_completed_phase:
+        if last_completed_phase.phase_type == 'final' and last_completed_phase.verdict in ['accepted', 'accepted_with_revisions']:
+            messages.error(request, "You have already passed the Final Defense. No more defense applications are needed. Congratulations!")
             return redirect('my-defense-application')
+        
+        if last_completed_phase.verdict == 'redefense':
+            next_phase_type = last_completed_phase.phase_type
+        elif last_completed_phase.phase_type == 'proposal' and last_completed_phase.verdict in ['accepted', 'accepted_with_revisions']:
+            next_phase_type = 'design'
+        elif last_completed_phase.phase_type == 'design' and last_completed_phase.verdict in ['accepted', 'accepted_with_revisions']:
+            next_phase_type = 'preliminary'
+        elif last_completed_phase.phase_type == 'preliminary' and last_completed_phase.verdict in ['accepted', 'accepted_with_revisions']:
+            next_phase_type = 'final'
+
+    submitted = False
+
+    if request.method == 'POST': 
+        # Ensure no pending phase exists before proceeding
+        pending_phases = project.phases.filter(verdict='pending').exclude(first_phase=True)
+        if pending_phases.exists():
+            messages.error(request, "There is already a pending Defense Application for your project group. Please wait for a verdict.")
+            return redirect('my-defense-application')  # Redirect if a pending phase exists
+
+        form = CapstoneSubmissionForm(request.POST, request.FILES)
+        if form.is_valid():
+            application = form.save(commit=False)
+            application.owner = request.user.id
+            application.proponents = project.proponents
+            application.project = project
+            application.title = next_phase_type
+
+            if project.adviser:
+                application.adviser = project.adviser
+            else:
+                form.add_error('adviser', 'No adviser assigned to this group.')
+                return render(request, 'project/add_project.html', {
+                    'project': project,
+                    'group': user_group, 
+                    'form': form,
+                    'submitted': submitted
+                })
             
-        project = Project.objects.filter(proponents=user_group, status='approved', is_archived=False).first()
+            application.save()
+            # Set submitted to True after saving the application
+            submitted = True
 
-        if project is None:
-            messages.error(request, "No project found for your group. Please submit a project first and wait for approval from an Adviser.")
-            return redirect('my-defense-application')
+            panel_members = project.panel.all()
 
-        elif project.status == 'pending':
-            messages.error(request, "Your project has not been approved yet. You cannot submit a Defense Application.")
-            return redirect('my-defense-application')
-        
-        # Check for any two pending project phase
-        pending_phases_count = project.phases.filter(verdict='pending').count()
-        if pending_phases_count >= 1:
-            messages.error(request, "There is already a pending Defense Application for your project group. Please wait for a Verdict to be given.")
-            return redirect('my-defense-application')
+            if not panel_members:
+                messages.error(request, "No panel members found for this project.")
+                return render(request, 'project/submit_defense_application.html', {
+                    'project': project,
+                    'group': user_group,
+                    'form': form,
+                    'submitted': submitted
+                })
 
-        # Fetch custom phases if they exist
-        # custom_phases = project.custom_phases.all()
-        # if custom_phases.exists():
-        #     # Allow the user to select from the custom phases instead of fixed ones
-        #     # You can render a dropdown of custom phases or the available phases for the defense
-        #     next_phase_type = custom_phases.first().phase_type  # Get the first custom phase
-        # else:
-        
-        next_phase_type = 'proposal'  # Default phase if no custom phases exist
+            application.panel.set(panel_members.values_list('id', flat=True))
+            form.save_m2m()
 
-        # Fetch the last completed phase, if any
-        last_completed_phase = project.phases.exclude(verdict='pending').order_by('-date').first()
-
-        # Check if the last completed phase has a verdict of "Not Accepted"
-        if last_completed_phase and last_completed_phase.verdict == 'not_accepted':
-            messages.error(request, "The Verdict of the recent Defense was Not-Accepted. Please Contact the Coordinator if you think this is a mistake.")
-            return redirect('my-defense-application')
-   
-        if last_completed_phase:
-            if last_completed_phase.phase_type == 'final' and last_completed_phase.verdict in ['accepted', 'accepted_with_revisions']:
-                messages.error(request, "You have already passed the Final Defense. No more defense applications are needed. Congratulations!")
-                return redirect('my-defense-application')
             
-            if last_completed_phase.verdict == 'redefense':
-                next_phase_type = last_completed_phase.phase_type
-            elif last_completed_phase.phase_type == 'proposal' and last_completed_phase.verdict in ['accepted', 'accepted_with_revisions']:
-                next_phase_type = 'design'
-            elif last_completed_phase.phase_type == 'design' and last_completed_phase.verdict in ['accepted', 'accepted_with_revisions']:
-                next_phase_type = 'preliminary'
-            elif last_completed_phase.phase_type == 'preliminary' and last_completed_phase.verdict in ['accepted', 'accepted_with_revisions']:
-                next_phase_type = 'final'
-        
-        submitted = False
 
-        if request.method == 'POST': 
-            form = CapstoneSubmissionForm(request.POST, request.FILES)
-            if form.is_valid():
-                application = form.save(commit=False)
-                application.owner = request.user.id
-                application.proponents = project.proponents
-                application.project = project
-                application.title = next_phase_type
-
-                if project.adviser:
-                    application.adviser = project.adviser
-                else:
-                    form.add_error('adviser', 'No adviser assigned to this group.')
-                    return render(request, 'project/add_project.html', {
-                        'project': project,
-                        'group': user_group, 
-                        'form': form,
-                        'submitted': submitted
-                    })
-                
-                application.save()
-                # Set submitted to True after saving the application
-                submitted = True
-
-                panel_members = project.panel.all()
-
-                if not panel_members:
-                    messages.error(request, "No panel members found for this project.")
-                    return render(request, 'project/submit_defense_application.html', {
-                        'project': project,
-                        'group': user_group,
-                        'form': form,
-                        'submitted': submitted
-                    })
-
-                application.panel.set(panel_members.values_list('id', flat=True))
-                form.save_m2m()
-
-                # Create the new phase only if there is no pending phase 
-                # if not pending_phase:
-                ProjectPhase.objects.create(
-                    project=project,
-                    phase_type=next_phase_type,
-                    verdict='pending',
-                    date=timezone.now()
+            # Send notifications to all proponents except the logged-in user
+            for proponent in project.proponents.proponents.all().exclude(id=request.user.id):
+                Notification.objects.create(
+                    recipient=proponent,
+                    notification_type='SUBMITTED_DEFENSE_APPLICATION',
+                    group=project.proponents,
+                    sender=request.user,
+                    message=f"A new defense application for the '{application.get_title_display()}' has been submitted for the project '{project.title}' by {request.user.get_full_name()}."
+                    
                 )
-
-                # Send notifications to all proponents except the logged-in user
-                for proponent in project.proponents.proponents.all().exclude(id=request.user.id):
-                    Notification.objects.create(
-                        recipient=proponent,
-                        notification_type='SUBMITTED_DEFENSE_APPLICATION',
-                        group=project.proponents,
-                        sender=request.user,
-                        message=f"A new defense application for the '{application.get_title_display()}' has been submitted for the project '{project.title}' by {request.user.get_full_name()}."
-                        
-                    )
                 # Send notification to the Coordinator
             try:
                 coordinator = User.objects.get(is_current_coordinator=True)  # Adjust this query based on your model
@@ -854,29 +863,44 @@ def submit_defense_application(request):
             except User.DoesNotExist:
                 logger.error("No current coordinator found to notify.")
 
-                return HttpResponseRedirect('/submit_defense_application?submitted=True')
-        else:
-            form = CapstoneSubmissionForm(initial={
-                'adviser': project.adviser.id if project.adviser else None, 
-                'project_group': user_group, 
-                'project': project, 
-                'panel': project.panel.all(),
-                'title': next_phase_type,
-            })
-            if 'submitted' in request.GET: 
-                submitted = True
+            # Check if there is already a pending phase
+            pending_phases = project.phases.filter(verdict='pending')   
 
-        return render(request, 'project/submit_defense_application.html', {
-            'last_phase': last_completed_phase, 
-            'next_phase_type': next_phase_type, 
+                # Create the new phase only if there is no pending phase
+                # Only create a new phase if no pending phases exist
+            if not pending_phases.exists():
+                # Create the new phase
+                ProjectPhase.objects.create(
+                    project=project,
+                    phase_type=next_phase_type,
+                    verdict='pending',
+                    date=timezone.now(),
+                    first_phase=True if not project.phases.exists() else False
+                )
+                return HttpResponseRedirect('/submit_defense_application?submitted=True')
+            else:
+                messages.error(request, "There is already a pending Defense Application for your project group. Please wait for a verdict.")
+                return redirect('my-defense-application')   
+    else:
+        form = CapstoneSubmissionForm(initial={
+            'adviser': project.adviser.id if project.adviser else None, 
+            'project_group': user_group, 
             'project': project, 
-            'group': user_group,
-            'form': form, 
-            'submitted': submitted
+            'panel': project.panel.all(),
+            'title': next_phase_type,
         })
-    else: 
-        messages.error(request, "Please Login to view this page")
-        return redirect('home')
+        if 'submitted' in request.GET: 
+            submitted = True
+
+    return render(request, 'project/submit_defense_application.html', {
+        'last_phase': last_completed_phase, 
+        'next_phase_type': next_phase_type, 
+        'project': project, 
+        'group': user_group,
+        'form': form, 
+        'submitted': submitted
+    })
+
     
 from django.db.models import Subquery, OuterRef, F
 from django.utils import timezone
@@ -1776,7 +1800,6 @@ def generate_report(request):
                 'project': project,
                 'defense_results': defense_results
             })
-
 
         return render(request, 'project/generate_report.html', 
         { "adviser_count": adviser_count, 

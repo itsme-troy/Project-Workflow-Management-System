@@ -105,7 +105,7 @@ class ProjectAdmin(admin.ModelAdmin): #project_type'
 @admin.register(ProjectPhase)
 class ProjectPhaseAdmin(admin.ModelAdmin):
     model = ProjectPhase
-    fields = ["project", "phase_type", "verdict", "date"]
+    fields = ["project", "phase_type", "verdict", "date", 'first_phase']
     list_display = ["project", "phase_type", "verdict", "date"]
     ordering = ("project",)
     readonly_fields = ['date',]
