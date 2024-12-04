@@ -1,40 +1,46 @@
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Available_schedule
 from django.http import JsonResponse
-from datetime import timezone
 from django.utils import timezone
+from django.utils.timezone import localtime  # Add this import
+
 from datetime import datetime
+import pytz  # Make sure to install pytz if you haven't
 
 # def find_common_schedule 
-def find_common_schedule(request): 
-    schedules = Available_schedule.objects.all()  # or filter by some criteria
-    common_slots = {}
-    # Here, add logic to find overlapping time slots
-    for schedule in schedules:
-        start_time = schedule.start
-        end_time = schedule.end
+# def find_common_schedule(request): 
+#     schedules = Available_schedule.objects.all()  # or filter by some criteria
+#     common_slots = {}
+#     # Here, add logic to find overlapping time slots
+#     for schedule in schedules:
+#         start_time = schedule.start
+#         end_time = schedule.end
 
-     # Assuming common_slots is a dictionary where keys are start times and values are lists of events
-        if (start_time, end_time) in common_slots:
-            common_slots[(start_time, end_time)].append(schedule)
+#      # Assuming common_slots is a dictionary where keys are start times and values are lists of events
+#         if (start_time, end_time) in common_slots:
+#             common_slots[(start_time, end_time)].append(schedule)
         
-        else:
-            common_slots[(start_time, end_time)] = [schedule]
+#         else:
+#             common_slots[(start_time, end_time)] = [schedule]
 
-    # Prepare the response in the required format
-    events = []
-    for (start, end), schedules in common_slots.items():
-        events.append({
-            'title': 'Common Slot',
-            'start': start.strftime("%Y-%m-%d %H:%M:%S"),
-            'end': end.strftime("%Y-%m-%d %H:%M:%S"),
-        })
+#     # Prepare the response in the required format
+#     events = []
+#     for (start, end), schedules in common_slots.items():
+#         events.append({
+#             'title': 'Common Slot',
+#             'start': start.strftime("%Y-%m-%d %H:%M:%S"),
+#             'end': end.strftime("%Y-%m-%d %H:%M:%S"),
+#         })
 
-    return JsonResponse(events, safe=False)
+#     return JsonResponse(events, safe=False)
 
 def free_sched(request): # index 
+    if not request.user.is_authenticated: 
+        messages.error(request, "Please login to view this page")
+        return redirect('login')    
+    
     all_events = Available_schedule.objects.filter(faculty=request.user.id)
     return render(request, 'free_schedule/free_schedule.html', {
         "events": all_events,
@@ -43,12 +49,14 @@ def free_sched(request): # index
 def all_sched(request):                                                                                                 
     all_events = Available_schedule.objects.filter(faculty=request.user.id)                                                                  
     out = []                                                                                                             
-    for event in all_events:                                                                                             
+    for event in all_events:          
+        start_local = localtime(event.start)
+        end_local = localtime(event.end)                                                                                  
         out.append({                                                                                                     
             'title': event.title,                                                                                         
             'id': event.id,                                                                                              
-            'start': event.start.strftime("%m/%d/%Y, %H:%M:%S"),                                                         
-            'end': event.end.strftime("%m/%d/%Y, %H:%M:%S"),                                                             
+            'start': start_local.strftime("%b %d, %Y, %I:%M %p"),  # Consistent format
+            'end': end_local.strftime("%b %d, %Y, %I:%M %p"),                                                         
         })                                                                                                                                                                                                                                
     return JsonResponse(out, safe=False) 
  
@@ -58,42 +66,52 @@ def add_sched(request):
     end = request.GET.get("end", None)
     title = request.GET.get("title", None)
 
-    if start and end and title:
-        try:
-            # Convert to naive datetime objects
-            start = datetime.strptime(start, "%Y-%m-%dT%H:%M:%SZ")
-            end = datetime.strptime(end, "%Y-%m-%dT%H:%M:%SZ")
+     # Convert start and end to datetime objects
+    start_datetime = datetime.strptime(start, "%b-%d,%Y %H:%M:%S")  # Updated format
+    end_datetime = datetime.strptime(end, "%b-%d,%Y %H:%M:%S") 
 
-            # Make timezone-aware
-            start = timezone.make_aware(start, timezone=timezone.utc)
-            end = timezone.make_aware(end, timezone=timezone.utc)
+    # Set the timezone to Asia/Manila
+    local_tz = pytz.timezone('Asia/Manila')
+    start_datetime = local_tz.localize(start_datetime)
+    end_datetime = local_tz.localize(end_datetime)
 
-            # Save event
-            event = Available_schedule(title=title, start=start, end=end, faculty=request.user)
-            event.save()
 
-            return JsonResponse({'status': 'success', 'message': 'Event added successfully'})
+    event = Available_schedule(title=str(title), start=start_datetime, end=end_datetime, faculty=request.user)
+    event.save()
+    
+    # Return a success message or the created event data
+    data = {
+        'id': event.id,
+        'title': event.title,
+        'start': event.start.strftime("%b-%d,%Y %H:%M:%S"),  # Updated format to abbreviated month
+        'end': event.end.strftime("%b-%d,%Y %H:%M:%S"),      # Updated format to abbreviated month
+    }
 
-        except ValueError as e:
-            # Log the error for debugging
-            print(f"Error parsing datetime: {start}, {end} - {e}")
-            return JsonResponse({'status': 'error', 'message': 'Invalid datetime format: ' + str(e)})
-
-    return JsonResponse({'status': 'error', 'message': 'Missing parameters'})
-
+    return JsonResponse(data)
 
 def update_sched(request):
     start = request.GET.get("start", None)
     end = request.GET.get("end", None)
     title = request.GET.get("title", None)
     id = request.GET.get("id", None)
+
+    # Convert start and end to datetime objects
+    start_datetime = datetime.strptime(start, "%b-%d,%Y %H:%M:%S")  # Updated format
+    end_datetime = datetime.strptime(end, "%b-%d,%Y %H:%M:%S") 
+
+    # Set the timezone to Asia/Manila
+    local_tz = pytz.timezone('Asia/Manila')
+    start_datetime = local_tz.localize(start_datetime)
+    end_datetime = local_tz.localize(end_datetime)
+
     event = Available_schedule.objects.get(id=id)
-    event.start = start
-    event.end = end
+    event.start = start_datetime
+    event.end = end_datetime
     event.title = title
     event.save()
     data = {}
     return JsonResponse(data)
+
  
 def remove_sched(request):
     id = request.GET.get("id", None)

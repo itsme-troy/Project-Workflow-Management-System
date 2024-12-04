@@ -1,4 +1,3 @@
-
 {% load static %}
 
 <!DOCTYPE html>
@@ -8,11 +7,11 @@
     <title>CMS | Available Schedule Calendar </title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+      
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css" />
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
    
     <link rel="stylesheet" href="{% static 'project/css/style.css' %}">
     
@@ -31,16 +30,42 @@
     {% include 'project/navbar.html' %}
 
     <div class="container">
-        <div id="calendar"></div>  <!-- This will render the FullCalendar -->
         <div class="row">
 
-            <h4>Available Schedule</h4> 
+            {% comment %} <h4>Available Schedule</h4>  {% endcomment %}
             {% block content %}  {% endblock %}
-
+                
         </div>
     </div>
 
     <script>
+        function formatDate(date) {
+            return moment(date).format("MMM-DD,YYYY HH:mm:ss"); // Change format to match expected
+        }
+
+        function refreshEventsList() {
+            $.ajax({
+                type: "GET",
+                url: 'all_sched',  
+                dataType: "json",
+                success: function (data) {
+                    var list = $('.list-group');
+                    list.empty(); // Clear the existing list
+                    if (data.length > 0) {
+                        $.each(data, function (index, event) {
+                            list.append('<li class="list-group-item">' + event.start + ' to ' + event.end + '</li>');
+                        });
+                    } else {
+                        list.append('<li class="list-group-item">No available schedules found.</li>');
+                    }
+                },
+                error: function (data) {
+                    console.error(data); // Log the error response
+                    alert('There was a problem fetching the events list!');
+                }
+            });
+        }
+
         $(document).ready(function () {
             var calendar = $('#calendar').fullCalendar({
                 header: {
@@ -57,43 +82,54 @@
                 select: function (start, end, allDay) {
                     var title = prompt("Enter Event Title");
                     if (title) {
-                         // Convert start and end to UTC and format the date
-                         $('#id_start').val(moment(start).format('YYYY-MM-DDTHH:mm'));
-                         $('#id_end').val(moment(end).format('YYYY-MM-DDTHH:mm'));
-                         
+                        var startFormatted = formatDate(start); 
+                        var endFormatted;
+
+                         // Check if the selection spans multiple days or if start is the same as end - 1 second
+                        if (start.isSame(end.clone().subtract(1, 'seconds'), 'day')) {
+                            // If only one day is selected, set end time to 11:59 PM of the selected day
+                            endFormatted = moment(start).endOf('day').subtract(1, 'seconds').format("MMM-DD,YYYY HH:mm:ss"); }
+                        
+                        else {
+                            // If multiple days are selected, set end time to 11:59 PM of the last selected day
+                            endFormatted = moment(end).subtract(1, 'days').endOf('day').subtract(1, 'seconds').format("MMM-DD,YYYY HH:mm:ss");
+                        }
+                        
+
+                        
                         $.ajax({
                             type: "GET",
                             url: 'add_sched',  // Use Django's URL tag
-                            data: { 'title': title, 'start': startUTC, 'end': endUTC },
+                            data: { 'title': title, 'start': startFormatted, 'end': endFormatted },
                             dataType: "json",
                             success: function (data) {
-                                if (data.status === 'success') {
-                                    calendar.fullCalendar('refetchEvents');
-                                    alert("Added Successfully");
-                                } else {
-                                    alert(data.message);
-                                }
-                            },
-                            error: function () {
+                                calendar.fullCalendar('refetchEvents');
+                                refreshEventsList(); // Refresh the events list
+
+                                alert("Added Succesfully");
+                            }, 
+                            error: function (data) {
                                 alert('There was a problem!');
                             }
                         });
                     }
                 },
                 eventResize: function (event) {
-                    var start = $.fullCalendar.formatDate(event.start, "Y-MM-DD[T]HH:mm:ss[Z]");
-                    var end = $.fullCalendar.formatDate(event.end, "Y-MM-DD[T]HH:mm:ss[Z]"); var title = event.title;
+                
+                    var startFormatted = formatDate(event.start); 
+                    var endFormatted = formatDate(event.end); 
+
                     var title = event.title;
                     var id = event.id;
-
                     $.ajax({
                         type: "GET",
                         url: 'update_sched',
-                        data: {'title': title, 'start': start, 'end': end, 'id': id},
+                        data: {'title': title, 'start': startFormatted, 'end': endFormatted, 'id': id},
                         dataType: "json",
                         success: function (data) {
                             calendar.fullCalendar('refetchEvents');
-                            alert('Event Updated');
+                            refreshEventsList(); // Refresh the events list
+                            alert('Schedue Updated');
                         },
                         error: function (data) {
                             alert('There is a problem!!!');
@@ -102,17 +138,19 @@
                 },
 
                 eventDrop: function (event) {
-                    var start = $.fullCalendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
-                    var end = $.fullCalendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
+                    var startFormatted = formatDate(event.start); 
+                    var endFormatted = formatDate(event.end); 
+
                     var title = event.title;
                     var id = event.id;
                     $.ajax({
                         type: "GET",
                         url: 'update_sched',
-                        data: {'title': title, 'start': start, 'end': end, 'id': id},
+                        data: {'title': title, 'start': startFormatted, 'end': endFormatted, 'id': id},
                         dataType: "json",
                         success: function (data) {
                             calendar.fullCalendar('refetchEvents');
+                            refreshEventsList(); // Refresh the events list
                             alert('Event Updated');
                         },
                         error: function (data) {
@@ -131,7 +169,8 @@
                             dataType: "json",
                             success: function (data) {
                                 calendar.fullCalendar('refetchEvents');
-                                alert('Event Removed');
+                                refreshEventsList(); // Refresh the events list
+                                alert('Schedule Removed');
                             },
                             error: function (data) {
                                 alert('There is a problem!!!');

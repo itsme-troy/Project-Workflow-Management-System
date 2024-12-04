@@ -1,21 +1,36 @@
 {% extends 'free_schedule/base.html' %}
 {% load static %}
-{% block content %}
+{% load tz %}{% block content %}
 
-{% if user.is_authenticated  %}
+
+
+{% if user.is_authenticated %}
     </br> 
+{% comment %} 
+    <p> Hello, <b> {{ user }} </b> . Please Enter your Available Schedule/s. </br> </p> {% endcomment %}
 
-    <p> Hello, <b> {{ user }} </b> . Please Enter your Available Schedule/s. </br> </p>
-
-    <center> 
-    </br> 
-        <div class="col-md-12"> 
+    <div class="row">
+        <div class="col-md-4">
+            <h4>Your Available Schedules</h4> 
+            <ul class="list-group">
+                {% for event in events %}
+                    <li class="list-group-item">
+                       {{ event.start|localtime }} to {{ event.end|localtime }}
+                    </li>
+                {% empty %}
+                    <li class="list-group-item">No available schedules found.</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-md-8"> 
             <div id='calendar'></div> 
-            {% comment %} {% for event in events %}
-                {{ event }}
-            {% endfor %} {% endcomment %}
-        </div> 
-    </center> 
+        </div>
+    </div>
+
+    <!-- Debug -->
+    <!-- {% for event in events %}
+        <p>{{ event.title }} - {{ event.start|localtime }} to {{ event.end|localtime }}</p>
+    {% endfor %}  -->
 
 {% else %}
     <h1> Sorry! Please login first to view this Page. </h1> 
