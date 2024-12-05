@@ -15,7 +15,7 @@
             <ul class="list-group">
                 {% for event in events %}
                     <li class="list-group-item">
-                       {{ event.start|localtime }} to {{ event.end|localtime }}
+                       From: {{ event.start|localtime }} to {{ event.end|localtime }}
                     </li>
                 {% empty %}
                     <li class="list-group-item">No available schedules found.</li>

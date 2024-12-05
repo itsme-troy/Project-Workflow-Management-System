@@ -13,10 +13,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
    
+   
+    <link rel="stylesheet" href="{% static 'css/free_sched_style.css' %}">
     <link rel="stylesheet" href="{% static 'project/css/style.css' %}">
     
     <script src="{% static 'project/js/custom.js' %}"></script>
-    <style>
+    {% comment %} <style>
+        
         /* Change navbar font color to white */
         .navbar, .navbar a {
             color: white !important; /* Ensures navbar links are white */
@@ -24,15 +27,100 @@
         .navbar-nav .nav-link {
             color: white !important; /* Ensures individual links are white */
         }
-    </style>
+    </style> {% endcomment %}
 </head> 
-<body class="custom-sky-blue-bg"> 
-    {% include 'project/navbar.html' %}
+<body> 
+    <div class="wrapper">
+        <div class="top_navbar">
+          <div class="hamburger">
+             <div class="hamburger__inner">
+               <div class="one"></div>
+               <div class="two"></div>
+               <div class="three"></div>
+             </div>
+          </div>
+          <div class="menu">
+            <div class="logo">
+              SP Management System 
+            </div>
+            <div class="right_menu">
+              <ul>
+                <li><i class="fas fa-user"></i>
+                  <div class="profile_dd">
+                     <div class="dd_item">Profile</div>
+                     <div class="dd_item">Change Password</div>
+                     <div class="dd_item">Logout</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+          
+        <div class="main_container">
+            <div class="sidebar">
+                <div class="sidebar__inner">
+                  <div class="profile">
+                    <div class="img">
+                      <img src="https://i.imgur.com/Ctwf8HA.png" alt="profile_pic">
+                    </div>
+                    <div class="profile_info">
+                       <p>Welcome</p>
+                       <p class="profile_name"> {{request.user.first_name }}  {{request.user.last_name }}</p>
+                    </div>
+                  </div>
+                  <ul>
+                    <li>
+                      <a href="#" class="active">
+                        <span class="icon"><i class="fas fa-dice-d6"></i></span>
+                        <span class="title">Dashboard</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="free_schedule">
+                        <span class="icon"><i class="fab fa-delicious"></i></span>
+                        <span class="title">Calendar </span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="#">
+                        <span class="icon"><i class="fab fa-elementor"></i></span>
+                        <span class="title">UI Elements</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="#">
+                        <span class="icon"><i class="fas fa-chart-pie"></i></span>
+                        <span class="title">Charts</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="#">
+                        <span class="icon"><i class="fas fa-border-all"></i></span>
+                        <span class="title">Tables</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+            </div>
 
-    <div class="container">
+     {% comment %} {% include 'project/navbar.html' %}  {% endcomment %}
+    
+     {% comment %} <div class="container-fluid">
         <div class="row">
+            <div class="col-md-3" id="sidebar">
+                <!-- Sidebar content goes here -->
+                <h4>Sidebar</h4>
+                <ul class="list-unstyled">
+                    <li><a href="#">Dashboard </a></li>
+                    <li><a href="#">Calendar </a></li>
+                    <li><a href="#">Link 3</a></li>
+                </ul>
+            </div> {% endcomment %}
 
-            {% comment %} <h4>Available Schedule</h4>  {% endcomment %}
+            <div class="container">
+                <div class="row">
+
             {% block content %}  {% endblock %}
                 
         </div>
@@ -67,6 +155,16 @@
         }
 
         $(document).ready(function () {
+            $(".hamburger .hamburger__inner").click(function(){
+                $(".wrapper").toggleClass("active")
+              })
+  
+              $(".top_navbar .fas").click(function(){
+                 $(".profile_dd").toggleClass("active");
+              });
+
+
+
             var calendar = $('#calendar').fullCalendar({
                 header: {
                     left: 'prev,next today',
@@ -83,20 +181,13 @@
                     var title = prompt("Enter Event Title");
                     if (title) {
                         var startFormatted = formatDate(start); 
-                        var endFormatted;
-
-                         // Check if the selection spans multiple days or if start is the same as end - 1 second
-                        if (start.isSame(end.clone().subtract(1, 'seconds'), 'day')) {
-                            // If only one day is selected, set end time to 11:59 PM of the selected day
-                            endFormatted = moment(start).endOf('day').subtract(1, 'seconds').format("MMM-DD,YYYY HH:mm:ss"); }
-                        
-                        else {
-                            // If multiple days are selected, set end time to 11:59 PM of the last selected day
-                            endFormatted = moment(end).subtract(1, 'days').endOf('day').subtract(1, 'seconds').format("MMM-DD,YYYY HH:mm:ss");
-                        }
-                        
-
-                        
+                        var endFormatted = formatDate(end); 
+                        // Check if the start time is midnight
+                        if (moment(end).hour() === 0 && moment(end).minute() === 0) {
+                            // Set end time to 11:59 PM of the previous day
+                            var endFormatted = moment(end).subtract(1, 'days').endOf('day').subtract(1, 'seconds').format("MMM-DD,YYYY HH:mm:ss");
+                        } 
+                    
                         $.ajax({
                             type: "GET",
                             url: 'add_sched',  // Use Django's URL tag
@@ -129,7 +220,7 @@
                         success: function (data) {
                             calendar.fullCalendar('refetchEvents');
                             refreshEventsList(); // Refresh the events list
-                            alert('Schedue Updated');
+                            alert('Schedule Updated');
                         },
                         error: function (data) {
                             alert('There is a problem!!!');
@@ -151,7 +242,7 @@
                         success: function (data) {
                             calendar.fullCalendar('refetchEvents');
                             refreshEventsList(); // Refresh the events list
-                            alert('Event Updated');
+                            alert('Schedule Updated');
                         },
                         error: function (data) {
                             alert('There is a problem!!!');

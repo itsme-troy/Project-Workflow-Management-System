@@ -41,13 +41,13 @@ def free_sched(request): # index
         messages.error(request, "Please login to view this page")
         return redirect('login')    
     
-    all_events = Available_schedule.objects.filter(faculty=request.user.id)
+    all_events = Available_schedule.objects.filter(faculty=request.user.id).order_by('-start')  # Order by start time descending
     return render(request, 'free_schedule/free_schedule.html', {
         "events": all_events,
     })
 
 def all_sched(request):                                                                                                 
-    all_events = Available_schedule.objects.filter(faculty=request.user.id)                                                                  
+    all_events = Available_schedule.objects.filter(faculty=request.user.id).order_by('-start')  # Order by start time descending                                                                
     out = []                                                                                                             
     for event in all_events:          
         start_local = localtime(event.start)
@@ -56,7 +56,7 @@ def all_sched(request):
             'title': event.title,                                                                                         
             'id': event.id,                                                                                              
             'start': start_local.strftime("%b %d, %Y, %I:%M %p"),  # Consistent format
-            'end': end_local.strftime("%b %d, %Y, %I:%M %p"),                                                         
+            'end': end_local.strftime("%b %d, %Y, %I:%M %p"),                                                 
         })                                                                                                                                                                                                                                
     return JsonResponse(out, safe=False) 
  
