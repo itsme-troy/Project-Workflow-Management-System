@@ -9,14 +9,7 @@ html {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
-#sidebar {
-    height: 100vh; /* Full height */
-    position: fixed; /* Fixed sidebar */
-    top: 0; /* Align to top */
-    left: 0; /* Align to left */
-    z-index: 100; /* Ensure it stays on top */
-    margin-top: 100px; /* Adjust margin as needed */
-}
+
 .sidebar .nav-link {
     color: #333; /* Default link color */
 }
@@ -49,7 +42,7 @@ html {
 }
 
 .top_navbar{
-  background: #80CBC4;
+  background: #8edbd4;
   height: 60px;
   display: flex;
   position: fixed;
@@ -99,6 +92,7 @@ html {
   justify-content: space-between;
   align-items: center;
   padding: 0 20px;
+  margin-bottom: 20px;
 }
 
 .top_navbar .menu .logo{
@@ -156,15 +150,19 @@ html {
   border: 10px solid;
   border-color: transparent transparent #fff transparent;
 }
+.main_container {
+  margin: 30px; /* Set all margins to 30px */
+}
 
 .main_container .sidebar{
   position: fixed;
   top: 60px;
   left: 0;
-  width: 225px;
+  width: 270px;
   height: 100%;
-  background: #004D40;
+  background: #333333;
   transition: all 0.3s ease;
+  margin-right: 10px; /* Add margin to the sidebar */
 }
 
 .main_container .sidebar .sidebar__inner{
@@ -191,13 +189,13 @@ html {
 .main_container .sidebar .profile p:first-child{
   font-size: 14px;
   color: #80CBC4;
-  margin-bottom: 3px;
+  margin-bottom: 10px;
 }
 
 .main_container .container{
-  margin-top: 60px;
+  margin-top: 80px;
   width: calc(100% - 225px);
-  margin-left: 225px;
+  margin-left: 300px;
   padding: 30px;
   transition: all 0.3s ease;
 }
@@ -214,7 +212,7 @@ html {
 }
 
 .main_container .sidebar ul li a .icon{
-  margin-right: 15px;
+  margin-right: 20px;
   font-size: 28px;
 }
 
@@ -235,6 +233,7 @@ html {
   padding: 20px;
   font-size: 14px;
   line-height: 22px;
+  
 }
 
 /* after adding active class */
@@ -250,5 +249,5 @@ html {
 
 .wrapper.active .main_container .container{
   width: calc(100% - 80px);
-  margin-left: 80px;
+  margin-left: 100px;
 }

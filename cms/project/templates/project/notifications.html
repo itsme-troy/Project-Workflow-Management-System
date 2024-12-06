@@ -18,13 +18,12 @@
 </head>
 
 {% block content %}
-<div class="container mt-2">
     <h1 class="text-center">Your Notifications</h1>
     <hr class="my-4">
     
     {% if not notifications%}
         <center>
-            <div class="alert alert-danger" role="alert">
+            <div class="alert custom-error-alert no-timeout-alert" role="alert">
                 <h4> No Notifications at the moment. </h4> 
             </div> 
         </center>
@@ -62,7 +61,6 @@
             </div>
         {% endif %}
     {% endif %}
-</div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Attach event listener to each notification item for redirection

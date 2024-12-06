@@ -1,4 +1,30 @@
 
+.fa-lightbulb { color: #ffd700; }
+.fa-brain { color: #4169e1; }
+.fa-plus-circle { color: #32cd32; }
+.fa-home { color:#00ff08;  }
+.fa-user-friends { color: #00ffff; }
+.fa-user-graduate { color: #e39dff; }  /* Purple - represents academic achievement */
+.fa-chalkboard-teacher { color: #ff7700; } 
+.fa-users { color: #f2ff00;}
+.fa-layer-group { color: #6c757d; /* Neutral gray */}
+
+.fa-hourglass-half {   color: #007bff; /* Blue to match the theme */}
+
+.fa-user-plus {   color: #28a745; /* Green for positive action */}
+.fa-plus-circle {color: #28a745;}
+
+.icon-margin {
+    margin-right: 10px; /* can adjust value as needed */
+}
+
+/* Flexbox for Layout */
+.wrapper {
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items */
+}
+
 /* Navbar Background & Color */
 .custom-navbar-bg {
     background-color: #343a40; /* Dark background */
@@ -12,7 +38,9 @@
     padding: 12px 20px; /* Increase padding for larger clickable area */
     border-radius: 5px; /* Rounded corners for a modern look */
     transition: color 0.3s ease, background-color 0.3s ease; /* Smooth transition */
+    margin-right: 25px; /* Can Adjust the value as needed */
 }
+
 
 /* Hover Effect for Navbar Items */
 .navbar-nav .nav-link:hover {
@@ -112,7 +140,8 @@ body {
 
 h1, h2, h3, h4 {
     font-family: 'Poppins', sans-serif; /* Stylish font for headings */
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    color: #333; /* Dark color for contrast */
 }
 
 /* For touch devices,  use :focus-within or :active */
@@ -318,9 +347,9 @@ textarea {
 .btn {
     display: inline-block;
     color: white;
-    padding: 12px 24px;
+    padding: 10px 20px;
     border: 2px solid #007bff; /* Border to match the background */
-    border-radius: 4px;
+    border-radius: 5px;
     text-align: center;
     text-decoration: none; /* Remove underline from links */
     font-size: 1.2rem;
@@ -1059,14 +1088,16 @@ body {
 }
 
 .container {
-    background-color: #fff; /* White background for content */
+    max-width: fit-content; /* Adjust max-width to fit content */
+    width: auto; /* Set width to auto */
+    padding: 30px; 
+    margin: 40px auto;
+    background-color: #ffffff; /* White background for content */
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
-    margin: 20px auto;
-    max-width: 1200px;
     max-width: 80%;
     text-align: center;
-    padding: 50px 20px; 
+
 }
 .card {
     max-width: 100%; /* Allow the card to use full width */
@@ -1076,6 +1107,7 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
     font-size: 0.9em;
     transition: box-shadow 0.3s ease;
+    
 }
 .card:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
@@ -1128,7 +1160,10 @@ body {
         padding: 15px;
     }
     .card {
-        margin: 10px;
+        margin: 15px;
+    }
+    h1 {
+        font-size: 2em; /* Adjust heading size */
     }
     .table th,
     .table td {

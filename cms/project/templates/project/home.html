@@ -2,7 +2,9 @@
 {% load static %}
 
 {% block content %}
-<div class="hero-section text-center py-2">
+
+<div> 
+<div class="hero-section text-center py-20">
     <h1>Welcome to the SP Management System</h1>
     <p>Streamline Your Senior Project Journey</p>
     {% if not user.is_authenticated %}
@@ -61,4 +63,5 @@
     <p style="color: white;">Contact us at: info@capstonemanagement.com</p>
     <p style="color: white;">Follow us on social media: [Social Media Links]</p>
 </div>
+
 {% endblock %}

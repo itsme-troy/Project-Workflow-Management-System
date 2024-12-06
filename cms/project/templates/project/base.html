@@ -9,21 +9,54 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'js/custom.js' %}">
-    <link rel="stylesheet" href="{% static 'project/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/free_sched_style.css' %}">
+    
     
     <script src="{% static 'js/custom.js' %}"></script>
     
     <title>Senior Project App</title>
   
     {% block styles %}{% endblock %}
+
+    
   </head>
   <body class="custom-sky-blue-bg">
 
-    <div class="d-flex justify-content-between align-items-center">
-      {% include 'project/navbar.html' %}
+    <div class="wrapper">
+      <div class="top_navbar">
+        <div class="hamburger">
+           <div class="hamburger__inner">
+             <div class="one"></div>
+             <div class="two"></div>
+             <div class="three"></div>
+           </div>
+        </div>
+        <div class="menu">
+          <div class="logo">
+            SP Management System 
+          </div>
+          <div class="right_menu">
+            <ul>
+              <li><i class="fas fa-user"></i>
+                <div class="profile_dd">
+                   <div class="dd_item">Profile</div>
+                   <div class="dd_item">Change Password</div>
+                   <div class="dd_item">Logout</div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    {% comment %} <div class="d-flex justify-content-between align-items-center">
+      {% include 'project/navbar.html' %} {% endcomment %}
+
       {% if user.is_authenticated %}
-        <div class="user-designation d-flex align-items-center p-2 bg-light rounded shadow-sm">
+        <div class="usecdr-designation d-flex align-items-center p-2 bg-light rounded shadow-sm position-fixed bottom-0 end-0 m-3">
           <span class="me-2 fw-bold">Logged in as:</span>
           <span>{{ user.get_full_name }}</span>
           
@@ -35,11 +68,14 @@
             
         </div>
       {% endif %}
-    </div>
+    </div> 
     
-    <br/>
-     <div class="container mt-4">
-           
+    <div class="main_container">
+          <div class="row">
+
+  <!-- Include the sidebar here -->
+      {% include 'project/sidebar.html' %}
+
       {% if messages %}
         <div class="alert-container">
           {% for message in messages %}
@@ -51,11 +87,15 @@
         </div> 
       {% endif %}
     
+      <div class="container">
         {% block content %} <!-- content of all web pages go -->
         {% endblock %}
-     </div> 
-        <br/> 
+      </div>
 
+     </div> 
+  </div> 
+        <br/> 
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     
     {% csrf_token %}

@@ -123,12 +123,11 @@
 
 </style>
 {% endblock %}{% block content %}
-<div class="container">
     <center><h1>Available Project Groups</h1></center>
     <br>
 
     {% if not groups_with_all_members %}
-        <div class="alert alert-danger text-center" role="alert">
+        <div class="alert custom-error-alert text-center" role="alert">
             <h3> No Project Groups Available at the moment. </h3>
         </div>
     {% else %}
