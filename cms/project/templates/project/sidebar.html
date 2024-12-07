@@ -16,7 +16,7 @@
         <ul>
             
             <li>    
-                <a href="{% url 'home' %}" >
+                <a href="{% url 'home' %}" data-title="Home">
                     <span class="icon"><i class="fas fa-home"></i></span> <!-- Changed icon to home -->
                     <span class="title">Home </span>
                 </a>
@@ -24,7 +24,7 @@
                   
            
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Users">
                   <i class="fas fa-user-friends icon icon-margin"></i> Users
                 </a>
                 <ul class="dropdown-menu">
@@ -38,7 +38,7 @@
 
             {% if user.is_authenticated %}
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Groups">
                         <i class="fas fas fa-users icon icon-margin"></i> Groups 
                     </a>
                     <ul class="dropdown-menu">
@@ -53,7 +53,7 @@
             </li> {% endif %}
 
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Projects">
                   <i class="fas fa-project-diagram icon icon-margin"></i> Projects
                 </a>
                 <ul class="dropdown-menu">
@@ -61,11 +61,19 @@
                   
                   {% if user.is_authenticated %}
                     {% if user.role == 'STUDENT' %}
-                      <li><a class="dropdown-item" href="{% url 'my-project' %}"><i class="fas fa-tasks icon-margin"></i> My Project  </a></li> 
-                      <li><a class="dropdown-item" href="{% url 'list-proposals' %}"><i class="fas fa-file-alt icon-margin"></i> All Proposals  </a></li> 
-                      <li><a class="dropdown-item" href="{% url 'add-project' %}"><i class="fas fa-file-upload icon-margin"></i> Add Proposal  </a></li>
+                        <li><a class="dropdown-item" href="{% url 'my-project' %}"><i class="fas fa-tasks icon-margin"></i> My Project  </a></li> 
+                        <li><a class="dropdown-item" href="{% url 'list-proposals' %}"><i class="fas fa-file-alt icon-margin"></i> All Proposals  </a></li> 
+                        <li><a class="dropdown-item" href="{% url 'add-project' %}"><i class="fas fa-file-upload icon-margin"></i> Add Proposal  </a></li>
                     {% endif %}
-                  {% endif  %}
+
+                    {% if user.role == 'FACULTY' %}
+                        <li><a class="dropdown-item" href="{% url 'adviser-projects' %}"> My Advisory Projects  </a></li>
+                        <li><a class="dropdown-item" href="{% url 'adviser-proposals' %}"> My Received Proposals  </a></li>
+                        <li><a class="dropdown-item" href="{% url 'panel-projects' %}"> Projects I serve as Panelist  </a></li>
+                    {% endif %}
+                {% endif  %}
+
+                  
                   
                 </ul>
             </li>
@@ -73,7 +81,7 @@
 
             {% if user.role == 'STUDENT' %}
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Defense">
                     <i class="fas fa-shield-alt icon icon-margin"></i> Defense 
                 </a>
                 <ul class="dropdown-menu">
@@ -88,14 +96,11 @@
 
             {% if user.role == 'FACULTY' %}
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Faculty Tab
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Faculty_tab">
+                        <i class="fas fa-chalkboard-teacher icon icon-margin"></i> Faculty Tab
                     </a>
                     <ul class="dropdown-menu">
-                    
-                        <li><a class="dropdown-item" href="{% url 'adviser-projects' %}"> My Advisory Projects  </a></li>
-                        <li><a class="dropdown-item" href="{% url 'adviser-proposals' %}"> My Received Proposals  </a></li>
-                        <li><a class="dropdown-item" href="{% url 'panel-projects' %}"> Projects I serve as Panelist  </a></li>
+                  
                         <li><a class="dropdown-item" href="{% url 'generate-report' %}"> Report Generation  </a></li>
                         <li><a class="dropdown-item" href="{% url 'free-schedule' %}"> Set Available Schedule  </a></li>
                         
@@ -106,7 +111,7 @@
             {% if request.user.role == 'COORDINATOR' and request.user.is_current_coordinator %}
                     
                     <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Coordinator_tab">
                         Coordinator Tab
                     </a>
                     <ul class="dropdown-menu">
@@ -128,7 +133,7 @@
             {% if request.user.is_authenticated %}
             
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Ideas">
                 <i class="fas fa-lightbulb icon icon-margin"></i> Ideas 
               </a>
               <ul class="dropdown-menu">
@@ -139,11 +144,13 @@
           </li>
             {% endif %}
 
-            <li><a class="nav-link" href="{% url 'notifications' %}">  Notifications </a></li>
-      
+            <li><a class="nav-link" href="{% url 'notifications' %}">
+                <i class="fas fa-bell icon icon-margin"></i> Notifications
+            </a></li>
+
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout' %}">
-                  <i class="fas fa-sign-out-alt"></i> Logout
+                <a class="nav-link" href="{% url 'logout' %}" data-title="logout">
+                  <i class="fas fa-sign-out-alt icon icon-margin"></i> Logout
                 </a>
               </li>
       

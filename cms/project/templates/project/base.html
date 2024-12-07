@@ -10,10 +10,10 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'js/custom.js' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/free_sched_style.css' %}">
-    
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     
     <script src="{% static 'js/custom.js' %}"></script>
     
@@ -24,7 +24,7 @@
     
   </head>
   <body class="custom-sky-blue-bg">
-
+  
     <div class="wrapper">
       <div class="top_navbar">
         <div class="hamburger">
@@ -38,17 +38,32 @@
           <div class="logo">
             SP Management System 
           </div>
-          <div class="right_menu">
-            <ul>
-              <li><i class="fas fa-user"></i>
-                <div class="profile_dd">
-                   <div class="dd_item">Profile</div>
-                   <div class="dd_item">Change Password</div>
-                   <div class="dd_item">Logout</div>
-                </div>
-              </li>
-            </ul>
-          </div>
+          
+          
+          {% if user.is_authenticated%}
+
+            <div class="right_menu">
+              <ul>
+
+                <!-- Add notification icon/link -->
+                <li class="me-3">
+                  <a href="{% url 'notifications' %}" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notification-count">0</span>
+                  </a>
+                </li>
+
+                <li><i class="fas fa-user"></i>
+                  <div class="profile_dd">
+                    <div class="dd_item">Profile</div>
+                    <div class="dd_item">Change Password</div>
+                    <div class="dd_item"><a href="{% url 'logout' %}" style="text-decoration: none; color: inherit;"><i class="fas fa-sign-out-alt"></i> Logout</a></div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          {% endif %}
+
         </div>
       </div>
     
@@ -70,7 +85,9 @@
       {% endif %}
     </div> 
     
-    <div class="main_container">
+    {% if request.user.is_authenticated %}
+      <div class="main_container ">
+    {% endif %}
           <div class="row">
 
   <!-- Include the sidebar here -->
@@ -101,6 +118,29 @@
     {% csrf_token %}
     
     <script src="{% static 'js/notifications.js' %}"></script>
+    <script>
+      $(document).ready(function() {
+          $(".hamburger .hamburger__inner").click(function(){
+              $(".wrapper").toggleClass("active");
+              
+              if ($(".wrapper").hasClass("active")) {
+                  // Collapse sidebar
+                  $(".sidebar .dropdown-menu").hide();
+                  $(".sidebar .dropdown-toggle").dropdown('dispose');
+                  $(".profile_info").fadeOut(200);
+              } else {
+                  // Expand sidebar
+                  $(".sidebar .dropdown-toggle").dropdown();
+                  $(".profile_info").fadeIn(200);
+              }
+          });
+  
+          // Keep the existing profile dropdown code
+          $(".right_menu .fas.fa-user").click(function(){
+              $(".profile_dd").toggleClass("active");
+          });
+      });
+  </script>
   </body>
 </html>
 

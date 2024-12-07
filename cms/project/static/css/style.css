@@ -3,21 +3,24 @@
 .fa-brain { color: #4169e1; }
 .fa-plus-circle { color: #32cd32; }
 .fa-home { color:#00ff08;  }
-.fa-user-friends { color: #00ffff; }
+.fa-user-friends { color: #6fbebe; }
 .fa-user-graduate { color: #e39dff; }  /* Purple - represents academic achievement */
 .fa-chalkboard-teacher { color: #ff7700; } 
-.fa-users { color: #f2ff00;}
-.fa-layer-group { color: #6c757d; /* Neutral gray */}
+.fa-users { color: #ff2200;}
+.fa-layer-group { color: #aaaaaa; /* Neutral gray */}
 
-.fa-hourglass-half {   color: #007bff; /* Blue to match the theme */}
-
-.fa-user-plus {   color: #28a745; /* Green for positive action */}
+.fa-hourglass-half {   color: #afd6ff; /* Blue to match the theme */}
+.fa-user-plus {   color: #6cff8e; /* Green for positive action */}
 .fa-plus-circle {color: #28a745;}
-
+.fa-shield-alt { color: #80ffff; /* Dark slate gray - represents security/protection */ }
+.fa-file-contract { color: #e0b4ff; /* Indigo - represents official/formal documents */ }
+.fa-file-upload { color: #befcfc; /* Teal - represents file system actions */ }
 .icon-margin {
     margin-right: 10px; /* can adjust value as needed */
 }
-
+.profile_name {
+    color:white
+}
 /* Flexbox for Layout */
 .wrapper {
     display: flex; /* Use flexbox for layout */
@@ -447,7 +450,7 @@ select {
     margin-top: 10px; /* Adjust the value as needed */
 }
 /* Add styles for the Add Proposal button */
-.btn-add-proposal {
+.btn-add-poprosal {
     background-color: #28a745; /* Green background */
     color: #ffffff; /* White text */
     border: none; /* Remove border */
@@ -704,13 +707,13 @@ p {
     color: #343a40; 
 }
 a {
-    color: #007bff; /* Link color */
+    color: #0077ff; /* Link color */
     text-decoration: none; /* Remove underline */
     transition: color 0.3s ease; /* Smooth transition */
 }
 a:hover {
-    color: #0056b3; /* Darker blue on hover */
-    text-decoration: underline; /* Underline on hover */
+    color: #0055ff; /* Darker blue on hover */
+    text-decoration: none; /* Underline on hover */
 }
 
 
@@ -814,7 +817,21 @@ a:hover {
     font-size: 1.5em;
     color: #6c757d;
 }
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+    display: none; /* Will be shown via JavaScript when count > 0 */
+}
 
+.right_menu ul li {
+    position: relative;
+}
 .notification-item {
     padding: 20px;
     border-bottom: 1px solid #eee;

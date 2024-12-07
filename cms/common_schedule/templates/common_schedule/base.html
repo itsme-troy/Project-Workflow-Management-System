@@ -1,24 +1,19 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <style> 
-        .nav-item .btn {
-            margin-left: 10px; /* Adjust spacing */
-        }
-    </style>
-    
-    <title>CMS | Common Schedule Calendar </title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-      
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
-</head>
-<body>
-    {% include 'project/navbar.html' %}
+{% extends 'project/base.html' %}
+{% load static %}
 
-  <!-- Modal for selecting Defense Application -->
+{% block styles %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css" />
+    <link rel="stylesheet" href="{% static 'project/css/free_sched_style.css' %}">
+        <!-- Add jQuery UI CSS -->
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{% endblock %}
+
+
+
+    {% block content %}
+
+    
+ <!-- Modal for selecting Defense Application -->
 <div class="modal fade" id="defenseApplicationModal" tabindex="-1" aria-labelledby="defenseApplicationLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -45,19 +40,137 @@
       </div>
     </div>
 
-</br> </br> 
-    <center> <h4> View Common Available Schedule For Defense </h4> </br> </center> 
 
-<div class="container">
-    
     <button type="button" class="btn btn-primary btn-m mt-3" data-bs-toggle="modal" data-bs-target="#defenseApplicationModal">
         Select Defense Application
-    </br> </button> </br> 
-</br> <div id="calendar"></div>
+    </br> </button> </br> </br> 
 
- <div class="row">
 
-    {% block content %}{% endblock %}
+        {{ block.super }}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
+        <script> 
+
+        $(document).ready(function () {
+            $(".hamburger .hamburger__inner").click(function(){
+                $(".wrapper").toggleClass("active")
+              })
+  
+              $(".top_navbar .fas").click(function(){
+                 $(".profile_dd").toggleClass("active");
+              });
+
+
+            var calendar = $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                events: 'all_sched',
+                selectable: true,
+                selectHelper: true,
+                editable: true,
+                eventLimit: true,
+                
+                select: function (start, end, allDay) {
+                    var title = prompt("Enter Event Title");
+                    if (title) {
+                        var startFormatted = formatDate(start); 
+                        var endFormatted = formatDate(end); 
+                        // Check if the start time is midnight
+                        if (moment(end).hour() === 0 && moment(end).minute() === 0) {
+                            // Set end time to 11:59 PM of the previous day
+                            var endFormatted = moment(end).subtract(1, 'days').endOf('day').subtract(1, 'seconds').format("MMM-DD,YYYY HH:mm:ss");
+                        } 
+                    
+                        $.ajax({
+                            type: "GET",
+                            url: 'add_sched',  // Use Django's URL tag
+                            data: { 'title': title, 'start': startFormatted, 'end': endFormatted },
+                            dataType: "json",
+                            success: function (data) {
+                                calendar.fullCalendar('refetchEvents');
+                                refreshEventsList(); // Refresh the events list
+
+                                alert("Added Succesfully");
+                            }, 
+                            error: function (data) {
+                                alert('There was a problem!');
+                            }
+                        });
+                    }
+                },
+                eventResize: function (event) {
+                
+                    var startFormatted = formatDate(event.start); 
+                    var endFormatted = formatDate(event.end); 
+
+                    var title = event.title;
+                    var id = event.id;
+                    $.ajax({
+                        type: "GET",
+                        url: 'update_sched',
+                        data: {'title': title, 'start': startFormatted, 'end': endFormatted, 'id': id},
+                        dataType: "json",
+                        success: function (data) {
+                            calendar.fullCalendar('refetchEvents');
+                            refreshEventsList(); // Refresh the events list
+                            alert('Schedule Updated');
+                        },
+                        error: function (data) {
+                            alert('There is a problem!!!');
+                        }
+                    });
+                },
+
+                eventDrop: function (event) {
+                    var startFormatted = formatDate(event.start); 
+                    var endFormatted = formatDate(event.end); 
+
+                    var title = event.title;
+                    var id = event.id;
+                    $.ajax({
+                        type: "GET",
+                        url: 'update_sched',
+                        data: {'title': title, 'start': startFormatted, 'end': endFormatted, 'id': id},
+                        dataType: "json",
+                        success: function (data) {
+                            calendar.fullCalendar('refetchEvents');
+                            refreshEventsList(); // Refresh the events list
+                            alert('Schedule Updated');
+                        },
+                        error: function (data) {
+                            alert('There is a problem!!!');
+                        }
+                    });
+                },
+
+                eventClick: function (event) {
+                    if (confirm("Are you sure you want to remove it?")) {
+                        var id = event.id;
+                        $.ajax({
+                            type: "GET",
+                            url: 'remove_sched',
+                            data: {'id': id},
+                            dataType: "json",
+                            success: function (data) {
+                                calendar.fullCalendar('refetchEvents');
+                                refreshEventsList(); // Refresh the events list
+                                alert('Schedule Removed');
+                            },
+                            error: function (data) {
+                                alert('There is a problem!!!');
+                            }
+                        });
+                    }
+                },
+            });
+        });
+    
+    </script>
+    
+    {% endblock %}
  </div>
 </div>
 

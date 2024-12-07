@@ -1,9 +1,12 @@
 {% extends 'free_schedule/base.html' %}
 {% load static %}
-{% load tz %}{% block content %}
+{% load tz %}
 
 
+{% block content %}
 
+{{ block.super }}  <!-- This will include the calendar from base.html -->
+ 
 {% if user.is_authenticated %}
     </br> 
 {% comment %} 
@@ -32,11 +35,11 @@
         <p>{{ event.title }} - {{ event.start|localtime }} to {{ event.end|localtime }}</p>
     {% endfor %}  -->
 
-{% else %}
-    <h1> Sorry! Please login first to view this Page. </h1> 
-</br> </br> 
-    <a href="{% url 'login' %}"> Login Here </a>
+    {% else %}
+        <h1> Sorry! Please login first to view this Page. </h1> 
+    </br> </br> 
+        <a href="{% url 'login' %}"> Login Here </a>
 
-{% endif %}
+    {% endif %}
 
 {% endblock %}

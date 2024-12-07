@@ -7,6 +7,12 @@
 <h1 class="display-4" style="font-size: 2.5em;" > Show Project Idea </h1> <!-- Improved heading style -->
 </center> 
 
+<div class="mb-3 text-end">
+    <a href="{% url 'all-project-ideas' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Ideas List
+    </a>
+</div>
+
 <div class="card border-dark mt-4 shadow-lg border border-light"> <!-- Added border for definition -->
     <div class="card-header bg-secondary text-white text-center"> <!-- Changed header color -->
         <h5 class="card-title" style="font-size: 2em;">{{ project_idea.title }}</h5> <!-- Added title -->

@@ -39,15 +39,24 @@ html {
 .wrapper{
   width: 100%;
   height: 100%;
+  transition: all 0.3s ease;
 }
 
 .top_navbar{
-  background: #8edbd4;
+  background: #00ffea;
   height: 60px;
   display: flex;
   position: fixed;
   width: 100%;
   top: 0;
+}
+
+.hamburger {
+  cursor: pointer;
+  z-index: 1000;
+}
+.hamburger__inner > div {
+  transition: all 0.3s ease;
 }
 
 .top_navbar .hamburger{
@@ -162,7 +171,8 @@ html {
   height: 100%;
   background: #333333;
   transition: all 0.3s ease;
-  margin-right: 10px; /* Add margin to the sidebar */
+  overflow-y: auto; /* Allow scrolling for long menus */
+  z-index: 999; /* Ensure sidebar stays above content */
 }
 
 .main_container .sidebar .sidebar__inner{
@@ -200,20 +210,22 @@ html {
   transition: all 0.3s ease;
 }
 
-.main_container .sidebar ul li a{
-  color: #fff;
-  font-size: 18px;
-  padding: 20px 30px;
-  white-space: nowrap;
+/* Menu items styling */
+.main_container .sidebar ul li a {
   display: flex;
   align-items: center;
-  margin-bottom: 1px;
+  padding: 15px 20px;
+  color: #fff;
   transition: all 0.3s ease;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
-.main_container .sidebar ul li a .icon{
-  margin-right: 20px;
-  font-size: 28px;
+.main_container .sidebar ul li a .icon {
+  min-width: 40px;
+  font-size: 20px;
+  text-align: center;
+  transition: margin 0.3s ease;
 }
 
 .main_container .sidebar ul li a span{
@@ -235,7 +247,32 @@ html {
   line-height: 22px;
   
 }
+.wrapper.active .hamburger__inner div.one {
+  transform: rotate(45deg) translate(7px, 7px);
+}
+.wrapper.active .hamburger__inner div.two {
+  opacity: 0;
+}
+.wrapper.active .hamburger__inner div.three {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
 
+.wrapper.active .sidebar ul li a:hover::after {
+  content: attr(data-title);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  color: #333;
+  padding: 5px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+
+/* Collapsed sidebar styles */
 /* after adding active class */
 .wrapper.active .sidebar{
   width: 80px;
@@ -244,10 +281,60 @@ html {
 .wrapper.active .sidebar ul li a span.title,
 .wrapper.active .profile_info
 {
+  padding: 20px;
+  justify-content: center;
+  display: none;
+}
+/* Hover tooltips for collapsed state */
+.wrapper.active .sidebar ul li a {
+  justify-content: center;
+  padding: 15px;
+}
+/* Hide dropdown arrows when collapsed */
+.wrapper.active .sidebar .dropdown-toggle::after {
   display: none;
 }
 
+.wrapper.active .sidebar ul li a .icon {
+  margin-right: 0;
+}
 .wrapper.active .main_container .container{
   width: calc(100% - 80px);
   margin-left: 100px;
+}
+.wrapper.active .sidebar ul li a span:not(.icon),
+.wrapper.active .sidebar .profile_info,
+.wrapper.active .sidebar .dropdown-menu,
+.wrapper.active .sidebar .nav-link span:not(.icon) {
+    display: none;
+}
+.wrapper.active .container {
+  width: calc(100% - 80px);
+  margin-left: 80px;
+}
+
+.wrapper.active .sidebar .dropdown-menu {
+  display: none !important; /* Force hide dropdowns when collapsed */
+}
+.wrapper.active .sidebar .nav-link.dropdown-toggle::after {
+  display: none; /* Hide dropdown arrows when collapsed */
+}
+
+.wrapper.active .sidebar .profile {
+  padding: 20px 0;
+  justify-content: center;
+}
+.wrapper.active .sidebar .profile .img {
+  padding: 0;
+}
+.wrapper.active .sidebar .profile img {
+  width: 40px; /* Smaller image when collapsed */
+}
+
+/* Add styles for dropdown icons */
+.nav-link.dropdown-toggle::after {
+  transition: opacity 0.3s ease;
+}
+.wrapper.active .nav-link.dropdown-toggle::after {
+  opacity: 0;
 }

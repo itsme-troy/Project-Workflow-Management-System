@@ -1,5 +1,33 @@
 document.addEventListener('DOMContentLoaded', function() {
     
+    // Hamburger menu functionality
+    const hamburger = document.querySelector(".hamburger .hamburger__inner");
+    const wrapper = document.querySelector(".wrapper");
+    
+    hamburger.addEventListener("click", function() {
+        wrapper.classList.toggle("active");
+        
+        // Get all dropdown menus and toggle their visibility
+        const dropdownMenus = document.querySelectorAll('.sidebar .dropdown-menu');
+        dropdownMenus.forEach(menu => {
+            if (wrapper.classList.contains("active")) {
+                menu.style.display = 'none';
+            } else {
+                menu.style.display = '';
+            }
+        });
+
+        // Toggle profile info visibility
+        const profileInfo = document.querySelector('.profile_info');
+        if (profileInfo) {
+            if (wrapper.classList.contains("active")) {
+                profileInfo.style.display = 'none';
+            } else {
+                profileInfo.style.display = '';
+            }
+        }
+    });
+
     const alerts = document.querySelectorAll('.alert'); // Select all alerts
 
     alerts.forEach(function(alert) {
