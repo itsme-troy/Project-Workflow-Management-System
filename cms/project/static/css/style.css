@@ -60,41 +60,6 @@
     border-bottom: 2px solid #ffffff; /* Underline effect for active links */
 }
 
-/* Show the dropdown on hover */
-.nav-item.dropdown:hover .dropdown-menu {
-    display: block; /* Show the dropdown */
-    transform: translateY(0); /* Move to its original position */
-}
-/* Default state for the dropdown menu */
-.nav-item.dropdown .dropdown-menu {
-    display: none; /* Hidden by default */
-    background-color: #343a40; /* Match navbar background */
-    color: white; /* White text */
-    border-radius: 5px; /* Rounded corners */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
-    padding: 10px 0; /* Padding for dropdown items */
-    transform: translateY(10px); /* Start from a higher position */
-    transition: transform 0.3s ease; /* Smooth transition */
-}
-
-/* Dropdown Item Styling */
-.nav-item.dropdown .dropdown-menu .dropdown-item {
-    color: #ffffff; /* White text */
-    padding: 10px 20px; /* Increase padding for better touch targets */
-    border-radius: 4px; /* Slightly rounded corners */
-    transition: background-color 0.3s ease; /* Smooth hover effect */
-}
-
-/* Hover Effect for Dropdown Items */
-.nav-item.dropdown .dropdown-menu .dropdown-item:hover {
-    background-color: #007bff; /* Blue background on hover */
-    color: white; /* White text on hover */
-}
-
-/* Dropdown Menu Shadow */
-.nav-item.dropdown .dropdown-menu {
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15); /* Deep shadow for floating effect */
-}
 
 
 /* Improve Navbar Responsiveness */
@@ -123,16 +88,6 @@
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5); /* Focus ring for accessibility */
 }
 
-.dropdown-item:focus {
-    outline: none;
-    background-color: #007bff; /* Blue background when focused */
-    color: white; /* White text */
-}
-
-/* General Styling Enhancements */
-.navbar, .dropdown-menu {
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
-}
 
 /* Custom Font and Spacing */
 body {
@@ -1109,6 +1064,7 @@ body {
     width: auto; /* Set width to auto */
     padding: 30px; 
     margin: 40px auto;
+     margin-left: 20px; /* Set a specific left margin */
     background-color: #ffffff; /* White background for content */
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */

@@ -1,31 +1,9 @@
 @import url(https://fonts.googleapis.com/css?family=Lato:300,400,400i,700);
 @import url(https://fonts.googleapis.com/css?family=Niconne);
-
-
-html {
-    font-family: sans-serif;
-    line-height: 1.15;
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-}
-
-
-.sidebar .nav-link {
-    color: #333; /* Default link color */
-}
-.sidebar .nav-link.active {
-    font-weight: bold; /* Highlight active link */
-    color: #007bff; /* Active link color */
-}
-.app-sidebar {
-    background-color: #f8f9fa; /* Light background for sidebar */
-    background-color: #d3d3d3; /* Change to gray background */
-    border-right: 1px solid #dee2e6; /* Border for sidebar */
-}
-
-
-
 @import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+
+
 
 *{
   margin: 0;
@@ -34,6 +12,13 @@ html {
   box-sizing: border-box;
   text-decoration: none;
   font-family: 'Montserrat', sans-serif;
+}
+
+html {
+    font-family: sans-serif;
+    line-height: 1.15;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 .wrapper{
@@ -49,6 +34,7 @@ html {
   position: fixed;
   width: 100%;
   top: 0;
+  font-size: 25px;
 }
 
 .hamburger {
@@ -58,12 +44,14 @@ html {
 .hamburger__inner > div {
   transition: all 0.3s ease;
 }
-
+.top_navbar {
+  height: 60px; /* Reduced height from 60px to 50px */
+}
 .top_navbar .hamburger{
-  width: 80px;
+  width: 99px;
   background: #004D40;
   position: relative;
-  font-size: 28px;
+  font-size: 24px;
 }
 
 .top_navbar .hamburger .hamburger__inner{
@@ -105,9 +93,13 @@ html {
 }
 
 .top_navbar .menu .logo{
-  color: #004D40;
+  color: #3700ff;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
+  font-family: 'Poppins', sans-serif; /* Updated font */
+  font-size: 20px; /* Increased font size */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Added text shadow */
+  padding: 10px 15px; /* Added padding for better spacing */
 }
 
 .top_navbar .menu .right_menu ul{
@@ -125,16 +117,9 @@ html {
 }
 
 .top_navbar .menu .right_menu ul li .profile_dd{
-  position: absolute;
-  top: 35px;
-  right: -10px;
-  background: #fff;
-  box-shadow: 0 0 2px rgba(0,0,0,0.5);
-  padding: 10px 0;
-  width: 180px;
-  border-radius: 3px;
-  display: none;
-  user-select: none;
+  top: 40px;
+  right: 0px;
+
 }
 
 .top_navbar .menu .right_menu ul li .profile_dd.active{
@@ -160,19 +145,64 @@ html {
   border-color: transparent transparent #fff transparent;
 }
 .main_container {
+  
   margin: 30px; /* Set all margins to 30px */
+  width: calc(100% - 290px); /* Adjusted width for the sidebar */
+  margin-left: 170px; /* Offset for the sidebar */
+  overflow: hidden; /* Default state */
+}
+/* Show dropdown on hover and click */
+.main_container .sidebar ul li.nav-item.dropdown:hover .dropdown-menu,
+.main_container .sidebar ul li.nav-item.dropdown:focus-within .dropdown-menu {
+    display: block; /* Show dropdown menu on hover, when active, and when focused */
+    top: 80%; /* Position below the parent item */
+    left: 10%; /* Align to the left of the parent */
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow: visible; /* Allow overflow to be visible */
+    background-color: #363333; /* Match sidebar background */
+    color: white; /* White text */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    padding: 10px 0; /* Padding for dropdown items */
+    transition: all 0.3s ease; /* Smooth transition */
+    transform: translateX(0); /* Reset any translation */
+    z-index: 1000; /* Ensure it appears above other elements */
 }
 
-.main_container .sidebar{
+
+/* New styles to keep dropdown open on click */
+.main_container .sidebar ul li.nav-item.dropdown.active .dropdown-menu {
+  display: block; /* Keep dropdown open when parent is active */
+}
+.main_container .sidebar ul li.nav-item.dropdown .dropdown-menu {
+  display: none; /* Hide dropdown menu by default */
+  position: absolute; /* Ensure it is positioned absolutely */
+  top: 100%; /* Position below the parent item */
+  left: 0; /* Align to the left of the parent */
+  margin-left: 0; /* Ensure no left margin */
+}
+
+/* Hover Effect for Dropdown Items */
+.nav-item.dropdown .dropdown-menu .dropdown-item:hover {
+    background-color: #007bff; /* Blue background on hover */
+    color: white; /* White text on hover */
+}
+
+.main_container .sidebar{ 
   position: fixed;
   top: 60px;
   left: 0;
-  width: 270px;
-  height: 100%;
-  background: #333333;
+  width: 300px;
+  height: 200%;
+  background: #363333;
   transition: all 0.3s ease;
   overflow-y: auto; /* Allow scrolling for long menus */
   z-index: 999; /* Ensure sidebar stays above content */
+}
+
+.main_container .sidebar {
+  transition: width 0.3s ease, margin 0.3s ease, opacity 0.3s ease; /* Add opacity transition */
+  opacity: 1; /* Default opacity */
 }
 
 .main_container .sidebar .sidebar__inner{
@@ -189,43 +219,46 @@ html {
 }
 
 .main_container .sidebar .profile .img{
-  padding: 0 18px;
+  padding: 0 20px;
 }
 
 .main_container .sidebar .profile img{
-   width: 45px;
+   width: 50px;
 }
 
 .main_container .sidebar .profile p:first-child{
   font-size: 14px;
-  color: #80CBC4;
-  margin-bottom: 10px;
+  color: rgb(0, 255, 102);
+  margin-bottom: 3px;
 }
 
 .main_container .container{
-  margin-top: 80px;
+  margin-top: 100px;
   width: calc(100% - 225px);
   margin-left: 300px;
-  padding: 30px;
+  padding: 25px;
   transition: all 0.3s ease;
 }
 
 /* Menu items styling */
 .main_container .sidebar ul li a {
   display: flex;
-  align-items: center;
-  padding: 15px 20px;
+  padding: 15px 10px;
   color: #fff;
   transition: all 0.3s ease;
   overflow: hidden;
   white-space: nowrap;
+  font-size: 18px;
+  align-items: center;
+  margin-bottom: 1px;
+  transition: all 0.3s ease;
 }
 
 .main_container .sidebar ul li a .icon {
-  min-width: 40px;
-  font-size: 20px;
-  text-align: center;
   transition: margin 0.3s ease;
+  margin-right: 15px;
+  font-size: 28px;
+
 }
 
 .main_container .sidebar ul li a span{
@@ -242,7 +275,7 @@ html {
   background: #fff;
   border: 1px solid #E0F2F1;
   margin-bottom: 30px;
-  padding: 20px;
+  padding: 15px;
   font-size: 14px;
   line-height: 22px;
   
@@ -281,18 +314,18 @@ html {
 .wrapper.active .sidebar ul li a span.title,
 .wrapper.active .profile_info
 {
-  padding: 20px;
-  justify-content: center;
   display: none;
 }
 /* Hover tooltips for collapsed state */
 .wrapper.active .sidebar ul li a {
-  justify-content: center;
   padding: 15px;
 }
-/* Hide dropdown arrows when collapsed */
-.wrapper.active .sidebar .dropdown-toggle::after {
-  display: none;
+
+/* Ensure dropdown arrows are hidden when wrapper is active */
+.wrapper.active .sidebar .dropdown-toggle::after,
+.wrapper.active .sidebar .dropdown-toggle::before {
+  appearance: none;
+  display: none; /* Hide both before and after pseudo-elements */
 }
 
 .wrapper.active .sidebar ul li a .icon {
@@ -300,7 +333,8 @@ html {
 }
 .wrapper.active .main_container .container{
   width: calc(100% - 80px);
-  margin-left: 100px;
+  margin-left: 80px;
+  overflow: hidden; /* Allow overflow when sidebar is active */
 }
 .wrapper.active .sidebar ul li a span:not(.icon),
 .wrapper.active .sidebar .profile_info,
@@ -308,33 +342,15 @@ html {
 .wrapper.active .sidebar .nav-link span:not(.icon) {
     display: none;
 }
-.wrapper.active .container {
+
+.wrapper.active .sidebar {
   width: calc(100% - 80px);
   margin-left: 80px;
+  opacity: 0; /* Fade out when collapsed */
+  pointer-events: none; /* Prevent interaction when hidden */
 }
 
-.wrapper.active .sidebar .dropdown-menu {
-  display: none !important; /* Force hide dropdowns when collapsed */
-}
-.wrapper.active .sidebar .nav-link.dropdown-toggle::after {
-  display: none; /* Hide dropdown arrows when collapsed */
-}
-
-.wrapper.active .sidebar .profile {
-  padding: 20px 0;
-  justify-content: center;
-}
-.wrapper.active .sidebar .profile .img {
-  padding: 0;
-}
-.wrapper.active .sidebar .profile img {
-  width: 40px; /* Smaller image when collapsed */
-}
-
-/* Add styles for dropdown icons */
-.nav-link.dropdown-toggle::after {
-  transition: opacity 0.3s ease;
-}
-.wrapper.active .nav-link.dropdown-toggle::after {
-  opacity: 0;
+.sidebar:hover {
+  opacity: 1; /* Ensure it's fully visible when hovered */
+  pointer-events: auto; /* Allow interaction when hovered */
 }

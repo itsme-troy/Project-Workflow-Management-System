@@ -1,32 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Hamburger menu functionality
-    const hamburger = document.querySelector(".hamburger .hamburger__inner");
-    const wrapper = document.querySelector(".wrapper");
-    
-    hamburger.addEventListener("click", function() {
-        wrapper.classList.toggle("active");
-        
-        // Get all dropdown menus and toggle their visibility
-        const dropdownMenus = document.querySelectorAll('.sidebar .dropdown-menu');
-        dropdownMenus.forEach(menu => {
-            if (wrapper.classList.contains("active")) {
-                menu.style.display = 'none';
-            } else {
-                menu.style.display = '';
-            }
-        });
-
-        // Toggle profile info visibility
-        const profileInfo = document.querySelector('.profile_info');
-        if (profileInfo) {
-            if (wrapper.classList.contains("active")) {
-                profileInfo.style.display = 'none';
-            } else {
-                profileInfo.style.display = '';
-            }
-        }
-    });
 
     const alerts = document.querySelectorAll('.alert'); // Select all alerts
 
@@ -67,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Smooth scroll to sections
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
             document.querySelector(this.getAttribute('href')).scrollIntoView({
@@ -109,9 +83,30 @@ document.addEventListener('DOMContentLoaded', function() {
             item.style.transform = 'scale(1)'; // Reset size
         });
     });
-    
 
+    // document.querySelectorAll('.sidebar ul li a').forEach(link => {
+    //     link.addEventListener('mouseenter', function() {
+    //         if (document.querySelector('.wrapper').classList.contains('active')) {
+    //             const tooltip = document.createElement('div');
+    //             tooltip.className = 'tooltip';
+    //             tooltip.innerText = this.getAttribute('data-title');
+    //             document.body.appendChild(tooltip);
+    //             const rect = this.getBoundingClientRect();
+    //             tooltip.style.left = `${rect.right}px`;
+    //             tooltip.style.top = `${rect.top + window.scrollY}px`;
+    //         }
+    //     });
+    
+    //     link.addEventListener('mouseleave', function() {
+    //         const tooltip = document.querySelector('.tooltip');
+    //         if (tooltip) {
+    //             tooltip.remove();
+    //         }
+    //     });
+    // });
+    
 });
+
 
 // function dismissNotification(button) {
 //     // Find the parent list item and remove it

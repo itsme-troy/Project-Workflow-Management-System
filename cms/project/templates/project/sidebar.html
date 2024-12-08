@@ -16,45 +16,54 @@
         <ul>
             
             <li>    
-                <a href="{% url 'home' %}" data-title="Home">
+                <a href="{% url 'home' %}" class="sidebar-link" data-title="Home">
                     <span class="icon"><i class="fas fa-home"></i></span> <!-- Changed icon to home -->
-                    <span class="title">Home </span>
+                    <span class="sidebar-link-text">Home </span>
                 </a>
             </li>
                   
-           
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Users">
-                  <i class="fas fa-user-friends icon icon-margin"></i> Users
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="icon"><i class="fas fa-user-friends"></i></span>
+                    <span class="sidebar-link-text">Users</span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{% url 'list-student' %}"><i class="fas fa-user-graduate icon-margin"></i> Students</a></li>
-                  {% comment %} <li><a class="dropdown-item" href="{% url 'list-student-waitlist' %}">Student Waitlist</a></li> {% endcomment %}
-                  
-                  <li><a class="dropdown-item" href="{% url 'list-faculty' %}"><i class="fas fa-chalkboard-teacher icon-margin"></i> Faculty</a></li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'list-student' %}">
+                           <i class="fas fa-user-graduate icon-margin"></i> Students
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'list-faculty' %}">
+                            <i class="fas fa-chalkboard-teacher icon-margin"></i> Faculty
+                        </a>
+                    </li>
                 </ul>
-              </li>
-
+            </li>
 
             {% if user.is_authenticated %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Groups">
-                        <i class="fas fas fa-users icon icon-margin"></i> Groups 
+                <li class="nav-item dropdown ">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="icon"><i class="fas fas fa-users"></i> </span> 
+                        <span class="sidebar-link-text"> Groups </span>
+
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'list-project-group' %}"><i class="fas fa-layer-group icon-margin"></i> Show Project Groups </a></li>
+                        <li><a class="dropdown-item" href="{% url 'list-project-group' %}"><i class="fas fa-layer-group icon-margin"></i> All Project Groups </a></li>
                         {% if user.role == 'STUDENT' %}
-                        <li><a class="dropdown-item" href="{% url 'my-project-group-waitlist' %}"><i class="fas fa-hourglass-half icon-margin"></i> My Project Group Waitlist </a></li>
+                        <li><a class="dropdown-item" href="{% url 'my-project-group-waitlist' %}"><i class="fas fa-hourglass-half icon-margin"></i> My Group Waitlist </a></li>
                         <li><a class="dropdown-item" href="{% url 'join-group-list' %}"><i class="fas fa-user-plus icon-margin"></i> Join a Group</a></li>
-                        <li><a class="dropdown-item" href="{% url 'add-project-group' %}"><i class="fas fa-plus-circle icon-margin"></i> Register a Project Group </a></li>
+                        <li><a class="dropdown-item" href="{% url 'add-project-group' %}"><i class="fas fa-plus-circle icon-margin"></i> Register Group </a></li>
                         {% endif %}
-                    
                 </ul>
             </li> {% endif %}
 
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Projects">
-                  <i class="fas fa-project-diagram icon icon-margin"></i> Projects
+                  <span class="icon"> <i class="fas fa-project-diagram icon icon-margin"></i> </span> 
+                  <span class="sidebar-link-text"> Projects </span> 
+
+
                 </a>
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="{% url 'list-projects' %}"><i class="fas fa-list icon-margin"></i> All Projects  </a></li>
@@ -67,14 +76,12 @@
                     {% endif %}
 
                     {% if user.role == 'FACULTY' %}
-                        <li><a class="dropdown-item" href="{% url 'adviser-projects' %}"> My Advisory Projects  </a></li>
-                        <li><a class="dropdown-item" href="{% url 'adviser-proposals' %}"> My Received Proposals  </a></li>
-                        <li><a class="dropdown-item" href="{% url 'panel-projects' %}"> Projects I serve as Panelist  </a></li>
+                        <li><a class="dropdown-item" href="{% url 'adviser-projects' %}">  Advisory Projects  </a></li>
+                        <li><a class="dropdown-item" href="{% url 'adviser-proposals' %}">  Received Proposals  </a></li>
+                        <li><a class="dropdown-item" href="{% url 'panel-projects' %}"> Panel Projects </a></li>
                     {% endif %}
                 {% endif  %}
 
-                  
-                  
                 </ul>
             </li>
 
@@ -82,14 +89,15 @@
             {% if user.role == 'STUDENT' %}
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Defense">
-                    <i class="fas fa-shield-alt icon icon-margin"></i> Defense 
+                    <span class="icon"><i class="fas fa-shield-alt icon icon-margin"></i> </span> 
+                    <span class="sidebar-link-text"> Defense  </span>
                 </a>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="{% url 'my-defense-application' %}">
-                        <i class="fas fa-file-contract icon-margin"></i> My Defense Application
+                        <i class="fas fa-file-contract icon-margin"></i> My Application
                     </a></li>
                     <li><a class="dropdown-item" href="{% url 'submit-defense-application' %}">
-                        <i class="fas fa-file-upload icon-margin"></i> Submit Defense Application
+                        <i class="fas fa-file-upload icon-margin"></i> Submit Application
                     </a></li>
                 </ul>
             </li> {% endif %}
@@ -97,13 +105,13 @@
             {% if user.role == 'FACULTY' %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Faculty_tab">
-                        <i class="fas fa-chalkboard-teacher icon icon-margin"></i> Faculty Tab
+                        <span class="icon"><i class="fas fa-chalkboard-teacher icon icon-margin"></i> </span>
+                        <span class="sidebar-link-text">Faculty Tab</span>
                     </a>
                     <ul class="dropdown-menu">
                   
                         <li><a class="dropdown-item" href="{% url 'generate-report' %}"> Report Generation  </a></li>
                         <li><a class="dropdown-item" href="{% url 'free-schedule' %}"> Set Available Schedule  </a></li>
-                        
                     </ul>
                 </li>
             {% endif %}
@@ -111,11 +119,12 @@
             {% if request.user.role == 'COORDINATOR' and request.user.is_current_coordinator %}
                     
                     <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Coordinator_tab">
-                        Coordinator Tab
-                    </a>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Coordinator_tab">
+                            <span class="icon"><i class="fas fa-user-tie"></i></span> 
+                            <span class="sidebar-link-text">Coordinator Tab </span> 
+                        </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}"><i class="fas fa-check-circle"></i> Approved Projects</a></li>
+                        <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}"><i class="fas fa-check-circle icon "></i> Approved Projects</a></li>
                         <li><a class="dropdown-item" href="{% url 'coordinator-approval-student' %}"><i class="fas fa-user-check"></i> Student Approval Form</a></li>
                         <li><a class="dropdown-item" href="{% url 'coordinator-approval-faculty' %}"><i class="fas fa-user-tie"></i> Faculty Approval Form</a></li>
                         <li><a class="dropdown-item" href="{% url 'list-defense-applications' %}"><i class="fas fa-file-invoice"></i> All Defense Applications</a></li>
@@ -134,7 +143,8 @@
             
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Ideas">
-                <i class="fas fa-lightbulb icon icon-margin"></i> Ideas 
+                <span class="icon"><i class="fas fa-lightbulb icon icon-margin"></i> </span>
+                <span class="sidebar-link-text">Ideas </span> 
               </a>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{% url 'all-project-ideas' %}" >    <i class="fas fa-brain icon-margin"></i> All Project Ideas </a></li>
@@ -144,13 +154,14 @@
           </li>
             {% endif %}
 
-            <li><a class="nav-link" href="{% url 'notifications' %}">
+            {% comment %} <li><a class="nav-link" href="{% url 'notifications' %}">
                 <i class="fas fa-bell icon icon-margin"></i> Notifications
-            </a></li>
+            </a></li> {% endcomment %}
 
-            <li class="nav-item">
+            <li class="nav-item" class="sidebar-link">
                 <a class="nav-link" href="{% url 'logout' %}" data-title="logout">
-                  <i class="fas fa-sign-out-alt icon icon-margin"></i> Logout
+                    <span class="icon"> <i class="fas fa-sign-out-alt icon icon-margin"></i></span>
+                    <span class="sidebar-link-text">Logout </span>   
                 </a>
               </li>
       
@@ -194,5 +205,6 @@
                 </a>
             </li> {% endcomment %}
         </ul>
+        </div> 
     </div>
 </div>
