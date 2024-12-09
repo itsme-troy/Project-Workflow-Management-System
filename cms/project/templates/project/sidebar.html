@@ -1,30 +1,53 @@
 <!-- free_schedule/templates/free_schedule/sidebar.html -->
 <div class="sidebar">
     <div class="sidebar__inner">
-        {% if request.user.is_authenticated %}
-            <div class="profile">
-                <div class="img">
-                    {% comment %} <img src="path/to/default-placeholder.png"  alt="profile_pic" width="300" height="300" class="rounded-circle mb-3"> {% endcomment %}
-                    <img src="https://i.imgur.com/Ctwf8HA.png" alt="profile_pic">
-                </div>
-                
-                <div class="profile_info">
-                    <p>Welcome</p>
-                    <p class="profile_name"> {{request.user.first_name }}  {{request.user.last_name }}</p>
-                </div>
+    
+        {% if not request.user.is_authenticated %}
+        <div class="profile">
+            <div class="img">
+                <img src="https://i.imgur.com/Ctwf8HA.png" alt="profile_pic">
             </div>
+            <div class="profile_info"> <!-- Made visible for guests -->
+                <p>Welcome</p>
+                <p class="profile_name">Guest</p>
+            </div>
+        </div>
         <ul>
-            
             <li>    
                 <a href="{% url 'home' %}" class="sidebar-link" data-title="Home">
-                    <span class="icon"><i class="fas fa-home"></i></span> <!-- Changed icon to home -->
+                    <span class="icon"><i class="fas fa-home icon icon-margin"></i></span>
                     <span class="sidebar-link-text">Home </span>
                 </a>
             </li>
-                  
+              <li>
+                    <a href="{% url 'login' %}" class="sidebar-link" data-title="Login">
+                        <span class="icon"><i class="fas fa-sign-in-alt icon icon-margin"></i> </span>
+                        <span class="sidebar-link-text">Login </span>
+                    </a>
+              </li>
+        {% else %}    
+        <div class="profile">
+            <div class="img">
+                <img src="https://i.imgur.com/Ctwf8HA.png" alt="profile_pic">
+            </div>
+            <div class="profile_info"> <!-- Display profile info for authenticated users -->
+                <p>Welcome</p>
+                <p class="profile_name">{{ request.user.first_name }} {{ request.user.last_name }}</p> <!-- Show logged-in user's name -->
+            
+            </div>
+        </div>
+        <ul>
+            <li>    
+                <a href="{% url 'home' %}" class="sidebar-link" data-title="Home">
+                    <span class="icon"><i class="fas fa-home icon icon-margin"></i></span>
+                    <span class="sidebar-link-text">Home </span>
+                </a>
+            </li>
+        {% if not request.user.is_current_coordinator %}    
+            
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span class="icon"><i class="fas fa-user-friends"></i></span>
+                    <span class="icon"><i class="fas fa-user-friends icon icon-margin"></i></span>
                     <span class="sidebar-link-text">Users</span>
                 </a>
                 <ul class="dropdown-menu">
@@ -40,11 +63,28 @@
                     </li>
                 </ul>
             </li>
+        {% endif %}
+        
+        {% if request.user.role == 'COORDINATOR' and request.user.is_current_coordinator %} 
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Coordinator_tab">
+                    <span class="icon"><i class="fas fa-user-tie icon icon-margin"></i></span> 
+                    <span class="sidebar-link-text"> Manage Users </span> 
+                </a>
+                <ul class="dropdown-menu">
+                    <li>  <a class="dropdown-item" href="{% url 'list-student' %}"> <i class="fas fa-user-graduate icon-margin icon"></i> Students </a> </li>
+                    <li> <a class="dropdown-item" href="{% url 'list-faculty' %}"> <i class="fas fa-chalkboard-teacher icon icon-margin"></i> Faculty </a> </li>
+                    <li><a class="dropdown-item" href="{% url 'coordinator-approval-student' %}"><i class="fas fa-user-check icon icon-margin"></i> Student Form</a></li>
+                    <li><a class="dropdown-item" href="{% url 'coordinator-approval-faculty' %}"><i class="fas fa-user-tie icon icon-margin"></i> Faculty Form</a></li>
+                    {% comment %} <li><a class="dropdown-item" href="{% url 'create-custom-phases' %}"><i class="fas fa-file-alt"></i> Create Custom Phase </a></li> {% endcomment %}
+                </ul>
+            </li> 
+        {% endif %}
 
             {% if user.is_authenticated %}
                 <li class="nav-item dropdown ">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="icon"><i class="fas fas fa-users"></i> </span> 
+                        <span class="icon"><i class="fas fas fa-users icon icon-margin"></i> </span> 
                         <span class="sidebar-link-text"> Groups </span>
 
                     </a>
@@ -80,29 +120,41 @@
                         <li><a class="dropdown-item" href="{% url 'adviser-proposals' %}">  Received Proposals  </a></li>
                         <li><a class="dropdown-item" href="{% url 'panel-projects' %}"> Panel Projects </a></li>
                     {% endif %}
+                    
+                    {% if request.user.is_current_coordinator %}
+                            <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}"><i class="fas fa-check-circle icon icon-margin"></i> Approved Projects</a></li>
+                            <li><a class="dropdown-item" href="{% url 'list-archived-projects' %}"><i class="fas fa-archive  icon icon-margin"></i> Archived Projects</a></li>
+                    {% endif %}
+
+
                 {% endif  %}
 
                 </ul>
             </li>
 
 
-            {% if user.role == 'STUDENT' %}
+            {% if user.role == 'STUDENT' or request.user.is_current_coordinator%}
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Defense">
                     <span class="icon"><i class="fas fa-shield-alt icon icon-margin"></i> </span> 
                     <span class="sidebar-link-text"> Defense  </span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{% url 'my-defense-application' %}">
-                        <i class="fas fa-file-contract icon-margin"></i> My Application
-                    </a></li>
-                    <li><a class="dropdown-item" href="{% url 'submit-defense-application' %}">
-                        <i class="fas fa-file-upload icon-margin"></i> Submit Application
-                    </a></li>
+                    {% if user.role == 'STUDENT' %}
+                        <li><a class="dropdown-item" href="{% url 'my-defense-application' %}">
+                            <i class="fas fa-file-contract icon-margin"></i> My Application
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'submit-defense-application' %}">
+                            <i class="fas fa-file-upload icon-margin"></i> Submit Application
+                        </a></li>
+                    {% elif request.user.is_current_coordinator %}
+                    <li><a class="dropdown-item" href="{% url 'list-defense-applications' %}"><i class="fas fa-file-invoice icon icon-margin"></i> Defense Applications</a></li>
+                    {% endif %}
+                    
                 </ul>
             </li> {% endif %}
 
-            {% if user.role == 'FACULTY' %}
+            {% comment %} {% if user.role == 'FACULTY' %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Faculty_tab">
                         <span class="icon"><i class="fas fa-chalkboard-teacher icon icon-margin"></i> </span>
@@ -110,35 +162,59 @@
                     </a>
                     <ul class="dropdown-menu">
                   
-                        <li><a class="dropdown-item" href="{% url 'generate-report' %}"> Report Generation  </a></li>
                         <li><a class="dropdown-item" href="{% url 'free-schedule' %}"> Set Available Schedule  </a></li>
                     </ul>
                 </li>
+            {% endif %} {% endcomment %}
+
+            {% if request.user.role == 'FACULTY' or request.user.is_current_coordinator %}
+                <li>    
+                    <a href="{% url 'generate-report' %}" class="sidebar-link" data-title="Report_Generation">
+                        <span class="icon"><i class="fas fa-chart-bar icon icon-margin"></i></span> 
+                        <span class="sidebar-link-text"> Report Generation </span>
+                    </a>
+                </li>
             {% endif %}
 
-            {% if request.user.role == 'COORDINATOR' and request.user.is_current_coordinator %}
-                    
+            {% comment %} {% if request.user.role == 'COORDINATOR' and request.user.is_current_coordinator %}
+              
+                            
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Coordinator_tab">
                             <span class="icon"><i class="fas fa-user-tie"></i></span> 
                             <span class="sidebar-link-text">Coordinator Tab </span> 
                         </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}"><i class="fas fa-check-circle icon "></i> Approved Projects</a></li>
-                        <li><a class="dropdown-item" href="{% url 'coordinator-approval-student' %}"><i class="fas fa-user-check"></i> Student Approval Form</a></li>
-                        <li><a class="dropdown-item" href="{% url 'coordinator-approval-faculty' %}"><i class="fas fa-user-tie"></i> Faculty Approval Form</a></li>
-                        <li><a class="dropdown-item" href="{% url 'list-defense-applications' %}"><i class="fas fa-file-invoice"></i> All Defense Applications</a></li>
+   
                         <li><a class="dropdown-item" href="{% url 'common-sched-calendar' %}"><i class="fas fa-calendar-alt"></i> View Common Available Schedule</a></li>
-                        <li><a class="dropdown-item" href="{% url 'select-coordinator' %}"><i class="fas fa-user-plus"></i> Select New Coordinator</a></li>
-                        <li><a class="dropdown-item" href="{% url 'list-archived-projects' %}"><i class="fas fa-archive"></i> Archived Projects</a></li>
-                        <li><a class="dropdown-item" href="{% url 'generate-report' %}"><i class="fas fa-file-alt"></i> Report Generation</a></li>
-                        {% comment %} <li><a class="dropdown-item" href="{% url 'create-custom-phases' %}"><i class="fas fa-file-alt"></i> Create Custom Phase </a></li> {% endcomment %}
+                     
+                        <li><a class="dropdown-item" href="{% url 'create-custom-phases' %}"><i class="fas fa-file-alt"></i> Create Custom Phase </a></li>
                         
                         </ul>
-                </li>
+                    </li>
+            {% endif %} {% endcomment %}
+
+            {% if request.user.role == 'FACULTY' or request.user.is_current_coordinator %}
+              
+                            
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Coordinator_tab">
+                            <span class="icon"><i class="fas fa-calendar-alt icon icon-margin"></i></span> 
+                            <span class="sidebar-link-text">Calendar </span> 
+                        </a>
+                    <ul class="dropdown-menu">
+
+                        {% if request.user.role == 'FACULTY' %}
+                            <li><a class="dropdown-item" href="{% url 'free-schedule' %}"> Set free Schedule  </a></li> {% endif %}
+
+                        {% if request.user.is_current_coordinator %}
+                            <li><a class="dropdown-item" href="{% url 'common-sched-calendar' %}"><i class="fas fa-calendar-alt icon icon-margin"></i> View Common Schedule</a></li>  {% endif %}
+
+                        
+                        </ul>
+                    </li>
             {% endif %}
 
-            
             {% if request.user.is_authenticated %}
             
             <li class="nav-item dropdown">
@@ -153,6 +229,22 @@
               </ul>
           </li>
             {% endif %}
+            
+            {% if request.user.role == 'COORDINATOR' and request.user.is_current_coordinator %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Coordinator_tab">
+                    <span class="icon"><i class="fas fa-cog icon icon-margin"></i></span> 
+                    <span class="sidebar-link-text">Settings  </span> 
+                </a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'select-coordinator' %}"><i class="fas fa-user-plus"></i> Select New Coordinator</a></li>
+               {% comment %} <li><a class="dropdown-item" href="{% url 'create-custom-phases' %}"><i class="fas fa-file-alt"></i> Create Custom Phase </a></li> {% endcomment %}
+                
+                </ul>
+        </li>
+            {% endif %}
+            
+        
 
             {% comment %} <li><a class="nav-link" href="{% url 'notifications' %}">
                 <i class="fas fa-bell icon icon-margin"></i> Notifications
@@ -164,14 +256,14 @@
                     <span class="sidebar-link-text">Logout </span>   
                 </a>
               </li>
-      
+        {% endif %}
             {% comment %} {% else %}
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'login' %}">
                   <i class="fas fa-sign-in-alt"></i> Login
                 </a>
               </li> {% endcomment %}
-            {% endif %}
+            {% comment %} {% endif %} {% endcomment %}
 
 
             {% comment %} <li>

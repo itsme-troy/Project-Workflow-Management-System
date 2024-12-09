@@ -1,11 +1,30 @@
 document.addEventListener('DOMContentLoaded', function() {
     
+    // document.addEventListener('click', function(event) {
+    //     const dropdowns = document.querySelectorAll('.profile_dd'); // Select all dropdowns
+    //     dropdowns.forEach(dropdown => {
+    //         // Check if the click was outside the dropdown and its toggle
+    //         if (!dropdown.contains(event.target) && !dropdown.previousElementSibling.contains(event.target)) {
+    //             dropdown.classList.remove('active'); // Hide the dropdown
+    //         }
+    //     });
+    // });
+
+    //    const dropdownToggles = document.querySelectorAll('.top_navbar .dropdown-toggle');
+    //    dropdownToggles.forEach(toggle => {
+    //        toggle.addEventListener('click', function(event) {
+    //            event.stopPropagation(); // Prevent the click from bubbling up to the document
+    //            const dropdown = this.nextElementSibling; // Get the associated dropdown
+    //            dropdown.classList.toggle('active'); // Toggle the dropdown visibility
+    //        });
+    //    });
+   
 
     const alerts = document.querySelectorAll('.alert'); // Select all alerts
 
     alerts.forEach(function(alert) {
             // If it's NOT a custom success or error alert
-            if (!alert.classList.contains('custom-success-alert') && !alert.classList.contains('custom-error-alert')) {
+            if (!alert.classList.contains('custom-success-alert') && !alert.classList.contains('custom-error-alert') && !alert.classList.contains('custom-info-alert')) {
                 // Set a timeout to remove the alert after 5 seconds or any desired time
                 setTimeout(function() {
                     alert.style.transition = "opacity 0.5s ease-out"; // Optional: Fade out effect

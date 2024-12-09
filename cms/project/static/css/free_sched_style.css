@@ -20,6 +20,11 @@ html {
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
+/* Base color */
+body {
+  background-color: #876060; /* Light gray background */
+  color: #534747; /* Dark text for contrast */
+}
 
 .wrapper{
   width: 100%;
@@ -51,7 +56,7 @@ html {
   width: 99px;
   background: #004D40;
   position: relative;
-  font-size: 24px;
+  font-size:20px;
 }
 
 .top_navbar .hamburger .hamburger__inner{
@@ -155,8 +160,8 @@ html {
 .main_container .sidebar ul li.nav-item.dropdown:hover .dropdown-menu,
 .main_container .sidebar ul li.nav-item.dropdown:focus-within .dropdown-menu {
     display: block; /* Show dropdown menu on hover, when active, and when focused */
-    top: 80%; /* Position below the parent item */
-    left: 10%; /* Align to the left of the parent */
+    top: 100%; /* Position below the parent item */
+    left: 0%; /* Align to the left of the parent */
     white-space: nowrap; /* Prevent text wrapping */
     overflow: visible; /* Allow overflow to be visible */
     background-color: #363333; /* Match sidebar background */
@@ -172,21 +177,29 @@ html {
 
 /* New styles to keep dropdown open on click */
 .main_container .sidebar ul li.nav-item.dropdown.active .dropdown-menu {
-  display: block; /* Keep dropdown open when parent is active */
+  display: none; /* Hide dropdown when parent is active */
+  left: 0; /* Keep it aligned to the left */
+  margin-left: 0; /* Ensure no left margin */
+  transform: translateX(0); /* Prevent any movement */
 }
+/* Show dropdown on hover only */
+/* .main_container .sidebar ul li.nav-item.dropdown:hover .dropdown-menu {
+  display: block; /* Show dropdown menu on hover */
+/* } */ 
+
 .main_container .sidebar ul li.nav-item.dropdown .dropdown-menu {
   display: none; /* Hide dropdown menu by default */
   position: absolute; /* Ensure it is positioned absolutely */
   top: 100%; /* Position below the parent item */
   left: 0; /* Align to the left of the parent */
   margin-left: 0; /* Ensure no left margin */
+  background-color: #333333; /* Updated background color */
+  color: #FFFFFF; /* Updated text color */
+  /* Added this line to prevent movement */
+  transform: translateX(0); /* Reset any translation */
 }
 
-/* Hover Effect for Dropdown Items */
-.nav-item.dropdown .dropdown-menu .dropdown-item:hover {
-    background-color: #007bff; /* Blue background on hover */
-    color: white; /* White text on hover */
-}
+
 
 .main_container .sidebar{ 
   position: fixed;

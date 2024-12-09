@@ -1,11 +1,8 @@
 {% extends 'project/base.html'%} <!-- use the base file -->
 
 {% load static %}
-    {% block head %}
 
-         <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    {% endblock %}
-    {% block content %} <!-- content of all web pages go -->
+{% block content %} <!-- content of all web pages go -->
     <div class="center-content">
     
     {% if user.is_authenticated %}
@@ -17,7 +14,7 @@
 
              <!-- Display current coordinator -->
         {% if current_coordinator %}
-             <div class="alert alert-info">
+             <div class="alert custom-info-alert text-center" role="alert">
                  Current Coordinator: <strong>{{ current_coordinator.get_full_name }} </strong>
              </div>
         {% else %}

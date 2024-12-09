@@ -22,7 +22,7 @@
 
     
   </head>
-  <body class="custom-sky-blue-bg">
+  <body class="body">
   
     
     <div class="wrapper">
@@ -36,7 +36,7 @@
         </div>
         <div class="menu">
           <div class="logo">
-            SP Management System 
+            <a href="{% url 'home' %}" style="text-decoration: none; color: inherit;">SP Management System</a>
           </div>
           
           
@@ -85,9 +85,7 @@
       {% endif %}
     </div> 
     
-    {% if request.user.is_authenticated %}
       <div class="main_container">
-    {% endif %}
           <div class="row">
 
   <!-- Include the sidebar here -->
