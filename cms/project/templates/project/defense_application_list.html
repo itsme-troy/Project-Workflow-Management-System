@@ -2,10 +2,6 @@
 {% load static %}
 {% load custom_filters %}
 
-{% block styles %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <script src="{% static 'js/custom.js' %}"></script>
-{% endblock %}
 
 {% block content %}
 
@@ -14,7 +10,7 @@
     <h1> Defense Application List </h1> 
 
 {% if not defense_applications %}
-    <div class="alert custom-error-alert text-center no-timeout-alert" role="alert">
+    <div class="alert custom-error-alert no-timeout-alert" role="alert">
         <h5> No Defense Applications available at the moment. </h5>
     </div>
 

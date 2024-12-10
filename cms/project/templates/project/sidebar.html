@@ -33,7 +33,11 @@
             <div class="profile_info"> <!-- Display profile info for authenticated users -->
                 <p>Welcome</p>
                 <p class="profile_name">{{ request.user.first_name }} {{ request.user.last_name }}</p> <!-- Show logged-in user's name -->
-            
+                {% if user.get_role_display == "Coordinator" and not user.is_current_coordinator %}
+                    <span class="profile_name">(Former Coordinator)</span>
+                {% else %}
+                    <span class="profile_name">[ {{ user.get_role_display }} ]</span>
+                {% endif %}
             </div>
         </div>
         <ul>
@@ -74,6 +78,7 @@
                 <ul class="dropdown-menu">
                     <li>  <a class="dropdown-item" href="{% url 'list-student' %}"> <i class="fas fa-user-graduate icon-margin icon"></i> Students </a> </li>
                     <li> <a class="dropdown-item" href="{% url 'list-faculty' %}"> <i class="fas fa-chalkboard-teacher icon icon-margin"></i> Faculty </a> </li>
+                    <li><a class="dropdown-item" href="{% url 'list-project-group' %}"><i class="fas fa-layer-group icon-margin"></i> Project Groups </a></li>
                     <li><a class="dropdown-item" href="{% url 'coordinator-approval-student' %}"><i class="fas fa-user-check icon icon-margin"></i> Student Form</a></li>
                     <li><a class="dropdown-item" href="{% url 'coordinator-approval-faculty' %}"><i class="fas fa-user-tie icon icon-margin"></i> Faculty Form</a></li>
                     {% comment %} <li><a class="dropdown-item" href="{% url 'create-custom-phases' %}"><i class="fas fa-file-alt"></i> Create Custom Phase </a></li> {% endcomment %}
@@ -82,21 +87,24 @@
         {% endif %}
 
             {% if user.is_authenticated %}
-                <li class="nav-item dropdown ">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="icon"><i class="fas fas fa-users icon icon-margin"></i> </span> 
-                        <span class="sidebar-link-text"> Groups </span>
+                {% if not user.is_current_coordinator %}
+                    <li class="nav-item dropdown ">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="icon"><i class="fas fas fa-users icon icon-margin"></i> </span> 
+                            <span class="sidebar-link-text"> Groups </span>
 
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'list-project-group' %}"><i class="fas fa-layer-group icon-margin"></i> All Project Groups </a></li>
-                        {% if user.role == 'STUDENT' %}
-                        <li><a class="dropdown-item" href="{% url 'my-project-group-waitlist' %}"><i class="fas fa-hourglass-half icon-margin"></i> My Group Waitlist </a></li>
-                        <li><a class="dropdown-item" href="{% url 'join-group-list' %}"><i class="fas fa-user-plus icon-margin"></i> Join a Group</a></li>
-                        <li><a class="dropdown-item" href="{% url 'add-project-group' %}"><i class="fas fa-plus-circle icon-margin"></i> Register Group </a></li>
-                        {% endif %}
-                </ul>
-            </li> {% endif %}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'list-project-group' %}"><i class="fas fa-layer-group icon-margin"></i> All Project Groups </a></li>
+                            {% if user.role == 'STUDENT' %}
+                            <li><a class="dropdown-item" href="{% url 'my-project-group-waitlist' %}"><i class="fas fa-hourglass-half icon-margin"></i> My Group Waitlist </a></li>
+                            <li><a class="dropdown-item" href="{% url 'join-group-list' %}"><i class="fas fa-user-plus icon-margin"></i> Join a Group</a></li>
+                            <li><a class="dropdown-item" href="{% url 'add-project-group' %}"><i class="fas fa-plus-circle icon-margin"></i> Register Group </a></li>
+                            {% endif %}
+                        </ul>
+                    </li> 
+                {% endif %}
+            {% endif %}
 
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Projects">
@@ -171,7 +179,7 @@
                 <li>    
                     <a href="{% url 'generate-report' %}" class="sidebar-link" data-title="Report_Generation">
                         <span class="icon"><i class="fas fa-chart-bar icon icon-margin"></i></span> 
-                        <span class="sidebar-link-text"> Report Generation </span>
+                        <span class="sidebar-link-text"> Report </span>
                     </a>
                 </li>
             {% endif %}

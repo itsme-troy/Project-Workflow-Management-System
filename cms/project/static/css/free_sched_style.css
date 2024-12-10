@@ -22,7 +22,7 @@ html {
 }
 /* Base color */
 body {
-  background-color: #876060; /* Light gray background */
+  background-color: #989898; /* Light gray background */
   color: #534747; /* Dark text for contrast */
 }
 
@@ -164,13 +164,12 @@ body {
     left: 0%; /* Align to the left of the parent */
     white-space: nowrap; /* Prevent text wrapping */
     overflow: visible; /* Allow overflow to be visible */
-    background-color: #363333; /* Match sidebar background */
+    background-color: #484848; /* Match sidebar background */
     color: white; /* White text */
     border-radius: 5px; /* Rounded corners */
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
     padding: 10px 0; /* Padding for dropdown items */
     transition: all 0.3s ease; /* Smooth transition */
-    transform: translateX(0); /* Reset any translation */
     z-index: 1000; /* Ensure it appears above other elements */
 }
 
@@ -207,10 +206,12 @@ body {
   left: 0;
   width: 300px;
   height: 200%;
-  background: #363333;
+  background: #333131;
   transition: all 0.3s ease;
-  overflow-y: auto; /* Allow scrolling for long menus */
+  /* overflow-y: auto; Allow scrolling for long menus */
   z-index: 999; /* Ensure sidebar stays above content */
+  
+  
 }
 
 .main_container .sidebar {
@@ -367,3 +368,5 @@ body {
   opacity: 1; /* Ensure it's fully visible when hovered */
   pointer-events: auto; /* Allow interaction when hovered */
 }
+
+

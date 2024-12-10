@@ -18,8 +18,9 @@
 
     <script>
         function formatDate(date) {
-            return moment(date).format("MMM-DD,YYYY HH:mm:ss"); // Change format to match expected
+            return moment(date).toISOString(); // Use ISO format
         }
+        
 
         function refreshEventsList() {
             $.ajax({
@@ -31,7 +32,10 @@
                     list.empty(); // Clear the existing list
                     if (data.length > 0) {
                         $.each(data, function (index, event) {
-                            list.append('<li class="list-group-item">' + event.start + ' to ' + event.end + '</li>');
+                            // Displaying start and end in the same format as your add_sched or all_sched
+                            var startFormatted = moment(event.start).format("MMM-DD, YYYY hh:mm A"); // Adjust as per add_sched format
+                            var endFormatted = moment(event.end).format("MMM-DD, YYYY hh:mm A");
+                            list.append('<li class="list-group-item">From: ' + startFormatted + ' to ' + endFormatted + '</li>');
                         });
                     } else {
                         list.append('<li class="list-group-item">No available schedules found.</li>');
@@ -52,27 +56,36 @@
                     center: 'title',
                     right: 'month,agendaWeek,agendaDay'
                 },
+                timezone: 'Asia/Manila', // Align with server timezone
                 events: 'all_sched',
                 selectable: true,
-                selectHelper: true,
+                selectHelper: false,
                 editable: true,
                 eventLimit: true,
+                contentHeight: 'auto',
+                height: 'auto',
+                // defaultView: 'agendaWeek',
                 
                 select: function (start, end, allDay) {
                     var title = prompt("Enter Event Title");
                     if (title) {
-                        var startFormatted = formatDate(start); 
-                        var endFormatted = formatDate(end); 
+                        // var startFormatted = formatDate(start); 
+                        // var endFormatted = formatDate(end); 
                         // Check if the start time is midnight
-                        if (moment(end).hour() === 0 && moment(end).minute() === 0) {
+                        //if (moment(end).hour() === 0 && moment(end).minute() === 0) {
                             // Set end time to 11:59 PM of the previous day
-                            var endFormatted = moment(end).subtract(1, 'days').endOf('day').subtract(1, 'seconds').format("MMM-DD,YYYY HH:mm:ss");
-                        } 
-                    
+                        //    var endFormatted = moment(end).subtract(1, 'days').endOf('day').subtract(1, 'seconds').format("MMM-DD,YYYY HH:mm:ss");
+                        //} 
+
+                        
                         $.ajax({
                             type: "GET",
                             url: 'add_sched',  // Use Django's URL tag
-                            data: { 'title': title, 'start': startFormatted, 'end': endFormatted },
+                            data: {
+                                    title: title, 
+                                    start: start.toISOString(), 
+                                    end: end.toISOString() 
+                                },
                             dataType: "json",
                             success: function (data) {
                                 calendar.fullCalendar('refetchEvents');
@@ -91,12 +104,15 @@
                     var startFormatted = formatDate(event.start); 
                     var endFormatted = formatDate(event.end); 
 
-                    var title = event.title;
-                    var id = event.id;
                     $.ajax({
                         type: "GET",
                         url: 'update_sched',
-                        data: {'title': title, 'start': startFormatted, 'end': endFormatted, 'id': id},
+                        data: {
+                            'title': event.title, 
+                            'start': startFormatted, 
+                            'end': endFormatted,
+                            'id': event.id
+                        },
                         dataType: "json",
                         success: function (data) {
                             calendar.fullCalendar('refetchEvents');
@@ -113,12 +129,14 @@
                     var startFormatted = formatDate(event.start); 
                     var endFormatted = formatDate(event.end); 
 
-                    var title = event.title;
-                    var id = event.id;
                     $.ajax({
                         type: "GET",
                         url: 'update_sched',
-                        data: {'title': title, 'start': startFormatted, 'end': endFormatted, 'id': id},
+                        data: {
+                            'title': event.title, 
+                            'start': startFormatted, 
+                            'end': endFormatted, 
+                            'id': event.id},
                         dataType: "json",
                         success: function (data) {
                             calendar.fullCalendar('refetchEvents');
@@ -133,11 +151,11 @@
 
                 eventClick: function (event) {
                     if (confirm("Are you sure you want to remove it?")) {
-                        var id = event.id;
+                        //var id = event.id;
                         $.ajax({
                             type: "GET",
                             url: 'remove_sched',
-                            data: {'id': id},
+                            data: {'id': event.id},
                             dataType: "json",
                             success: function (data) {
                                 calendar.fullCalendar('refetchEvents');
@@ -145,7 +163,8 @@
                                 alert('Schedule Removed');
                             },
                             error: function (data) {
-                                alert('There is a problem!!!');
+                                console.error(data); // Log the error response
+                                alert('There is a problem removing the schedule!');
                             }
                         });
                     }

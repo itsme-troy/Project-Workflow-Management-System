@@ -50,14 +50,14 @@ def all_sched(request):
     all_events = Available_schedule.objects.filter(faculty=request.user.id).order_by('-start')  # Order by start time descending                                                                
     out = []                                                                                                             
     for event in all_events:          
-        start_local = localtime(event.start)
-        end_local = localtime(event.end)                                                                                  
-        out.append({                                                                                                     
-            'title': event.title,                                                                                         
-            'id': event.id,                                                                                              
-            'start': start_local.strftime("%b %d, %Y, %I:%M %p"),  # Consistent format
-            'end': end_local.strftime("%b %d, %Y, %I:%M %p"),                                                 
-        })                                                                                                                                                                                                                                
+        # start_local = localtime(event.start)
+        # end_local = localtime(event.end)                                                                                  
+        out.append({
+            'title': event.title,
+            'id': event.id,
+            'start': event.start.isoformat(),
+            'end': event.end.isoformat(),
+        })                                                                                                                                                                                                                               
     return JsonResponse(out, safe=False) 
  
 
@@ -66,25 +66,23 @@ def add_sched(request):
     end = request.GET.get("end", None)
     title = request.GET.get("title", None)
 
-     # Convert start and end to datetime objects
-    start_datetime = datetime.strptime(start, "%b-%d,%Y %H:%M:%S")  # Updated format
-    end_datetime = datetime.strptime(end, "%b-%d,%Y %H:%M:%S") 
-
+    start_datetime = datetime.fromisoformat(start)
+    end_datetime = datetime.fromisoformat(end)
+    
     # Set the timezone to Asia/Manila
     local_tz = pytz.timezone('Asia/Manila')
     start_datetime = local_tz.localize(start_datetime)
     end_datetime = local_tz.localize(end_datetime)
-
 
     event = Available_schedule(title=str(title), start=start_datetime, end=end_datetime, faculty=request.user)
     event.save()
     
     # Return a success message or the created event data
     data = {
-        'id': event.id,
-        'title': event.title,
-        'start': event.start.strftime("%b-%d,%Y %H:%M:%S"),  # Updated format to abbreviated month
-        'end': event.end.strftime("%b-%d,%Y %H:%M:%S"),      # Updated format to abbreviated month
+    #     'id': event.id,
+    #     'title': event.title,
+    #     'start': event.start.strftime("%b-%d,%Y %H:%M:%S"),  # Updated format to abbreviated month
+    #     'end': event.end.strftime("%b-%d,%Y %H:%M:%S"),      # Updated format to abbreviated month
     }
 
     return JsonResponse(data)
@@ -95,23 +93,44 @@ def update_sched(request):
     title = request.GET.get("title", None)
     id = request.GET.get("id", None)
 
-    # Convert start and end to datetime objects
-    start_datetime = datetime.strptime(start, "%b-%d,%Y %H:%M:%S")  # Updated format
-    end_datetime = datetime.strptime(end, "%b-%d,%Y %H:%M:%S") 
+    try:
+        # Convert start and end to datetime objects using `datetime.fromisoformat` for consistency
+        start_datetime = datetime.fromisoformat(start)
+        end_datetime = datetime.fromisoformat(end)
 
-    # Set the timezone to Asia/Manila
-    local_tz = pytz.timezone('Asia/Manila')
-    start_datetime = local_tz.localize(start_datetime)
-    end_datetime = local_tz.localize(end_datetime)
+        # Set the timezone to Asia/Manila
+        local_tz = pytz.timezone('Asia/Manila')
+        start_datetime = local_tz.localize(start_datetime)
+        end_datetime = local_tz.localize(end_datetime)
 
-    event = Available_schedule.objects.get(id=id)
-    event.start = start_datetime
-    event.end = end_datetime
-    event.title = title
-    event.save()
-    data = {}
+        # Fetch the event from the database
+        event = Available_schedule.objects.get(id=id)
+        event.start = start_datetime
+        event.end = end_datetime
+        event.title = title
+        event.save()
+
+        # Return success response
+        data = {
+            'status': 'success',
+            'message': 'Schedule updated successfully',
+            'id': event.id,
+            'title': event.title,
+            'start': event.start.isoformat(),
+            'end': event.end.isoformat(),
+        }
+    except Available_schedule.DoesNotExist:
+        data = {
+            'status': 'error',
+            'message': 'Event not found',
+        }
+    except Exception as e:
+        data = {
+            'status': 'error',
+            'message': str(e),
+        }
+
     return JsonResponse(data)
-
  
 def remove_sched(request):
     id = request.GET.get("id", None)

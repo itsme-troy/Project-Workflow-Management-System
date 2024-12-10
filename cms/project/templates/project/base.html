@@ -70,7 +70,7 @@
     {% comment %} <div class="d-flex justify-content-between align-items-center">
       {% include 'project/navbar.html' %} {% endcomment %}
 
-      {% if user.is_authenticated %}
+      {% comment %} {% if user.is_authenticated %}
         <div class="usecdr-designation d-flex align-items-center p-2 bg-light rounded shadow-sm position-fixed bottom-0 end-0 m-3">
           <span class="me-2 fw-bold">Logged in as:</span>
           <span>{{ user.get_full_name }}</span>
@@ -82,7 +82,7 @@
           {% endif %}
             
         </div>
-      {% endif %}
+      {% endif %} {% endcomment %}
     </div> 
     
       <div class="main_container">

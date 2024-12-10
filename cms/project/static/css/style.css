@@ -18,6 +18,7 @@
 .icon-margin {
     margin-right: 10px; /* can adjust value as needed */
 }
+
 .profile_name {
     color:white
 }
@@ -879,7 +880,6 @@ body.custom-sky-blue-bg {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
-    justify-content: space-between; /* This ensures space between the icon/text and the close button */
     gap: 10px; /* Space between icon and text */
     border: 1px solid transparent;
     transition: opacity 0.5s ease-out;
@@ -1021,6 +1021,8 @@ body.custom-sky-blue-bg {
     padding: 15px 30px; /* Adjust padding to make it larger */
     border-radius: 5px; /* Slightly rounded corners */
     position: relative; /* To position the close button */
+    display: flex; /* Use flexbox to control the layout of icon and text */
+    align-items: center; /* Vertically center the items */
 }
 
 /* Close Button Styling */
@@ -1035,11 +1037,10 @@ body.custom-sky-blue-bg {
     line-height: 1;
     opacity: 1;
 }
-
 /* Hover effect for custom error alert */
 .custom-error-alert:hover {
     background-color: #f5c6cb; /* Slightly darker when hovered */
-    transform: translateY(-2px);
+    /* transform: translateY(-2px); */
     transition: all 0.2s ease;
 }
 
@@ -1048,6 +1049,8 @@ body.custom-sky-blue-bg {
     content: "✘"; /* Cross icon for error */
     font-size: 1.5em;
     color: #dc3545; /* Red */
+    margin-right: 10px; /* Add space between icon and text */
+    display: inline-block; /* Make sure the icon behaves like inline text */
 }
 
 /* Custom Info Alert */
@@ -1079,7 +1082,7 @@ body.custom-sky-blue-bg {
 /* Hover effect for custom info alert */
 .custom-info-alert:hover {
     background-color: #bee5eb; /* Slightly darker when hovered */
-    transform: translateY(-2px);
+    /* transform: translateY(-2px); */
     transition: all 0.2s ease;
 }
 
