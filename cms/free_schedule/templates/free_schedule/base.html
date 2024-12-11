@@ -2,9 +2,14 @@
 {% load static %}
 
 {% block styles %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" /> 
+    <!-- Updated FullCalendar JavaScript -->
+     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script> 
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css" />
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
     
     <link rel="stylesheet" href="{% static 'project/css/free_sched_style.css' %}">
@@ -17,24 +22,25 @@
 
 
     <script>
+        
         function formatDate(date) {
             return moment(date).toISOString(); // Use ISO format
         }
         
-
         function refreshEventsList() {
             $.ajax({
                 type: "GET",
                 url: 'all_sched',  
                 dataType: "json",
+                
                 success: function (data) {
                     var list = $('.list-group');
                     list.empty(); // Clear the existing list
                     if (data.length > 0) {
                         $.each(data, function (index, event) {
-                            // Displaying start and end in the same format as your add_sched or all_sched
-                            var startFormatted = moment(event.start).format("MMM-DD, YYYY hh:mm A"); // Adjust as per add_sched format
-                            var endFormatted = moment(event.end).format("MMM-DD, YYYY hh:mm A");
+                            // Adjust the displayed times to Asia/Manila timezone
+                            var startFormatted = moment(event.start).tz('Asia/Manila').format("MMM-DD, YYYY hh:mm A");
+                            var endFormatted = moment(event.end).tz('Asia/Manila').format("MMM-DD, YYYY hh:mm A");
                             list.append('<li class="list-group-item">From: ' + startFormatted + ' to ' + endFormatted + '</li>');
                         });
                     } else {
@@ -62,29 +68,57 @@
                 selectHelper: false,
                 editable: true,
                 eventLimit: true,
-                contentHeight: 'auto',
-                height: 'auto',
-                // defaultView: 'agendaWeek',
+                //contentHeight: 'auto',
+                //height: 'auto',
+                //defaultView: 'agendaWeek',
                 
                 select: function (start, end, allDay) {
+                    // Check the current view type (month, week, or day)
+                    var currentView = calendar.fullCalendar('getView').type;
+
+                    // Declare variables for adjusted start and end times
+                    var adjustedStart, adjustedEnd;
+
+                    // If the current view is 'month', set the event as an all-day event
+                    if (currentView === 'month') {
+                        adjustedStart = moment(start).startOf('day'); // Start at 12:00 AM
+                        adjustedEnd = moment(start).endOf('day');   // End at 11:59:59 PM
+                    } else {
+                        // For week and day views, keep the original start and end times
+                        adjustedStart = start;
+                        adjustedEnd = end;
+                    }
+
+                    // Make sure the adjusted times are not reversed (end < start)
+                    if (adjustedEnd.isBefore(adjustedStart)) {
+                        alert("End time cannot be before start time.");
+                        return;
+            }
+                    // Convert times to UTC format 
+                    //var startUTC = moment(start).utc().toISOString();
+                    //var endUTC = moment(end).utc().toISOString();
+
+                    
+                    // var startAdjusted = moment(start).tz('Asia/Manila').utc().toISOString();
+                    //var endAdjusted = moment(end).tz('Asia/Manila').utc().toISOString();
+                        
+                    // If the end time is at midnight, adjust to 11:59 PM
+                    //if (moment(end).hour() === 0 && moment(end).minute() === 0) {
+                    //    endAdjusted = moment(end).subtract(1, 'seconds').tz('Asia/Manila').utc().toISOString();
+                    //}
+                    // Set the start and end to cover the full day
+                    //var fullDayStart = moment(start).startOf('day'); // Set start to 12:00 AM
+                    //var fullDayEnd = moment(start).endOf('day'); // Set end to 11:59 PM
+                                
                     var title = prompt("Enter Event Title");
                     if (title) {
-                        // var startFormatted = formatDate(start); 
-                        // var endFormatted = formatDate(end); 
-                        // Check if the start time is midnight
-                        //if (moment(end).hour() === 0 && moment(end).minute() === 0) {
-                            // Set end time to 11:59 PM of the previous day
-                        //    var endFormatted = moment(end).subtract(1, 'days').endOf('day').subtract(1, 'seconds').format("MMM-DD,YYYY HH:mm:ss");
-                        //} 
-
-                        
                         $.ajax({
                             type: "GET",
                             url: 'add_sched',  // Use Django's URL tag
                             data: {
                                     title: title, 
-                                    start: start.toISOString(), 
-                                    end: end.toISOString() 
+                                    start: adjustedStart.toISOString(),  // Convert to ISO format
+                                    end: adjustedEnd.toISOString()      // Convert to ISO format
                                 },
                             dataType: "json",
                             success: function (data) {
@@ -94,11 +128,24 @@
                                 alert("Added Succesfully");
                             }, 
                             error: function (data) {
-                                alert('There was a problem!');
+                                console.error(data); // Log the error response
+                                alert('There was a problem adding schedule!');
                             }
                         });
                     }
+                    
                 },
+                eventRender: function (event, element) {
+                    // Display times in local timezone (Asia/Manila)
+                    var startFormatted = moment(event.start).tz('Asia/Manila').format('hh:mm A');
+                    var endFormatted = moment(event.end).tz('Asia/Manila').format('hh:mm A');
+                    var timeText = startFormatted + ' - ' + endFormatted;
+                
+                    // Ensure that the time is inserted into the appropriate element
+                    element.find('.fc-time').html(timeText);  // Ensure you're targeting the correct element
+                },
+                
+                //  When resizing an event, the start and end times are converted to UTC before being sent to the server.
                 eventResize: function (event) {
                 
                     var startFormatted = formatDate(event.start); 
@@ -124,7 +171,7 @@
                         }
                     });
                 },
-
+                // When dropping an event to a new position, the times are converted to UTC and saved.
                 eventDrop: function (event) {
                     var startFormatted = formatDate(event.start); 
                     var endFormatted = formatDate(event.end); 
@@ -149,18 +196,29 @@
                     });
                 },
 
+                
+                // This allows for removing events from the calendar and from the database.
                 eventClick: function (event) {
-                    if (confirm("Are you sure you want to remove it?")) {
-                        //var id = event.id;
+                    if (confirm("Are you sure you want to remove the event with ID: " + event.id + "?")) {
+                        var id = event.id;
                         $.ajax({
                             type: "GET",
                             url: 'remove_sched',
-                            data: {'id': event.id},
+                            data: {
+                                'id': id,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}',  // Include CSRF token for safety
+                            },
+                            
                             dataType: "json",
                             success: function (data) {
-                                calendar.fullCalendar('refetchEvents');
-                                refreshEventsList(); // Refresh the events list
-                                alert('Schedule Removed');
+                                console.log(data);  // Log the server response to check if it's returning the correct status
+                                if (data.status === 'success') {
+                                    calendar.fullCalendar('refetchEvents');
+                                    refreshEventsList(); // Refresh the events list
+                                    alert('Schedule Removed');
+                                } else {
+                                    alert('There was a problem removing the schedule.');
+                                }
                             },
                             error: function (data) {
                                 console.error(data); // Log the error response

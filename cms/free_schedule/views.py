@@ -3,11 +3,19 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Available_schedule
 from django.http import JsonResponse
-from django.utils import timezone
-from django.utils.timezone import localtime  # Add this import
+import json
+
+from django.utils.timezone import localtime  
 
 from datetime import datetime
-import pytz  # Make sure to install pytz if you haven't
+from pytz import timezone  
+import pytz
+local_tz = pytz.timezone('Asia/Manila')
+
+from django.utils.timezone import make_aware, localtime
+# from django.utils import timezone
+
+
 
 # def find_common_schedule 
 # def find_common_schedule(request): 
@@ -36,6 +44,22 @@ import pytz  # Make sure to install pytz if you haven't
 
 #     return JsonResponse(events, safe=False)
 
+def convert_to_utc(date_str):
+    try:
+        local_timezone = timezone('Asia/Manila')  # Correct usage of pytz.timezone
+        local_time = datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%S')  # Parse input format
+        local_time = local_timezone.localize(local_time)  # Add timezone info
+        return local_time.astimezone(pytz.utc)  # Convert to UTC
+    except Exception as e:
+        raise ValueError(f"Invalid date format: {e}")
+
+def to_local(utc_time):
+    try:
+        manila_timezone = timezone('Asia/Manila')  # Correct usage of pytz.timezone
+        return utc_time.astimezone(manila_timezone)
+    except Exception as e:
+        raise ValueError(f"Error converting time to local: {e}")
+
 def free_sched(request): # index 
     if not request.user.is_authenticated: 
         messages.error(request, "Please login to view this page")
@@ -46,96 +70,92 @@ def free_sched(request): # index
         "events": all_events,
     })
 
-def all_sched(request):                                                                                                 
-    all_events = Available_schedule.objects.filter(faculty=request.user.id).order_by('-start')  # Order by start time descending                                                                
-    out = []                                                                                                             
-    for event in all_events:          
-        # start_local = localtime(event.start)
-        # end_local = localtime(event.end)                                                                                  
+def all_sched(request): # still return 
+    all_events = Available_schedule.objects.filter(faculty=request.user.id)
+    out = []
+    for event in all_events:
+         # Convert start and end to Asia/Manila timezone before sending to the frontend
+        # start_local = to_local(event.start)
+        # end_local = to_local(event.end)
+
         out.append({
+            'id': event.id,  # Add event ID to the response data
             'title': event.title,
-            'id': event.id,
-            'start': event.start.isoformat(),
-            'end': event.end.isoformat(),
-        })                                                                                                                                                                                                                               
-    return JsonResponse(out, safe=False) 
- 
+            'start': to_local(event.start).isoformat(),
+            'end': to_local(event.end).isoformat(),
+        })
+    
+    # print(json.dumps(out, indent=4))  # Log JSON for debugging
+    return JsonResponse(out, safe=False)
 
 def add_sched(request):
-    start = request.GET.get("start", None)
-    end = request.GET.get("end", None)
-    title = request.GET.get("title", None)
+    start = request.GET.get("start")
+    end = request.GET.get("end")
+    title = request.GET.get("title")
 
-    start_datetime = datetime.fromisoformat(start)
-    end_datetime = datetime.fromisoformat(end)
-    
-    # Set the timezone to Asia/Manila
-    local_tz = pytz.timezone('Asia/Manila')
-    start_datetime = local_tz.localize(start_datetime)
-    end_datetime = local_tz.localize(end_datetime)
-
-    event = Available_schedule(title=str(title), start=start_datetime, end=end_datetime, faculty=request.user)
-    event.save()
-    
-    # Return a success message or the created event data
-    data = {
-    #     'id': event.id,
-    #     'title': event.title,
-    #     'start': event.start.strftime("%b-%d,%Y %H:%M:%S"),  # Updated format to abbreviated month
-    #     'end': event.end.strftime("%b-%d,%Y %H:%M:%S"),      # Updated format to abbreviated month
-    }
-
-    return JsonResponse(data)
-
-def update_sched(request):
-    start = request.GET.get("start", None)
-    end = request.GET.get("end", None)
-    title = request.GET.get("title", None)
-    id = request.GET.get("id", None)
+    if not start or not end or not title:
+        return JsonResponse({'error': 'Missing required fields: start, end, or title'}, status=400)
 
     try:
-        # Convert start and end to datetime objects using `datetime.fromisoformat` for consistency
-        start_datetime = datetime.fromisoformat(start)
-        end_datetime = datetime.fromisoformat(end)
+        start_datetime = convert_to_utc(start)
+        end_datetime = convert_to_utc(end)
 
-        # Set the timezone to Asia/Manila
-        local_tz = pytz.timezone('Asia/Manila')
-        start_datetime = local_tz.localize(start_datetime)
-        end_datetime = local_tz.localize(end_datetime)
+        # Ensure end time is after start time
+        if end_datetime <= start_datetime:
+            return JsonResponse({'error': 'End time must be after start time'}, status=400)
 
-        # Fetch the event from the database
-        event = Available_schedule.objects.get(id=id)
+        event = Available_schedule(
+            title=title,
+            start=start_datetime,
+            end=end_datetime,
+            faculty=request.user
+        )
+        event.save()
+        return JsonResponse({'message': 'Event added successfully'}, status=200)
+    except ValueError as ve:
+        return JsonResponse({'error': str(ve)}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': f"Unexpected error: {e}"}, status=500)
+    
+def update_sched(request):
+    start = request.GET.get("start")
+    end = request.GET.get("end")
+    title = request.GET.get("title")
+    event_id = request.GET.get("id")
+    
+    try:
+        start_datetime = datetime.fromisoformat(start).astimezone(pytz.utc)
+        end_datetime = datetime.fromisoformat(end).astimezone(pytz.utc)
+
+        event = Available_schedule.objects.get(id=event_id)
         event.start = start_datetime
         event.end = end_datetime
         event.title = title
         event.save()
 
-        # Return success response
-        data = {
+        return JsonResponse({
             'status': 'success',
             'message': 'Schedule updated successfully',
             'id': event.id,
             'title': event.title,
             'start': event.start.isoformat(),
             'end': event.end.isoformat(),
-        }
+        })
     except Available_schedule.DoesNotExist:
-        data = {
-            'status': 'error',
-            'message': 'Event not found',
-        }
+        return JsonResponse({'status': 'error', 'message': 'Event not found'})
     except Exception as e:
-        data = {
-            'status': 'error',
-            'message': str(e),
-        }
-
-    return JsonResponse(data)
+        return JsonResponse({'status': 'error', 'message': str(e)})
  
 def remove_sched(request):
-    id = request.GET.get("id", None)
-    event = Available_schedule.objects.get(id=id)
-    event.delete()
-    data = {}
-    return JsonResponse(data)
-
+    if request.method == 'GET':
+        id = request.GET.get("id", None)
+        try:
+            event = Available_schedule.objects.get(id=id)
+            print(f"Deleting event: {event}")  # Debug print to ensure the event is found
+            event.delete()
+            return JsonResponse({'status': 'success', 'message': 'Event removed successfully'})
+        except Available_schedule.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Event not found'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
