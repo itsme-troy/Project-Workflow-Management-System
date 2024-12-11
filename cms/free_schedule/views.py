@@ -12,6 +12,9 @@ from pytz import timezone
 import pytz
 local_tz = pytz.timezone('Asia/Manila')
 
+import logging
+
+logger = logging.getLogger(__name__)
 from django.utils.timezone import make_aware, localtime
 # from django.utils import timezone
 
@@ -89,19 +92,28 @@ def all_sched(request): # still return
     return JsonResponse(out, safe=False)
 
 def add_sched(request):
+    title = request.GET.get("title")
     start = request.GET.get("start")
     end = request.GET.get("end")
-    title = request.GET.get("title")
+    
+    
+    logger.debug(f"Received data: title={title}, start={start}, end={end}")
 
     if not start or not end or not title:
         return JsonResponse({'error': 'Missing required fields: start, end, or title'}, status=400)
 
     try:
-        start_datetime = convert_to_utc(start)
-        end_datetime = convert_to_utc(end)
+         # Make sure the date format matches '%Y-%m-%dT%H:%M:%S' (the format used in ISO strings)
+        start_datetime = datetime.fromisoformat(start).astimezone(pytz.utc)
+        end_datetime = datetime.fromisoformat(end).astimezone(pytz.utc)
+        # start_datetime = convert_to_utc(start)
+        # end_datetime = convert_to_utc(end)
+
+        logger.debug(f"Converted times: start={start_datetime}, end={end_datetime}")
 
         # Ensure end time is after start time
         if end_datetime <= start_datetime:
+            logger.error("End time must be after start time")
             return JsonResponse({'error': 'End time must be after start time'}, status=400)
 
         event = Available_schedule(
@@ -111,10 +123,15 @@ def add_sched(request):
             faculty=request.user
         )
         event.save()
+
+        logger.info(f"Event saved: {event.id}")
         return JsonResponse({'message': 'Event added successfully'}, status=200)
+    
     except ValueError as ve:
+        logger.error(f"ValueError: {str(ve)}")
         return JsonResponse({'error': str(ve)}, status=400)
     except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
         return JsonResponse({'error': f"Unexpected error: {e}"}, status=500)
     
 def update_sched(request):

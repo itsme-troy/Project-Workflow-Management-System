@@ -7,7 +7,7 @@
      <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script> 
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css" />
-    
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
@@ -82,18 +82,25 @@
                     // If the current view is 'month', set the event as an all-day event
                     if (currentView === 'month') {
                         adjustedStart = moment(start).startOf('day'); // Start at 12:00 AM
-                        adjustedEnd = moment(start).endOf('day');   // End at 11:59:59 PM
+                        adjustedEnd = moment(end).endOf('day');   // End at 11:59:59 PM
                     } else {
                         // For week and day views, keep the original start and end times
                         adjustedStart = start;
                         adjustedEnd = end;
                     }
+                    
+
+                     // Debugging: Log values for debugging
+                    console.log('Start:', start.format());
+                    console.log('End:', end.format());
+                    console.log('Adjusted Start:', adjustedStart.format());
+                    console.log('Adjusted End:', adjustedEnd.format());
 
                     // Make sure the adjusted times are not reversed (end < start)
                     if (adjustedEnd.isBefore(adjustedStart)) {
                         alert("End time cannot be before start time.");
                         return;
-            }
+                    }
                     // Convert times to UTC format 
                     //var startUTC = moment(start).utc().toISOString();
                     //var endUTC = moment(end).utc().toISOString();
@@ -109,31 +116,36 @@
                     // Set the start and end to cover the full day
                     //var fullDayStart = moment(start).startOf('day'); // Set start to 12:00 AM
                     //var fullDayEnd = moment(start).endOf('day'); // Set end to 11:59 PM
-                                
+                        
+                    // Ask the user for the event title
+                    // Check if end time is after start time
+                    if (adjustedEnd.isBefore(adjustedStart)) {
+                        alert("End time cannot be before start time.");
+                        return;
+                    }
+
                     var title = prompt("Enter Event Title");
                     if (title) {
                         $.ajax({
                             type: "GET",
-                            url: 'add_sched',  // Use Django's URL tag
+                            url: 'add_sched',
                             data: {
-                                    title: title, 
-                                    start: adjustedStart.toISOString(),  // Convert to ISO format
-                                    end: adjustedEnd.toISOString()      // Convert to ISO format
-                                },
+                                title: title, 
+                                start: adjustedStart.toISOString(),  // Convert to ISO format
+                                end: adjustedEnd.toISOString()      // Convert to ISO format
+                            },
                             dataType: "json",
                             success: function (data) {
+                                refreshEventsList()
                                 calendar.fullCalendar('refetchEvents');
-                                refreshEventsList(); // Refresh the events list
-
-                                alert("Added Succesfully");
-                            }, 
+                                alert("Event added successfully");
+                            },
                             error: function (data) {
-                                console.error(data); // Log the error response
-                                alert('There was a problem adding schedule!');
+                                console.error(data);
+                                alert('There was a problem adding the event!');
                             }
                         });
                     }
-                    
                 },
                 eventRender: function (event, element) {
                     // Display times in local timezone (Asia/Manila)
@@ -162,6 +174,7 @@
                         },
                         dataType: "json",
                         success: function (data) {
+                            refreshEventsList()
                             calendar.fullCalendar('refetchEvents');
                             refreshEventsList(); // Refresh the events list
                             alert('Schedule Updated');
