@@ -4,6 +4,17 @@ from django.utils.text import slugify
 register = template.Library()
 
 @register.filter
+def format_end_date(start_date, end_date):
+    # Check if the years are the same
+    if start_date.year == end_date.year:
+        # Return only the month, day and time for the end date if the years are the same
+        return end_date.strftime("%b %d, %g %I:%M %p")  # Use %g for short year (e.g., 24)
+    else:
+        # Display full date for both start and end if years differ
+        return end_date.strftime("%b %d, %Y, %I:%M %p")
+
+
+@register.filter
 def get_item(dictionary, key):
     return dictionary.get(key)
 
@@ -28,3 +39,4 @@ def range_filter(value):
 @register.filter
 def slugify_filter(value):
     return slugify(value)
+

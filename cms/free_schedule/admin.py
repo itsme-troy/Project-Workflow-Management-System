@@ -5,7 +5,7 @@ from django.contrib import admin
 
 @admin.register(Available_schedule)
 class Available_scheduleAdmin(admin.ModelAdmin): 
-    fields = ( 'title', 'start', 'end', 'faculty') #'title',
+    fields = ( 'title', 'start', 'end', 'faculty', 'color') #'title',
     list_display = ( 'title','start', 'end', 'faculty') # 'title',
 
 

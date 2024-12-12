@@ -1,4 +1,19 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Function to generate a random hex color
+    function generateRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+    // Attach the click event to the Random Color button
+    $('#random-color-btn').on('click', function () {
+        var randomColor = generateRandomColor();
+        $('#schedule-color').val(randomColor); // Set the random color to the color picker
+    });
     
     // document.addEventListener('click', function(event) {
     //     const dropdowns = document.querySelectorAll('.profile_dd'); // Select all dropdowns

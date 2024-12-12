@@ -8,7 +8,8 @@ class Available_schedule(models.Model):
     start = models.DateTimeField(null=True,blank=True)
     end = models.DateTimeField(null=True,blank=True)
     faculty = models.ForeignKey(Faculty, null=True, on_delete=models.CASCADE)
-    
+    color = models.CharField(max_length=7, default='#FFFFFF')  # Store the color in hex format (e.g., #FF5733)
+    created_at = models.DateTimeField(auto_now_add=True)
     # def save(self, *args, **kwargs):
     #     # Only set the group name if it's not already set
     #     if not self.title:

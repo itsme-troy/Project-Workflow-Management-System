@@ -1,7 +1,7 @@
 {% extends 'free_schedule/base.html' %}
 {% load static %}
 {% load tz %}
-
+{% load custom_filters %}  <!-- Load custom filters -->
 
 {% block content %}
 
@@ -24,8 +24,12 @@
             <div class="scrollable-events">
                 <ul class="list-group mt-3">
                     {% for event in events %}
-                        <li class="list-group-item">
-                            From: {{ event.start|date:"M. d, Y, g a" }} to {{ event.end|date:"M. d, Y, g a" }}
+                        <li class="list-group-item d-flex align-items-center" 
+                            style="padding-left: 10px; border-radius: 4px; background: linear-gradient(to right, {{ event.color|default:'#007BFF' }} 5px, #fff 5px);">
+                            <div style="height: 100%; width: 5px; background-color: {{ event.color|default:'#007BFF' }};"></div>
+                            <span class="ms-3">
+                                From: {{ event.start|date:"M. d, Y, g a" }} to {{ event.end|date:"M. d, Y, g a" }}
+                            </span>
                         </li>
                     {% empty %}
                         <li class="list-group-item">No available schedules found.</li>

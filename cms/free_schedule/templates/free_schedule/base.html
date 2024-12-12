@@ -1,6 +1,6 @@
 {% extends 'project/base.html' %}
 {% load static %}
-
+{% load custom_filters %} 
 {% block styles %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css" />
     <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
      
     <link rel="stylesheet" href="{% static 'css/free_sched.css' %}">
-    {% comment %} <link rel="stylesheet" href="{% static 'css/style_calendar.css' %}"> {% endcomment %}
+    <link rel="stylesheet" href="{% static 'css/style_calendar.css' %}">
     <!-- FullCalendar JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
     
@@ -38,12 +38,26 @@
                 success: function (data) {
                     var list = $('.list-group');
                     list.empty(); // Clear the existing list
+        
                     if (data.length > 0) {
                         $.each(data, function (index, event) {
                             // Adjust the displayed times to Asia/Manila timezone
-                            var startFormatted = moment(event.start).tz('Asia/Manila').format("MMM-DD, YYYY hh:mm A");
-                            var endFormatted = moment(event.end).tz('Asia/Manila').format("MMM-DD, YYYY hh:mm A");
-                            list.append('<li class="list-group-item">From: ' + startFormatted + ' to ' + endFormatted + '</li>');
+                            var startFormatted = moment(event.start).tz('Asia/Manila').format("MMM. D, YYYY h:mm A");
+                            var endFormatted = moment(event.end).tz('Asia/Manila').format("MMM. D, YYYY h:mm A");
+        
+                            // Create the list item
+                            var listItem = `
+                                <li class="list-group-item d-flex align-items-center"
+                                    style="padding-left: 10px; border-radius: 4px; background: linear-gradient(to right, ${event.color || '#007BFF'} 5px, #fff 5px);">
+                                    <div style="height: 100%; width: 5px; background-color: ${event.color || '#007BFF'};"></div>
+                                    <span class="ms-3">
+                                        From: ${startFormatted} to ${endFormatted}
+                                    </span>
+                                </li>
+                            `;
+        
+                            // Append the list item to the list
+                            list.append(listItem);
                         });
                     } else {
                         list.append('<li class="list-group-item">No available schedules found.</li>');
@@ -65,11 +79,14 @@
             // Handle form submission
             $('#create-schedule-form').on('submit', function (e) {
                 e.preventDefault(); // Prevent the default form submission
-
+                
+                // Get the selected color
+                var selectedColor = $('#schedule-color').val();
+                
                 $.ajax({
                     url: 'create_schedule', // Update with the correct URL
                     type: 'POST',
-                    data: $(this).serialize(),
+                    data: $(this).serialize() + '&color=' + selectedColor, // Append color to the form data
                     success: function (response) {
                         if (response.status === 'success') {
                             alert('Schedule created successfully!');
@@ -128,16 +145,31 @@
                         alert("End time must be after start time.");
                         return;
                     }
+                    
+                    // Function to generate a random color in hex format
+                    function getRandomColor() {
+                        var letters = '0123456789ABCDEF';
+                        var color = '#';
+                        for (var i = 0; i < 6; i++) {
+                            color += letters[Math.floor(Math.random() * 16)];
+                        }
+                        return color;
+                    }
+                    
+                      // Generate a random color
+                    var randomColor = getRandomColor();
                 
-                    var title = prompt("Enter Event Title");
-                    if (title) {
+                    // Show a confirmation dialog 
+                    var confirmation = confirm("Do you want to create this schedule?");
+                    if (confirmation) {
                         $.ajax({
                             type: "GET",
                             url: 'add_sched',
                             data: {
-                                title: title, 
+                                // title: title, 
                                 start: adjustedStart.toISOString(),  // Convert to ISO format
-                                end: adjustedEnd.toISOString()      // Convert to ISO format
+                                end: adjustedEnd.toISOString(),
+                                color: randomColor,   // Pass the random color
                             },
                             dataType: "json",
                             success: function (data) {
@@ -164,7 +196,8 @@
 
                     // Remove the title from the event display by setting it to an empty string
                     element.find('.fc-title').html('');
-                
+                 // Apply the color to the event
+                    element.css('border', '2px solid ' + event.color);
                 },
                 
                 //  When resizing an event, the start and end times are converted to UTC before being sent to the server.

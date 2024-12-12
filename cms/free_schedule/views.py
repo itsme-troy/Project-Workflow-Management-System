@@ -20,8 +20,6 @@ logger = logging.getLogger(__name__)
 from django.utils.timezone import make_aware, localtime
 # from django.utils import timezone
 
-
-
 # def find_common_schedule 
 # def find_common_schedule(request): 
 #     schedules = Available_schedule.objects.all()  # or filter by some criteria
@@ -70,7 +68,7 @@ def free_sched(request): # index
         messages.error(request, "Please login to view this page")
         return redirect('login')    
     
-    all_events = Available_schedule.objects.filter(faculty=request.user.id).order_by('-start')  # Order by start time descending
+    all_events = Available_schedule.objects.filter(faculty=request.user.id).order_by('-created_at')   # Order by start time descending
     return render(request, 'free_schedule/free_schedule.html', {
         "events": all_events,
     })
@@ -88,6 +86,8 @@ def all_sched(request): # still return
             'title': event.title,
             'start': start_local.isoformat(),
             'end': end_local.isoformat(),
+            'color': event.color, 
+            
         })
     
    # Log the output for debugging
@@ -95,14 +95,14 @@ def all_sched(request): # still return
     return JsonResponse(out, safe=False)
 
 def add_sched(request):
-    title = request.GET.get("title")
+    # title = request.GET.get("title")
     start = request.GET.get("start")
     end = request.GET.get("end")
+    color = request.GET.get("color", None)
     
-    
-    logger.debug(f"Received data: title={title}, start={start}, end={end}")
+    # logger.debug(f"Received data: title={title}, start={start}, end={end}")
 
-    if not start or not end or not title:
+    if not start or not end: 
         return JsonResponse({'error': 'Missing required fields: start, end, or title'}, status=400)
 
     try:
@@ -112,18 +112,34 @@ def add_sched(request):
         # start_datetime = convert_to_utc(start)
         # end_datetime = convert_to_utc(end)
 
-        logger.debug(f"Converted times: start={start_datetime}, end={end_datetime}")
+        # logger.debug(f"Converted times: start={start_datetime}, end={end_datetime}")
 
         # Ensure end time is after start time
         if end_datetime <= start_datetime:
             logger.error("End time must be after start time")
             return JsonResponse({'error': 'End time must be after start time'}, status=400)
 
+         # Fetch existing colors for the user
+        existing_colors = list(
+            Available_schedule.objects.filter(faculty=request.user).values_list('color', flat=True)
+        )
+
+        # Default color palette
+        default_colors = [
+            '#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#F3FF33', '#33FFF6', '#A333FF'
+        ]
+
+        # Assign the first unused color from the palette
+        if not color:
+            color = next((c for c in default_colors if c not in existing_colors), '#007BFF')
+
+        # Save the new event   
         event = Available_schedule(
-            title=title,
+            # title=title,
             start=start_datetime,
             end=end_datetime,
-            faculty=request.user
+            faculty=request.user,
+            color = color, 
         )
         event.save()
 
@@ -195,6 +211,7 @@ def create_schedule(request):
     if request.method == 'POST' and request.user.is_authenticated:
         start = request.POST.get('start')
         end = request.POST.get('end')
+        color = request.POST.get('color', '#FFFFFF')  # Default to white if no color is selected
 
         if not start or not end:
             return JsonResponse({'error': 'Missing required fields: start, end, or title'}, status=400)
@@ -208,11 +225,15 @@ def create_schedule(request):
             return JsonResponse({'error': 'End time must be after start time'}, status=400)
 
         # Validate inputs and create a schedule
-        if start and end:
-            try:
-                schedule = Available_schedule.objects.create(faculty=request.user, start=start_datetime, end=end_datetime)
-                return JsonResponse({'status': 'success', 'schedule_id': schedule.id})
-            except Exception as e:
-                return JsonResponse({'status': 'error', 'message': str(e)})
-        return JsonResponse({'status': 'error', 'message': 'Invalid inputs'})
+        try:
+            schedule = Available_schedule.objects.create(
+                faculty=request.user, 
+                start=start_datetime, 
+                end=end_datetime,
+                color=color  # Save the selected color
+            )
+            return JsonResponse({'status': 'success', 'schedule_id': schedule.id})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+        
     return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=403)

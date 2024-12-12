@@ -16,7 +16,18 @@
                         <label for="schedule-end" class="form-label">End Time</label>
                         <input type="datetime-local" class="form-control" id="schedule-end" name="end" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Create Schedule</button>
+                    <div class="mb-3">
+                        <label for="schedule-color" class="form-label">Event Color</label>
+                        <div class="d-flex align-items-center">
+                            <!-- Color Picker Input -->
+                            <input type="color" class="form-control form-control-color" id="schedule-color" name="color" value="#007bff" title="Choose your color">
+                            <!-- Button to Randomly Generate a Color -->
+                            <button type="button" class="btn btn-sm btn-secondary ms-2" id="random-color-btn">
+                                <i class="fas fa-random"></i> Random Color
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Create Schedule</button>
                 </form>
             </div>
         </div>
