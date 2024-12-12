@@ -2,24 +2,22 @@
 {% load static %}
 
 {% block styles %}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" /> 
-    <!-- Updated FullCalendar JavaScript -->
-     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script> 
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css" />
+    {% comment %} <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"> {% endcomment %}
     <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
+     
+    <!-- FullCalendar JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
     
-    <link rel="stylesheet" href="{% static 'project/css/free_sched_style.css' %}">
-    <link rel="stylesheet" href="{% static 'project/js/custom.js' %}">
-
+    <!-- Custom JS -->
+    {% comment %} <script src="{% static 'project/js/custom.js' %}"></script> {% endcomment %}
 {% endblock %}
 
 {% block content %}  
     {{ block.super }}
-
 
     <script>
         
@@ -67,63 +65,39 @@
                 selectable: true,
                 selectHelper: false,
                 editable: true,
-                eventLimit: true,
+                eventLimit: false,
                 //contentHeight: 'auto',
                 //height: 'auto',
-                //defaultView: 'agendaWeek',
+                //defaultView: 'agendaDay',
                 
                 select: function (start, end, allDay) {
                     // Check the current view type (month, week, or day)
                     var currentView = calendar.fullCalendar('getView').type;
-
+                
+                    // Debugging: Show the current view type in an alert
+                    //alert("Current view type: " + currentView);
+                
                     // Declare variables for adjusted start and end times
                     var adjustedStart, adjustedEnd;
-
-                    // If the current view is 'month', set the event as an all-day event
+                
+                     // If the current view is 'month', set the event as an all-day event
                     if (currentView === 'month') {
-                        adjustedStart = moment(start).startOf('day'); // Start at 12:00 AM
-                        adjustedEnd = moment(end).endOf('day');   // End at 11:59:59 PM
-                    } else {
+                         // Start at 12:00 AM
+                        adjustedStart = moment(start).startOf('day'); 
+                        adjustedEnd = moment(end).endOf('day'); // 11:59:59 PM of the previous day
+                    } 
+                    else {
                         // For week and day views, keep the original start and end times
-                        adjustedStart = start;
-                        adjustedEnd = end;
+                        adjustedStart = moment(start);
+                        adjustedEnd = moment(end);
                     }
-                    
-
-                     // Debugging: Log values for debugging
-                    console.log('Start:', start.format());
-                    console.log('End:', end.format());
-                    console.log('Adjusted Start:', adjustedStart.format());
-                    console.log('Adjusted End:', adjustedEnd.format());
-
-                    // Make sure the adjusted times are not reversed (end < start)
-                    if (adjustedEnd.isBefore(adjustedStart)) {
-                        alert("End time cannot be before start time.");
+                
+                    // Ensure end time is after start time
+                    if (!adjustedEnd.isAfter(adjustedStart)) {
+                        alert("End time must be after start time.");
                         return;
                     }
-                    // Convert times to UTC format 
-                    //var startUTC = moment(start).utc().toISOString();
-                    //var endUTC = moment(end).utc().toISOString();
-
-                    
-                    // var startAdjusted = moment(start).tz('Asia/Manila').utc().toISOString();
-                    //var endAdjusted = moment(end).tz('Asia/Manila').utc().toISOString();
-                        
-                    // If the end time is at midnight, adjust to 11:59 PM
-                    //if (moment(end).hour() === 0 && moment(end).minute() === 0) {
-                    //    endAdjusted = moment(end).subtract(1, 'seconds').tz('Asia/Manila').utc().toISOString();
-                    //}
-                    // Set the start and end to cover the full day
-                    //var fullDayStart = moment(start).startOf('day'); // Set start to 12:00 AM
-                    //var fullDayEnd = moment(start).endOf('day'); // Set end to 11:59 PM
-                        
-                    // Ask the user for the event title
-                    // Check if end time is after start time
-                    if (adjustedEnd.isBefore(adjustedStart)) {
-                        alert("End time cannot be before start time.");
-                        return;
-                    }
-
+                
                     var title = prompt("Enter Event Title");
                     if (title) {
                         $.ajax({
@@ -136,9 +110,12 @@
                             },
                             dataType: "json",
                             success: function (data) {
-                                refreshEventsList()
+                                console.log('Fetched events:', data);  // Log the events data to the console
+                                callback(data);
+                                
                                 calendar.fullCalendar('refetchEvents');
-                                alert("Event added successfully");
+                                refreshEventsList()
+                                alert("Schedule added successfully");
                             },
                             error: function (data) {
                                 console.error(data);
@@ -148,6 +125,7 @@
                     }
                 },
                 eventRender: function (event, element) {
+                    console.log("Rendering event:", event); // Log the event to check the times and data
                     // Display times in local timezone (Asia/Manila)
                     var startFormatted = moment(event.start).tz('Asia/Manila').format('hh:mm A');
                     var endFormatted = moment(event.end).tz('Asia/Manila').format('hh:mm A');
@@ -155,6 +133,7 @@
                 
                     // Ensure that the time is inserted into the appropriate element
                     element.find('.fc-time').html(timeText);  // Ensure you're targeting the correct element
+                
                 },
                 
                 //  When resizing an event, the start and end times are converted to UTC before being sent to the server.
@@ -162,15 +141,17 @@
                 
                     var startFormatted = formatDate(event.start); 
                     var endFormatted = formatDate(event.end); 
+                    var title = event.title;
+                    var id = event.id;
 
                     $.ajax({
                         type: "GET",
                         url: 'update_sched',
                         data: {
-                            'title': event.title, 
+                            'title': title, 
                             'start': startFormatted, 
                             'end': endFormatted,
-                            'id': event.id
+                            'id': id, 
                         },
                         dataType: "json",
                         success: function (data) {
@@ -188,15 +169,19 @@
                 eventDrop: function (event) {
                     var startFormatted = formatDate(event.start); 
                     var endFormatted = formatDate(event.end); 
+                    var title = event.title;
+                    var id = event.id;
 
                     $.ajax({
                         type: "GET",
                         url: 'update_sched',
                         data: {
-                            'title': event.title, 
+                            'title': title, 
                             'start': startFormatted, 
                             'end': endFormatted, 
-                            'id': event.id},
+                            'id': id
+                        },
+                        
                         dataType: "json",
                         success: function (data) {
                             calendar.fullCalendar('refetchEvents');
@@ -241,6 +226,7 @@
                     }
                 },
             });
+            
         });
     
     </script>

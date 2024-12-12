@@ -8,7 +8,7 @@ class Available_schedule(models.Model):
     start = models.DateTimeField(null=True,blank=True)
     end = models.DateTimeField(null=True,blank=True)
     faculty = models.ForeignKey(Faculty, null=True, on_delete=models.CASCADE)
-
+    
     # def save(self, *args, **kwargs):
     #     # Only set the group name if it's not already set
     #     if not self.title:

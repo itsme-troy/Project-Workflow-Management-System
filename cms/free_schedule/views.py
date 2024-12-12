@@ -78,17 +78,18 @@ def all_sched(request): # still return
     out = []
     for event in all_events:
          # Convert start and end to Asia/Manila timezone before sending to the frontend
-        # start_local = to_local(event.start)
-        # end_local = to_local(event.end)
+        start_local = to_local(event.start)
+        end_local = to_local(event.end)
 
         out.append({
-            'id': event.id,  # Add event ID to the response data
+            'id': event.id,
             'title': event.title,
-            'start': to_local(event.start).isoformat(),
-            'end': to_local(event.end).isoformat(),
+            'start': start_local.isoformat(),
+            'end': end_local.isoformat(),
         })
     
-    # print(json.dumps(out, indent=4))  # Log JSON for debugging
+   # Log the output for debugging
+    logger.debug("Returning events: " + json.dumps(out, indent=4))  
     return JsonResponse(out, safe=False)
 
 def add_sched(request):
