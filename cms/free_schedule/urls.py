@@ -8,5 +8,7 @@ urlpatterns = [
     path('add_sched', views.add_sched, name='add_sched'), 
     path('update_sched', views.update_sched, name='update_sched'),
     path('remove_sched', views.remove_sched, name='remove_sched'),
-
+    
+    path('delete_all_schedules', views.delete_all_schedules, name='delete_all_schedules'),
+    path('create_schedule', views.create_schedule, name='create_schedule'),
 ]

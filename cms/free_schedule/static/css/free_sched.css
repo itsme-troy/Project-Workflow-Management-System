@@ -1,0 +1,43 @@
+.scrollable-events {
+    max-height: 600px; /* Restrict the height for scrollable content */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 2px solid #6c757d; /* Add a subtle border */
+    border-radius: 8px; /* Round the corners */
+    padding: 15px; /* Add padding inside the container */
+    background-color: #f8f9fa; /* Light background color for contrast */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+    margin-top: 25px; /* Space above the container */
+}
+
+/* Style list items inside the scrollable container */
+.scrollable-events .list-group-item {
+    border: none; /* Remove default list borders */
+    border-bottom: 1px solid #ddd; /* Add subtle separators */
+    padding: 10px 15px; /* Add consistent padding */
+    background-color: transparent; /* Transparent background */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+/* Hover effect for list items */
+.scrollable-events .list-group-item:hover {
+    background-color: #e9ecef; /* Light gray background on hover */
+}
+
+/* Add a custom scrollbar */
+.scrollable-events::-webkit-scrollbar {
+    width: 10px; /* Width of the scrollbar */
+}
+
+.scrollable-events::-webkit-scrollbar-track {
+    background: #f8f9fa; /* Background of the scrollbar track */
+    border-radius: 8px; /* Round the scrollbar track corners */
+}
+
+.scrollable-events::-webkit-scrollbar-thumb {
+    background: #6c757d; /* Scrollbar color */
+    border-radius: 8px; /* Round the scrollbar corners */
+}
+
+.scrollable-events::-webkit-scrollbar-thumb:hover {
+    background: #495057; /* Darker scrollbar color on hover */
+}

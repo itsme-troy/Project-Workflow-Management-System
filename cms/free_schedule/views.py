@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Available_schedule
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 import json
 
 from django.utils.timezone import localtime  
@@ -177,3 +179,40 @@ def remove_sched(request):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+def delete_all_schedules(request):
+    if request.method == 'POST':
+        try:
+            # Delete all schedules for the logged-in user
+            Available_schedule.objects.filter(faculty=request.user).delete()
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+
+@csrf_exempt
+def create_schedule(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        start = request.POST.get('start')
+        end = request.POST.get('end')
+
+        if not start or not end:
+            return JsonResponse({'error': 'Missing required fields: start, end, or title'}, status=400)
+
+        start_datetime = datetime.fromisoformat(start).astimezone(pytz.utc)
+        end_datetime = datetime.fromisoformat(end).astimezone(pytz.utc)
+        
+         # Ensure end time is after start time
+        if end_datetime <= start_datetime:
+            logger.error("End time must be after start time")
+            return JsonResponse({'error': 'End time must be after start time'}, status=400)
+
+        # Validate inputs and create a schedule
+        if start and end:
+            try:
+                schedule = Available_schedule.objects.create(faculty=request.user, start=start_datetime, end=end_datetime)
+                return JsonResponse({'status': 'success', 'schedule_id': schedule.id})
+            except Exception as e:
+                return JsonResponse({'status': 'error', 'message': str(e)})
+        return JsonResponse({'status': 'error', 'message': 'Invalid inputs'})
+    return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=403)
