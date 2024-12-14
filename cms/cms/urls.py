@@ -10,9 +10,9 @@ urlpatterns = [
     path("", include("project.urls")),
     path('users/', include('django.contrib.auth.urls')), # gonna deal w/ authentication
     path('users/', include('users.urls')), 
-    path('calendar_app/', include('calendar_app.urls')), 
+    # path('calendar/', include('calendar_app.urls')), 
     path('free_schedule/', include('free_schedule.urls')), 
-    path('common_schedule/', include('common_schedule.urls')),
+    path('defense_schedule/', include('defense_schedule.urls')),
 
     
     # path("calendarapp", include("calendarapp.urls")),
@@ -21,5 +21,5 @@ urlpatterns = [
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Configure Admin Titles
-admin.site.site_header = "Capstone Management System Page"
+admin.site.site_header = "SP System Page"
 admin.site.index_title = "Welcome to the Admin Area"

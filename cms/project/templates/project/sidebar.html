@@ -134,12 +134,10 @@
                             <li><a class="dropdown-item" href="{% url 'list-archived-projects' %}"><i class="fas fa-archive  icon icon-margin"></i> Archived Projects</a></li>
                     {% endif %}
 
-
                 {% endif  %}
 
                 </ul>
             </li>
-
 
             {% if user.role == 'STUDENT' or request.user.is_current_coordinator%}
             <li class="nav-item dropdown">
@@ -212,11 +210,13 @@
                         </a>
                     <ul class="dropdown-menu">
 
+                        {% comment %} {% if request.user.is_current_coordinator %} {% endcomment %}
+                        <li><a class="dropdown-item" href="{% url 'defense-schedule' %}"><i class="fas fa-calendar-alt icon icon-margin"></i> Defense Schedule </a></li>  
+                        {% comment %} {% endif %} {% endcomment %}
+
+                        
                         {% if request.user.role == 'FACULTY' %}
                             <li><a class="dropdown-item" href="{% url 'free-schedule' %}"> Set free Schedule  </a></li> {% endif %}
-
-                        {% if request.user.is_current_coordinator %}
-                            <li><a class="dropdown-item" href="{% url 'common-sched-calendar' %}"><i class="fas fa-calendar-alt icon icon-margin"></i> View Common Schedule</a></li>  {% endif %}
 
                         
                         </ul>

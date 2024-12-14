@@ -15,6 +15,24 @@ document.addEventListener('DOMContentLoaded', function() {
         $('#schedule-color').val(randomColor); // Set the random color to the color picker
     });
     
+    const startInput = document.getElementById("schedule-start");
+    const endInput = document.getElementById("schedule-end");
+
+    function formatDate(date) {
+        const options = { year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+        return new Date(date).toLocaleString('en-GB', options); // Adjust locale if needed
+    }
+
+    // Display the formatted date when the user selects a time
+    startInput.addEventListener("change", function() {
+        const formattedDate = formatDate(startInput.value);
+        startInput.setAttribute("data-formatted", formattedDate); // Store formatted date
+    });
+
+    endInput.addEventListener("change", function() {
+        const formattedDate = formatDate(endInput.value);
+        endInput.setAttribute("data-formatted", formattedDate); // Store formatted date
+    });
     // document.addEventListener('click', function(event) {
     //     const dropdowns = document.querySelectorAll('.profile_dd'); // Select all dropdowns
     //     dropdowns.forEach(dropdown => {

@@ -11,8 +11,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
      
-    <link rel="stylesheet" href="{% static 'css/free_sched.css' %}">
-    <link rel="stylesheet" href="{% static 'css/style_calendar.css' %}">
+    <link rel="stylesheet" href="{% static 'free_schedule/css/free_sched.css' %}">
+    <link rel="stylesheet" href="{% static 'free_schedule/css/style_calendar.css' %}">
+    
     <!-- FullCalendar JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
     
@@ -60,7 +61,7 @@
                             list.append(listItem);
                         });
                     } else {
-                        list.append('<li class="list-group-item">No available schedules found.</li>');
+                        list.append('<li class="list-group-item">No Defense Schedules found.</li>');
                     }
                 },
                 error: function (data) {
@@ -71,20 +72,20 @@
         }
 
         $(document).ready(function () {
-            $('#create-schedule-btn').on('click', function () {
+            $('#create-defense-schedule-btn').on('click', function () {
                 // Open a modal for schedule creation
-                $('#createScheduleModal').modal('show');
+                $('#createDefenseScheduleModal').modal('show');
             });
 
-            // Handle form submission
-            $('#create-schedule-form').on('submit', function (e) {
+             // Handle form submission
+             $('#create-defense-schedule-form').on('submit', function (e) {
                 e.preventDefault(); // Prevent the default form submission
                 
                 // Get the selected color
                 var selectedColor = $('#schedule-color').val();
                 
                 $.ajax({
-                    url: 'create_schedule', // Update with the correct URL
+                    url: 'create_defense_schedule', 
                     type: 'POST',
                     data: $(this).serialize() + '&color=' + selectedColor, // Append color to the form data
                     success: function (response) {
@@ -298,10 +299,10 @@
                 },
             });
 
-            $('#delete-all-free-schedules-btn').on('click', function () {
-                if (confirm('Are you sure you want to delete all available schedules? This action cannot be undone.')) {
+            $('#delete-all-defense-schedules-btn').on('click', function () {
+                if (confirm('Are you sure you want to delete all Defense schedules? This action cannot be undone.')) {
                     $.ajax({
-                        url: '{% url "delete_all_free_schedules" %}',  
+                        url: '{% url "delete_all_defense_schedules" %}',  // Define this view in your Django project
                         type: 'POST',
                         data: {
                             csrfmiddlewaretoken: '{{ csrf_token }}'
@@ -321,6 +322,7 @@
                     });
                 }
             });
+            
         });
     
     </script>

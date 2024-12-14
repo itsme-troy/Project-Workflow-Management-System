@@ -28,9 +28,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "project",
     "users",
-    "calendar_app",
+    # "calendar_app",
     "free_schedule", 
-    "common_schedule", 
+    'defense_schedule',
+    # "common_schedule", 
     "google_calendar",
     # "calendarapp.apps.CalendarappConfig",
  

@@ -1,7 +1,7 @@
-
+from django.shortcuts import render
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Available_schedule
+from .models import Defense_schedule
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -20,33 +20,6 @@ logger = logging.getLogger(__name__)
 from django.utils.timezone import make_aware, localtime
 # from django.utils import timezone
 
-# def find_common_schedule 
-# def find_common_schedule(request): 
-#     schedules = Available_schedule.objects.all()  # or filter by some criteria
-#     common_slots = {}
-#     # Here, add logic to find overlapping time slots
-#     for schedule in schedules:
-#         start_time = schedule.start
-#         end_time = schedule.end
-
-#      # Assuming common_slots is a dictionary where keys are start times and values are lists of events
-#         if (start_time, end_time) in common_slots:
-#             common_slots[(start_time, end_time)].append(schedule)
-        
-#         else:
-#             common_slots[(start_time, end_time)] = [schedule]
-
-#     # Prepare the response in the required format
-#     events = []
-#     for (start, end), schedules in common_slots.items():
-#         events.append({
-#             'title': 'Common Slot',
-#             'start': start.strftime("%Y-%m-%d %H:%M:%S"),
-#             'end': end.strftime("%Y-%m-%d %H:%M:%S"),
-#         })
-
-#     return JsonResponse(events, safe=False)
-
 def convert_to_utc(date_str):
     try:
         local_timezone = timezone('Asia/Manila')  # Correct usage of pytz.timezone
@@ -63,18 +36,21 @@ def to_local(utc_time):
     except Exception as e:
         raise ValueError(f"Error converting time to local: {e}")
 
-def free_sched(request): # index 
+
+# Create your views here.
+def defense_sched(request):
     if not request.user.is_authenticated: 
         messages.error(request, "Please login to view this page")
         return redirect('login')    
     
-    all_events = Available_schedule.objects.filter(faculty=request.user.id).order_by('-created_at')   # Order by start time descending
-    return render(request, 'free_schedule/free_schedule.html', {
+    all_events = Defense_schedule.objects.all().order_by('-created_at')   # Order by start time descending
+    return render(request, 'defense_schedule/defense_schedule.html', {
         "events": all_events,
     })
 
+
 def all_sched(request): # still return 
-    all_events = Available_schedule.objects.filter(faculty=request.user.id).order_by('-created_at') 
+    all_events = Defense_schedule.objects.all().order_by('-created_at') 
     out = []
     for event in all_events:
          # Convert start and end to Asia/Manila timezone before sending to the frontend
@@ -83,11 +59,10 @@ def all_sched(request): # still return
 
         out.append({
             'id': event.id,
-            'title': event.title,
+            # 'title': event.title,
             'start': start_local.isoformat(),
             'end': end_local.isoformat(),
             'color': event.color, 
-            
         })
     
    # Log the output for debugging
@@ -121,7 +96,7 @@ def add_sched(request):
 
          # Fetch existing colors for the user
         existing_colors = list(
-            Available_schedule.objects.filter(faculty=request.user).values_list('color', flat=True)
+            Defense_schedule.objects.all().values_list('color', flat=True)
         )
 
         # Default color palette
@@ -134,11 +109,11 @@ def add_sched(request):
             color = next((c for c in default_colors if c not in existing_colors), '#007BFF')
 
         # Save the new event   
-        event = Available_schedule(
+        event = Defense_schedule(
             # title=title,
             start=start_datetime,
             end=end_datetime,
-            faculty=request.user,
+            # faculty=request.user,
             color = color, 
             # all_day=all_day,  # Save the allDay status
         )
@@ -157,50 +132,51 @@ def add_sched(request):
 def update_sched(request):
     start = request.GET.get("start")
     end = request.GET.get("end")
-    title = request.GET.get("title")
+    # title = request.GET.get("title")
     event_id = request.GET.get("id")
     
     try:
         start_datetime = datetime.fromisoformat(start).astimezone(pytz.utc)
         end_datetime = datetime.fromisoformat(end).astimezone(pytz.utc)
 
-        event = Available_schedule.objects.get(id=event_id)
+        event = Defense_schedule.objects.get(id=event_id)
         event.start = start_datetime
         event.end = end_datetime
-        event.title = title
+        # event.title = title
         event.save()
 
         return JsonResponse({
             'status': 'success',
             'message': 'Schedule updated successfully',
             'id': event.id,
-            'title': event.title,
+            # 'title': event.title,
             'start': event.start.isoformat(),
             'end': event.end.isoformat(),
         })
-    except Available_schedule.DoesNotExist:
+    except Defense_schedule.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Event not found'})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
  
 def remove_sched(request):
+    # pass
     if request.method == 'GET':
         id = request.GET.get("id", None)
         try:
-            event = Available_schedule.objects.get(id=id)
+            event = Defense_schedule.objects.get(id=id)
             print(f"Deleting event: {event}")  # Debug print to ensure the event is found
             event.delete()
             return JsonResponse({'status': 'success', 'message': 'Event removed successfully'})
-        except Available_schedule.DoesNotExist:
+        except Defense_schedule.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Event not found'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
-def delete_all_free_schedules(request):
+def delete_all_defense_schedules(request):
     if request.method == 'POST':
         try:
-            schedules = Available_schedule.objects.all()
+            schedules = Defense_schedule.objects.all()
             if not schedules.exists():
                 return JsonResponse({'status': 'error', 'message': 'No schedules available to delete.'})
             
@@ -211,8 +187,9 @@ def delete_all_free_schedules(request):
             return JsonResponse({'status': 'error', 'message': str(e)})
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
 
-@csrf_exempt
-def create_schedule(request):
+
+# @csrf_exempt
+def create_defense_schedule(request):
     if request.method == 'POST' and request.user.is_authenticated:
         start = request.POST.get('start')
         end = request.POST.get('end')
@@ -231,8 +208,8 @@ def create_schedule(request):
 
         # Validate inputs and create a schedule
         try:
-            schedule = Available_schedule.objects.create(
-                faculty=request.user, 
+            schedule = Defense_schedule.objects.create(
+                # faculty=request.user, 
                 start=start_datetime, 
                 end=end_datetime,
                 color=color  # Save the selected color
@@ -242,3 +219,31 @@ def create_schedule(request):
             return JsonResponse({'status': 'error', 'message': str(e)})
         
     return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=403)
+
+
+# def find_common_schedule 
+# def find_common_schedule(request): 
+#     schedules = Available_schedule.objects.all()  # or filter by some criteria
+#     common_slots = {}
+#     # Here, add logic to find overlapping time slots
+#     for schedule in schedules:
+#         start_time = schedule.start
+#         end_time = schedule.end
+
+#      # Assuming common_slots is a dictionary where keys are start times and values are lists of events
+#         if (start_time, end_time) in common_slots:
+#             common_slots[(start_time, end_time)].append(schedule)
+        
+#         else:
+#             common_slots[(start_time, end_time)] = [schedule]
+
+#     # Prepare the response in the required format
+#     events = []
+#     for (start, end), schedules in common_slots.items():
+#         events.append({
+#             'title': 'Common Slot',
+#             'start': start.strftime("%Y-%m-%d %H:%M:%S"),
+#             'end': end.strftime("%Y-%m-%d %H:%M:%S"),
+#         })
+
+#     return JsonResponse(events, safe=False)

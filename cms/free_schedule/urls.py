@@ -1,5 +1,4 @@
 from django.urls import path
-
 from . import views 
 urlpatterns = [
     # All Available Schedule 
@@ -9,6 +8,6 @@ urlpatterns = [
     path('update_sched', views.update_sched, name='update_sched'),
     path('remove_sched', views.remove_sched, name='remove_sched'),
     
-    path('delete_all_schedules', views.delete_all_schedules, name='delete_all_schedules'),
+    path('delete_all_free_schedules', views.delete_all_free_schedules, name='delete_all_free_schedules'),
     path('create_schedule', views.create_schedule, name='create_schedule'),
 ]

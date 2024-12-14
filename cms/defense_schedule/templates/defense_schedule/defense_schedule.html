@@ -1,4 +1,4 @@
-{% extends 'free_schedule/base.html' %}
+{% extends 'defense_schedule/base.html' %}
 {% load static %}
 {% load tz %}
 {% load custom_filters %}  <!-- Load custom filters -->
@@ -15,13 +15,13 @@
     <div class="row">
         <div class="col-md-4">
             <h4>Defense Schedule </h4> 
-            {% comment %} <button id="create-schedule-btn" class="btn btn-success btn-sm">
+             <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
                 <i class="fas fa-plus-circle icon" style="color: white;"></i> Create
             </button>
 
-            <button id="delete-all-schedules-btn" class="btn btn-danger btn-sm">
+            <button id="delete-all-defense-schedules-btn" class="btn btn-danger btn-sm">
                 <i class="fas fa-trash"></i> Delete All
-            </button>
+            </button> 
             
             <div class="scrollable-events">
                 <ul class="list-group mt-3">
@@ -38,8 +38,8 @@
                     {% endfor %}
                 </ul>
             </div>
-
         </div>
+        
         <div class="col-md-8"> 
             <div id='calendar'></div> 
         </div>
@@ -49,9 +49,10 @@
     {% comment %} {% for event in events %}
         <p>{{ event.title }} - {{ event.start|localtime }} to {{ event.end|localtime }}</p>
     {% endfor %}   
-    
+    {% endcomment %}
     <!-- Include the modal -->
-     {% endcomment %}
+    {% include 'defense_schedule/create_defense_schedule_modal.html' %}
+    
     {% else %}
         <h1> Sorry! Please login first to view this Page. </h1> 
     </br> </br> 

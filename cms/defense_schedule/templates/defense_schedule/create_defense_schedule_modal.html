@@ -1,12 +1,12 @@
-<div class="modal fade" id="createScheduleModal" tabindex="-1" aria-labelledby="createScheduleModalLabel" aria-hidden="true">
+<div class="modal fade" id="createDefenseScheduleModal" tabindex="-1" aria-labelledby="createDefenseScheduleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-m modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="createScheduleModalLabel">Create Available Schedule</h5>
+                <h5 class="modal-title" id="createDefenseScheduleModalLabel">Create Defense Schedule</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="create-schedule-form">
+                <form id="create-defense-schedule-form">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="schedule-start" class="form-label">Start Time</label>
@@ -27,7 +27,7 @@
                             </button>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Create Schedule</button>
+                    <button type="submit" class="btn btn-primary w-100">Create Defense Schedule</button>
                 </form>
             </div>
         </div>

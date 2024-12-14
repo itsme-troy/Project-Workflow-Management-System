@@ -1,5 +1,5 @@
-from .models import Available_schedule
 from django.contrib import admin
+from .models import Available_schedule
 # Register your models here.
 
 
@@ -9,3 +9,4 @@ class Available_scheduleAdmin(admin.ModelAdmin):
     list_display = ( 'title','start', 'end', 'faculty') # 'title',
 
 
+    

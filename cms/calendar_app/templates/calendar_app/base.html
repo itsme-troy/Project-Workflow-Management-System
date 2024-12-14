@@ -298,29 +298,7 @@
                 },
             });
 
-            $('#delete-all-free-schedules-btn').on('click', function () {
-                if (confirm('Are you sure you want to delete all available schedules? This action cannot be undone.')) {
-                    $.ajax({
-                        url: '{% url "delete_all_free_schedules" %}',  
-                        type: 'POST',
-                        data: {
-                            csrfmiddlewaretoken: '{{ csrf_token }}'
-                        },
-                        success: function (response) {
-                            if (response.status === 'success') {
-                                alert('All schedules deleted successfully.');
-                                location.reload();  // Refresh the page to update the UI
-                            } else {
-                                alert(response.message || 'Failed to delete schedules. Please try again.');
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            console.error(xhr.responseText);
-                            alert('An error occurred. Please try again.');
-                        }
-                    });
-                }
-            });
+            
         });
     
     </script>
