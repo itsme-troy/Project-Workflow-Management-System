@@ -9,6 +9,18 @@
                 <form id="create-defense-schedule-form">
                     {% csrf_token %}
                     <div class="mb-3">
+                        <label for="schedule-application" class="form-label">Defense Application</label>
+                        <select class="form-select" id="schedule-application" name="application" required>
+                            <option value="">Select a Defense Application</option>
+                            {% for application in defense_applications %}
+                                <option value="{{ application.id }}">
+                                    {{ application.project.title }} - {{ application.get_title_display }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
                         <label for="schedule-start" class="form-label">Start Time</label>
                         <input type="datetime-local" class="form-control" id="schedule-start" name="start" required>
                     </div>
@@ -27,6 +39,7 @@
                             </button>
                         </div>
                     </div>
+                    
                     <button type="submit" class="btn btn-primary w-100">Create Defense Schedule</button>
                 </form>
             </div>

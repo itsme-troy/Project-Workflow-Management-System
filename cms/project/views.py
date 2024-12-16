@@ -949,6 +949,7 @@ def list_defense_applications(request):
     else:
         messages.success(request, "Please Login to view this page")
         return redirect('login')
+    
 def my_defense_application(request):
     if request.user.is_authenticated and request.user.role != 'STUDENT':
         messages.error(request, "You are not a Student. You cannot view this page.")

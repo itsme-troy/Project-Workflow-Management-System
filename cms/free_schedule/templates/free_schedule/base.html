@@ -268,7 +268,7 @@
                 
                 // This allows for removing events from the calendar and from the database.
                 eventClick: function (event) {
-                    if (confirm("Are you sure you want to remove the event with ID: " + event.id + "?")) {
+                    if (confirm("Are you sure you want to remove this schedule?")) {
                         var id = event.id;
                         $.ajax({
                             type: "GET",

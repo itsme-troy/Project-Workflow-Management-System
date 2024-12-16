@@ -25,7 +25,7 @@
     {{ block.super }}
 
     <script>
-        
+
         function formatDate(date) {
             return moment(date).toISOString(); // Use ISO format
         }
@@ -72,28 +72,52 @@
         }
 
         $(document).ready(function () {
-            $('#create-defense-schedule-btn').on('click', function () {
-                // Open a modal for schedule creation
-                $('#createDefenseScheduleModal').modal('show');
-            });
+            // Function to open the modal and set start and end times
+            function openCreateScheduleModal(start = '', end = '') {
+                // Set the start and end fields if provided
+                $('#schedule-start').val(start);
+                $('#schedule-end').val(end);
 
-             // Handle form submission
-             $('#create-defense-schedule-form').on('submit', function (e) {
+                // Reset other fields
+                $('#schedule-application').val('');
+                $('#schedule-color').val('#007bff');
+        
+                // Open the modal 
+                $('#createDefenseScheduleModal').modal('show');
+            }
+        
+            //   // Open modal without pre-filled dates when the "Create Schedule" button is clicked
+            $('#create-defense-schedule-btn').on('click', function () {
+                openCreateScheduleModal(); // No dates passed
+            });
+        
+            // Handle form submission
+            $('#create-defense-schedule-form').on('submit', function (e) {
                 e.preventDefault(); // Prevent the default form submission
-                
+        
+                // Get the CSRF token
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+                // Serialize form data
+                const formData = $(this).serialize();
+        
                 // Get the selected color
-                var selectedColor = $('#schedule-color').val();
-                
+                const selectedColor = $('#schedule-color').val();
+        
+                // Send AJAX request
                 $.ajax({
-                    url: 'create_defense_schedule', 
+                    url: 'create_defense_schedule', // URL for the view
                     type: 'POST',
-                    data: $(this).serialize() + '&color=' + selectedColor, // Append color to the form data
+                    headers: {
+                        'X-CSRFToken': csrfToken // Include the CSRF token in the headers
+                    },
+                    data: formData + '&color=' + encodeURIComponent(selectedColor), // Append color to the serialized data
                     success: function (response) {
                         if (response.status === 'success') {
                             alert('Schedule created successfully!');
                             location.reload(); // Refresh the page to show the new schedule
                         } else {
-                            alert('Failed to create schedule. Please try again.');
+                            alert(`Failed to create schedule: ${response.message}`);
                         }
                     },
                     error: function (xhr, status, error) {
@@ -102,7 +126,8 @@
                     }
                 });
             });
-            
+        
+            // Initialize FullCalendar
             var calendar = $('#calendar').fullCalendar({
                 header: {
                     left: 'prev,next today',
@@ -110,14 +135,14 @@
                     right: 'month,agendaWeek,agendaDay'
                 },
                 timezone: 'Asia/Manila', // Align with server timezone
-                events: 'all_sched',
-                selectable: true,
-                selectHelper: false,
-                editable: true,
-                eventLimit: false,
+                events: 'all_sched',  // Load events from this endpoint
+                selectable: true,  // Enable selection on the calendar
+                selectHelper: false,  // Disable "helper" selection UI
+                editable: true,  // Allow event editing
+                eventLimit: false, // // Disable event limit per day
                 //contentHeight: 'auto',
                 //height: 'auto',
-                defaultView: 'agendaWeek',
+                defaultView: 'agendaWeek', // Default view is the week view
                 
                 select: function (start, end, allDay) {
                     // Check the current view type (month, week, or day)
@@ -127,17 +152,18 @@
                     var adjustedStart, adjustedEnd;
                 
                      // If the current view is 'month', set the event as an all-day event
+                    // If the current view is 'month', set the event as an all-day event
                     if (currentView === 'month') {
-                         // Start at 12:00 AM
-                        adjustedStart = moment(start).startOf('day'); 
-                        adjustedEnd = moment(end).endOf('day'); // 11:59:59 PM of the previous day
-                        isAllDay = true;
-                    } 
-                    else {
-                        // For week and day views, keep the original start and end times
-                        adjustedStart = moment(start);
-                        adjustedEnd = moment(end);
-                        isAllDay = allDay;// If the user selects an all-day event, pass it accordingly
+                        // Adjust start and end times for all-day events (12:00 AM to 11:59 PM)
+                        var adjustedStart = start.clone().startOf('day'); // Start at 12:00 AM
+                        var adjustedEnd = end.clone().subtract(1, 'seconds').endOf('day'); // End at 11:59 PM
+                        // isAllDay = true;
+                        // Open the modal with the adjusted start and end times
+                        openCreateScheduleModal(adjustedStart.toISOString(), adjustedEnd.toISOString(), true);
+                    } else {
+                        // For other views (week, day), pass the original start and end times
+                        openCreateScheduleModal(start.toISOString(), end.toISOString());
+                        // If the user selects an all-day event, pass it accordingly
                     } 
                 
                     // Ensure end time is after start time
@@ -145,67 +171,41 @@
                         alert("End time must be after start time.");
                         return;
                     }
-                    
-                    // Function to generate a random color in hex format
-                    function getRandomColor() {
-                        var letters = '0123456789ABCDEF';
-                        var color = '#';
-                        for (var i = 0; i < 6; i++) {
-                            color += letters[Math.floor(Math.random() * 16)];
-                        }
-                        return color;
-                    }
-                    
-                      // Generate a random color
-                    var randomColor = getRandomColor();
-                
-                    // Show a confirmation dialog 
-                    var confirmation = confirm("Do you want to create this schedule?");
-                    if (confirmation) {
-                        $.ajax({
-                            type: "GET",
-                            url: 'add_sched',
-                            data: {
-                                // title: title, 
-                                start: adjustedStart.toISOString(),  // Convert to ISO format
-                                end: adjustedEnd.toISOString(),
-                                color: randomColor,   // Pass the random color
-                                //allDay: isAllDay      // Pass the 'allDay' property
-                                // Convert to ISO format
-                            },
-                            dataType: "json",
-                            success: function (data) {
-                                calendar.fullCalendar('refetchEvents');
-                                refreshEventsList()
-                                alert("Schedule added successfully");
-                            },
-                            error: function (data) {
-                                console.error(data);
-                                alert('There was a problem adding the event!');
-                            }
-                        });
-                    }
+
                 },
+                
                 eventRender: function (event, element) {
                     console.log("Rendering event:", event); // Log the event to check the times and data
-                    // Display times in local timezone (Asia/Manila)
+                    
+                    // Format start and end times in the local timezone (Asia/Manila)
                     var startFormatted = moment(event.start).tz('Asia/Manila').format('hh:mm A');
                     var endFormatted = moment(event.end).tz('Asia/Manila').format('hh:mm A');
                     var timeText = startFormatted + ' - ' + endFormatted; 
                 
-                    // Ensure that the time is inserted into the appropriate element
-                    element.find('.fc-time').html(timeText);  // Ensure you're targeting the correct element
+                    // Construct the content to display project title first, followed by the time
+                    var displayContent = '<div><strong>' + event.projectTitle + '</strong><br>' + '<strong>' + timeText + '</strong></div>';
 
-                    // Remove the title from the event display by setting it to an empty string
-                    element.find('.fc-title').html('');
-                 // Apply the color to the event
+                    // Ensure that the time and title are inserted into the event's element
+                    element.find('.fc-content').html(displayContent);
+                
+                    // Apply the color to the event's border
                     element.css('border', '2px solid ' + event.color);
                 
-                    // If the event is an all-day event, display it in the all-day row
-                    if (event.allDay) {
-                        element.addClass('fc-day-grid-event'); // Make sure it appears in the all-day section
+                    var startMoment = moment(event.start).tz('Asia/Manila');
+                    var endMoment = moment(event.end).tz('Asia/Manila');
+                
+                    // Example: If the event spans exactly from 00:00:00 on Dec 17 to 00:00:00 on Dec 18
+                    var specificStart = moment('2024-12-17 00:00:00', 'YYYY-MM-DD HH:mm:ss').tz('Asia/Manila');
+                    var specificEnd = moment('2024-12-18 00:00:00', 'YYYY-MM-DD HH:mm:ss').tz('Asia/Manila');
+                
+                    if (startMoment.isSame(specificStart) && endMoment.isSame(specificEnd)) {
+                        event.allDay = true; // Mark the event as all-day
                     }
-                    
+                
+                    // Handle all-day events
+                    if (event.allDay) {
+                        element.addClass('fc-day-grid-event'); // Ensure it appears in the all-day section
+                    }
                 },
                         
                 //  When resizing an event, the start and end times are converted to UTC before being sent to the server.
@@ -269,7 +269,7 @@
                 
                 // This allows for removing events from the calendar and from the database.
                 eventClick: function (event) {
-                    if (confirm("Are you sure you want to remove the event with ID: " + event.id + "?")) {
+                    if (confirm("Are you sure you want to remove this event?")) {
                         var id = event.id;
                         $.ajax({
                             type: "GET",

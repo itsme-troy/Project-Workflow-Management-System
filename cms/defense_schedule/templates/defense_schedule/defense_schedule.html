@@ -30,7 +30,7 @@
                             style="padding-left: 10px; border-radius: 4px; background: linear-gradient(to right, {{ event.color|default:'#007BFF' }} 5px, #fff 5px);">
                             <div style="height: 100%; width: 5px; background-color: {{ event.color|default:'#007BFF' }};"></div>
                             <span class="ms-3">
-                                From: {{ event.start|date:"M. d, Y, g a" }} to {{ event.end|date:"M. d, Y, g a" }}
+                                From: {{ event.start|date:"M. d, Y, g:i a" }} to {{ event.end|date:"M. d, Y, g:i a" }}
                             </span>
                         </li>
                     {% empty %}

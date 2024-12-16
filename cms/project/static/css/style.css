@@ -1123,7 +1123,7 @@ body {
     width: auto; /* Set width to auto */
     padding: 30px; 
     margin: 40px auto;
-     margin-left: 20px; /* Set a specific left margin */
+    margin-left: 20px; /* Set a specific left margin */
     background-color: #ffffff; /* White background for content */
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */

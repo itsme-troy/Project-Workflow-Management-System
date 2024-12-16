@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 from django.utils.timezone import localtime  
+from project.models import Defense_Application 
 
 from datetime import datetime
 from pytz import timezone  
@@ -15,6 +16,9 @@ import pytz
 local_tz = pytz.timezone('Asia/Manila')
 
 import logging
+
+from project.models import ProjectPhase
+from django.db.models import Subquery, OuterRef, Max, Q, F
 
 logger = logging.getLogger(__name__)
 from django.utils.timezone import make_aware, localtime
@@ -43,9 +47,30 @@ def defense_sched(request):
         messages.error(request, "Please login to view this page")
         return redirect('login')    
     
+    # Pass Defense Applications to the modal
+    # Subquery to fetch the latest submission date per project
+    latest_application_date_subquery = Defense_Application.objects.filter(
+        project=OuterRef('project')
+    ).order_by('-submission_date').values('submission_date')[:1]
+
+    # Filter for the latest defense application per project with date comparison
+    defense_applications = Defense_Application.objects.annotate(
+        latest_application_date=Subquery(latest_application_date_subquery)
+    ).filter(submission_date=F('latest_application_date'))
+
+    # Check for 'pending' verdict in the latest phase
+    latest_phase_subquery = ProjectPhase.objects.filter(
+        project=OuterRef('project')
+    ).order_by('-date').values('verdict')[:1]
+
+    defense_applications = defense_applications.annotate(
+        latest_verdict=Subquery(latest_phase_subquery)
+    ).filter(latest_verdict='pending')
+
     all_events = Defense_schedule.objects.all().order_by('-created_at')   # Order by start time descending
     return render(request, 'defense_schedule/defense_schedule.html', {
         "events": all_events,
+        "defense_applications": defense_applications,
     })
 
 
@@ -74,6 +99,7 @@ def add_sched(request):
     start = request.GET.get("start")
     end = request.GET.get("end")
     color = request.GET.get("color", None)
+    # application_id = request.GET("application")
     # all_day = request.GET.get("allDay", "false") == "true"
     # logger.debug(f"Received data: title={title}, start={start}, end={end}")
 
@@ -113,6 +139,7 @@ def add_sched(request):
             # title=title,
             start=start_datetime,
             end=end_datetime,
+            # application = application,
             # faculty=request.user,
             color = color, 
             # all_day=all_day,  # Save the allDay status
@@ -191,33 +218,44 @@ def delete_all_defense_schedules(request):
 # @csrf_exempt
 def create_defense_schedule(request):
     if request.method == 'POST' and request.user.is_authenticated:
+        # Get form data
         start = request.POST.get('start')
         end = request.POST.get('end')
         color = request.POST.get('color', '#FFFFFF')  # Default to white if no color is selected
-
-        if not start or not end:
+        application_id = request.POST.get('application')
+        
+        # Validate inputs
+        if not start or not end or not application_id:
             return JsonResponse({'error': 'Missing required fields: start, end, or title'}, status=400)
 
-        start_datetime = datetime.fromisoformat(start).astimezone(pytz.utc)
-        end_datetime = datetime.fromisoformat(end).astimezone(pytz.utc)
-        
-         # Ensure end time is after start time
-        if end_datetime <= start_datetime:
-            logger.error("End time must be after start time")
-            return JsonResponse({'error': 'End time must be after start time'}, status=400)
+         # Convert start and end times to aware datetime
+        try:
+            start_datetime = make_aware(datetime.fromisoformat(start))
+            end_datetime = make_aware(datetime.fromisoformat(end))
 
-        # Validate inputs and create a schedule
+            if end_datetime <= start_datetime:
+                return JsonResponse({'status': 'error', 'message': 'End time must be after start time'}, status=400)
+        except ValueError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid datetime format'}, status=400)
+
+         # Check if the Defense_Application exists
+        try:
+            application = Defense_Application.objects.get(id=application_id)
+        except Defense_Application.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Invalid Defense Application selected'}, status=404)
+
+        # Create the Defense Schedule
         try:
             schedule = Defense_schedule.objects.create(
-                # faculty=request.user, 
-                start=start_datetime, 
+                start=start_datetime,
                 end=end_datetime,
-                color=color  # Save the selected color
+                color=color,
+                application=application
             )
             return JsonResponse({'status': 'success', 'schedule_id': schedule.id})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
-        
+
     return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=403)
 
 

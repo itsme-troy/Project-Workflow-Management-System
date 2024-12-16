@@ -1,7 +1,6 @@
 from django.db import models
 from project.models import Defense_Application
 
-# Create your models here.
 
 # Create your models here.
 class Defense_schedule(models.Model):
