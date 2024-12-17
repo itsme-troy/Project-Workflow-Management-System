@@ -6,7 +6,8 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 import json
-
+from project.models import Faculty
+from django.views.decorators.csrf import csrf_protect
 from django.utils.timezone import localtime  
 
 from datetime import datetime
@@ -20,7 +21,7 @@ logger = logging.getLogger(__name__)
 from django.utils.timezone import make_aware, localtime
 from project.models import Defense_Application 
 from free_schedule.models import Available_schedule
-
+from django.views.decorators.http import require_POST
 from collections import defaultdict
 import random
 # from django.utils import timezone
@@ -108,6 +109,32 @@ def all_sched(request):
         out.append(event_data)
 
     return JsonResponse(out, safe=False)
+
+@csrf_exempt  # Optional if CSRF token is handled in JS
+def update_faculty_color(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)  # Parse JSON from the request body
+            faculty_id = data.get("faculty_id")
+            new_color = data.get("color")
+
+            # Validate input
+            if not faculty_id or not new_color:
+                return JsonResponse({"success": False, "error": "Invalid data provided."}, status=400)
+
+            # Update the faculty record
+            faculty = Faculty.objects.get(id=faculty_id)
+            faculty.color = new_color
+            faculty.save()
+
+            # Return a success response
+            return JsonResponse({"success": True, "new_color": new_color})
+        except Faculty.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Faculty not found."}, status=404)
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+    else:
+        return JsonResponse({"success": False, "error": "Invalid request method."}, status=405)
 
 # def filter_schedules_by_defense(request):
 #     defense_id = request.GET.get('defense')

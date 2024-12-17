@@ -15,24 +15,82 @@
             <h4>Faculty Schedules</h4>
             <ul class="list-group">
                 {% for faculty, schedules in grouped_events.items %}
-                    {% comment %} <p>Faculty ID: {{ faculty.id }}, Color: {{ faculty_colors|get_item:faculty.id }}</p> {% endcomment %}
                     <li class="list-group-item">
                         <div class="d-flex align-items-center">
-                            <span class="me-2" style="display: inline-block; width: 20px; height: 20px; border-radius: 50%; background-color: {{ faculty.color }};"></span>
+                            <!-- Color Circle -->
+                            <span id="color-preview-{{ faculty.id }}" 
+                                class="me-2 color-preview" 
+                                style="background-color: {{ faculty.color }};">
+                            </span>
                             <strong>{{ faculty.first_name }} {{ faculty.last_name }}</strong>
+
+                            <!-- Expand/Collapse Icon -->
+                            <i id="toggle-icon-{{ faculty.id }}" 
+                               class="fas fa-chevron-down ms-2" 
+                               style="cursor: pointer;" 
+                               onclick="toggleSchedules({{ faculty.id }})">
+                            </i>
+
+                            <!-- Settings Icon and Color Picker (Positioned to the Right) -->
+                            <div class="ms-auto d-flex align-items-center" style="position: relative;">
+                                <!-- Cog Icon -->
+                                <i id="cog-icon-{{ faculty.id }}" 
+                                    class="fas fa-cog me-2" 
+                                    style="cursor: pointer;" 
+                                    onclick="toggleColorPicker({{ faculty.id }})">
+                                </i>
+
+                                <!-- Color Picker Dropdown (Initially Hidden) -->
+                                <div id="color-picker-dropdown-{{ faculty.id }}" 
+                                    class="dropdown-menu dropdown-menu-end p-3 text-center" 
+                                    style="display: none; min-width: 240px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+
+                                    <!-- Label and Close Icon in the Same Row -->
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <!-- Label -->
+                                        <label for="color-picker-{{ faculty.id }}" 
+                                            class="form-label fw-bold mb-0" 
+                                            style="font-size: 1.1rem; color: #333;">
+                                            Update Color
+                                        </label>
+
+                                        <!-- Close Icon -->
+                                        <i class="fas fa-times" 
+                                        style="cursor: pointer; font-size: 1.2rem; color: #333;" 
+                                        onclick="closeDropdown({{ faculty.id }})">
+                                        </i>
+                                    </div>
+
+                                    <!-- Centered Color Picker with Spacing -->
+                                    <input type="color" id="color-picker-{{ faculty.id }}" 
+                                        class="form-control mx-auto mb-3 border-0 shadow-sm" 
+                                        style="width: 100px; height: 50px; cursor: pointer;">
+
+                                    <!-- Centered Button at the Bottom -->
+                                    <button class="btn btn-primary btn-lg mx-auto d-block mb-2" 
+                                        onclick="updateColor({{ faculty.id }})" 
+                                        style="width: 120px;">
+                                        Update
+                                    </button>
+
+                                </div>
+                            </div>
+
                         </div>
-                        <ul class="mt-2 ps-4">
+
+                        <!-- Faculty Schedules List (Initially Hidden) -->
+                        <ul id="schedule-list-{{ faculty.id }}" class="mt-2 ps-4" style="display: none;">
                             {% for event in schedules %}
                                 <li>
-                                    <div style="display: inline-block; width: 10px; height: 10px; background-color: {{ faculty.color }};" class="me-2"></div>
+                                    <div class="schedule-dot" style="background-color: {{ faculty.color }};"></div>
                                     From: {{ event.start|date:"M. d, Y, g:i A" }} 
                                     To: {{ event.end|date:"M. d, Y, g:i A" }}
                                 </li>
+                            {% empty %}
+                                <li class="text-muted">No schedules available.</li>
                             {% endfor %}
                         </ul>
                     </li>
-                {% empty %}
-                    <li class="list-group-item text-muted">No schedules available.</li>
                 {% endfor %}
             </ul>
         </div>
@@ -40,7 +98,6 @@
             <div id='calendar'></div> 
         </div>
     </div>
-        
 {% else %}
     <div class="text-center mt-5">
         <h1>Please login to view this page.</h1>
@@ -49,5 +106,118 @@
 {% endif %}
 
 
+<script>
+    function toggleSchedules(facultyId) {
+        const scheduleList = document.getElementById(`schedule-list-${facultyId}`);
+        const toggleIcon = document.getElementById(`toggle-icon-${facultyId}`);
+        
+        if (scheduleList.style.display === "none" || scheduleList.style.display === "") {
+            scheduleList.style.display = "block";  // Show schedules
+            toggleIcon.classList.remove("fa-chevron-down");
+            toggleIcon.classList.add("fa-chevron-up");
+        } else {
+            scheduleList.style.display = "none";   // Hide schedules
+            toggleIcon.classList.remove("fa-chevron-up");
+            toggleIcon.classList.add("fa-chevron-down");
+        }
+    }
+    let currentOpenDropdown = null; // Store the currently open dropdown to close it when a new one is clicked
+
+    function closeDropdown(facultyId) {
+        const colorPickerDropdown = document.getElementById(`color-picker-dropdown-${facultyId}`);
+        colorPickerDropdown.style.display = "none"; // Hide the dropdown
+        currentOpenDropdown = null; // Reset the open dropdown state
+    }
+    // Toggle the visibility of the color picker dropdown
+    function toggleColorPicker(facultyId) {
+        const colorPickerDropdown = document.getElementById(`color-picker-dropdown-${facultyId}`);
+        const scheduleList = document.getElementById(`schedule-list-${facultyId}`);
+        const toggleIcon = document.getElementById(`toggle-icon-${facultyId}`);
+
+        // If another dropdown is open, close it
+        if (currentOpenDropdown && currentOpenDropdown !== colorPickerDropdown) {
+            currentOpenDropdown.style.display = 'none';
+        }
+
+        // Toggle the dropdown for the clicked cog
+        if (colorPickerDropdown.style.display === "none" || colorPickerDropdown.style.display === "") {
+            colorPickerDropdown.style.display = "block";  // Show the dropdown
+            currentOpenDropdown = colorPickerDropdown;    // Update the currently open dropdown
+        } else {
+            colorPickerDropdown.style.display = "none";  // Hide the dropdown
+            currentOpenDropdown = null;
+        }
+
+        // Check if schedules are already visible
+        if (scheduleList.style.display === "none" || scheduleList.style.display === "") {
+            // If schedules are hidden, show them
+            scheduleList.style.display = "block";
+            toggleIcon.classList.remove("fa-chevron-down");
+            toggleIcon.classList.add("fa-chevron-up");
+        }
+    }
+    
+    function updateColor(facultyId) {
+        const colorPicker = document.getElementById(`color-picker-${facultyId}`);
+        const colorPreview = document.getElementById(`color-preview-${facultyId}`);
+        const newColor = colorPicker.value;
+        
+        // Update the preview color locally
+        colorPreview.style.backgroundColor = newColor;
+    
+        // Perform AJAX POST request to update the color in the database
+        fetch("{% url 'update_faculty_color' %}", {  // Replace with the correct URL name
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",  // CSRF token for security
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                faculty_id: facultyId,
+                color: newColor
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log("Color updated successfully:", data.new_color);
+                alert("Color updated successfully!");
+                
+                // Refresh FullCalendar events to apply the updated color
+                $('#calendar').fullCalendar('refetchEvents');
+                
+                // Refresh the schedule dots list by updating the color of all dots related to this faculty
+                document.querySelectorAll(`#schedule-list-${facultyId} .schedule-dot`).forEach(dot => {
+                    dot.style.backgroundColor = newColor;
+                });
+    
+            } else {
+                console.error("Error updating color:", data.error);
+                alert("Failed to update color. Please try again.");
+            }
+        })
+        .catch(error => {
+            console.error("AJAX error:", error);
+            alert("An error occurred. Please try again.");
+        });
+    }
+    
+    
+
+    // Close the color picker if clicked outside
+    document.addEventListener("click", function(event) {
+        const isClickInsideCog = event.target.closest(".fas.fa-cog");
+        const isClickInsideDropdown = event.target.closest(".dropdown-menu");
+        
+        if (!isClickInsideCog && !isClickInsideDropdown) {
+            // Close the dropdown if the click is outside the cog icon or dropdown
+            if (currentOpenDropdown) {
+                currentOpenDropdown.style.display = "none";
+                currentOpenDropdown = null;
+            }
+        }
+});
+
+</script>
 
 {% endblock %}

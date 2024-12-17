@@ -5,15 +5,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css" />
     <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-
+    
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
     
+    <link rel="stylesheet" href="{% static  'css/mutual_availability.css' %}">
     <link rel="stylesheet" href="{% static 'free_schedule/css/free_sched.css' %}">
     <link rel="stylesheet" href="{% static 'free_schedule/css/style_calendar.css' %}">
-    
+
     <!-- FullCalendar JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
     
@@ -25,6 +26,55 @@
     {{ block.super }}
 
     <script>
+
+        function updateColor(facultyId) {
+            const colorPicker = document.getElementById(`color-picker-${facultyId}`);
+            const colorPreview = document.getElementById(`color-preview-${facultyId}`);
+            const newColor = colorPicker.value;
+            
+            // Update the preview color locally
+            colorPreview.style.backgroundColor = newColor;
+        
+            // Perform AJAX POST request to update the color in the database
+            fetch("{% url 'update_faculty_color' %}", {  // Replace with the correct URL name
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",  // CSRF token for security
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    faculty_id: facultyId,
+                    color: newColor
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log("Color updated successfully:", data.new_color);
+                    alert("Color updated successfully!");
+                    
+                    // Refresh FullCalendar events to apply the updated color
+                    $('#calendar').fullCalendar('refetchEvents');
+                    
+                    // Refresh the schedule dots list by updating the color of all dots related to this faculty
+                    document.querySelectorAll(`#schedule-list-${facultyId} .schedule-dot`).forEach(dot => {
+                        dot.style.backgroundColor = newColor;
+                    });
+        
+                    refreshEventsList(); // Call refreshEventsList to update the list of events
+                
+                } else {
+                    console.error("Error updating color:", data.error);
+                    alert("Failed to update color. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error("AJAX error:", error);
+                alert("An error occurred. Please try again.");
+            });
+        }
+        
+        
         // utility function in JavaScript to dynamically select a text color (black or white) 
         // based on the background color's brightness.
         function getContrastYIQ(hexColor) {
@@ -104,22 +154,22 @@
                 // This allows for removing events from the calendar and from the database.
                 eventRender: function (event, element) {
                     const textColor = getContrastYIQ(event.color);
-                
+                    
                     var displayText = `
                         <div style="font-size: 12px; font-weight: bold;">
                             ${moment(event.start).tz('Asia/Manila').format('hh:mm A')} - ${moment(event.end).tz('Asia/Manila').format('hh:mm A')}
                         </div>
                         <div style="font-size: 12px; color: #333;">
-                            Faculty: ${event.faculty.first_name} ${event.faculty.last_name}
+                            ${event.faculty.first_name} ${event.faculty.last_name}
                         </div>
                     `;
                     element.find('.fc-content').html(displayText);
                     element.css({
-                        'border': `2px solid ${faculty.color}`,
-                        'background-color': faculty.color,
+                        'border': `2px solid ${event.color}`,
+                        'background-color': event.color,
                         'color': textColor
                     });
-                }
+                },
             });
         });
     
