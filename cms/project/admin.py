@@ -54,7 +54,7 @@ class FacultyProfileInline(admin.StackedInline):
 
 class FacultyAdmin(admin.ModelAdmin): 
     model = Faculty
-    fields = ["first_name", "last_name", "role", "adviser_eligible", "panel_eligible", "profile_image"]
+    fields = ["first_name", "last_name", "role", "adviser_eligible", "panel_eligible", "profile_image", 'color']
     inlines = [FacultyProfileInline]
     
 # Unregister initial User

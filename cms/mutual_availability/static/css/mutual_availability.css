@@ -1,0 +1,23 @@
+.availability-events {
+    max-height: 300px; /* Adjust as needed */
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.list-group-item {
+    display: flex;
+    align-items: center;
+    border: none;
+    margin-bottom: 5px;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.list-group-item div {
+    flex: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}

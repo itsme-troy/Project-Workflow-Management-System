@@ -1,5 +1,5 @@
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,  get_object_or_404
 from django.contrib import messages
 from .models import Available_schedule
 from django.http import JsonResponse
@@ -18,34 +18,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 from django.utils.timezone import make_aware, localtime
+from .models import Defense_Application, Available_schedule
+
 # from django.utils import timezone
-
-# def find_common_schedule 
-# def find_common_schedule(request): 
-#     schedules = Available_schedule.objects.all()  # or filter by some criteria
-#     common_slots = {}
-#     # Here, add logic to find overlapping time slots
-#     for schedule in schedules:
-#         start_time = schedule.start
-#         end_time = schedule.end
-
-#      # Assuming common_slots is a dictionary where keys are start times and values are lists of events
-#         if (start_time, end_time) in common_slots:
-#             common_slots[(start_time, end_time)].append(schedule)
-        
-#         else:
-#             common_slots[(start_time, end_time)] = [schedule]
-
-#     # Prepare the response in the required format
-#     events = []
-#     for (start, end), schedules in common_slots.items():
-#         events.append({
-#             'title': 'Common Slot',
-#             'start': start.strftime("%Y-%m-%d %H:%M:%S"),
-#             'end': end.strftime("%Y-%m-%d %H:%M:%S"),
-#         })
-
-#     return JsonResponse(events, safe=False)
 
 def convert_to_utc(date_str):
     try:

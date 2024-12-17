@@ -201,8 +201,6 @@
             {% endif %} {% endcomment %}
 
             {% if request.user.role == 'FACULTY' or request.user.is_current_coordinator %}
-              
-                            
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Coordinator_tab">
                             <span class="icon"><i class="fas fa-calendar-alt icon icon-margin"></i></span> 
@@ -211,14 +209,13 @@
                     <ul class="dropdown-menu">
 
                         {% comment %} {% if request.user.is_current_coordinator %} {% endcomment %}
-                        <li><a class="dropdown-item" href="{% url 'defense-schedule' %}"><i class="fas fa-calendar-alt icon icon-margin"></i> Defense Schedule </a></li>  
+                        <li><a class="dropdown-item" href="{% url 'defense-schedule' %}"><i class="fas fa-calendar-alt icon icon-margin"></i> Schedule Defense </a></li>  
+                        <li><a class="dropdown-item" href="{% url 'manage-availability' %}"> View Mutual Availability  </a></li> 
                         {% comment %} {% endif %} {% endcomment %}
 
                         
                         {% if request.user.role == 'FACULTY' %}
                             <li><a class="dropdown-item" href="{% url 'free-schedule' %}"> Set free Schedule  </a></li> {% endif %}
-
-                        
                         </ul>
                     </li>
             {% endif %}

@@ -10,4 +10,5 @@ urlpatterns = [
     
     path('delete_all_free_schedules', views.delete_all_free_schedules, name='delete_all_free_schedules'),
     path('create_schedule', views.create_schedule, name='create_schedule'),
+
 ]

@@ -13,7 +13,7 @@ urlpatterns = [
     # path('calendar/', include('calendar_app.urls')), 
     path('free_schedule/', include('free_schedule.urls')), 
     path('defense_schedule/', include('defense_schedule.urls')),
-
+    path('mutual_availability/', include('mutual_availability.urls')),
     
     # path("calendarapp", include("calendarapp.urls")),
     # path('google_calendar/', include('google_calendar.urls')),

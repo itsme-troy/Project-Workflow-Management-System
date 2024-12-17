@@ -7,7 +7,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-
+import random
 from django.contrib.auth import get_user_model
 
 # Multiple User types 
@@ -60,8 +60,6 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
         FACULTY = "FACULTY", "Faculty"
         STUDENT = "STUDENT", "Student"
 
-    # class Course(models.TextChoices)
-
     base_role = Role.STUDENT
     role = models.CharField(max_length=50, choices=Role.choices, default='STUDENT')
     
@@ -91,6 +89,19 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
     USERNAME_FIELD = "email" # user will login using their email
     EMAIL_FIELD = "email"
     REQUIRED_FIELDS = []
+
+    color = models.CharField(max_length=7, default="#007BFF")  # Hex color code
+
+    def save(self, *args, **kwargs):
+        # Assign a random color only if no color exists
+        if not self.color:
+            self.color = self.generate_random_color()
+        super().save(*args, **kwargs)
+
+    @staticmethod
+    def generate_random_color():
+        return "#{:06x}".format(random.randint(0, 0xFFFFFF))
+
 
     def get_first_name(self): 
         return self.first_name

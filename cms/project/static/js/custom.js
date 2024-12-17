@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+    
     // Function to generate a random hex color
     function generateRandomColor() {
         var letters = '0123456789ABCDEF';

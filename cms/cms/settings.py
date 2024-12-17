@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "project",
     "users",
-    # "calendar_app",
+    "mutual_availability",
     "free_schedule", 
     'defense_schedule',
     # "common_schedule", 

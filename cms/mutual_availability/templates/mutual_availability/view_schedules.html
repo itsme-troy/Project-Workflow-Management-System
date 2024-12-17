@@ -1,0 +1,53 @@
+{% extends 'mutual_availability/base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% load tz %}
+
+{% block content %}
+{{ block.super }}
+
+{% if user.is_authenticated %}
+    <h2 class="mb-4">Faculty Schedule Management</h2>
+    
+    <div class="row">
+        <!-- Faculty Schedules -->
+        <div class="col-md-4">
+            <h4>Faculty Schedules</h4>
+            <ul class="list-group">
+                {% for faculty, schedules in grouped_events.items %}
+                    {% comment %} <p>Faculty ID: {{ faculty.id }}, Color: {{ faculty_colors|get_item:faculty.id }}</p> {% endcomment %}
+                    <li class="list-group-item">
+                        <div class="d-flex align-items-center">
+                            <span class="me-2" style="display: inline-block; width: 20px; height: 20px; border-radius: 50%; background-color: {{ faculty.color }};"></span>
+                            <strong>{{ faculty.first_name }} {{ faculty.last_name }}</strong>
+                        </div>
+                        <ul class="mt-2 ps-4">
+                            {% for event in schedules %}
+                                <li>
+                                    <div style="display: inline-block; width: 10px; height: 10px; background-color: {{ faculty.color }};" class="me-2"></div>
+                                    From: {{ event.start|date:"M. d, Y, g:i A" }} 
+                                    To: {{ event.end|date:"M. d, Y, g:i A" }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">No schedules available.</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-md-8"> 
+            <div id='calendar'></div> 
+        </div>
+    </div>
+        
+{% else %}
+    <div class="text-center mt-5">
+        <h1>Please login to view this page.</h1>
+        <a href="{% url 'login' %}" class="btn btn-primary mt-3">Login Here</a>
+    </div>
+{% endif %}
+
+
+
+{% endblock %}

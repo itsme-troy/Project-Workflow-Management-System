@@ -14,9 +14,11 @@ def format_end_date(start_date, end_date):
         return end_date.strftime("%b %d, %Y, %I:%M %p")
 
 
+@register.filter(name='get_item')
 @register.filter
 def get_item(dictionary, key):
-    return dictionary.get(key)
+    """Returns the value from a dictionary by key."""
+    return dictionary.get(key, None)
 
 @register.filter
 def subtract(value, arg):

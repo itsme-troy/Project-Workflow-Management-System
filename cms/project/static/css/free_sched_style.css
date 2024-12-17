@@ -26,6 +26,26 @@ body {
   color: #534747; /* Dark text for contrast */
 }
 
+/* Default layout with expanded sidebar */
+.wrapper .main_container .container {
+  margin-left: 300px; /* Matches the sidebar width */
+  width: calc(100% - 300px); /* Adjust width */
+  transition: all 0.3s ease;
+}
+
+/* Collapsed sidebar layout */
+.wrapper.active .main_container .container {
+  margin-left: 80px; /* Smaller sidebar width */
+  width: calc(100% - 80px);
+  transition: all 0.3s ease;
+}
+
+
+/* Sidebar collapsed styles */
+.wrapper.active .sidebar {
+  width: 80px;
+}
+
 .wrapper{
   width: 100%;
   height: 100%;
@@ -356,10 +376,13 @@ body {
 .wrapper.active .sidebar .nav-link span:not(.icon) {
     display: none;
 }
+.sidebar {
+    width: 300px; /* Default sidebar width */
+    transition: all 0.3s ease;
+}
 
 .wrapper.active .sidebar {
-  width: calc(100% - 80px);
-  margin-left: 80px;
+  width: 80px;
   opacity: 0; /* Fade out when collapsed */
   pointer-events: none; /* Prevent interaction when hidden */
 }
