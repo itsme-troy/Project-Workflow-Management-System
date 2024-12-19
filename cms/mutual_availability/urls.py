@@ -2,9 +2,12 @@ from django.urls import path
 from . import views 
 urlpatterns = [
     # All Available Schedule 
-    path('availability', views.manage_availability, name="manage-availability"),
+    path('view_schedule', views.view_schedule, name="view-schedule"),
     path('all_sched', views.all_sched, name='all_sched'),
     path('update_faculty_color/', views.update_faculty_color, name='update_faculty_color'),
+
+
+
     # path('add_sched', views.add_sched, name='add_sched'), 
     # path('update_sched', views.update_sched, name='update_sched'),
     # path('remove_sched', views.remove_sched, name='remove_sched'),

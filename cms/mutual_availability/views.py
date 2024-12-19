@@ -6,10 +6,10 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 import json
-from project.models import Faculty
+from project.models import Faculty, Project
 from django.views.decorators.csrf import csrf_protect
 from django.utils.timezone import localtime  
-
+from django.db.models import Subquery, OuterRef, Max, Q, F
 from datetime import datetime
 from pytz import timezone  
 import pytz
@@ -25,7 +25,6 @@ from django.views.decorators.http import require_POST
 from collections import defaultdict
 import random
 # from django.utils import timezone
-
 
 FACULTY_COLOR_MAP = {}  # A global dictionary to map faculty to colors
 
@@ -57,34 +56,79 @@ def to_local(utc_time):
         raise ValueError(f"Error converting time to local: {e}")
 
     # group events by faculty and pass them to template 
-def manage_availability(request):
+def view_schedule(request):
     if not request.user.is_authenticated: 
         messages.error(request, "Please login to view this page")
         return redirect('login')    
-
-    # Retrieve all events ordered by faculty and start time
-    all_events = Available_schedule.objects.all().select_related('faculty').order_by('faculty', 'start')
     
-    # Group schedules by faculty with assigned colors
-    grouped_events = {}
-    faculty_colors = {}
+    project_id = request.GET.get('project')
 
-    grouped_events = {}
-    for event in all_events:
-        faculty = event.faculty
-        if faculty:
-            if faculty not in grouped_events:
-                grouped_events[faculty] = []
-            grouped_events[faculty].append(event)
-            
+    if project_id and project_id.isdigit():
+        # Filter schedules based on the selected project with status='approved'
+        project = get_object_or_404(Project, id=project_id, status='approved')
+        # Get the panelists and the adviser of the project
+        panelists = project.panel.all()
+        adviser = project.adviser
+        # Combine panelists and adviser into one query
+        faculty_schedules = Available_schedule.objects.filter(
+            Q(faculty__in=panelists) | Q(faculty=adviser)
+        )
         
+        # Create a list of faculty with their roles (panelist or adviser)
+        faculty_roles = {}
+        for faculty in panelists:
+            faculty_roles[faculty] = 'panelist'
+        faculty_roles[adviser] = 'adviser'  # Mark adviser role
+        
+    else:
+        project = None
+        # Show all faculty schedules if no project is selected
+        faculty_schedules = Available_schedule.objects.all().select_related('faculty')
+        
+        # Create a dictionary for faculty roles (no panelists or adviser in this case)
+        faculty_roles = {}
+
+    # Group events by faculty
+    grouped_events = {}
+    for schedule in faculty_schedules:
+        faculty = schedule.faculty
+        if faculty not in grouped_events:
+            grouped_events[faculty] = []
+        grouped_events[faculty].append(schedule)
+
+    # print(grouped_events)
+    # Pass approved projects to the modal
+    approved_projects = Project.objects.filter(status='approved', is_archived=False)
+    
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # Check if AJAX
+        return render(request, 'mutual_availability/partials/faculty_list.html', {
+            "grouped_events": grouped_events,
+            "faculty_roles": faculty_roles,
+        })
+    
     return render(request, 'mutual_availability/view_schedules.html', {
         "grouped_events": grouped_events,
-        "faculty_colors": faculty_colors,
+        "projects": approved_projects,
+        "faculty_roles": faculty_roles,  # Pass faculty roles to template
     })
 
 def all_sched(request):
-    all_events = Available_schedule.objects.all().select_related('faculty').order_by('-created_at')
+    project_id = request.GET.get('project')
+    
+    if project_id:
+        # Get the project and its panelists and adviser
+        project = get_object_or_404(Project, id=project_id, status='approved')
+        panelists = project.panel.all()
+        adviser = project.adviser
+
+        # Filter events for panelists and adviser of the selected project
+        all_events = Available_schedule.objects.filter(
+            Q(faculty__in=panelists) | Q(faculty=adviser)
+        ).select_related('faculty').order_by('-created_at')
+    else:
+        # Show all faculty schedules if no project is selected
+        all_events = Available_schedule.objects.all().select_related('faculty').order_by('-created_at')
+
     out = []
 
     for event in all_events:

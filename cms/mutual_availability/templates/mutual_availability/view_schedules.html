@@ -7,13 +7,38 @@
 {{ block.super }}
 
 {% if user.is_authenticated %}
+
     <h2 class="mb-4">Faculty Schedule Management</h2>
     
+    
     <div class="row">
+    <!-- Left Column: Filter and Faculty Schedules -->
+    <div class="col-md-4">
+        <!-- Filter by Project Form -->
+        <div class="mb-6">
+            <form id="filter-project-form" method="GET" class="border p-3 rounded bg-light mb-3" action="{% url 'view-schedule' %}">
+                <h5>Filter by Project</h5>
+                <div class="mb-2">
+                    <label for="project" class="form-label">Select Project:</label>
+                    <select name="project" id="project" class="form-control">
+                        <option value="" {% if not request.GET.project %}selected{% endif %}>
+                            All Faculty
+                        </option>
+                        {% for project in projects %}
+                            <option value="{{ project.id }}"
+                                {% if project.id|stringformat:"s" == request.GET.project %}selected{% endif %}>
+                                {{ project.title }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
+            </form>
+        </div>
+        
         <!-- Faculty Schedules -->
-        <div class="col-md-4">
             <h4>Faculty Schedules</h4>
-            <ul class="list-group">
+            <ul id="faculty-list-group" class="list-group">
                 {% for faculty, schedules in grouped_events.items %}
                     <li class="list-group-item">
                         <div class="d-flex align-items-center">
@@ -22,7 +47,16 @@
                                 class="me-2 color-preview" 
                                 style="background-color: {{ faculty.color }};">
                             </span>
-                            <strong>{{ faculty.first_name }} {{ faculty.last_name }}</strong>
+                                <!-- Faculty Name -->
+                                <strong>{{ faculty.first_name }} {{ faculty.last_name }}</strong>
+
+                                <!-- Display Role Badge -->
+                                {% if faculty in faculty_roles %}
+                                    <span class="badge ms-4 {% if faculty_roles|get_item:faculty == 'panelist' %}bg-primary{% elif faculty_roles|get_item:faculty == 'adviser' %}bg-success{% endif %}">
+                                        {% if faculty_roles|get_item:faculty == 'panelist' %}Panelist{% elif faculty_roles|get_item:faculty == 'adviser' %}Adviser{% endif %}
+                                    </span>
+                                {% endif %}
+                                        
 
                             <!-- Expand/Collapse Icon -->
                             <i id="toggle-icon-{{ faculty.id }}" 
@@ -216,7 +250,22 @@
                 currentOpenDropdown = null;
             }
         }
+        document.getElementById('filter-project-form').addEventListener('submit', function(event) {
+            const url = new URL(window.location.href);
+            const params = new URLSearchParams(url.search);
+        
+            // Avoid appending duplicate 'project' parameters
+            if (params.has('project')) {
+                params.delete('project');
+            }
+            params.append('project', document.getElementById('project').value);
+        
+            // Update the form action with clean query parameters
+            this.action = `${url.pathname}?${params.toString()}`;
+        });
+        
 });
+
 
 </script>
 

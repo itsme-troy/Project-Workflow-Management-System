@@ -19,7 +19,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
     
     <!-- Custom JS -->
-    {% comment %} <script src="{% static 'project/js/custom.js' %}"></script> {% endcomment %}
+    <script src="{% static 'js/availability.js' %}"></script> 
+
 {% endblock %}
 
 {% block content %}  
@@ -90,43 +91,48 @@
         function formatDate(date) {
             return moment(date).toISOString(); // Use ISO format
         }
-        
         function refreshEventsList() {
             $.ajax({
                 type: "GET",
-                url: 'all_sched',  
+                url: "{% url 'all_sched' %}",
                 dataType: "json",
-                
                 success: function (data) {
-                    var list = $('.list-group');
-                    list.empty(); // Clear the existing list
+                    const list = $('.list-group');
+                    list.empty(); // Clear existing list
         
-                    if (data.length > 0) {
-                        $.each(data, function (index, event) {
-                            // Adjust the displayed times to Asia/Manila timezone
-                            var startFormatted = moment(event.start).tz('Asia/Manila').format("MMM. D, YYYY h:mm A");
-                            var endFormatted = moment(event.end).tz('Asia/Manila').format("MMM. D, YYYY h:mm A");
+                    if (data && Object.keys(data).length > 0) {
+                        Object.entries(data).forEach(([facultyId, info]) => {
+                            const { faculty, schedules } = info;
         
-                            // Create the list item
-                            var listItem = `
-                                <li class="list-group-item d-flex align-items-center"
-                                    style="padding-left: 10px; border-radius: 4px; background: linear-gradient(to right, ${event.color || '#007BFF'} 5px, #fff 5px);">
-                                    <div style="height: 100%; width: 5px; background-color: ${event.color || '#007BFF'};"></div>
-                                    <span class="ms-3">
-                                        From: ${startFormatted} to ${endFormatted}
-                                    </span>
-                                </li>
-                            `;
-        
-                            // Append the list item to the list
-                            list.append(listItem);
+                            // Create faculty item
+                            const facultyItem = `
+                                <li class="list-group-item">
+                                    <div class="d-flex align-items-center">
+                                        <span id="color-preview-${faculty.id}" 
+                                              class="me-2 color-preview" 
+                                              style="background-color: ${faculty.color || '#007BFF'};">
+                                        </span>
+                                        <strong>${faculty.first_name} ${faculty.last_name}</strong>
+                                        <ul id="schedule-list-${faculty.id}" class="mt-2 ps-4">
+                                            ${schedules.map(schedule => `
+                                                <li>
+                                                    <div class="schedule-dot" style="background-color: ${faculty.color || '#007BFF'};"></div>
+                                                    From: ${moment(schedule.start).tz('Asia/Manila').format("MMM. D, YYYY h:mm A")}
+                                                    To: ${moment(schedule.end).tz('Asia/Manila').format("MMM. D, YYYY h:mm A")}
+                                                </li>
+                                            `).join('')}
+                                        </ul>
+                                    </div>
+                                </li>`;
+                            
+                            list.append(facultyItem);
                         });
                     } else {
                         list.append('<li class="list-group-item">No available schedules found.</li>');
                     }
                 },
-                error: function (data) {
-                    console.error(data); // Log the error response
+                error: function (xhr, status, error) {
+                    console.error("Error fetching events:", status, error);
                     alert('There was a problem fetching the events list!');
                 }
             });
@@ -141,7 +147,23 @@
                     right: 'month,agendaWeek,agendaDay'
                 },
                 timezone: 'Asia/Manila', // Align with server timezone
-                events: 'all_sched',
+                
+                events: function(start, end, timezone, callback) {
+                    // Get the selected project ID from the filter form
+                    var project_id = $('#project').val();
+                    
+                    // Make an AJAX request to fetch events based on the selected project
+                    $.ajax({
+                        url: '{% url "all_sched" %}',  // Adjust to the correct URL pattern
+                        data: {
+                            'project': project_id,  // Send the selected project ID to the server
+                        },
+                        success: function(data) {
+                            // Pass the data to FullCalendar
+                            callback(data);
+                        }
+                    });
+                },
                 selectable: false,
                 selectHelper: false,
                 editable: false,
@@ -150,7 +172,6 @@
                 //height: 'auto',
                 defaultView: 'agendaWeek',
                   
-
                 // This allows for removing events from the calendar and from the database.
                 eventRender: function (event, element) {
                     const textColor = getContrastYIQ(event.color);
@@ -170,8 +191,12 @@
                         'color': textColor
                     });
                 },
+            }); // Update calendar events when the project filter is changed
+            $('#filter-project-form').submit(function(e) {
+                e.preventDefault();
+                calendar.fullCalendar('refetchEvents'); // Refetch events with the selected project filter
+                //refreshEventsList()
             });
         });
-    
     </script>
 {% endblock %}
