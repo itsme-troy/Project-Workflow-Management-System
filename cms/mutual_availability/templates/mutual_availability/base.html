@@ -75,7 +75,6 @@
             });
         }
         
-        
         // utility function in JavaScript to dynamically select a text color (black or white) 
         // based on the background color's brightness.
         function getContrastYIQ(hexColor) {
@@ -170,20 +169,22 @@
                 eventLimit: false,
                 //contentHeight: 'auto',
                 //height: 'auto',
-                defaultView: 'agendaWeek',
+                defaultView: 'month',
                   
                 // This allows for removing events from the calendar and from the database.
                 eventRender: function (event, element) {
                     const textColor = getContrastYIQ(event.color);
+                    const facultyTextColor = getContrastYIQ(event.color); // Apply same contrast to faculty name text
                     
                     var displayText = `
-                        <div style="font-size: 12px; font-weight: bold;">
+                        <div style="font-size: 12px; font-weight: bold; color: ${facultyTextColor};">
                             ${moment(event.start).tz('Asia/Manila').format('hh:mm A')} - ${moment(event.end).tz('Asia/Manila').format('hh:mm A')}
                         </div>
-                        <div style="font-size: 12px; color: #333;">
+                        <div style="font-size: 12px; color: ${facultyTextColor};">
                             ${event.faculty.first_name} ${event.faculty.last_name}
                         </div>
                     `;
+
                     element.find('.fc-content').html(displayText);
                     element.css({
                         'border': `2px solid ${event.color}`,
@@ -191,6 +192,8 @@
                         'color': textColor
                     });
                 },
+
+                
             }); // Update calendar events when the project filter is changed
             $('#filter-project-form').submit(function(e) {
                 e.preventDefault();

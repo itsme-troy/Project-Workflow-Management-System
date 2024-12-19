@@ -28,6 +28,16 @@
         function formatDate(date) {
             return moment(date).toISOString(); // Use ISO format
         }
+        // Function to get the contrast color (either black or white)
+        function getContrastYIQ(hexColor) {
+            if (!hexColor) return '#000000'; // Default to black if no color is provided
+            hexColor = hexColor.replace('#', '');
+            const r = parseInt(hexColor.substr(0, 2), 16);
+            const g = parseInt(hexColor.substr(2, 2), 16);
+            const b = parseInt(hexColor.substr(4, 2), 16);
+            const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+            return yiq >= 128 ? '#000000' : '#FFFFFF'; // Return black for light colors and white for dark colors
+        }
         
         function refreshEventsList() {
             $.ajax({
@@ -187,19 +197,36 @@
                 },
                 eventRender: function (event, element) {
                     console.log("Rendering event:", event); // Log the event to check the times and data
+                    
+                    // Get the background color for the event, fallback to blue if not provided
+                    const eventColor = event.color || '#007BFF';
+                    // Get the contrast color for the text (either black or white)
+                    const textColor = getContrastYIQ(eventColor);
+
                     // Display times in local timezone (Asia/Manila)
                     var startFormatted = moment(event.start).tz('Asia/Manila').format('hh:mm A');
                     var endFormatted = moment(event.end).tz('Asia/Manila').format('hh:mm A');
                     var timeText = startFormatted + ' - ' + endFormatted; 
                 
+                    // Construct the content to display project title first, followed by the time
+                    var displayContent = `
+                        <div style="font-size: 12px; color: ${textColor};">
+                            ${timeText}
+                        </div>
+                    `;
+
                     // Ensure that the time is inserted into the appropriate element
-                    element.find('.fc-time').html(timeText);  // Ensure you're targeting the correct element
+                    element.find('.fc-time').html(displayContent);  // Ensure you're targeting the correct element
 
                     // Remove the title from the event display by setting it to an empty string
                     element.find('.fc-title').html('');
                  // Apply the color to the event
-                    element.css('border', '2px solid ' + event.color);
-                
+                    element.css({
+                        'border': `2px solid ${eventColor}`,
+                        'background-color': eventColor,
+                        'color': textColor // Apply the calculated text color to the event
+                    });
+
                     // If the event is an all-day event, display it in the all-day row
                     if (event.allDay) {
                         element.addClass('fc-day-grid-event'); // Make sure it appears in the all-day section

@@ -10,7 +10,6 @@
 
     <h2 class="mb-4">Faculty Schedule Management</h2>
     
-    
     <div class="row">
     <!-- Left Column: Filter and Faculty Schedules -->
     <div class="col-md-4">
@@ -32,11 +31,12 @@
                         {% endfor %}
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
+                {% comment %} <button type="submit" class="btn btn-primary w-100">Apply Filter</button> {% endcomment %}
             </form>
         </div>
-        
+
         <!-- Faculty Schedules -->
+         
             <h4>Faculty Schedules</h4>
             <ul id="faculty-list-group" class="list-group">
                 {% for faculty, schedules in grouped_events.items %}
@@ -53,10 +53,9 @@
                                 <!-- Display Role Badge -->
                                 {% if faculty in faculty_roles %}
                                     <span class="badge ms-4 {% if faculty_roles|get_item:faculty == 'panelist' %}bg-primary{% elif faculty_roles|get_item:faculty == 'adviser' %}bg-success{% endif %}">
-                                        {% if faculty_roles|get_item:faculty == 'panelist' %}Panelist{% elif faculty_roles|get_item:faculty == 'adviser' %}Adviser{% endif %}
+                                        {% if faculty_roles|get_item:faculty == 'panelist' %} Panelist {% elif faculty_roles|get_item:faculty == 'adviser' %} Adviser {% endif %}
                                     </span>
                                 {% endif %}
-                                        
 
                             <!-- Expand/Collapse Icon -->
                             <i id="toggle-icon-{{ faculty.id }}" 
@@ -128,10 +127,12 @@
                 {% endfor %}
             </ul>
         </div>
+        <!-- Right Column: Calendar -->
         <div class="col-md-8"> 
             <div id='calendar'></div> 
         </div>
     </div>
+
 {% else %}
     <div class="text-center mt-5">
         <h1>Please login to view this page.</h1>
@@ -141,6 +142,15 @@
 
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('filter-project-form');
+        const projectSelect = document.getElementById('project');
+
+        projectSelect.addEventListener('change', function() {
+            form.submit();
+        });
+    });
+    
     function toggleSchedules(facultyId) {
         const scheduleList = document.getElementById(`schedule-list-${facultyId}`);
         const toggleIcon = document.getElementById(`toggle-icon-${facultyId}`);
@@ -263,7 +273,7 @@
             // Update the form action with clean query parameters
             this.action = `${url.pathname}?${params.toString()}`;
         });
-        
+
 });
 
 

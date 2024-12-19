@@ -29,6 +29,18 @@
         function formatDate(date) {
             return moment(date).toISOString(); // Use ISO format
         }
+
+        // Function to get the contrast color (either black or white)
+        function getContrastYIQ(hexColor) {
+            if (!hexColor) return '#000000'; // Default to black if no color is provided
+            hexColor = hexColor.replace('#', '');
+            const r = parseInt(hexColor.substr(0, 2), 16);
+            const g = parseInt(hexColor.substr(2, 2), 16);
+            const b = parseInt(hexColor.substr(4, 2), 16);
+            const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+            return yiq >= 128 ? '#000000' : '#FFFFFF'; // Return black for light colors and white for dark colors
+        }
+
         
         function refreshEventsList() {
             $.ajax({
@@ -177,20 +189,36 @@
                 eventRender: function (event, element) {
                     console.log("Rendering event:", event); // Log the event to check the times and data
                     
+                     // Get the background color for the event, fallback to blue if not provided
+                    const eventColor = event.color || '#007BFF';
+                    
+                    // Get the contrast color for the text (either black or white)
+                    const textColor = getContrastYIQ(eventColor);
+
                     // Format start and end times in the local timezone (Asia/Manila)
                     var startFormatted = moment(event.start).tz('Asia/Manila').format('hh:mm A');
                     var endFormatted = moment(event.end).tz('Asia/Manila').format('hh:mm A');
                     var timeText = startFormatted + ' - ' + endFormatted; 
                 
                     // Construct the content to display project title first, followed by the time
-                    var displayContent = '<div><strong>' + event.projectTitle + '</strong><br>' + '<strong>' + timeText + '</strong></div>';
-
+                    var displayContent = `
+                        <div style="font-size: 14px; font-weight: bold; color: ${textColor};">
+                            ${event.projectTitle}
+                        </div>
+                        <div style="font-size: 12px; color: ${textColor};">
+                            ${timeText}
+                        </div>
+                    `;
                     // Ensure that the time and title are inserted into the event's element
                     element.find('.fc-content').html(displayContent);
                 
-                    // Apply the color to the event's border
-                    element.css('border', '2px solid ' + event.color);
-                
+                    // Apply the color to the event's border and background
+                    element.css({
+                        'border': `2px solid ${eventColor}`,
+                        'background-color': eventColor,
+                        'color': textColor // Apply the calculated text color to the event
+                    });
+                    
                     var startMoment = moment(event.start).tz('Asia/Manila');
                     var endMoment = moment(event.end).tz('Asia/Manila');
                 
