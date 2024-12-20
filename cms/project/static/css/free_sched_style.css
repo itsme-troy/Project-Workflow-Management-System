@@ -4,7 +4,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
 
 
-
 *{
   margin: 0;
   padding: 0;
@@ -28,14 +27,14 @@ body {
 
 /* Default layout with expanded sidebar */
 .wrapper .main_container .container {
-  margin-left: 300px; /* Matches the sidebar width */
+  margin-left: 0px; /* Matches the sidebar width */
   width: calc(100% - 300px); /* Adjust width */
   transition: all 0.3s ease;
 }
 
 /* Collapsed sidebar layout */
 .wrapper.active .main_container .container {
-  margin-left: 80px; /* Smaller sidebar width */
+  margin-left: 0px; /* Smaller sidebar width */
   width: calc(100% - 80px);
   transition: all 0.3s ease;
 }
@@ -114,7 +113,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 0 20px;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 .top_navbar .menu .logo{
@@ -172,9 +171,9 @@ body {
 .main_container {
   
   margin: 30px; /* Set all margins to 30px */
-  width: calc(100% - 290px); /* Adjusted width for the sidebar */
-  margin-left: 170px; /* Offset for the sidebar */
-  overflow: hidden; /* Default state */
+  width: calc(100% - 100px); /* Adjusted width for the sidebar */
+  margin-left: 300px; /* Offset for the sidebar */
+  overflow: hidden; /* Defafult state */
 }
 /* Show dropdown on hover and click */
 .main_container .sidebar ul li.nav-item.dropdown:hover .dropdown-menu,
@@ -269,7 +268,7 @@ body {
 .main_container .container{
   margin-top: 100px;
   width: calc(100% - 225px);
-  margin-left: 300px;
+  margin-left:0px;
   padding: 25px;
   transition: all 0.3s ease;
 }
@@ -290,7 +289,7 @@ body {
 
 .main_container .sidebar ul li a .icon {
   transition: margin 0.3s ease;
-  margin-right: 15px;
+  margin-right: 10px;
   font-size: 28px;
 
 }

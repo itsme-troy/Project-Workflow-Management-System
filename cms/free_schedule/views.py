@@ -175,7 +175,7 @@ def remove_sched(request):
 def delete_all_free_schedules(request):
     if request.method == 'POST':
         try:
-            schedules = Available_schedule.objects.all()
+            schedules = Available_schedule.objects.filter(faculty=request.user.id)
             if not schedules.exists():
                 return JsonResponse({'status': 'error', 'message': 'No schedules available to delete.'})
             

@@ -5,7 +5,7 @@ urlpatterns = [
     path('view_schedule', views.view_schedule, name="view-schedule"),
     path('all_sched', views.all_sched, name='all_sched'),
     path('update_faculty_color/', views.update_faculty_color, name='update_faculty_color'),
-
+    path('calculate_common_schedules/', views.calculate_common_schedules, name='calculate_common_schedule'),
 
 
     # path('add_sched', views.add_sched, name='add_sched'), 

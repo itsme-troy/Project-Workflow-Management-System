@@ -97,4 +97,14 @@
         {% endfor %}
     </ul>
 
+    {% if common_schedules %}
+        {% for start, end in common_schedules %}
+            <li class="list-group-item">
+                {{ start|time:"H:i" }} - {{ end|time:"H:i" }}
+            </li>
+        {% endfor %}
+    {% else %}
+        <li class="list-group-item text-center">No common schedules available</li>
+    {% endif %}
+
 {% endblock %}

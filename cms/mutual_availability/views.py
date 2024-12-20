@@ -13,6 +13,7 @@ from django.db.models import Subquery, OuterRef, Max, Q, F
 from datetime import datetime
 from pytz import timezone  
 import pytz
+from datetime import timedelta
 local_tz = pytz.timezone('Asia/Manila')
 
 import logging
@@ -55,6 +56,54 @@ def to_local(utc_time):
     except Exception as e:
         raise ValueError(f"Error converting time to local: {e}")
 
+
+def calculate_common_schedules(schedules):
+    """
+    Calculate common time ranges from a list of schedules.
+    Each schedule contains a start and end datetime.
+    Excludes schedules that do not overlap with others and ensures overlaps involve multiple faculty members.
+    """
+    if not schedules:
+        return []
+
+    # Step 1: Group schedules by date for processing day by day
+    schedules_by_day = defaultdict(list)
+    for schedule in schedules:
+        schedule_date = schedule.start.date()
+        schedules_by_day[schedule_date].append(schedule)
+
+    common_ranges = []
+
+    # Step 2: Process schedules day by day
+    for day, daily_schedules in schedules_by_day.items():
+        # Create a list of (start, end, faculty) tuples
+        time_ranges = [(schedule.start, schedule.end, schedule.faculty) for schedule in daily_schedules]
+        time_ranges.sort(key=lambda x: x[0])  # Sort by start time
+
+        ongoing_ranges = [(time_ranges[0][0], time_ranges[0][1], {time_ranges[0][2]})]  # Track start, end, and faculties
+
+        for start, end, faculty in time_ranges[1:]:
+            if start <= ongoing_ranges[-1][1]:  # Overlapping schedules
+                # Update the last range's end time and add faculty
+                ongoing_ranges[-1] = (
+                    max(ongoing_ranges[-1][0], start),  # Update start of overlap
+                    min(ongoing_ranges[-1][1], end),    # Update end of overlap
+                    ongoing_ranges[-1][2] | {faculty}   # Add faculty to the set
+                )
+            else:
+                # Add the last range to common_ranges if it involved multiple faculties
+                if len(ongoing_ranges[-1][2]) > 1:
+                    common_ranges.append((ongoing_ranges[-1][0], ongoing_ranges[-1][1]))
+                
+                # Start a new range
+                ongoing_ranges.append((start, end, {faculty}))
+
+        # Final check for the last range of the day
+        if len(ongoing_ranges[-1][2]) > 1:
+            common_ranges.append((ongoing_ranges[-1][0], ongoing_ranges[-1][1]))
+
+    return common_ranges
+
     # group events by faculty and pass them to template 
 def view_schedule(request):
     if not request.user.is_authenticated: 
@@ -88,6 +137,11 @@ def view_schedule(request):
         # Create a dictionary for faculty roles (no panelists or adviser in this case)
         faculty_roles = {}
 
+    print("Faculty Schedules:\n", faculty_schedules)
+    # Calculate common schedules
+    common_schedules = calculate_common_schedules(faculty_schedules)
+    print("\nCommon schedules:\n", common_schedules)
+    # print(common_schedules)
     # Group events by faculty
     grouped_events = {}
     for schedule in faculty_schedules:
@@ -104,12 +158,13 @@ def view_schedule(request):
         return render(request, 'mutual_availability/partials/faculty_list.html', {
             "grouped_events": grouped_events,
             "faculty_roles": faculty_roles,
+            "common_schedules": common_schedules,
         })
-    
     return render(request, 'mutual_availability/view_schedules.html', {
         "grouped_events": grouped_events,
         "projects": approved_projects,
         "faculty_roles": faculty_roles,  # Pass faculty roles to template
+        "common_schedules": common_schedules,
     })
 
 def all_sched(request):
@@ -179,6 +234,10 @@ def update_faculty_color(request):
             return JsonResponse({"success": False, "error": str(e)}, status=500)
     else:
         return JsonResponse({"success": False, "error": "Invalid request method."}, status=405)
+
+
+
+
 
 # def filter_schedules_by_defense(request):
 #     defense_id = request.GET.get('defense')

@@ -27,7 +27,6 @@
     {{ block.super }}
 
     <script>
-
         function updateColor(facultyId) {
             const colorPicker = document.getElementById(`color-picker-${facultyId}`);
             const colorPreview = document.getElementById(`color-preview-${facultyId}`);
@@ -138,7 +137,76 @@
         }
 
         $(document).ready(function () {
+            // Event listener for "Find Common Schedule" button
+            {% comment %} $('#find-common-schedule-btn').on('click', function () {
+                // Gather all faculty schedules
+                let facultySchedules = [];
+                
+                $('#faculty-list-group .list-group-item').each(function () {
+                    let facultyId = $(this).data('faculty-id');
+                    let schedules = [];
 
+                    // Collect all schedule times for the faculty
+                    $(this).find('.schedule-list li').each(function () {
+                        let startTime = $(this).data('start');
+                        let endTime = $(this).data('end');
+                        schedules.push({ start: startTime, end: endTime });
+                    });
+
+                    // Add faculty schedules to the array
+                    if (schedules.length > 0) {
+                        facultySchedules.push(schedules);
+                    }
+                });
+
+                // Find common time ranges among all faculty
+                let commonTimes = findCommonTimeRanges(facultySchedules);
+
+                // Display the common schedule times
+                if (commonTimes.length > 0) {
+                    alert('Common schedule times: ' + commonTimes.join(', '));
+                } else {
+                    alert('No common schedule times found.');
+                }
+            }); {% endcomment %}
+
+            // Function to find common time ranges (simplified version)
+            {% comment %} function findCommonTimeRanges(facultySchedules) {
+                // Convert the schedules to time ranges and find intersections
+                let commonTimes = [];
+                // Assume the first faculty schedules as the base
+                let baseSchedules = facultySchedules[0];
+
+                // Iterate through the rest of the faculty schedules
+                for (let i = 1; i < facultySchedules.length; i++) {
+                    let currentFacultySchedules = facultySchedules[i];
+                    let intersection = [];
+
+                    baseSchedules.forEach(baseSchedule => {
+                        currentFacultySchedules.forEach(currentSchedule => {
+                            // Check if the time ranges overlap
+                            let startMax = Math.max(new Date(baseSchedule.start).getTime(), new Date(currentSchedule.start).getTime());
+                            let endMin = Math.min(new Date(baseSchedule.end).getTime(), new Date(currentSchedule.end).getTime());
+
+                            if (startMax < endMin) {
+                                // Overlapping time range found, add to the intersection list
+                                intersection.push({
+                                    start: new Date(startMax).toISOString(),
+                                    end: new Date(endMin).toISOString()
+                                });
+                            }
+                        });
+                    });
+
+                    // Update the base schedules with the intersection times
+                    baseSchedules = intersection;
+                }
+
+                // Return the common time ranges
+                commonTimes = baseSchedules.map(schedule => `${new Date(schedule.start).toLocaleString()} - ${new Date(schedule.end).toLocaleString()}`);
+                return commonTimes;
+                } {% endcomment %}
+                    
             var calendar = $('#calendar').fullCalendar({
                 header: {
                     left: 'prev,next today',
@@ -176,13 +244,17 @@
                     const textColor = getContrastYIQ(event.color);
                     const facultyTextColor = getContrastYIQ(event.color); // Apply same contrast to faculty name text
                     
+                    var currentView = calendar.fullCalendar('getView').type;
+                
+                    // Append faculty name if in 'agendaDay' view
+                
                     var displayText = `
                         <div style="font-size: 12px; font-weight: bold; color: ${facultyTextColor};">
                             ${moment(event.start).tz('Asia/Manila').format('hh:mm A')} - ${moment(event.end).tz('Asia/Manila').format('hh:mm A')}
                         </div>
                         <div style="font-size: 12px; color: ${facultyTextColor};">
-                            ${event.faculty.first_name} ${event.faculty.last_name}
                         </div>
+                        
                     `;
 
                     element.find('.fc-content').html(displayText);

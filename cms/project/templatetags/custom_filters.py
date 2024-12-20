@@ -4,6 +4,10 @@ from django.utils.text import slugify
 register = template.Library()
 
 @register.filter
+def dict_value(d, key):
+    return d.get(key, '#ccc')
+
+@register.filter
 def format_end_date(start_date, end_date):
     # Check if the years are the same
     if start_date.year == end_date.year:

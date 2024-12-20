@@ -1,4 +1,3 @@
-
 .fa-lightbulb { color: #ffd700; }
 .fa-brain { color: #4169e1; }
 .fa-plus-circle { color: #32cd32; }
@@ -1119,17 +1118,19 @@ body {
 }
 
 .container {
-    max-width: fit-content; /* Adjust max-width to fit content */
-    width: auto; /* Set width to auto */
-    padding: 30px; 
+    width: 80%; /* Default width */
+    max-width: 100%; /* Maximum width the container can grow */
+    min-width: 200px; /* Minimum width the container can shrink to */
+    padding: 30px;
     margin: 40px auto;
-    margin-left: 20px; /* Set a specific left margin */
     background-color: #ffffff; /* White background for content */
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
-    max-width: 80%;
     text-align: center;
-
+    
+    /* Enable resizing horizontally */
+    resize: both; /* Allow resizing both horizontally and vertically */
+    overflow: auto; /* Allow overflow content if the element is resized */
 }
 .card {
     max-width: 100%; /* Allow the card to use full width */

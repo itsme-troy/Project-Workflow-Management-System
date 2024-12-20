@@ -8,39 +8,17 @@
 
 {% if user.is_authenticated %}
 
+
     <h2 class="mb-4">Faculty Schedule Management</h2>
-    
     <div class="row">
     <!-- Left Column: Filter and Faculty Schedules -->
-    <div class="col-md-4">
-        <!-- Filter by Project Form -->
-        <div class="mb-6">
-            <form id="filter-project-form" method="GET" class="border p-3 rounded bg-light mb-3" action="{% url 'view-schedule' %}">
-                <h5>Filter by Project</h5>
-                <div class="mb-2">
-                    <label for="project" class="form-label">Select Project:</label>
-                    <select name="project" id="project" class="form-control">
-                        <option value="" {% if not request.GET.project %}selected{% endif %}>
-                            All Faculty
-                        </option>
-                        {% for project in projects %}
-                            <option value="{{ project.id }}"
-                                {% if project.id|stringformat:"s" == request.GET.project %}selected{% endif %}>
-                                {{ project.title }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                {% comment %} <button type="submit" class="btn btn-primary w-100">Apply Filter</button> {% endcomment %}
-            </form>
-        </div>
+    <div class="col-md-3">
 
         <!-- Faculty Schedules -->
-         
             <h4>Faculty Schedules</h4>
             <ul id="faculty-list-group" class="list-group">
                 {% for faculty, schedules in grouped_events.items %}
-                    <li class="list-group-item">
+                    <li class="list-group-item mt-1">
                         <div class="d-flex align-items-center">
                             <!-- Color Circle -->
                             <span id="color-preview-{{ faculty.id }}" 
@@ -128,9 +106,57 @@
             </ul>
         </div>
         <!-- Right Column: Calendar -->
-        <div class="col-md-8"> 
+        <div class="col-md-6"> 
             <div id='calendar'></div> 
         </div>
+
+        <div class="col-md-3">
+
+            <!-- Filter by Project Form -->
+        <div class="mb-6">
+            <form id="filter-project-form" method="GET" class="border p-3 rounded bg-light mb-3" action="{% url 'view-schedule' %}">
+                <h5>Filter by Project</h5>
+                <div class="mb-2">
+                    <label for="project" class="form-label">Select Project:</label>
+                    <select name="project" id="project" class="form-control">
+                        <option value="" {% if not request.GET.project %}selected{% endif %}>
+                            All Faculty
+                        </option>
+                        {% for project in projects %}
+                            <option value="{{ project.id }}"
+                                {% if project.id|stringformat:"s" == request.GET.project %}selected{% endif %}>
+                                {{ project.title }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% comment %} <button type="submit" class="btn btn-primary w-100">Apply Filter</button> {% endcomment %}
+            </form>
+        </div>
+        
+            <div class="mb-4">
+                <section class="common-schedule-container mb-6 border p-3 rounded bg-light mb-3">
+                    <h5 class="form-label text-center mb-3">Common Schedule</h5>
+        
+                    <ul id="common-schedule-list" class="list-group">
+                        {% for start, end in common_schedules %}
+                            <li class="list-group-item d-flex align-items-center">
+                                <!-- Color Dot (Optional) -->
+                                <div class="schedule-dot me-2" style="background-color: #007bff;"></div>     
+                                <!-- Schedule Details -->
+                                <div>
+                                    <strong>From:</strong> {{ start|date:"M. d, Y, g:i A" }} <br>
+                                    <strong>To:</strong> {{ end|date:"M. d, Y, g:i A" }}
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-center">No common schedules available</li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            </div>
+        </div>
+        
     </div>
 
 {% else %}
@@ -142,6 +168,34 @@
 
 
 <script>
+    {% comment %} document.querySelector('#project').addEventListener('change', function () {
+        const selectedProject = this.value;
+        fetch(`view-schedule?project=${selectedProject}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.querySelector('#common-schedule-list').innerHTML = html;
+        })
+        .catch(err => console.error('Error fetching schedules:', err));
+    }); {% endcomment %}
+
+    {% comment %} document.querySelector('#find-common-schedule-btn').addEventListener('click', () => {
+        const list = document.querySelector('#common-schedule-list');
+        const newSchedule = document.createElement('li');
+        newSchedule.className = 'list-group-item';
+        newSchedule.textContent = 'Schedule at 3:00 PM';
+        list.appendChild(newSchedule);
+    
+        // Brief highlight effect
+        newSchedule.style.backgroundColor = '#d4edda';
+        setTimeout(() => {
+            newSchedule.style.backgroundColor = '';
+        }, 1000);
+    }); {% endcomment %}
+
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('filter-project-form');
         const projectSelect = document.getElementById('project');
