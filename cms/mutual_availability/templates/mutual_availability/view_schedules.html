@@ -54,10 +54,10 @@
                                 <!-- Color Picker Dropdown (Initially Hidden) -->
                                 <div id="color-picker-dropdown-{{ faculty.id }}" 
                                     class="dropdown-menu dropdown-menu-end p-3 text-center" 
-                                    style="display: none; min-width: 240px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                                    style="display: none; min-width: 200px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
 
                                     <!-- Label and Close Icon in the Same Row -->
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
                                         <!-- Label -->
                                         <label for="color-picker-{{ faculty.id }}" 
                                             class="form-label fw-bold mb-0" 
@@ -73,24 +73,32 @@
                                     </div>
 
                                     <!-- Centered Color Picker with Spacing -->
-                                    <input type="color" id="color-picker-{{ faculty.id }}" 
-                                        class="form-control mx-auto mb-3 border-0 shadow-sm" 
-                                        style="width: 100px; height: 50px; cursor: pointer;">
+                                    <div class="d-flex justify-content-center align-items-center mb-3">
+                                        <input type="color" id="color-picker-{{ faculty.id }}" 
+                                            class="form-control border-0 shadow-sm" 
+                                            style="width: 40px; height: 40px; cursor: pointer; padding: 0; margin: 0;">
+                                        
+                                        <!-- Random Button with Icon -->
+                                        <button class="btn btn-secondary btn-sm ms-2 d-flex align-items-center justify-content-center" 
+                                            style="font-size: 1rem; padding: 0; height: 40px; width: 40px;" 
+                                            onclick="generateRandomColor({{ faculty.id }})">
+                                            <i class="fas fa-random" style="font-size: 1.2rem;"></i>
+                                        </button>
+                                    </div>
 
                                     <!-- Centered Button at the Bottom -->
-                                    <button class="btn btn-primary btn-lg mx-auto d-block mb-2" 
+                                    <button class="btn btn-primary btn-sm mx-auto d-block mb-2" 
                                         onclick="updateColor({{ faculty.id }})" 
-                                        style="width: 120px;">
+                                        style="width: 100px;">
                                         Update
                                     </button>
-
                                 </div>
                             </div>
 
                         </div>
 
                         <!-- Faculty Schedules List (Initially Hidden) -->
-                        <ul id="schedule-list-{{ faculty.id }}" class="mt-2 ps-4" style="display: none;">
+                        <ul id="schedule-list-{{ faculty.id }}" class="mt-2 ps-4 schedule-list" style="display: none;">
                             {% for event in schedules %}
                                 <li>
                                     <div class="schedule-dot" style="background-color: {{ faculty.color }};"></div>
@@ -168,33 +176,25 @@
 
 
 <script>
-    {% comment %} document.querySelector('#project').addEventListener('change', function () {
-        const selectedProject = this.value;
-        fetch(`view-schedule?project=${selectedProject}`, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.text())
-        .then(html => {
-            document.querySelector('#common-schedule-list').innerHTML = html;
-        })
-        .catch(err => console.error('Error fetching schedules:', err));
-    }); {% endcomment %}
-
-    {% comment %} document.querySelector('#find-common-schedule-btn').addEventListener('click', () => {
-        const list = document.querySelector('#common-schedule-list');
-        const newSchedule = document.createElement('li');
-        newSchedule.className = 'list-group-item';
-        newSchedule.textContent = 'Schedule at 3:00 PM';
-        list.appendChild(newSchedule);
+    function generateRandomColor(facultyId) {
+        // Generate a random hex color
+        const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
     
-        // Brief highlight effect
-        newSchedule.style.backgroundColor = '#d4edda';
-        setTimeout(() => {
-            newSchedule.style.backgroundColor = '';
-        }, 1000);
-    }); {% endcomment %}
+        // Find the color picker input and set its value
+        const colorPicker = document.getElementById(`color-picker-${facultyId}`);
+        colorPicker.value = randomColor;
+    
+        // Optionally: Apply the color (e.g., update a preview or UI element)
+        applyColorToUI(facultyId, randomColor);
+    }
+    
+    function applyColorToUI(facultyId, color) {
+        // Example: Update a preview dot or other element with the new color
+        const previewDot = document.querySelector(`#schedule-list-${facultyId} .schedule-dot`);
+        if (previewDot) {
+            previewDot.style.backgroundColor = color;
+        }
+    }
 
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('filter-project-form');

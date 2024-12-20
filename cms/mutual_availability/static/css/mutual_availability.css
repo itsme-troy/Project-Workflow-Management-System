@@ -118,6 +118,24 @@ input[type="color"]:hover {
     margin-top: 10px; /* Space between color picker and button */
 }
 
+
+.schedule-list {
+    min-height: 150px;
+    min-width: 300px; /* Adjust as necessary */
+    border: 1px solid #ddd; /* Optional: for visibility */
+    padding: 10px; /* Optional: for spacing */
+    background-color: #f9f9f9; /* Optional: for a subtle background */
+    border-radius: 5px; /* Optional: for rounded corners */
+}
+
+.schedule-list li {
+    margin-bottom: 5px; /* Space between items */
+}
+
+.schedule-list .text-muted {
+    font-style: italic; /* Different style for "No schedules available" */
+}
+
 /* Container Styling */
 .common-schedule-container {
     background: linear-gradient(90deg, #f8f9fa, #e9ecef); /* Subtle gradient background */
@@ -132,6 +150,7 @@ input[type="color"]:hover {
     transform: translateY(-5px); /* Slight lift on hover */
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
 }
+
 
 /* Button Styling */
 #find-common-schedule-btn {

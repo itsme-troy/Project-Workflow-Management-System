@@ -106,10 +106,10 @@ def calculate_common_schedules(schedules):
 
     # group events by faculty and pass them to template 
 def view_schedule(request):
-    if not request.user.is_authenticated: 
+    if not request.user.is_authenticated:
         messages.error(request, "Please login to view this page")
-        return redirect('login')    
-    
+        return redirect('login')
+
     project_id = request.GET.get('project')
 
     if project_id and project_id.isdigit():
@@ -119,41 +119,34 @@ def view_schedule(request):
         panelists = project.panel.all()
         adviser = project.adviser
         # Combine panelists and adviser into one query
+        faculties = list(panelists) + ([adviser] if adviser else [])
         faculty_schedules = Available_schedule.objects.filter(
             Q(faculty__in=panelists) | Q(faculty=adviser)
         )
-        
+
         # Create a list of faculty with their roles (panelist or adviser)
-        faculty_roles = {}
-        for faculty in panelists:
-            faculty_roles[faculty] = 'panelist'
-        faculty_roles[adviser] = 'adviser'  # Mark adviser role
-        
+        faculty_roles = {faculty: 'panelist' for faculty in panelists}
+        if adviser:
+            faculty_roles[adviser] = 'adviser'
+
     else:
         project = None
         # Show all faculty schedules if no project is selected
         faculty_schedules = Available_schedule.objects.all().select_related('faculty')
-        
-        # Create a dictionary for faculty roles (no panelists or adviser in this case)
+        faculties = Faculty.objects.filter(role='FACULTY')
         faculty_roles = {}
 
-    print("Faculty Schedules:\n", faculty_schedules)
     # Calculate common schedules
     common_schedules = calculate_common_schedules(faculty_schedules)
-    print("\nCommon schedules:\n", common_schedules)
-    # print(common_schedules)
-    # Group events by faculty
-    grouped_events = {}
-    for schedule in faculty_schedules:
-        faculty = schedule.faculty
-        if faculty not in grouped_events:
-            grouped_events[faculty] = []
-        grouped_events[faculty].append(schedule)
 
-    # print(grouped_events)
+    # Group events by faculty, including those without schedules
+    grouped_events = {faculty: [] for faculty in faculties}
+    for schedule in faculty_schedules:
+        grouped_events[schedule.faculty].append(schedule)
+
     # Pass approved projects to the modal
     approved_projects = Project.objects.filter(status='approved', is_archived=False)
-    
+
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # Check if AJAX
         return render(request, 'mutual_availability/partials/faculty_list.html', {
             "grouped_events": grouped_events,
@@ -163,7 +156,7 @@ def view_schedule(request):
     return render(request, 'mutual_availability/view_schedules.html', {
         "grouped_events": grouped_events,
         "projects": approved_projects,
-        "faculty_roles": faculty_roles,  # Pass faculty roles to template
+        "faculty_roles": faculty_roles,
         "common_schedules": common_schedules,
     })
 
