@@ -143,6 +143,7 @@ input[type="color"]:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effects */
+    height: 500px;
 }
 
 /* Hover Effect */
@@ -168,7 +169,7 @@ input[type="color"]:hover {
 
 /* Schedule List */
 #common-schedule-list {
-    max-height: 300px; /* Limit height for long lists */
+    max-height: 400px; /* Limit height for long lists */
     overflow-y: auto; /* Scroll if content exceeds container */
     padding: 10px;
     margin: 0;
@@ -214,4 +215,17 @@ input[type="color"]:hover {
         font-size: 0.85rem;
         padding: 10px;
     }
+}
+
+/* Make the faculty schedule container scrollable */
+.faculty-schedule-container {
+    background-color: #ffffff; /* White background for content */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    padding: 15px;
+    max-height: 670px; /* Adjust height based on the content */
+    overflow-y: auto; /* Allow vertical scrolling if content exceeds the max height */
+    border: 1px solid #ddd; /* Subtle border for definition */
+    margin-bottom: 20px; /* Add space between sections */
+
 }

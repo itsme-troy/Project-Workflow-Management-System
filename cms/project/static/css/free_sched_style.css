@@ -89,8 +89,8 @@ body {
 }
 
 .top_navbar .hamburger__inner > div{
-  width: 30px;
-  height: 2px;
+  width: 50px;
+  height: 3px;
   background: #fff;
   position: absolute;
   top: 0;

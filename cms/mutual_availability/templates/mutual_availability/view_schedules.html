@@ -14,6 +14,7 @@
     <!-- Left Column: Filter and Faculty Schedules -->
     <div class="col-md-3">
 
+    <section class="faculty-schedule-container mb-6 border p-3 rounded bg-light mb-3">
         <!-- Faculty Schedules -->
             <h4>Faculty Schedules</h4>
             <ul id="faculty-list-group" class="list-group">
@@ -53,49 +54,52 @@
 
                                 <!-- Color Picker Dropdown (Initially Hidden) -->
                                 <div id="color-picker-dropdown-{{ faculty.id }}" 
-                                    class="dropdown-menu dropdown-menu-end p-3 text-center" 
-                                    style="display: none; min-width: 200px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                                class="dropdown-menu dropdown-menu-end p-3 text-center" 
+                                style="display: none; min-width: 200px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
 
-                                    <!-- Label and Close Icon in the Same Row -->
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <!-- Label -->
-                                        <label for="color-picker-{{ faculty.id }}" 
-                                            class="form-label fw-bold mb-0" 
-                                            style="font-size: 1.1rem; color: #333;">
-                                            Update Color
-                                        </label>
+                                <!-- Label and Close Icon in the Same Row -->
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <!-- Label -->
+                                    <label for="color-picker-{{ faculty.id }}" 
+                                        class="form-label fw-bold mb-0" 
+                                        style="font-size: 1.1rem; color: #333;">
+                                        Update Color
+                                    </label>
 
-                                        <!-- Close Icon -->
-                                        <i class="fas fa-times" 
-                                        style="cursor: pointer; font-size: 1.2rem; color: #333;" 
-                                        onclick="closeDropdown({{ faculty.id }})">
-                                        </i>
-                                    </div>
+                                    <!-- Close Icon -->
+                                    <i class="fas fa-times" 
+                                    style="cursor: pointer; font-size: 1.2rem; color: #333;" 
+                                    onclick="closeDropdown({{ faculty.id }})">
+                                    </i>
+                                </div>
 
-                                    <!-- Centered Color Picker with Spacing -->
-                                    <div class="d-flex justify-content-center align-items-center mb-3">
-                                        <input type="color" id="color-picker-{{ faculty.id }}" 
-                                            class="form-control border-0 shadow-sm" 
-                                            style="width: 40px; height: 40px; cursor: pointer; padding: 0; margin: 0;">
-                                        
-                                        <!-- Random Button with Icon -->
-                                        <button class="btn btn-secondary btn-sm ms-2 d-flex align-items-center justify-content-center" 
-                                            style="font-size: 1rem; padding: 0; height: 40px; width: 40px;" 
-                                            onclick="generateRandomColor({{ faculty.id }})">
-                                            <i class="fas fa-random" style="font-size: 1.2rem;"></i>
-                                        </button>
-                                    </div>
-
-                                    <!-- Centered Button at the Bottom -->
-                                    <button class="btn btn-primary btn-sm mx-auto d-block mb-2" 
-                                        onclick="updateColor({{ faculty.id }})" 
-                                        style="width: 100px;">
-                                        Update
+                                <!-- Centered Color Picker and Random Button -->
+                                <div class="d-flex justify-content-center align-items-center mb-3">
+                                    <!-- Color Picker -->
+                                    <input type="color" id="color-picker-{{ faculty.id }}" 
+                                        class="form-control border-0 shadow-sm" 
+                                        style="width: 40px; height: 40px; cursor: pointer; padding: 0; margin: 0;">
+                                    
+                                    <!-- Random Button with Icon -->
+                                    <button class="btn btn-secondary btn-sm d-flex align-items-center justify-content-center ms-2" 
+                                        style="font-size: 1.2rem; padding: 0; height: 40px; width: 40px;" 
+                                        onclick="generateRandomColor({{ faculty.id }})">
+                                        <i class="fas fa-random" style="font-size: 1.2rem;"></i>
                                     </button>
                                 </div>
-                            </div>
 
+                                <!-- Centered Button at the Bottom -->
+                                <button class="btn btn-primary btn-sm mx-auto d-block mb-2" 
+                                    onclick="updateColor({{ faculty.id }})" 
+                                    style="width: 100px;">
+                                    Update
+                                </button>
+                            
+                            </div>
                         </div>
+
+                    </div>
+                  
 
                         <!-- Faculty Schedules List (Initially Hidden) -->
                         <ul id="schedule-list-{{ faculty.id }}" class="mt-2 ps-4 schedule-list" style="display: none;">
@@ -112,7 +116,10 @@
                     </li>
                 {% endfor %}
             </ul>
+        </section>
         </div>
+
+
         <!-- Right Column: Calendar -->
         <div class="col-md-6"> 
             <div id='calendar'></div> 

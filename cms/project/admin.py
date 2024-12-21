@@ -12,6 +12,7 @@ from .models import Student, Faculty, Coordinator
 from .models import StudentProfile, FacultyProfile, CoordinatorProfile, ProjectPhase
 from .models import ApprovedProject, ApprovedProjectGroup, Not_ApprovedProject
 from .models import Approved_Adviser, Approved_panel, Notification, Approved_student
+
 # from .models import CustomPhaseGroup, Defense_order, Phase
 # from .models import CustomPhase
 #admin.site.register(Project_Group)
