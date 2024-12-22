@@ -784,9 +784,7 @@ a:hover {
     display: none; /* Will be shown via JavaScript when count > 0 */
 }
 
-.right_menu ul li {
-    position: relative;
-}
+
 .notification-item {
     padding: 20px;
     border-bottom: 1px solid #eee;
@@ -1091,13 +1089,15 @@ body.custom-sky-blue-bg {
     font-size: 2em;
     color: #17a2b8; /* Teal blue */
 }
+/*
 body {
-    background-color: #f8f9fa; /* Light background color */
+    background-color: #f8f9fa; Light background color 
     font-family: 'Roboto',  sans-serif, Arial,;
     font-size: 16px; 
-    line-height: 1.6; /* improve line spacing */
+    line-height: 1.6; /* improve line spacing 
     color: #343a40;
-}
+}*/
+
 .container, .card {
     padding: 30px; /* Increased padding */
 }
