@@ -64,6 +64,28 @@ User = get_user_model()
 #         messages.error(request, "You don't have permission to add phases to this project.")
 #         return redirect('project-list')  # Redirect to a different page if the user doesn't have permission
     
+
+def notifications_api(request):
+    if request.user.is_authenticated:
+        notifications = Notification.objects.filter(recipient=request.user).order_by('-created_at')
+        # print(notifications)
+        data = {
+            "notifications": [
+                {
+                    "type": n.get_notification_type_display(),
+                    "message": n.message,
+                    "created_at": n.created_at.strftime("%b %d, %Y %I:%M %p"),
+                    "redirect_url": n.redirect_url,
+                    "is_read": n.is_read,
+                    "verdict": n.verdict,
+                }
+                for n in notifications
+            ],
+            "unread_count": notifications.filter(is_read=False).count(),
+        }
+        return JsonResponse(data)
+    return JsonResponse({"error": "Not authenticated"}, status=401)
+
 def defense_settings(request): 
     return render(request, 'project/setting_defenses.html', {})
 
@@ -296,6 +318,20 @@ def notifications_view(request):
 
 from django.views.decorators.http import require_POST
 
+
+# Mark notification as read/unread
+def mark_read_unread(request, notification_id):
+    if request.user.is_authenticated:
+        try:
+            notification = Notification.objects.get(id=notification_id, recipient=request.user)
+            notification.is_read = not notification.is_read  # Toggle the read status
+            notification.save()
+            return JsonResponse({'status': 'success', 'is_read': notification.is_read})
+        except delete_notification.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Notification not found'}, status=404)
+    return JsonResponse({'error': 'Not authenticated'}, status=401)
+
+
 @require_POST
 @login_required 
 def mark_notification_read(request, notification_id):
@@ -311,13 +347,16 @@ from django.views.decorators.http import require_http_methods
 
 @require_http_methods(["DELETE"])
 @login_required
+# Delete notification
 def delete_notification(request, notification_id):
-    try:
-        notification = Notification.objects.get(id=notification_id, recipient=request.user)
-        notification.delete()
-        return JsonResponse({'success': True})
-    except Notification.DoesNotExist:
-        return JsonResponse({'error': 'Notification not found'}, status=404)
+    if request.user.is_authenticated:
+        try:
+            notification = Notification.objects.get(id=notification_id, recipient=request.user)
+            notification.delete()
+            return JsonResponse({'status': 'success'})
+        except Notification.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Notification not found'}, status=404)
+    return JsonResponse({'error': 'Not authenticated'}, status=401)
 
 def select_coordinator(request):
     if not request.user.is_authenticated: 

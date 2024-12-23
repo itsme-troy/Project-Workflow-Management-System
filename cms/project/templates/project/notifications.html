@@ -23,16 +23,17 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <strong>{{ notification.get_notification_type_display }}:</strong> {{ notification.message }}
                             
-                            
                              <!-- Add the verdict badge -->
                             {% if notification.verdict %}
                                 <span class="badge badge-{{ notification.verdict|lower|slugify_filter }}">
                                     {{ notification.verdict|capfirst }}
                                 </span>
+                            {% else %}
+                                {{ notification.verdict }}
                             {% endif %}
             
                             <div class="text-muted text-end float-end">{{ notification.created_at|date:"M j, Y g:i A" }}</div>
-                            <div class="dropdown">
+                            <div class="dropdown-page-notif-settings">
                                 <button class="btn btn-link p-0" type="button" aria-label="More options" data-bs-toggle="dropdown">
                                     <i class="fas fa-cog"></i>
                                 </button>

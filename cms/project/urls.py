@@ -104,4 +104,8 @@ urlpatterns = [
     path('settings', views.coordinator_settings, name = 'coordinator-settings'),
     path('defense_settings', views.defense_settings, name = 'defense-settings'),
 
+    path('notifications_api/', views.notifications_api, name='notifications_api'),
+    path('notifications/mark_read_unread/<int:notification_id>/', views.mark_read_unread, name='mark_read_unread'),
+    path('notifications/delete/<int:notification_id>/', views.delete_notification, name='delete_notification'),
 ]
+
