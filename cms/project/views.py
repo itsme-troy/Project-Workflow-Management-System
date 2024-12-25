@@ -72,6 +72,7 @@ def notifications_api(request):
         data = {
             "notifications": [
                 {
+                    "id": n.id, 
                     "type": n.get_notification_type_display(),
                     "message": n.message,
                     "created_at": n.created_at.strftime("%b %d, %Y %I:%M %p"),
@@ -327,7 +328,7 @@ def mark_read_unread(request, notification_id):
             notification.is_read = not notification.is_read  # Toggle the read status
             notification.save()
             return JsonResponse({'status': 'success', 'is_read': notification.is_read})
-        except delete_notification.DoesNotExist:
+        except Notification.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Notification not found'}, status=404)
     return JsonResponse({'error': 'Not authenticated'}, status=401)
 
@@ -357,6 +358,16 @@ def delete_notification(request, notification_id):
         except Notification.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Notification not found'}, status=404)
     return JsonResponse({'error': 'Not authenticated'}, status=401)
+
+# def delete_notification_dropdown(request, notification_id):
+#     if request.user.is_authenticated:
+#         try:
+#             notification = Notification.objects.get(id=notification_id, recipient=request.user)
+#             notification.delete()
+#             return JsonResponse({'status': 'success'})
+#         except Notification.DoesNotExist:
+#             return JsonResponse({'status': 'error', 'message': 'Notification not found'}, status=404)
+#     return JsonResponse({'error': 'Not authenticated'}, status=401)
 
 def select_coordinator(request):
     if not request.user.is_authenticated: 
@@ -3232,4 +3243,17 @@ def show_proposal(request, project_id):
         messages.error(request, "Please Login to view this page")
         return redirect('login')
 
+# def delete_notification(request): 
+#     if request.method == 'GET':
+#         id = request.GET.get("id", None)
+#         try:
+#             notification = Notification.objects.get(id=id)
+#             print(f"Deleting event: {notification}")  # Debug print to ensure the event is found
+#             notification.delete()
+#             return JsonResponse({'status': 'success', 'message': 'Notification removed successfully'})
+#         except Notification.DoesNotExist:
+#             return JsonResponse({'status': 'error', 'message': 'Notification not found'})
+#         except Exception as e:
+#             return JsonResponse({'status': 'error', 'message': str(e)})
+#     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 

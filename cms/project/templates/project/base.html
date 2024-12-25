@@ -55,7 +55,7 @@
                     </li>
                     <div id="notification-list">
                       <!-- Notifications will be dynamically inserted here -->
-                      <li class="dropdown-item text-muted">No notifications at the moment.</li>
+                          <li class="dropdown-item text-muted">No notifications at the moment.</li>
                     </div>
                     <li>
                       <div class="dropdown-footer text-center">
@@ -65,7 +65,7 @@
                   </ul>
                 </li>
                 
-{% comment %}                 
+              {% comment %}                 
                   <li> <a href="#">Features</a> </li>
                   <li> <a href="#">About</a> </li>
                   <li> <a href="#">Contact</a> </li> {% endcomment %}
@@ -132,7 +132,6 @@
     
       <div class="main_container">
           <div class="row">
-
   <!-- Include the sidebar here -->
    <div class=sidebar> 
       {% include 'project/sidebar.html' %}
@@ -166,17 +165,14 @@
 
 
     <script>
-      
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
       function ToggleMenuNotif(event) {
         event.preventDefault(); // Prevent the default link behavior
         
         const dropdown = document.getElementById('notifDropdown'); // The dropdown menu element
         dropdown.classList.toggle('open-menu'); // Toggle the 'open-menu' class to show or hide the dropdown
       }
-      
-    </script>
-
-    <script>
       
       let subMenu = document.getElementById("subMenu"); 
       
@@ -249,112 +245,126 @@
         // Optional: Handle the dropdown toggle
       });
 
-      // Function to toggle the read/unread status of a notification
-function toggleReadStatus(notificationId) {
-  fetch(`/notifications/mark_read_unread/${notificationId}/`, {
-    method: 'POST',
-    headers: {
-      'X-CSRFToken': csrfToken,  // Make sure to include the CSRF token
-    }
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.status === 'success') {
-      alert('Notification status updated!');
-      location.reload();  // Reload to update the UI with the correct status
-    }
-  })
-  .catch(error => console.error('Error:', error));
-}
-
-// Function to delete a notification
-function deleteNotification(notificationId) {
-  fetch(`/notifications/delete/${notificationId}/`, {
-    method: 'POST',
-    headers: {
-      'X-CSRFToken': csrfToken,  // Make sure to include the CSRF token
-    }
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.status === 'success') {
-      alert('Notification deleted!');
-      location.reload();  // Reload to remove the deleted notification
-    }
-  })
-  .catch(error => console.error('Error:', error));
-}
-
-    fetch('/notifications_api/')
-  .then(response => response.json())
-  .then(data => {
-    const notificationList = document.getElementById('notification-list');
-    notificationList.innerHTML = ''; // Clear existing notifications
-    
-    if (data.notifications.length === 0) {
-      notificationList.innerHTML = '<li class="dropdown-item text-muted">No notifications at the moment.</li>';
-    } else {
-      data.notifications.forEach(notification => {
-        
-        const item = document.createElement('li');
-        item.classList.add('notif-dropdown-item');
-        
-        // Apply the 'unread' class if the notification is not read
-        if (!notification.is_read) {
-          item.classList.add('unread');
+        // Function to toggle the read/unread status of a notification
+        function toggleReadStatus(notificationId) {
+          fetch(`/notifications/mark_read_unread/${notificationId}/`, {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': csrfToken,  // Ensure the CSRF token is included
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'success') {
+              /*alert('Notification status updated!');*/ 
+              location.reload();  // Reload to update the UI with the correct status
+            }
+          })
+          .catch(error => console.error('Error:', error));
         }
 
-        // Build the notification content
-        item.innerHTML = `
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <strong>${notification.message}</strong>
-              ${notification.group ? `<div>Group: ${notification.group}</div>` : ''}
-              ${notification.sender ? `<div>From: ${notification.sender}</div>` : ''}
-              ${notification.verdict ? `<div>"${notification.verdict}"</div>` : ''}
-              <div class="text-muted small">${notification.created_at}</div>
-            </div>
-
-            <!-- Options icon (three dots) on the right side -->
-            
-            <button class="btn btn-link p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fa-solid fa-ellipsis-vertical"></i>
-            </button>
-
-            <ul class="dropdown-menu">
-              <li><button class="dropdown-item mark-read" data-id="${notification.id}">${notification.is_read ? 'Mark as Unread' : 'Mark as Read'}</button></li>
-              <li><button class="dropdown-item delete-notification" data-id="${notification.id}">Delete</button></li>
-            </ul>
-          </div>
-        `;
-    
-           // Add click event to redirect if there's a URL
-        item.addEventListener('click', function () {
-          if (notification.redirect_url) {
-            window.location.href = notification.redirect_url;
+      // Function to delete a notification
+      function deleteNotification(notificationId) {
+        fetch(`/notifications/delete/${notificationId}/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': csrfToken,  // Ensure the CSRF token is included
           }
-        });
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            alert('Notification deleted!');
+            location.reload();  // Reload to remove the deleted notification
+          }
+        })
+        .catch(error => console.error('Error:', error));
+      }
 
-        // Event listeners for actions
-        item.querySelector('.mark-read').addEventListener('click', function(e) {
-          e.stopPropagation();  // Prevent dropdown from closing
-          toggleReadStatus(notification.id);
-        });
+      fetch('/notifications_api/')
+      .then(response => response.json())
+      .then(data => {
+        const notificationList = document.getElementById('notification-list');
+        notificationList.innerHTML = ''; // Clear existing notifications
+        
+        if (data.notifications.length === 0) {
+          notificationList.innerHTML = '<li class="dropdown-item text-muted">No notifications at the moment.</li>';
+        } else {
+          data.notifications.forEach(notification => {
+            const item = document.createElement('li');
+            item.classList.add('notif-dropdown-item');
+            
+            // Apply the 'unread' class if the notification is not read
+            if (!notification.is_read) {
+              item.classList.add('unread');
+            }
 
-        item.querySelector('.delete-notification').addEventListener('click', function(e) {
-          e.stopPropagation();  // Prevent dropdown from closing
-          deleteNotification(notification.id);
-        });
+            // Build the notification content
+            item.innerHTML = `
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <strong>${notification.message}</strong>
+                  ${notification.group ? `<div>Group: ${notification.group}</div>` : ''}
+                  ${notification.sender ? `<div>From: ${notification.sender}</div>` : ''}
+                  ${notification.verdict ? `<div>"${notification.verdict}"</div>` : ''}
+                  <div class="text-muted small">${notification.created_at}</div>
+                </div>
 
-        notificationList.appendChild(item);
-      });
-    }
+                <!-- Options icon (three dots) on the right side -->
+                <button class="btn btn-link p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="toggleDropdown(event)">
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
 
-    // Update the unread notification count
-    document.getElementById('notification-count').textContent = data.unread_count;
-  })
-  .catch(error => console.error('Error loading notifications:', error));
-      
+                <!-- Dropdown menu -->
+                <ul class="notif-dropdown-menu dropdown-menu">
+                  <li><button class="dropdown-item mark-read" data-id="${notification.id}">${notification.is_read ? 'Mark as Unread' : 'Mark as Read'}</button></li>
+                  <li><button class="dropdown-item delete-notification" data-id="${notification.id}">Delete</button></li>
+                </ul>
+              </div>
+            `;
+
+            // Event listener for Mark as Read/Unread
+            item.querySelector('.mark-read').addEventListener('click', function(e) {
+              e.stopPropagation();  // Prevent dropdown from closing
+              const notificationId = e.target.getAttribute('data-id'); // Get the notification ID from data-id attribute
+              if (notificationId) {
+                toggleReadStatus(notificationId);  // Pass the notification ID to the function
+              }
+            });
+
+            // Event listener for Delete
+            item.querySelector('.delete-notification').addEventListener('click', function(e) {
+              e.stopPropagation();  // Prevent dropdown from closing
+              const notificationId = e.target.getAttribute('data-id'); // Get the notification ID from data-id attribute
+              if (notificationId) {
+                deleteNotification(notificationId);  // Pass the notification ID to the function
+              }
+            });
+
+            notificationList.appendChild(item);
+          });
+        }
+
+        // Update the unread notification count
+        document.getElementById('notification-count').textContent = data.unread_count;
+      })
+      .catch(error => console.error('Error loading notifications:', error));
+
+      // Function to toggle the dropdown visibility
+      function toggleDropdown(event) {
+        event.stopPropagation(); // Prevent the click event from propagating to the parent notification item
+        const button = event.target.closest('button');
+        const dropdownMenu = button.nextElementSibling; // Get the associated dropdown menu
+
+        // Toggle visibility of the dropdown menu
+        const isVisible = dropdownMenu.classList.contains('show');
+        if (isVisible) {
+          dropdownMenu.classList.remove('show');  // Hide the menu
+        } else {
+          dropdownMenu.classList.add('show');  // Show the menu
+        }
+      }
+
     </script>
   </body>
 </html>

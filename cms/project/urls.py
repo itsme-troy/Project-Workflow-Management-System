@@ -87,9 +87,6 @@ urlpatterns = [
     # path('get_notifications/', views.get_notifications, name='get_notifications'),
     path('mark_notification_read/<int:notification_id>/', views.mark_notification_read, name='mark_notification_read'),
     
-    path('notifications/', views.notifications_view, name='notifications'),
-    path('delete_notification/<int:notification_id>/', views.delete_notification, name='delete_notification'),
-
     path('reject-panel-invitation/<int:project_id>/', views.reject_panel_invitation, name='reject-panel-invitation'),
 
     path('submit_project_idea', views.submit_project_idea, name='submit-project-idea'), 
@@ -105,7 +102,14 @@ urlpatterns = [
     path('defense_settings', views.defense_settings, name = 'defense-settings'),
 
     path('notifications_api/', views.notifications_api, name='notifications_api'),
+    # path('notifications_api/delete/<int:notification_id>/', views.delete_notification_dropdown, name='delete_notification_dropdown'),
+
     path('notifications/mark_read_unread/<int:notification_id>/', views.mark_read_unread, name='mark_read_unread'),
     path('notifications/delete/<int:notification_id>/', views.delete_notification, name='delete_notification'),
+
+    # path('delete_notification', views.delete_notification, name='delete_notification'),
+    path('notifications/', views.notifications_view, name='notifications'),
+    # path('delete_notification/<int:notification_id>/', views.delete_notification, name='delete_notification'),
+
 ]
 

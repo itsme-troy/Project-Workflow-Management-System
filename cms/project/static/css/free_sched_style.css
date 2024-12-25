@@ -634,23 +634,28 @@ body {
 /* Ensure the options button is aligned to the right */
 .notif-dropdown-item .btn-link {
   position: absolute;
-  top: 50%;
   right: 10px;
-  transform: translateY(-50%);
-  
-  /* Increase button size */
-  font-size: 20px; /* Adjust size as needed */
+  font-size: 30px; 
   padding: 10px 15px; /* Adjust padding to increase button size */
-  
-  /* Remove border */
-  border: none;
+  border: none;   /* Remove border */
   outline: none;
-  
-  /* Optionally, remove default background if needed */
-  background: none;
-  
-  /* Optionally, change color of text if you want */
+  background: none;   /* Remove bg */
   color: #333; /* Adjust color as needed */
+  transition: all 0.3s ease; /* Smooth transition */
+}
+.notif-dropdown-item .btn-link:hover {
+  color: #007bff; /* Change text color on hover */
+  background-color: rgba(0, 123, 255, 0.1); /* Light blue background on hover */
+  transform: translateY(-20%) scale(1.1); /* Slight zoom effect */
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3); /* Shadow on hover */
+}
+.notif-dropdown-item .btn-link i{
+  color: #333; /* Icon color */
+  font-size: 30px; /* Adjust icon size */
+  transition: color 0.3s ease;
+}
+.notif-dropdown-item .btn-link:hover i {
+  color: #007bff; /* Change icon color on hover */
 }
 
 .notif-dropdown-item .dropdown-menu{
@@ -772,3 +777,4 @@ body {
 .text-primary {
   color: #007bff !important;
 }
+

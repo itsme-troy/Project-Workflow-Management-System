@@ -12,11 +12,14 @@
             <div class="button-container" style="float: right;">
                 <a href="javascript:history.back()" class="btn btn-outline-danger btn-sm" 
                 style="float: right;"> Cancel </a> 
-            </div> </center> 
+                <a href="{% url 'list-proposals' %}" class="btn btn-outline-primary btn-sm" style="float: right; margin-left: 10px;"> View All Proposals </a>
+            </div> 
+        
+        </center> 
             <br/>
             
         {% if submitted %}
-            <div class="alert alert-success text-center" role="alert">
+            <div role="alert">
                 <h3> Your Proposal Was Submitted Successfully!</h3>
             </div>
         {% else %}
