@@ -749,69 +749,8 @@ a:hover {
     background-color: #87CEEB; /* Sky blue color */
 }
 
-.unread {
-    background-color: #e7f3fe; /* Light blue background for unread notifications */
-    font-weight: bold; /* Bold text for unread notifications */
-    border-left: 4px solid #007bff; /* Add a blue border to the left for emphasis */
-}
 
-.notification-list {
-    max-height: 500px; /* Set a maximum height for the notifications list */
-    overflow-y: auto; /* Enable vertical scrolling */
-    border: 1px solid #dee2e6; /* Optional: Add a border for better visibility */
-    border-radius: 4px; /* Optional: Rounded corners */
-    margin-top: 10px; /* Optional: Space above the list */
-    background-color: #ffffff; /* White background for contrast */
-    
-} 
 
-.no-notifications {
-    text-align: center;
-}
-.no-notifications h4 {
-    font-size: 1.5em;
-    color: #6c757d;
-}
-.notification-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: red;
-    color: white;
-    border-radius: 50%;
-    padding: 2px 6px;
-    font-size: 12px;
-    display: none; /* Will be shown via JavaScript when count > 0 */
-}
-
-.notification-item {
-    padding: 20px;
-    border-bottom: 1px solid #eee;
-    transition: background-color 0.3s ease;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    background-color: #f9f9f9;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    font-size: 0.95em;
-    z-index: 4000;
-}
-.notification-item .d-flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.notification-item .text-muted {
-    font-size: 0.9em;
-    color: #6c757d; /* Muted gray text */
-}
-.dropdown-menu {
-    min-width: 150px;
-}
-
-.notification-item.unread {
-    background-color: #e3f2fd; /* Light gray background for unread notifications */
-    font-weight: bold; /* Bold text for unread notifications */
-}
 @media (max-width: 768px) {
     .notification-list {
         max-height: 400px; /* Adjust for smaller screens */
@@ -838,26 +777,6 @@ a:hover {
 
 }
 
-.notification-link {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Style the notification badge */
-.notification-count {
-    background-color: #dc3545; /* Red background */
-    color: #ffffff; /* White text */
-    border-radius: 50%; /* Circular shape */
-    padding: 5px 10px; /* Padding for better appearance */
-}
-
-.notification-item:hover {
-    background-color: #f1f1f1; /* Light gray background on hover */
-    transform: translateY(-2px); /* Slightly lift the item */
-    cursor: pointer;
-}   
 
 
 /* General Alert Styling */

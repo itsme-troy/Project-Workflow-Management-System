@@ -306,19 +306,15 @@ def notifications_view(request):
 
     # Fetch all notifications for the logged-in user
     notifications = Notification.objects.filter(recipient=request.user).order_by('-created_at')
-    unread_notifications = Notification.objects.filter(recipient=request.user, is_read=False)
     
     # Mark all notifications as read
-    notifications.update(is_read=True)
+    # notifications.update(is_read=True)
 
     return render(request, 'project/notifications.html', {
         'notifications': notifications,
-        'unread_notifications': unread_notifications, 
-
     })
 
 from django.views.decorators.http import require_POST
-
 
 # Mark notification as read/unread
 def mark_read_unread(request, notification_id):
@@ -346,17 +342,21 @@ def mark_notification_read(request, notification_id):
     
 from django.views.decorators.http import require_http_methods
 
+
 @require_http_methods(["DELETE"])
-@login_required
-# Delete notification
 def delete_notification(request, notification_id):
     if request.user.is_authenticated:
         try:
+            # Get the notification for the logged-in user
             notification = Notification.objects.get(id=notification_id, recipient=request.user)
             notification.delete()
             return JsonResponse({'status': 'success'})
         except Notification.DoesNotExist:
+            # Notification not found
             return JsonResponse({'status': 'error', 'message': 'Notification not found'}, status=404)
+        except Exception as e:
+            # Log unexpected errors
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     return JsonResponse({'error': 'Not authenticated'}, status=401)
 
 # def delete_notification_dropdown(request, notification_id):
