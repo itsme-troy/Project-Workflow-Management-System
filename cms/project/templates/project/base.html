@@ -246,42 +246,54 @@
         // Optional: Handle the dropdown toggle
       });
 
-        // Function to toggle the read/unread status of a notification
-        function toggleReadStatus(notificationId) {
-          fetch(`/notifications/mark_read_unread/${notificationId}/`, {
+       // Function to toggle the read/unread status of a notification
+      function toggleReadStatus(notificationId) {
+        fetch(`/mark_read_unread/${notificationId}/`, {
             method: 'POST',
             headers: {
-              'X-CSRFToken': csrfToken,  // Ensure the CSRF token is included
+                'X-CSRFToken': csrfToken,  // Ensure the CSRF token is included
             }
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.status === 'success') {
-              /*alert('Notification status updated!');*/ 
-              location.reload();  // Reload to update the UI with the correct status
-            }
-          })
-          .catch(error => console.error('Error:', error));
-        }
-
-      // Function to delete a notification
-      function deleteNotification(notificationId) {
-        fetch(`/notifications/delete/${notificationId}/`, {
-          method: 'POST',
-          headers: {
-            'X-CSRFToken': csrfToken,  // Ensure the CSRF token is included
-          }
         })
         .then(response => response.json())
         .then(data => {
-          if (data.status === 'success') {
-            alert('Notification deleted!');
-            location.reload();  // Reload to remove the deleted notification
-          }
+            if (data.status === 'success') {
+                // Update the UI dynamically instead of reloading the page
+                const notificationItem = document.querySelector(`[data-id='${notificationId}']`).closest('.notif-dropdown-item');
+                const markButton = notificationItem.querySelector('.mark-read-unread');
+                // Toggle the class based on the response
+                if (data.is_read) {
+                    notificationItem.classList.remove('unread');
+                    notificationItem.classList.add('read');
+                    markButton.textContent = 'Mark as Unread';
+                } else {
+                    notificationItem.classList.remove('read');
+                    notificationItem.classList.add('unread');
+                    markButton.textContent = 'Mark as Read';
+                }
+            }
         })
         .catch(error => console.error('Error:', error));
       }
 
+      // Function to delete a notification
+      function deleteNotification(notificationId) {
+        fetch(`/delete_notification/${notificationId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': csrfToken,  // Ensure the CSRF token is included
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Remove the notification from the UI dynamically
+                const notificationItem = document.querySelector(`[data-id='${notificationId}']`).closest('.notif-dropdown-item');
+                notificationItem.remove();  // Remove the notification item from the DOM
+            }
+        })
+        .catch(error => console.error('Error:', error));
+      }
+      // Render notifications and attach event listeners
       fetch('/notifications_api/')
       .then(response => response.json())
       .then(data => {
@@ -294,7 +306,8 @@
           data.notifications.forEach(notification => {
             const item = document.createElement('li');
             item.classList.add('notif-dropdown-item');
-            
+            item.setAttribute('data-id', notification.id);  // Set the notification ID as a data attribute
+
             // Apply the 'unread' class if the notification is not read
             if (!notification.is_read) {
               item.classList.add('unread');
@@ -318,14 +331,14 @@
 
                 <!-- Dropdown menu -->
                 <ul class="notif-dropdown-menu dropdown-menu">
-                  <li><button class="dropdown-item mark-read" data-id="${notification.id}">${notification.is_read ? 'Mark as Unread' : 'Mark as Read'}</button></li>
+                  <li><button class="dropdown-item mark-read-unread" data-id="${notification.id}">${notification.is_read ? 'Mark as Unread' : 'Mark as Read'}</button></li>
                   <li><button class="dropdown-item delete-notification" data-id="${notification.id}">Delete</button></li>
                 </ul>
               </div>
             `;
 
             // Event listener for Mark as Read/Unread
-            item.querySelector('.mark-read').addEventListener('click', function(e) {
+            item.querySelector('.mark-read-unread').addEventListener('click', function(e) {
               e.stopPropagation();  // Prevent dropdown from closing
               const notificationId = e.target.getAttribute('data-id'); // Get the notification ID from data-id attribute
               if (notificationId) {

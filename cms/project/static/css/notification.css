@@ -269,7 +269,6 @@
   position: relative; /* This allows the button and dropdown to be positioned absolutely */
 }
 
-
 /* Ensure the dropdown menu appears above other elements */
 .dropdown-page-notif-settings .dropdown-menu {
   position: absolute; /* Position it relative to the parent container */
@@ -285,3 +284,5 @@
 .dropdown-page-notif-settings .dropdown-menu.show {
   display: block; /* Make dropdown visible when 'show' class is added */
 }
+
+

@@ -101,18 +101,14 @@ urlpatterns = [
     path('settings', views.coordinator_settings, name = 'coordinator-settings'),
     path('defense_settings', views.defense_settings, name = 'defense-settings'),
 
-    # path('notifications_api/delete/<int:notification_id>/', views.delete_notification_dropdown, name='delete_notification_dropdown'),
 
-    # path('notifications/mark_read_unread/<int:notification_id>/', views.mark_read_unread, name='mark_read_unread'),
-    # path('notifications/delete/<int:notification_id>/', views.delete_notification, name='delete_notification'),
-    
+    path('notifications/', views.notifications_view, name='notifications'), 
     path('notifications_api/', views.notifications_api, name='notifications_api'),    
     path('mark_read_unread/<int:notification_id>/', views.mark_read_unread, name='mark_read_unread'),
     path('delete_notification/<int:notification_id>/', views.delete_notification, name='delete_notification'),
-    
-    # path('delete_notification', views.delete_notification, name='delete_notification'),
-    path('notifications/', views.notifications_view, name='notifications'),
-    # path('delete_notification/<int:notification_id>/', views.delete_notification, name='delete_notification'),
-
+     path('delete_all_notifications/', views.delete_all_notifications, name='delete_all_notifications'),
+     
+    path('mark_all_read/', views.mark_all_read, name='mark_all_read'),
+ 
 ]
 

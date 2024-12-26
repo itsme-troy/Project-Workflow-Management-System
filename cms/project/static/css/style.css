@@ -785,9 +785,9 @@ body.custom-sky-blue-bg {
 }
 
 .alert {
-    padding: 25px 80px; /* Increase padding slightly for more space around text */
-    margin-top: 0; /* Remove the top margin */
-    margin-bottom: 0; /* Remove bottom margin */
+    padding: 25px 20px; /* Increase padding slightly for more space around text */
+    margin-top: 15px; /* Remove the top margin */
+    margin-bottom: 15px; /* Remove bottom margin */
     border-radius: 8px;
     font-family: 'Arial', sans-serif;
     font-size: 1.1em; /* Slightly larger font size for better readability */
@@ -934,7 +934,7 @@ body.custom-sky-blue-bg {
     background-color: #f8d7da; /* Custom error background */
     border-color: #f5c6cb; /* Custom border color */
     color: #721c24; /* Custom text color */
-    padding: 15px 30px; /* Adjust padding to make it larger */
+    padding: 30px 30px; /* Adjust padding to make it larger */
     border-radius: 5px; /* Slightly rounded corners */
     position: relative; /* To position the close button */
     display: flex; /* Use flexbox to control the layout of icon and text */
