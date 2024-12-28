@@ -331,6 +331,7 @@ def mark_read_unread(request, notification_id):
             notification = Notification.objects.get(id=notification_id, recipient=request.user)
             notification.is_read = not notification.is_read  # Toggle the read status
             notification.save()
+            
             return JsonResponse({'status': 'success', 'is_read': notification.is_read})
         except Notification.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Notification not found'}, status=404)

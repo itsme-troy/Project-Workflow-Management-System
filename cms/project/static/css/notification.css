@@ -45,6 +45,7 @@
   height: 80px; /* Default height for notification item */
 }
 
+
 .notification-item.with-dropdown {
   height: 150px; /* Increased height when the dropdown is visible */
 }
@@ -54,6 +55,8 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
   cursor: pointer;
   transform: translateX(3px);
+
+  
 }
 
 .notification-item .d-flex {
@@ -68,16 +71,20 @@
 }
 
 /* Unread notifications - highlighted with a light blue background */
+/* Unread notifications - highlighted with a light green background */
 .notification-item.unread {
-  background-color: #e1f7d5; /* Light blue background for unread notifications */
+  background-color: #e1f7d5; /* Light green background for unread notifications */
   font-weight: bold; /* Bold text for unread notifications */
-  border-left: 4px solid #007bff; /* Blue border for emphasis */
+  border-left: 4px solid #28a745; /* Green border for emphasis */
 }
-/* Hover effect for unread notifications */
+
+/* Hover effect for unread notifications (more green) */
 .notification-item.unread:hover {
-  background-color: #d4f7c2; /* Slightly darker blue background on hover */
+  background-color: #c8f7a6; /* Slightly darker green background on hover */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Darker shadow on hover */
+  border-left: 4px solid #218838; /* Slightly darker green border on hover */
 }
+
 /* Read notifications - more subtle with a light gray background */
 .notification-item.read {
   background-color: #f9f9f9; /* Light gray background for read notifications */
@@ -116,12 +123,12 @@
 .notification-dropdown {
     position: absolute;
     z-index: 9999; 
-    top: -5px; 
+    top: -55px; 
     left: 0; 
     right: 0%;
     display: block;  /* Always visible by default */
     max-height: 0px; /* Initially hidden */
-    width: 400px;
+    width: 500px;
     opacity: 0; /* Initially hidden */
     transition: max-height 0.5s ease, opacity 0.3s ease; /* Smooth transition */
     border-radius: 8px; /* Rounded corners */
@@ -144,16 +151,39 @@
     z-index: 9999;
     background-color: #f8f9fa;
   }
+  /* Ensure that the dropdown items are stacked vertically */
+.notification-dropdown .dropdown-item {
+  display: block; /* Make each item a block-level element to stack them */
+  padding: 8px 10px; /* Adjust padding for smaller items */
   
-  /* Notification header and footer styles */
-  .dropdown-header {
-    background-color: #f1f1f1;
-    font-weight: bold;
-    padding: 8px 12px;
-    font-size: 13px; /* Smaller font for the header */
-    text-align: center;
-    border-bottom: 1px solid #e5e5e5;
+}
   
+.dropdown-header {
+    width: 450px;
+    font-family: 'Roboto', Arial, sans-serif; /* Clean, modern font */
+    font-weight: 600; /* Semi-bold for better readability */
+    padding: 10px 15px; /* Spacious padding */
+    font-size: 15px; /* Balanced font size */
+    line-height: 1.5; /* Better readability */
+    border-bottom: 1px solid #ddd; /* Subtle separator */
+    color: #333; /* High-contrast text */
+    border-radius: 5px 5px 0 0; /* Rounded corners */
+    text-transform: uppercase; /* Emphasis with uppercase */
+    letter-spacing: 0.5px; /* Professional touch */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+  }
+  
+  .dropdown-header:hover {
+    background-color: #e0e0e0; /* Hover effect */
+    color: #000; /* Stronger hover contrast */
+    cursor: default; /* Non-clickable cursor */
+  }
+  
+  @media (max-width: 768px) {
+    .dropdown-header {
+      font-size: 13px; /* Smaller font for compact screens */
+      padding: 8px 12px; /* Adjusted padding */
+    }
   }
   
   .notif-dropdown-item{
@@ -185,18 +215,19 @@
   
   
   .notif-dropdown-item .btn-link:hover {
-    color: #d11818; /* Change text color on hover */
+    color: #f80000; /* Change text color on hover */
     background-color: rgba(0, 123, 255, 0.1); /* Light blue background on hover */
     transform: translateY(-20%) scale(1.1); /* Slight zoom effect */
     box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3); /* Shadow on hover */
   }
+
   .notif-dropdown-item .btn-link i{
     color: #333; /* Icon color */
     font-size: 30px; /* Adjust icon size */
     transition: color 0.3s ease;
   }
   .notif-dropdown-item .btn-link:hover i {
-    color: #007bff; /* Change icon color on hover */
+    color: #e31111; /* Change icon color on hover */
   }
   
   .notif-dropdown-item .dropdown-menu{
@@ -210,7 +241,7 @@
     cursor: pointer;
   }
   .notif-dropdown-item .dropdown-item:hover{
-    background-color: #f1f1f1;
+    background-color: #dfdfdf;
   }
   
   /* Hover effect for individual notification items */
@@ -266,16 +297,20 @@
 /* Custom styling for the dropdown menu */
 /* Ensure the parent container has relative positioning */
 .dropdown-page-notif-settings {
+  margin-top: -40px;
+  margin-left: 400px;
   position: relative; /* This allows the button and dropdown to be positioned absolutely */
 }
 
 /* Ensure the dropdown menu appears above other elements */
 .dropdown-page-notif-settings .dropdown-menu {
+  margin-top: 0px;
+  margin-right: 0px;
   position: absolute; /* Position it relative to the parent container */
   z-index: 9999; /* Ensure it appears above other elements */
   background-color: #ffffff; /* Dropdown background color */
-  top: -50%; /* Align vertically with the cog icon */
-  right: -100%; /* Position the dropdown menu to the left of the cog icon */
+  top: 20%; /* Align vertically with the cog icon */
+  right: 0%; /* Position the dropdown menu to the left of the cog icon */
   transform: translateY(50%); /* Center the dropdown vertically */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for visibility */
   display: none; /* Hide by default */
@@ -283,6 +318,11 @@
 /* Optional: Show dropdown when toggled (this is handled by JavaScript) */
 .dropdown-page-notif-settings .dropdown-menu.show {
   display: block; /* Make dropdown visible when 'show' class is added */
+}
+
+.dropdown-page-notif-settings .btn-link{
+  margin-top: 30px;
+  font-size: 20px;
 }
 
 

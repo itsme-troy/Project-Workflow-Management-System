@@ -3,55 +3,66 @@
 
 {% block content %}
 
-<div> 
-<div class="hero-section text-center py-20">
-    
-    <h1>Welcome to the SP Management System</h1>
-    <p>Streamline Your Senior Project Journey</p>
+<div class="hero-section text-center py-5" style="background: linear-gradient(to bottom, #007bff, #0056b3); color: white;">
+    <h1 class="display-4" style="color:white">Welcome to the SP Management System</h1>
+    <p class="lead" style="color:white">Streamline Your Senior Project Journey</p>
     {% if not user.is_authenticated %}
-        <a href="{% url 'login' %}" class="btn btn-primary mt-2">Get Started</a>
+        <a href="{% url 'login' %}" class="btn btn-lg mt-3 shadow">Get Started</a>
     {% endif %}
 </div>
-<div class="container mt-5" style="margin-left: auto; margin-right: auto;">
-    <div class="row ">
+
+<div class="container mt-5">
+    <div class="row text-center">
         <div class="col-md-4">
-            <i class="fas fa-users fa-3x"></i>
-            <h3>Group Management</h3>
-            <p>Easily form and manage project groups.</p>
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-users fa-3x mb-3 text-primary"></i>
+                    <h5 class="card-title">Group Management</h5>
+                    <p class="card-text">Easily form and manage project groups.</p>
+                </div>
+            </div>
         </div>
         <div class="col-md-4">
-            <i class="fas fa-tasks fa-3x"></i>
-            <h3>Project Tracking</h3>
-            <p>Monitor project progress and deadlines.</p>
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-tasks fa-3x mb-3 text-success"></i>
+                    <h5 class="card-title">Project Tracking</h5>
+                    <p class="card-text">Monitor project progress and deadlines.</p>
+                </div>
+            </div>
         </div>
         <div class="col-md-4">
-            <i class="fas fa-calendar-alt fa-3x"></i>
-            <h3>Defense Scheduling</h3>
-            <p>Schedule and manage defense sessions.</p>
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-calendar-alt fa-3x mb-3 text-warning"></i>
+                    <h5 class="card-title">Defense Scheduling</h5>
+                    <p class="card-text">Schedule and manage defense sessions.</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="container mt-5" style="margin-left: auto; margin-right: auto;">
-    <h2 class="text-center">User Role-Specific Information</h2>
-    <div class="row">
+<div class="container mt-5">
+    <h2 class="text-center mb-4">User Role-Specific Information</h2>
+    <div class="row text-center">
         <div class="col-md-4">
-            <h4><i class="fas fa-user-graduate"></i> For Students</h4>  <!-- Added icon for Students -->
-            <ul>
+            <h4><i class="fas fa-user-graduate text-info"></i> For Students</h4>
+            <ul class="list-unstyled">
                 <li>Join or create a project group</li>
                 <li>Submit a defense application</li>
             </ul>
         </div>
         <div class="col-md-4">
-            <h4><i class="fas fa-chalkboard-teacher"></i> For Faculty</h4>  <!-- Added icon for Faculty -->
-            <ul>
+            <h4><i class="fas fa-chalkboard-teacher text-danger"></i> For Faculty</h4>
+            <ul class="list-unstyled">
                 <li>Manage advisory projects</li>
                 <li>Generate insightful reports</li>
             </ul>
         </div>
         <div class="col-md-4">
-            <h4><i class="fas fa-user-tie"></i> For Coordinators</h4>  <!-- Added icon for Coordinators -->
-            <ul>
+            <h4><i class="fas fa-user-tie text-primary"></i> For Coordinators</h4>
+            <ul class="list-unstyled">
                 <li>System management features</li>
                 <li>Approval forms and scheduling tools</li>
             </ul>
@@ -59,9 +70,15 @@
     </div>
 </div>
 
-<div class="footer mt-5 py-3 bg-dark text-white text-center">
-    <p style="color: white;">Contact us at: info@capstonemanagement.com</p>
-    <p style="color: white;">Follow us on social media: [Social Media Links]</p>
-</div>
+<footer class="footer mt-5 py-3 bg-dark text-white">
+    <div class="container text-center">
+        <p>Contact us at: info@capstonemanagement.com</p>
+        <div>
+            <a href="#" class="text-white mx-2"><i class="fab fa-facebook fa-lg"></i></a>
+            <a href="#" class="text-white mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+            <a href="#" class="text-white mx-2"><i class="fab fa-instagram fa-lg"></i></a>
+        </div>
+    </div>
+</footer>
 
 {% endblock %}

@@ -13,8 +13,16 @@
                     <i class="fa-solid fa-ellipsis-vertical fa-2x"></i>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <li><a class="dropdown-item" href="#" id="mark-all-read-btn">Mark All as Read</a></li>
-                    <li><a class="dropdown-item" href="#" id="delete-all-btn">Delete All Notifications</a></li>
+                    <li>
+                        <a class="dropdown-item" href="#" id="mark-all-read-btn">
+                            <span class="material-icons" style="margin-right:2px">mark_email_read</span> Mark All as Read
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#" id="delete-all-btn">
+                            <span class="material-icons" style="margin-right:2px">delete</span> Delete All Notifications
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -37,7 +45,7 @@
                 </div>
             </center>
         {% else %}
-            <ul class="list-group" id="notifications-list">
+            <ul class="list-group" id="notification-list">
                 {% for notification in notifications %}
                     <li class="notification-item {% if not notification.is_read %}unread{% else %}read{% endif %}" data-url="{{ notification.redirect_url }}">
                         <div class="d-flex justify-content-between align-items-center">

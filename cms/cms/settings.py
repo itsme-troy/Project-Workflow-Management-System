@@ -34,8 +34,14 @@ INSTALLED_APPS = [
     # "common_schedule", 
     "google_calendar",
     # "calendarapp.apps.CalendarappConfig",
+    'rest_framework',
+    'channels',
  
 ]
+
+
+# Specify the ASGI application (for Django Channels)
+ASGI_APPLICATION = 'yourproject.asgi.application'
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

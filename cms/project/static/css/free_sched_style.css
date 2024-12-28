@@ -12,7 +12,6 @@
   box-sizing: border-box;
 }
 
-
 html {
     font-family: sans-serif;
     line-height: 1.15;
@@ -42,7 +41,7 @@ body {
 
 /* Collapsed sidebar layout */
 .wrapper.active .main_container .container {
-  margin-left: 0px; /* Smaller sidebar width */
+  margin-left: 5px; /* Smaller sidebar width */
   width: calc(100% - 80px);
   transition: all 0.3s ease;
 }
@@ -157,7 +156,6 @@ body {
   text-shadow: 1px 1px 2px rgba(135, 130, 130, 0.2); /* Added text shadow */
   padding: 10px 15px; /* Added padding for better spacing */
 }
-
 
 .right_menu {
   transform: none;
@@ -415,7 +413,6 @@ body {
   transition: all 0.3s ease;
 }
 
-
 .main_container .sidebar ul li a .icon {
   transition: margin 0.3s ease;
   margin-right: 10px;
@@ -564,7 +561,7 @@ body {
 /* Adjust icons in the sidebar */
 .sidebar i {
   font-size: 20px;
-  margin-left: -10px;
+  margin-left: -5px;
 }
 /* Sidebar Links - when collapsed */
 .sidebar.collapsed .sidebar-link-text .dropdown-toggle {

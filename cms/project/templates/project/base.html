@@ -43,16 +43,19 @@
 
             <div class="right_menu">
                 <ul>
-                <!-- Add notification icon/link -->
-            
+                
                 <li>
                   <a href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="ToggleMenuNotif(event)">
                     <i class="fas fa-bell icon icon-margin"></i>
                     <span class="notification-dropdown-badge" id="notification-count">0</span> Notifications
                   </a>
-                  <ul class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationsDropdown" id="notifDropdown">
+                  <ul class="dropdown-menu notification-dropdown text-start" aria-labelledby="notificationsDropdown" id="notifDropdown">
                     <li>
-                      <div class="dropdown-header">Notifications</div>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="dropdown-header mb-2">
+                          <span> Notifications </span>
+                        </div>
+                      </div>
                     </li>
                     <div id="notification-list">
                       <!-- Notifications will be dynamically inserted here -->
@@ -246,6 +249,7 @@
         // Optional: Handle the dropdown toggle
       });
 
+      
        // Function to toggle the read/unread status of a notification
       function toggleReadStatus(notificationId) {
         fetch(`/mark_read_unread/${notificationId}/`, {
@@ -307,6 +311,8 @@
             const item = document.createElement('li');
             item.classList.add('notif-dropdown-item');
             item.setAttribute('data-id', notification.id);  // Set the notification ID as a data attribute
+            item.setAttribute('data-url', notification.redirect_url); // Add redirect URL
+
 
             // Apply the 'unread' class if the notification is not read
             if (!notification.is_read) {
@@ -337,6 +343,7 @@
               </div>
             `;
 
+            
             // Event listener for Mark as Read/Unread
             item.querySelector('.mark-read-unread').addEventListener('click', function(e) {
               e.stopPropagation();  // Prevent dropdown from closing
@@ -357,6 +364,16 @@
 
             notificationList.appendChild(item);
           });
+           // Attach event listeners for redirection
+          document.querySelectorAll('.notif-dropdown-item').forEach(function(item) {
+            item.addEventListener('click', function() {
+              const redirectUrl = this.getAttribute('data-url');
+              if (redirectUrl) {
+                window.location.href = redirectUrl; // Redirect to the URL
+              }
+            });
+          });
+
         }
 
         // Update the unread notification count
@@ -365,20 +382,32 @@
       .catch(error => console.error('Error loading notifications:', error));
 
       // Function to toggle the dropdown visibility
-      function toggleDropdown(event) {
-        event.stopPropagation(); // Prevent the click event from propagating to the parent notification item
-        const button = event.target.closest('button');
-        const dropdownMenu = button.nextElementSibling; // Get the associated dropdown menu
+        function toggleDropdown(event) {
+          event.stopPropagation(); // Prevent the click event from propagating to the parent notification item
 
-        // Toggle visibility of the dropdown menu
-        const isVisible = dropdownMenu.classList.contains('show');
-        if (isVisible) {
-          dropdownMenu.classList.remove('show');  // Hide the menu
-        } else {
-          dropdownMenu.classList.add('show');  // Show the menu
+          // Close all other dropdown menus
+          document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+            menu.classList.remove('show');
+          });
+
+          // Toggle visibility of the current dropdown menu
+          const button = event.target.closest('button');
+          const dropdownMenu = button.nextElementSibling; // Get the associated dropdown menu
+
+          const isVisible = dropdownMenu.classList.contains('show');
+          if (!isVisible) {
+            dropdownMenu.classList.add('show'); // Show the menu
+          } else {
+            dropdownMenu.classList.remove('show'); // Hide the menu
+          }
         }
-      }
 
+        // Close dropdowns when clicking anywhere else on the page
+        document.addEventListener('click', () => {
+          document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+            menu.classList.remove('show');
+          });
+        });
     </script>
   </body>
 </html>
