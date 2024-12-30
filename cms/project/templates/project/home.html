@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block content %}
-
 <div class="hero-section text-center py-5" style="background: linear-gradient(to bottom, #007bff, #0056b3); color: white;">
     <h1 class="display-4" style="color:white">Welcome to the SP Management System</h1>
     <p class="lead" style="color:white">Streamline Your Senior Project Journey</p>
@@ -11,10 +10,10 @@
     {% endif %}
 </div>
 
-<div class="container mt-5">
+<div class="home_container mt-5 modern-container">
     <div class="row text-center">
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-3 shadow-sm">
                 <div class="card-body">
                     <i class="fas fa-users fa-3x mb-3 text-primary"></i>
                     <h5 class="card-title">Group Management</h5>
@@ -23,7 +22,7 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-3 shadow-sm">
                 <div class="card-body">
                     <i class="fas fa-tasks fa-3x mb-3 text-success"></i>
                     <h5 class="card-title">Project Tracking</h5>
@@ -32,7 +31,7 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-3 shadow-sm">
                 <div class="card-body">
                     <i class="fas fa-calendar-alt fa-3x mb-3 text-warning"></i>
                     <h5 class="card-title">Defense Scheduling</h5>
@@ -43,42 +42,49 @@
     </div>
 </div>
 
-<div class="container mt-5">
+<div class="home_container mt-5 modern-container">
     <h2 class="text-center mb-4">User Role-Specific Information</h2>
     <div class="row text-center">
         <div class="col-md-4">
-            <h4><i class="fas fa-user-graduate text-info"></i> For Students</h4>
-            <ul class="list-unstyled">
-                <li>Join or create a project group</li>
-                <li>Submit a defense application</li>
-            </ul>
+            <div class="card border-3 shadow-sm">
+                <h4><i class="fas fa-user-graduate text-info"></i> For Students</h4>
+                <ul class="list-unstyled">
+                    <li>Join or create a project group</li>
+                    <li>Submit a defense application</li>
+                </ul>
+            </div>
         </div>
         <div class="col-md-4">
-            <h4><i class="fas fa-chalkboard-teacher text-danger"></i> For Faculty</h4>
-            <ul class="list-unstyled">
-                <li>Manage advisory projects</li>
-                <li>Generate insightful reports</li>
-            </ul>
+            <div class="card border-3 shadow-sm">
+                <h4><i class="fas fa-chalkboard-teacher text-danger"></i> For Faculty</h4>
+                <ul class="list-unstyled">
+                    <li>Manage advisory projects</li>
+                    <li>Generate insightful reports</li>
+                </ul>
+            </div>
         </div>
         <div class="col-md-4">
-            <h4><i class="fas fa-user-tie text-primary"></i> For Coordinators</h4>
-            <ul class="list-unstyled">
-                <li>System management features</li>
-                <li>Approval forms and scheduling tools</li>
-            </ul>
+            <div class="card border-3 shadow-sm">
+                <h4><i class="fas fa-user-tie text-primary"></i> For Coordinators</h4>
+                <ul class="list-unstyled">
+                    <li>System management features</li>
+                    <li>Approval forms and scheduling tools</li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
 
-<footer class="footer mt-5 py-3 bg-dark text-white">
-    <div class="container text-center">
+<footer class="footer mt-5 py-3 bg- text-white">
+    <div class="home_container text-center">
         <p>Contact us at: info@capstonemanagement.com</p>
         <div>
-            <a href="#" class="text-white mx-2"><i class="fab fa-facebook fa-lg"></i></a>
-            <a href="#" class="text-white mx-2"><i class="fab fa-twitter fa-lg"></i></a>
-            <a href="#" class="text-white mx-2"><i class="fab fa-instagram fa-lg"></i></a>
+            <a href="#" class="text-black mx-2"><i class="fab fa-facebook fa-lg"></i></a>
+            <a href="#" class="text-black mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+            <a href="#" class="text-black mx-2"><i class="fab fa-instagram fa-lg"></i></a>
         </div>
     </div>
 </footer>
+
 
 {% endblock %}

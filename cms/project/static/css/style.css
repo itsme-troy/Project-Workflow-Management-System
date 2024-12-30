@@ -18,6 +18,22 @@
     margin-right: 10px; /* can adjust value as needed */
 }
 
+.container {
+    width: 80%; /* Default width */
+    max-width: 100%; /* Maximum width the container can grow */
+    min-width: 200px; /* Minimum width the container can shrink to */
+    padding: 30px;
+    margin: 40px auto;
+    background-color: #ffffff; /* White background for content */
+    border-radius: 8px;     
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    text-align: center;
+    
+    /* Enable resizing horizontally */
+    /* resize: both; /* Allow resizing both horizontally and vertically */
+    overflow: auto; /* Allow overflow content if the element is resized */
+}
+
 .profile_name {
     color:white
 }
@@ -1036,21 +1052,7 @@ body {
     font-size: 1.1em; /* Increased font size for list items */
 }
 
-.container {
-    width: 80%; /* Default width */
-    max-width: 100%; /* Maximum width the container can grow */
-    min-width: 200px; /* Minimum width the container can shrink to */
-    padding: 30px;
-    margin: 40px auto;
-    background-color: #ffffff; /* White background for content */
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
-    text-align: center;
-    
-    /* Enable resizing horizontally */
-    resize: both; /* Allow resizing both horizontally and vertically */
-    overflow: auto; /* Allow overflow content if the element is resized */
-}
+
 .card {
     max-width: 100%; /* Allow the card to use full width */
     margin-bottom: 20px; /* Add space between cards */

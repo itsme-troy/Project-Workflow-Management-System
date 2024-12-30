@@ -26,6 +26,7 @@ body {
   color: #525252; /* Dark text for contrast */
 }
 
+
 .wrapper{
   width: 100%;
   height: 100%;
@@ -36,6 +37,15 @@ body {
 .wrapper .main_container .container {
   margin-left: 0px; /* Matches the sidebar width */
   width: calc(100% - 300px); /* Adjust width */
+  transition: all 0.3s ease;
+}
+
+.block_container{
+  margin: 80px 30px 20px 80px;
+  background-color: #ffffff;
+  padding: 50px;
+  min-height: 800px;
+  min-width: 300px;
   transition: all 0.3s ease;
 }
 
@@ -207,7 +217,6 @@ body {
   transform: scale(1.05); /* Slightly increase the size */
 }
 
-
 .sub-menu-wrap{
   position: absolute;
   top: 100%;
@@ -300,7 +309,7 @@ body {
 .main_container {
   margin: 30px; /* Set all margins to 30px */
   width: calc(100% - 100px); /* Adjusted width for the sidebar */
-  margin-left: 195px; /* Offset for the sidebar */
+  margin-left: 80px; /* Offset for the sidebar */
   overflow: hidden; /* Defafult state */
 }
 /* Show dropdown on hover and click */
@@ -349,7 +358,7 @@ body {
   position: fixed;
   top: 60px;
   left: 0;
-  width: 300px;
+  width: 80px;
   height: 200%;
   background: #1a1a1a;
   transition: all 0.3s ease;
@@ -392,6 +401,7 @@ body {
 }
 
 .main_container .container{
+  
   margin-top: 100px;
   width: calc(100% - 225px);
   margin-left:0px;
@@ -582,3 +592,14 @@ body {
   color: #007bff !important;
 }
 
+.modern-container {
+  background-color: #f8f9fa; /* Light background for contrast */
+  border-radius: 10px; /* Rounded corners */
+  padding: 20px; /* Padding for spacing */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  transition: transform 0.3s; /* Smooth hover effect */
+}
+
+.modern-container:hover {
+  transform: scale(1.02); /* Slightly enlarge on hover */
+}

@@ -1802,7 +1802,7 @@ def show_student(request, student_id):
     
     else: 
         messages.error(request, "Please Login to view this page")
-        return redirect('error')
+        return redirect('home')
 
 def show_faculty(request, faculty_id): 
     if request.user.is_authenticated: 
@@ -3035,7 +3035,7 @@ def list_faculty(request):
     if request.user.is_authenticated: 
         # student_list = Student.objects.all().order_by('last_name')    
         
-        p = Paginator(Student.objects.filter(role='FACULTY').order_by('last_name'), 8) 
+        p = Paginator(Student.objects.filter(role='FACULTY').order_by('last_name'), 10) 
         page = request.GET.get('page')
         facultys = p.get_page(page)
         nums = "a" * facultys.paginator.num_pages
