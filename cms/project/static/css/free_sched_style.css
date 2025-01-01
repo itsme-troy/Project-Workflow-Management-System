@@ -25,7 +25,9 @@ body {
   background-color: #eceaff; /* Light gray background */
   color: #525252; /* Dark text for contrast */
 }
-
+.sidebar-collapsed {
+  overflow: hidden; /* Hide scrollbar */
+}
 
 .wrapper{
   width: 100%;
@@ -153,8 +155,8 @@ body {
 }
 
 .user-pic{
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   cursor: pointer;
   margin-left: 30px;
@@ -360,22 +362,33 @@ body {
   top: 60px;
   left: 0;
   width: 80px;
-  height: 200%;
-  background: #1a1a1a;
+  height: calc(100% - 60px); /* Adjust height to fit below the top navbar */
+  background: #333131;
   transition: all 0.3s ease;
   /* overflow-y: auto; Allow scrolling for long menus */
   z-index: 999; /* Ensure sidebar stays above content */
-  
-  
+  transition: width 0.3s ease-in-out, background-color 0.3s ease;
+  overflow-y: auto; /* Enable vertical scrolling */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2); /* Add a subtle shadow for depth */
 }
 
 .main_container .sidebar {
   transition: width 0.3s ease, margin 0.3s ease, opacity 0.3s ease; /* Add opacity transition */
   opacity: 1; /* Default opacity */
+
 }
 
 .main_container .sidebar .sidebar__inner{
   position: relative;
+  
+}
+.main_container .sidebar::-webkit-scrollbar-thumb {
+  background: #888; /* Color of the scrollbar thumb */
+  border-radius: 10px; /* Rounded corners for the scrollbar thumb */
+}
+
+.main_container .sidebar::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Darker color on hover */
 }
 
 .main_container .sidebar .profile{
@@ -393,7 +406,9 @@ body {
 
 .main_container .sidebar .profile img{
    width: 50px;
+   margin-right: 5px; /* Add fixed margin to the right of the profile image */
 }
+
 
 .main_container .sidebar .profile p:first-child{
   font-size: 14px;
@@ -422,6 +437,11 @@ body {
   align-items: center;
   margin-bottom: 1px;
   transition: all 0.3s ease;
+
+}
+.sidebar-list {
+  transition: none;  /* Remove any transitions */
+  margin-top:10px;
 }
 
 .main_container .sidebar ul li a .icon {
@@ -464,11 +484,11 @@ body {
   position: absolute;
   left: 100%;
   top: 50%;
-  transform: translateY(-50%);
+
   background: #fff;
   color: #333;
   padding: 5px 10px;
-  border-radius: 4px;
+  border-radius: 44px;
   white-space: nowrap;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   z-index: 1000;
@@ -490,7 +510,7 @@ body {
   display: flex;
   padding: 15px 10px;
   color: #fff;
-  transition: all 0.3s ease;
+  /* transition: all 0.3s ease; */
   overflow: hidden;
   white-space: nowrap;
   font-size: 18px;
@@ -555,7 +575,10 @@ body {
 .sidebar.collapsed {
   width: 98px;
   background-color: #34495e;
-
+  overflow-y: hidden;
+}
+.sidebar{
+  overflow-y: auto;
 }
 .sidebar.expanded {
   width: 300px;

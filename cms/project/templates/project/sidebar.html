@@ -1,3 +1,5 @@
+{% load static %}
+
 <!-- free_schedule/templates/free_schedule/sidebar.html -->
 <div class="sidebar">
     <div class="sidebar__inner">
@@ -5,7 +7,7 @@
         {% if not request.user.is_authenticated %}
         <div class="profile">
             <div class="img">
-                <img src="https://i.imgur.com/Ctwf8HA.png" alt="profile_pic">
+                <img src="{% static 'images/default_profile_pic.jpg' %}" class="user-pic" alt="profile_pic" style="margin: 0;" >
             </div>
             <div class="profile_info"> <!-- Made visible for guests -->
                 <p>Welcome</p>
@@ -34,8 +36,14 @@
               </li>
         {% else %}    
         <div class="profile">
-            <div class="img">
-                <img src="https://i.imgur.com/Ctwf8HA.png" alt="profile_pic">
+            <div class="img" >
+                {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                    {% comment %} yes {% endcomment %}
+                    <img src="{{ user.profile_image.url }}" alt="profile_pic" class="user-pic img-fluid" style="margin-left:10px;">
+                {% else %}
+                    {% comment %} no {% endcomment %}
+                    <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic" style="margin-left:10px;"> 
+                {% endif %}
             </div>
             <div class="profile_info"> <!-- Display profile info for authenticated users -->
                 <p>Welcome</p>
@@ -47,7 +55,7 @@
                 {% endif %}
             </div>
         </div>
-        <ul>
+        <ul class="sidebar-list">
             <li>    
                 <a href="{% url 'home' %}" class="sidebar-link" data-title="Home">
                     <span class="icon"><i class="fas fa-home icon icon-margin"></i></span>

@@ -69,7 +69,7 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
     username = models.CharField(max_length=255, blank=True)
     phone = models.CharField('Contact Phone', max_length=25, blank=True, null=True)
     course = models.CharField('Course', max_length=100, null=True, blank=True )
-    profile_image = models.ImageField(null=True, blank=True, default='static/images/default_pic.jpg', upload_to="images/")
+    profile_image = models.ImageField(null=True, blank=True, default='static/images/default_profile_pic.jpg', upload_to="images/")
     student_id = models.CharField(max_length=255, blank=True)
    
     #available_schedule = models.ManyToManyField(Available_schedule, related_name='Faculty_available', blank=True )

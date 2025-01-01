@@ -94,10 +94,13 @@
                   </li> {% endcomment %}
                 </ul>
                   <div><span class="user-info-header" onclick="toggleMenu()">
-                    {% if user.profile_image %}
+                    {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                      {% comment %} yes {% endcomment %}
+                      {% comment %} {{ user.profile_image.url }} {% endcomment %}
                       <img src="{{ user.profile_image.url }}" alt="profile_pic" class="user-pic img-fluid">
                     {% else %}
-                      <img src="{% static '/images/default_profile_image.jpg' %}" class="img-fluid rounded-start user-pic"> 
+                      {% comment %} no {% endcomment %}
+                      <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic"> 
                     {% endif %}
                     
                     <h5> {{ request.user.first_name }} {{ request.user.last_name }}</h5></span></div>    
@@ -105,10 +108,10 @@
                     <div class="sub-menu">
                       <div class="user-info"> 
                         
-                        {% if user.profile_image %}
+                        {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
                           <img src="{{ user.profile_image.url }}" alt="profile_pic" class="user-pic">
                         {% else %}
-                        <img src="{% static '/images/default_profile_image.jpg' %}" width=250 height=250 class="rounded-circle"> 
+                        <img src="{% static '/images/default_profile_pic.jpg' %}" class="user-pic img-fluid"> 
                         {% endif %}
                           
                         <h5> {{ request.user.first_name }} {{ request.user.last_name }}</h5>
@@ -210,6 +213,10 @@
         $(".sidebar").css("width", "80px"); // Collapse sidebar width initially
         $(".profile_info, .sidebar-link-text, .sidebar-menu-text").hide(); // Hide text initially
         $(".block_container").css("margin-left", "50px");
+        $(".profile").css("margin-bottom", "20px")
+        
+          // Hide sidebar scrollbar
+        $(".sidebar").addClass("collapsed");
 
         let subMenu = document.getElementById("subMenu"); 
 
@@ -227,7 +234,9 @@
             $(".sidebar-link-text").fadeOut(200);
             $(".sidebar-menu-text").fadeOut(200);
             $(".block_container").css("margin-left", "50px");
-            
+            $(".profile").css("margin-bottom", "60px")
+                 // Show sidebar scrollbar
+            $(".sidebar").removeClass("collapsed");
           } else {
             // Expand sidebar - show text content
             $(".sidebar").css("width", "300px");
@@ -235,6 +244,9 @@
             $(".sidebar-link-text").fadeIn(200);
             $(".sidebar-menu-text").fadeIn(200);
             $(".block_container").css("margin-left", "240px");
+            $(".profile").css("margin-bottom", "20px")
+             // Show sidebar scrollbar
+            $(".sidebar").removeClass("collapsed");
           }
         });
     
@@ -248,7 +260,10 @@
             $(".sidebar-link-text").fadeIn(200);
             $(".sidebar-menu-text").fadeIn(200);
             $(".block_container").css("margin-left", "240px");
-             // Show dropdown arrows
+            $(".profile").css("margin-bottom", "20px") 
+             // Show sidebar scrollbar
+            $(".sidebar").removeClass("collapsed");
+            // Show dropdown arrows
           },
           function() {
             // When the hover is removed, collapse it
@@ -259,7 +274,10 @@
               $(".sidebar-link-text").fadeOut(200);
               $(".sidebar-menu-text").fadeOut(200);
               $(".block_container").css("margin-left", "50px");
+              $(".profile").css("margin-bottom", "60px")
               // Hide dropdown arrows when collapsed
+                // Hide sidebar scrollbar
+              $(".sidebar").addClass("collapsed");
               }
           }
           
