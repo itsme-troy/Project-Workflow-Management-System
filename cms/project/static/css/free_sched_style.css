@@ -41,6 +41,7 @@ body {
 }
 
 .block_container{
+  text-align: center;
   margin: 80px 30px 20px 80px;
   background-color: #ffffff;
   padding: 50px;

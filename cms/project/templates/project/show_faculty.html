@@ -15,12 +15,12 @@
             <h1 class="display-4 text-primary">{{ faculty.first_name }} {{ faculty.last_name }}'s Profile</h1>
             <div class="card mt-4 p-4 shadow">
                 {% if faculty.profile_image %}
-                <img src= "{{ faculty.profile_image.url }}"
-                width=300 height=300 class="rounded-circle"> <br/> </br>  
-              {% else %} </br> 
-                <img src= "/static/images/default_profile_pic.jpg"
-                width=250 height=250 class="rounded-circle"> <br/> </br>  
-            {% endif %}
+                    <img src= "{{ faculty.profile_image.url }}"
+                    width=300 height=300 class="rounded-circle"> <br/> </br>  
+                {% else %} </br> 
+                    <img src= "/static/images/default_profile_pic.jpg"
+                    width=250 height=250 class="rounded-circle"> <br/> </br>  
+                {% endif %}
             
                 <div class="card-body">
                     <h5 class="card-title">Profile Details</h5>
