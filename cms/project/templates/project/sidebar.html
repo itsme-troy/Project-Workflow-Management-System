@@ -14,6 +14,9 @@
                 <p class="profile_name">Guest</p>
             </div>
         </div>
+                <p class="menu-label">
+                    <i class="fas fa-bars"></i> Menu
+                </p>
         <ul>
             <li>    
                 <a href="{% url 'home' %}" class="sidebar-link" data-title="Home">
@@ -34,6 +37,7 @@
                         </a>
                     </li>
               </li>
+     
         {% else %}    
         <div class="profile">
             <div class="img" >
@@ -55,6 +59,11 @@
                 {% endif %}
             </div>
         </div>
+    
+        <p class="menu-label">
+            <i class="fas fa-bars"></i> Menu
+        </p>
+        
         <ul class="sidebar-list">
             <li>    
                 <a href="{% url 'home' %}" class="sidebar-link" data-title="Home">

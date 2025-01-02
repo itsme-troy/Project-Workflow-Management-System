@@ -22,7 +22,7 @@ html {
 body {
   width: 100%;
   min-height: 100vh;
-  background-color: #eceaff; /* Light gray background */
+  background-color: #c7c7c7; /* Light gray background */
   color: #525252; /* Dark text for contrast */
 }
 .sidebar-collapsed {
@@ -45,7 +45,7 @@ body {
 .block_container{
   text-align: center;
   margin: 80px 30px 20px 80px;
-  background-color: #ffffff;
+  background-color: #fff7f7;
   padding: 50px;
   min-height: 800px;
   min-width: 300px;
@@ -279,9 +279,9 @@ body {
   align-items: center;
   text-decoration: none;
   color: #525252; 
-  margin: 12px 0;
 }
 .sub-menu-link p{
+  margin-top: 10px;
   width: 100%;
   font-family: 'sans-serif';
 }
@@ -301,7 +301,10 @@ body {
 .sub-menu-link:hover p{
   font-weight: 600;
 }
-
+.sub-menu-link i, .sub-menu-link span {
+  margin-right: 8px; /* Adjust spacing as needed */
+  font-size: 20px;   /* Adjust size as needed */
+}
 
 .top_navbar .menu .right_menu ul li .fas{
   font-size: 15px;
@@ -627,3 +630,35 @@ body {
 .modern-container:hover {
   transform: scale(1.02); /* Slightly enlarge on hover */
 }
+
+.menu-label {
+  background-color: #34495e; /* Match the sidebar background */
+  font-size: 16px; /* Slightly increase font size for better visibility */
+  font-weight: bold; /* Keep it bold for emphasis */
+  color: #ffffff; /* White text for contrast */
+  margin: 0px; /* Add some margin */
+  text-align: center; /* Center the text */
+  padding: 10px; /* Add padding for better spacing */
+  border-radius: 5px; /* Rounded corners for a softer look */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+}
+
+.menu-label i {
+  margin-right: 4px; /* Space between icon and text */
+  font-size: 20px; /* Icon size */
+  color: #007BFF; /* Icon color */
+  padding: 5px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  gap: 20px; /* Adjust the gap between boxes as needed */
+}
+
+.work, .secondary, .skills, .additional {
+  border: 1px solid #ccc; /* Optional: Add a border for visibility */
+  padding: 20px; /* Optional: Add padding for content */
+  background-color: #f9f9f9; /* Optional: Background color */
+}
+

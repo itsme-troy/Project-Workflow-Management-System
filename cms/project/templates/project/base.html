@@ -47,7 +47,7 @@
         </div>
         <div class="menu"> <!-- hero -->
           <div class="logo">
-            <a href="{% url 'home' %}" style="text-decoration: none; color: inherit;">SP Management System</a>
+            <a href="{% url 'home' %}" style="text-decoration: none; color: inherit;"> &lt;/SP&gt; Management App </a>
           </div>
           {% if user.is_authenticated%}
 
@@ -118,20 +118,23 @@
                         
                       </div> 
                       <hr>
-                        <a href="#" class="sub-menu-link">
-                          <p> Edit Profile </p>
-                          <span>> </span>
-                        </a> 
-
-                        <a href="#" class="sub-menu-link">
-                          <p> Settings and Privacy </p>
-                          <span>></span>
-                        </a> 
-
-                        <a href="{% url 'logout' %}" class="sub-menu-link">
-                          <p> Logout </p>
-                          <span>></span>
-                        </a> 
+                      <a href="#" class="sub-menu-link">
+                        <i class="material-icons">person</i>
+                        <p>Edit Profile</p>
+                        <span class="material-icons">chevron_right</span>
+                      </a>
+                      
+                      <a href="#" class="sub-menu-link">
+                        <i class="material-icons">settings</i>
+                        <p>Settings and Privacy</p>
+                        <span class="material-icons">chevron_right</span>
+                      </a>
+                      
+                      <a href="{% url 'logout' %}" class="sub-menu-link">
+                        <i class="material-icons">logout</i>
+                        <p>Logout</p>
+                        <span class="material-icons">chevron_right</span>
+                      </a>
 
                     </div>
                   </div>
@@ -176,7 +179,7 @@
         </div> 
       {% endif %}
     
-      <div class="block_container" style="color: #000; background-color: #ffffff; ">
+      <div class="block_container" style="color: #000;">
         {% block content %} <!-- content of all web pages go -->
         {% endblock %}
     </div>
@@ -214,9 +217,10 @@
         $(".profile_info, .sidebar-link-text, .sidebar-menu-text").hide(); // Hide text initially
         $(".block_container").css("margin-left", "50px");
         $(".profile").css("margin-bottom", "20px")
-        
+        $(".menu-label").css("margin-top", "0px")
           // Hide sidebar scrollbar
         $(".sidebar").addClass("collapsed");
+
 
         let subMenu = document.getElementById("subMenu"); 
 
@@ -235,8 +239,8 @@
             $(".sidebar-menu-text").fadeOut(200);
             $(".block_container").css("margin-left", "50px");
             $(".profile").css("margin-bottom", "60px")
-                 // Show sidebar scrollbar
-            $(".sidebar").removeClass("collapsed");
+                 // Hide sidebar scrollbar
+            $(".sidebar").addClass("collapsed");
           } else {
             // Expand sidebar - show text content
             $(".sidebar").css("width", "300px");

@@ -461,3 +461,9 @@ header {
 .timeline_about .contact_info ul .site span {
   color: var(--f5-color);
 }
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  gap: 20px; /* Adjust the gap between boxes as needed */
+}

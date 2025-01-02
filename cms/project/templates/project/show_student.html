@@ -5,16 +5,77 @@
     <link rel="stylesheet" href="fonts/remixicon.css">
 
 {% block content %}
+    
+    <div class="grid-container">
+             <!-- ===== ===== Work & Skills Section ===== ===== -->
+                    <!-- ===== ===== Work Container ===== ===== -->
+        <section class="userProfile card">
+            <div class="profile">
+                {% comment %} <figure><img src="profile.png" alt="profile" width="250px" height="250px"></figure> {% endcomment %}
+                {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                    <figure><img src="{{ user.profile_image.url }}" alt="profile_pic"></figure>
+                {% else %}
+                    <figure><img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid"></figure>
+                {% endif %}
+            </div>
+        </section>
+            
+        <section class="user_details_card">
+            <div class="secondary">
+                <h1>Metropolitan <br> Museum</h1>
+                <span>Secondary</span>
+                <p>S34 E 65th Street <br> New York, NY 10651-78 156-187-60</p>
+            </div>
+        </section>
 
-    <div class="user_profile">
-        <div class="container">
+                    
+        <section class="work_skills card">
+
+            <subsection>
+                <div class="work">
+                    <h1 class="heading">work</h1>
+                    <div class="primary">
+                        <h1>Spotify New York</h1>
+                        <span>Primary</span>
+                        <p>170 William Street <br> New York, NY 10038-212-315-51</p>
+                    </div>
+
+                    <div class="secondary">
+                        <h1>Metropolitan <br> Museum</h1>
+                        <span>Secondary</span>
+                        <p>S34 E 65th Street <br> New York, NY 10651-78 156-187-60</p>
+                    </div>
+                </div>
+            <
+
+            <!-- ===== ===== Skills Container ===== ===== -->
+            <div class="skills">
+                <h1 class="heading">Skills</h1>
+                <ul>
+                    <li style="--i:0">Android</li>
+                    <li style="--i:1">Web-Design</li>
+                    <li style="--i:2">UI/UX</li>
+                    <li style="--i:3">Video Editing</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <div>
+               <!-- ===== ===== Additional Container ===== ===== -->
+               <div class="additional">
+                    <h1 class="heading">Additional Info</h1>
+                    <p>Some additional information can go here.</p>
+                </div>
+            </div> <!-- End of grid container -->
+        </section>
             {% comment %} <span class="main_bg"></span> {% endcomment %}
 
             <!-- ===== ===== Main-Container ===== ===== -->
 
                 <!-- ===== ===== User Main-Profile ===== ===== -->
                 {% comment %} <figure><img src="images/default_profile_pic.jpg" alt="profile" width="250px" height="250px"></figure> {% endcomment %}
-
+{% comment %} 
                 <!-- ===== ===== Work & Skills Section ===== ===== -->
                 <section class="work_skills card">
 
@@ -148,7 +209,7 @@
                 </section>
             </div>
         </div>
-    </div>
+    </div> {% endcomment %}
 
 
 {% endblock %}
