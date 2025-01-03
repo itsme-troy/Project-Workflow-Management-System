@@ -11,12 +11,64 @@
   font-family: 'Poppins', sans-serif;
   box-sizing: border-box;
 }
+/* ===== =====>> Css Variables  <<===== =====  */
+:root {
+  /* =====>>  Font Color  <<===== */
+  --f1-color: #fff;
+  --f2-color: #000;
+  --f3-color: rgba(0, 0, 0, 0.8);
+  --f4-color: rgba(0, 0, 0, 0.6);
+  --f5-color: #0099cc;
+  --f6-color: #88cee6;
+
+  /* =====>>  Background Color  <<===== */
+  --bg1-color: #fff;
+  --bg2-color: #000;
+  --bg3-color: #33ccff;
+  --bg4-color: #33cc33;
+  --bg5-color: #0099cc;
+  --bg6-color: rgba(0, 0, 0, 0.4);
+  --bg7-color: rgba(0, 0, 0, 0.2);
+  --glass-bg: linear-gradient(
+    to right bottom,
+    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0.3)
+  );
+  --C-lg-bg: linear-gradient(45deg, #ff3399, #ff9933);
+
+  /* ===== =====>>  Font Size  <<===== =====  */
+  --xxxl-fs: 2.2rem;
+  --xxl-fs: 1.8rem;
+  --xl-fs: 1.6rem;
+  --l-fs: 1.4rem;
+  --m-fs: 1.2rem;
+  --s-fs: 1.1rem;
+  --xs-fs: 1rem;
+
+  /* =====>>  Margin  <<===== */
+  --m-2-5: 2.5rem;
+  --m-1-8: 1.8rem;
+  --m-1-5: 1.5rem;
+  --m-0-6: 0.6rem;
+  --m-0-5: 0.5rem;
+  --m-0-3: 0.3rem;
+
+  /* =====>>  Padding  <<===== */
+  --p-2-5: 2.5rem;
+  --p-1-5: 1.5rem;
+  --p-1-0: 1rem;
+  --p-0-8: 0.8rem;
+  --p-0-5: 0.5rem;
+  --p-0-4: 0.4rem;
+  --p-0-3: 0.3rem;
+}
 
 html {
     font-family: sans-serif;
     line-height: 1.15;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    font-size: 14px;
 }
 /* Base color */
 body {
@@ -444,7 +496,9 @@ body {
 }
 .sidebar-list {
   transition: none;  /* Remove any transitions */
-  margin-top:10px;
+  margin-top: 0px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background-color: #34495e;
 }
 
 .main_container .sidebar ul li a .icon {
@@ -644,21 +698,87 @@ body {
 }
 
 .menu-label i {
-  margin-right: 4px; /* Space between icon and text */
+  margin-left: 2px;
+  margin-right: 2px; /* Space between icon and text */
   font-size: 20px; /* Icon size */
-  color: #007BFF; /* Icon color */
+  color: #f4ecec; /* Icon color */
   padding: 5px;
 }
+
+
+/* START OF PROFILE_STYLE.CSS  */
 
 .grid-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* 2 columns */
-  gap: 20px; /* Adjust the gap between boxes as needed */
+  gap: 10px; /* Adjust the gap between boxes as needed */
 }
 
-.work, .secondary, .skills, .additional {
+.secondary, .skills, .additional {
   border: 1px solid #ccc; /* Optional: Add a border for visibility */
   padding: 20px; /* Optional: Add padding for content */
   background-color: #f9f9f9; /* Optional: Background color */
+  padding-left: 0px;
+}
+.grid-container .userProfile {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  background: none;
+  backdrop-filter: none;
+  box-shadow: none;
+  width: 500px;
+} 
+
+.userProfile .profile_container figure img {
+  width: 18rem;
+  height: 18rem;
+  border-radius: 50%;
+  margin: 25px 0px 10px;
 }
 
+.grid-container .skills{
+  width: 500px;
+  margin: 0px;
+  padding: 10px 10px;
+}
+.grid-container .skills .secondary{
+  width: 480px;
+}
+.grid-container .user_details{
+  width: 1120px;
+}
+
+.skills-list{
+  text-align: left;
+}
+
+.skills .heading{
+  position: relative;
+  font-size: var(--xs-fs);
+  color: rgba(0, 0, 0, 0.6);
+  text-transform: uppercase;
+  margin-bottom: var(--m-1-5);
+}
+
+.skills .heading .heading::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 0.1rem;
+  width: 88%;
+  background: var(--bg6-color);
+}
+
+/* ===== =====>>  User Details Css Start  <<===== ===== */
+.userDetails {
+  padding: var(--p-1-5) var(--p-2-5);
+}
+
+.userName{
+  text-align: left;
+  color: #007BFF;
+}

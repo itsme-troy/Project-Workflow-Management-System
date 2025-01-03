@@ -3,70 +3,59 @@
 
     <!-- ===== ===== Remix Font Icons Cdn ===== ===== -->
     <link rel="stylesheet" href="fonts/remixicon.css">
-
+    <link rel="stylesheet" href="{% static 'profile_style.css' %}">
 {% block content %}
     
     <div class="grid-container">
              <!-- ===== ===== Work & Skills Section ===== ===== -->
                     <!-- ===== ===== Work Container ===== ===== -->
         <section class="userProfile card">
-            <div class="profile">
+            <div class="profile_container">
                 {% comment %} <figure><img src="profile.png" alt="profile" width="250px" height="250px"></figure> {% endcomment %}
                 {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
-                    <figure><img src="{{ user.profile_image.url }}" alt="profile_pic"></figure>
+                    <figure><img src="{{ user.profile_image.url }}" alt="profile_pic" class="img-fluid" width="250px" height="250px"></figure>
                 {% else %}
-                    <figure><img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid"></figure>
+                    <figure><img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid" width="250px" height="250px"></figure>
                 {% endif %}
             </div>
         </section>
             
-        <section class="user_details_card">
-            <div class="secondary">
-                <h1>Metropolitan <br> Museum</h1>
+        <section class="user_details card">
+            <div class="UserName">
+                <h1 class="name">{{ user.first_name}} {{ user.last_name }}</h1>
                 <span>Secondary</span>
                 <p>S34 E 65th Street <br> New York, NY 10651-78 156-187-60</p>
             </div>
         </section>
-
                     
-        <section class="work_skills card">
-
-            <subsection>
-                <div class="work">
-                    <h1 class="heading">work</h1>
-                    <div class="primary">
-                        <h1>Spotify New York</h1>
-                        <span>Primary</span>
-                        <p>170 William Street <br> New York, NY 10038-212-315-51</p>
-                    </div>
-
-                    <div class="secondary">
-                        <h1>Metropolitan <br> Museum</h1>
-                        <span>Secondary</span>
-                        <p>S34 E 65th Street <br> New York, NY 10651-78 156-187-60</p>
-                    </div>
+        <section class="skills card">
+            <div>
+                <div class="secondary">
+                    <h1 class="heading">Skills</h1>
+                    <ul class="skills-list">
+                        <li style="--i:0">Android</li>
+                        <li style="--i:1">Web-Design</li>
+                        <li style="--i:2">UI/UX</li>
+                        <li style="--i:3">Video Editing</li>
+                    </ul>
                 </div>
-            <
-
-            <!-- ===== ===== Skills Container ===== ===== -->
-            <div class="skills">
-                <h1 class="heading">Skills</h1>
-                <ul>
-                    <li style="--i:0">Android</li>
-                    <li style="--i:1">Web-Design</li>
-                    <li style="--i:2">UI/UX</li>
-                    <li style="--i:3">Video Editing</li>
-                </ul>
             </div>
         </section>
 
-        <section>
+        <section class="additional_information card">
             <div>
                <!-- ===== ===== Additional Container ===== ===== -->
-               <div class="additional">
+               <div class="secondary">
                     <h1 class="heading">Additional Info</h1>
                     <p>Some additional information can go here.</p>
+                    <p class="card-text"><strong>First Name:</strong> {{ faculty.first_name }}</p>
+                    <p class="card-text"><strong>Last Name:</strong> {{ faculty.last_name }}</p>
+                    <p class="card-text"><strong>Course:</strong> {{ faculty.course }}</p>
+                    <p class="card-text"><strong>Email:</strong> {{ faculty.email }}</p>
+                    <p class="card-text"><strong>Contact Phone:</strong> {{ faculty.phone }}</p>
+                    <p class="card-text"><strong>Role:</strong> {{ faculty.role }}</p>
                 </div>
+                
             </div> <!-- End of grid container -->
         </section>
             {% comment %} <span class="main_bg"></span> {% endcomment %}

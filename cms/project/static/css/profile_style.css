@@ -161,7 +161,7 @@ header {
 }
 
 /* ===== =====>>  User Main-Profile Css Start  <<===== ===== */
-.container .userProfile {
+.grid-container .userProfile {
   position: relative;
   display: flex;
   justify-content: center;
@@ -172,11 +172,12 @@ header {
   box-shadow: none;
 }
 
-.container .userProfile .profile figure img {
+.userProfile .profile figure img {
   width: 18rem;
   height: 18rem;
   border-radius: 50%;
 }
+
 
 /* ===== =====>>  Work & Skills Css Start  <<===== ===== */
 .container .work_skills {
