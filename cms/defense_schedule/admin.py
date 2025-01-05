@@ -4,7 +4,7 @@ from .models import Defense_schedule
 @admin.register(Defense_schedule)
 class Defense_scheduleAdmin(admin.ModelAdmin): 
     fields = ( 'start', 'end','color', 'application') #'title',
-    list_display = ( 'title','start', 'end', 'get_project_title') # 'title',
+    list_display = ( 'start', 'end', 'get_project_title') # 'title',
 
     # Create a custom method to display the project title
     def get_project_title(self, obj):

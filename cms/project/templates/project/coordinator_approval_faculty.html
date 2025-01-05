@@ -36,9 +36,8 @@
     <thead> 
         <tr> 
             <th scope="col"> # </th> 
-            <th scope="col"> Last Name </th> 
-            <th scope="col"> First Name </th> 
-
+            <th scope="col" class="picture-column">Picture</th> 
+            <th scope="col"> Name</th>
             <th scope="col" style="width: 100px;" onclick="toggleCheckboxes('adviser-column')"> Adviser
                 <span class="hint-button" title="Click to toggle eligibility checkboxes">?</span>  </th> 
 
@@ -56,8 +55,17 @@
     
             <tr onclick="toggleActions(this)">
                 <td><strong> {{ forloop.counter }} </strong></td>
-                <td> {{ adviser.last_name }}    </td>
-                <td> {{ adviser.first_name }} </td>
+                <td>
+                    {% if adviser.profile_image and adviser.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                        <img src="{{ adviser.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid larger-img">
+                  {% else %}
+                    {% comment %} no {% endcomment %}
+                        <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table larger-img"> 
+                  {% endif %}
+                </td>
+                
+                <td>{{ adviser.first_name }} {{ adviser.last_name }}</td> <!-- Combined first and last name -->
+           
                 <td class="adviser-column">
                     <div class="form-check" style="display: none;"> 
                         <input class="form-check-input"

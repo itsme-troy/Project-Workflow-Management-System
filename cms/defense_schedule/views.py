@@ -8,7 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 from django.utils.timezone import localtime  
-from project.models import Defense_Application 
+from project.models import Defense_Application, Notification 
+from django.urls import reverse
 
 from datetime import datetime
 from pytz import timezone  
@@ -88,6 +89,7 @@ def all_sched(request): # still return
             'start': start_local.isoformat(),
             'end': end_local.isoformat(),
             'color': event.color, 
+            'application': event.application.project.title if event.application else None,
         })
     
    # Log the output for debugging
@@ -99,15 +101,16 @@ def add_sched(request):
     start = request.GET.get("start")
     end = request.GET.get("end")
     color = request.GET.get("color", None)
-    # application_id = request.GET("application")
+    application_id = request.GET("application")
     # all_day = request.GET.get("allDay", "false") == "true"
     # logger.debug(f"Received data: title={title}, start={start}, end={end}")
 
-    if not start or not end: 
+    if not start or not end or not application_id: 
         return JsonResponse({'error': 'Missing required fields: start, end, or title'}, status=400)
 
     try:
-         # Make sure the date format matches '%Y-%m-%dT%H:%M:%S' (the format used in ISO strings)
+        application = Defense_Application.objects.get(id=application_id)  # Fetch application
+        # Make sure the date format matches '%Y-%m-%dT%H:%M:%S' (the format used in ISO strings)
         start_datetime = datetime.fromisoformat(start).astimezone(pytz.utc)
         end_datetime = datetime.fromisoformat(end).astimezone(pytz.utc)
         # start_datetime = convert_to_utc(start)
@@ -139,7 +142,7 @@ def add_sched(request):
             # title=title,
             start=start_datetime,
             end=end_datetime,
-            # application = application,
+            application = application,
             # faculty=request.user,
             color = color, 
             # all_day=all_day,  # Save the allDay status
@@ -159,18 +162,42 @@ def add_sched(request):
 def update_sched(request):
     start = request.GET.get("start")
     end = request.GET.get("end")
-    # title = request.GET.get("title")
     event_id = request.GET.get("id")
+    
+    if not event_id:  # Validate event_id
+        return JsonResponse({'status': 'error', 'message': 'Missing event ID'}, status=400)
     
     try:
         start_datetime = datetime.fromisoformat(start).astimezone(pytz.utc)
         end_datetime = datetime.fromisoformat(end).astimezone(pytz.utc)
-
         event = Defense_schedule.objects.get(id=event_id)
         event.start = start_datetime
         event.end = end_datetime
         # event.title = title
         event.save()
+
+            # Notify all proponents about the schedule update
+        application = event.application  # Get the associated application
+        for proponent in application.project.proponents.proponents.all():
+            Notification.objects.create(
+                recipient=proponent,
+                notification_type='SCHEDULE_UPDATED',
+                group=application.project.proponents,
+                sender=request.user,
+                message=f"The defense schedule for the project '{application.project.title}' has been updated.",
+                redirect_url=reverse('defense-schedule')
+            )
+        # Notify the adviser about the schedule update
+        if application.project.adviser:
+            Notification.objects.create(
+                recipient=application.project.adviser,
+                notification_type='SCHEDULE_UPDATED',
+                group=application.project.proponents,
+                sender=request.user,
+                message=f"The defense schedule for the project '{application.project.title}' has been updated.",
+                redirect_url=reverse('defense-schedule')
+            )
+
 
         return JsonResponse({
             'status': 'success',
@@ -179,7 +206,9 @@ def update_sched(request):
             # 'title': event.title,
             'start': event.start.isoformat(),
             'end': event.end.isoformat(),
+            'application': event.application, 
         })
+    
     except Defense_schedule.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Event not found'})
     except Exception as e:
@@ -217,6 +246,10 @@ def delete_all_defense_schedules(request):
 
 # @csrf_exempt
 def create_defense_schedule(request):
+    if not request.user.is_current_coordinator: 
+        messages.error(request, "You are not authorized to perform this action.")
+        return redirect('defense-schedule')
+      
     if request.method == 'POST' and request.user.is_authenticated:
         # Get form data
         start = request.POST.get('start')
@@ -252,6 +285,27 @@ def create_defense_schedule(request):
                 color=color,
                 application=application
             )
+             # Notify all proponents
+            for proponent in application.project.proponents.proponents.all():
+                Notification.objects.create(
+                    recipient=proponent,
+                    notification_type='SCHEDULE_CREATED',
+                    group=application.project.proponents,
+                    sender=request.user,
+                    message=f"A new defense schedule has been created for the project '{application.project.title}'.",
+                    redirect_url=reverse('defense-schedule')
+                )
+            # Notify the adviser
+            if application.project.adviser:
+                Notification.objects.create(
+                    recipient=application.project.adviser,
+                    notification_type='SCHEDULE_CREATED',
+                    group=application.project.proponents,
+                    sender=request.user,
+                    message=f"A new defense schedule has been created for the project '{application.project.title}'.",
+                    redirect_url=reverse('defense-schedule')
+                )
+
             return JsonResponse({'status': 'success', 'schedule_id': schedule.id})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})

@@ -40,7 +40,6 @@
             const yiq = (r * 299 + g * 587 + b * 114) / 1000;
             return yiq >= 128 ? '#000000' : '#FFFFFF'; // Return black for light colors and white for dark colors
         }
-
         
         function refreshEventsList() {
             $.ajax({
@@ -55,22 +54,30 @@
                     if (data.length > 0) {
                         $.each(data, function (index, event) {
                             // Adjust the displayed times to Asia/Manila timezone
-                            var startFormatted = moment(event.start).tz('Asia/Manila').format("MMM. D, YYYY h:mm A");
-                            var endFormatted = moment(event.end).tz('Asia/Manila').format("MMM. D, YYYY h:mm A");
-        
-                            // Create the list item
-                            var listItem = `
-                                <li class="list-group-item d-flex align-items-center"
-                                    style="padding-left: 10px; border-radius: 4px; background: linear-gradient(to right, ${event.color || '#007BFF'} 5px, #fff 5px);">
-                                    <div style="height: 100%; width: 5px; background-color: ${event.color || '#007BFF'};"></div>
-                                    <span class="ms-3">
-                                        From: ${startFormatted} to ${endFormatted}
-                                    </span>
-                                </li>
-                            `;
-        
-                            // Append the list item to the list
-                            list.append(listItem);
+                            
+                            if (event.start && event.end && event.application   ) {
+                                var startFormatted = moment(event.start).tz('Asia/Manila').format("MMM. D, YYYY h:mm A");
+                                var endFormatted = moment(event.end).tz('Asia/Manila').format("MMM. D, YYYY h:mm A");
+            
+                                // Create the list item
+                                var listItem= `
+                                    <li class="list-group-item d-flex align-items-center"
+                                        style="padding-left: 10px; border-radius: 4px; background: linear-gradient(to right, ${event.color || '#007BFF'} 5px, #fff 5px);">
+
+                                          <div style="font-size: 14px; font-weight: bold;" >
+                                                ${event.application}
+                                            </div>
+                                        <div style="height: 100%; width: 5px; background-color: ${event.color || '#007BFF'};"></div>
+                                        <span class="ms-3">
+                                             Start: ${startFormatted}</br> End:  ${endFormatted}
+                                        </span>
+                                    </li>
+                                `;
+                                // Append the list item to the list
+                                list.append(listItem);
+                            }else {
+                                console.warn("Event missing required properties:", event);
+                            }
                         });
                     } else {
                         list.append('<li class="list-group-item">No Defense Schedules found.</li>');
@@ -84,8 +91,18 @@
         }
 
         $(document).ready(function () {
+            // Check if the user is the current coordinator
+            const isCurrentCoordinator = {{ request.user.is_current_coordinator|yesno:"true,false" }};
+
+            
             // Function to open the modal and set start and end times
             function openCreateScheduleModal(start = '', end = '') {
+
+                if (!isCurrentCoordinator) {
+                    alert('You do not have permission to create or edit schedules.');
+                    return; // Prevent opening the modal if not a coordinator
+                }
+
                 // Set the start and end fields if provided
                 $('#schedule-start').val(start);
                 $('#schedule-end').val(end);
@@ -105,6 +122,11 @@
         
             // Handle form submission
             $('#create-defense-schedule-form').on('submit', function (e) {
+                if (!isCurrentCoordinator) {
+                    alert('You do not have permission to create or edit schedules.');
+                    return; // Prevent opening the modal if not a coordinator
+                }
+
                 e.preventDefault(); // Prevent the default form submission
         
                 // Get the CSRF token
@@ -138,7 +160,6 @@
                     }
                 });
             });
-        
             // Initialize FullCalendar
             var calendar = $('#calendar').fullCalendar({
                 header: {
@@ -191,19 +212,19 @@
                     
                      // Get the background color for the event, fallback to blue if not provided
                     const eventColor = event.color || '#007BFF';
-                    
                     // Get the contrast color for the text (either black or white)
                     const textColor = getContrastYIQ(eventColor);
 
                     // Format start and end times in the local timezone (Asia/Manila)
                     var startFormatted = moment(event.start).tz('Asia/Manila').format('hh:mm A');
                     var endFormatted = moment(event.end).tz('Asia/Manila').format('hh:mm A');
-                    var timeText = startFormatted + ' - ' + endFormatted; 
+                    var timeText = startFormatted + ' - </br>' + endFormatted; 
                 
                     // Construct the content to display project title first, followed by the time
                     var displayContent = `
-                        <div style="font-size: 14px; font-weight: bold; color: ${textColor};">
-                            ${event.projectTitle}
+                        <div style="font-size: 14px; font-weight: bold; color: ${textColor}; text-align: center;" >
+                            ${event.application}
+                        </div>  <div style="font-size: 14px; font-weight: bold; color: ${textColor};" >
                         </div>
                         <div style="font-size: 12px; color: ${textColor};">
                             ${timeText}
@@ -238,24 +259,26 @@
                         
                 //  When resizing an event, the start and end times are converted to UTC before being sent to the server.
                 eventResize: function (event) {
+                    if (!isCurrentCoordinator) {
+                        calendar.fullCalendar('refetchEvents');
+                        alert('You do not have permission to create or edit schedules.');
+                        return; // Prevent opening the modal if not a coordinator
+                    }
                 
                     var startFormatted = formatDate(event.start); 
                     var endFormatted = formatDate(event.end); 
-                    var title = event.title;
                     var id = event.id;
 
                     $.ajax({
                         type: "GET",
                         url: 'update_sched',
                         data: {
-                            'title': title, 
                             'start': startFormatted, 
                             'end': endFormatted,
                             'id': id, 
                         },
                         dataType: "json",
                         success: function (data) {
-                            refreshEventsList()
                             calendar.fullCalendar('refetchEvents');
                             refreshEventsList(); // Refresh the events list
                             alert('Schedule Updated');
@@ -264,19 +287,24 @@
                             alert('There is a problem!!!');
                         }
                     });
+                    
                 },
                 // When dropping an event to a new position, the times are converted to UTC and saved.
                 eventDrop: function (event) {
+                    if (!isCurrentCoordinator) {
+                        alert('You do not have permission to create or edit schedules.');
+                        calendar.fullCalendar('refetchEvents');
+                        return; // Prevent opening the modal if not a coordinator
+                    }
+
                     var startFormatted = formatDate(event.start); 
                     var endFormatted = formatDate(event.end); 
-                    var title = event.title;
                     var id = event.id;
 
                     $.ajax({
                         type: "GET",
                         url: 'update_sched',
                         data: {
-                            'title': title, 
                             'start': startFormatted, 
                             'end': endFormatted, 
                             'id': id
@@ -290,6 +318,7 @@
                         },
                         error: function (data) {
                             alert('There is a problem!!!');
+                            
                         }
                     });
                 },
@@ -297,6 +326,11 @@
                 
                 // This allows for removing events from the calendar and from the database.
                 eventClick: function (event) {
+                    if (!isCurrentCoordinator) {
+                        alert('You do not have permission to create or edit schedules.');
+                        return; // Prevent opening the modal if not a coordinator
+                    }
+
                     if (confirm("Are you sure you want to remove this event?")) {
                         var id = event.id;
                         $.ajax({
@@ -328,6 +362,11 @@
             });
 
             $('#delete-all-defense-schedules-btn').on('click', function () {
+                if (!isCurrentCoordinator) {
+                    alert('You do not have permission to create or edit schedules.');
+                    return; // Prevent opening the modal if not a coordinator
+                }
+
                 if (confirm('Are you sure you want to delete all Defense schedules? This action cannot be undone.')) {
                     $.ajax({
                         url: '{% url "delete_all_defense_schedules" %}',  // Define this view in your Django project

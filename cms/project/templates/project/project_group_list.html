@@ -36,6 +36,13 @@
                     <td><strong>{{ forloop.counter0|add:project_groups_with_proponents.start_index }}</strong></td> <!-- Continuous counter -->
                     {% for proponent in group_data.proponents %}
                         <td>
+                            {% if proponent.profile_image and proponent.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                                <img src="{{ proponent.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid larger-img" style="margin-bottom: 5px;">
+                            {% else %}
+                            {% comment %} no {% endcomment %}
+                                <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table larger-img"  style="margin-bottom: 5px;"> 
+                            {% endif %}
+
                             {% if proponent %}
                                 {{ proponent.first_name }} {{ proponent.last_name }}
                             {% else %}

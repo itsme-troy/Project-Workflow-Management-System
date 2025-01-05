@@ -131,6 +131,8 @@ h1, h2, h3, h4 {
     overflow-x: auto; /* Allow horizontal scrolling */
     border-collapse: collapse; /* Avoid border collapse */
     font-size: 1rem; /* Make font size more readable */
+    border: 1px solid #000407; /* Add a solid border */
+    border-collapse: collapse; /* Ensure borders collapse into a single border */
 }
 /* Centering the checkbox inside the td */
 .table td.checkbox-cell {
@@ -138,6 +140,7 @@ h1, h2, h3, h4 {
     vertical-align: middle; /* Vertically center the content inside the td */
     padding: 0.5rem; /* Optional: Add padding for better spacing */
 }
+
 /* Optionally, you can make the form-check div also centered */
 .form-check {
     display: flex;  /* Use flexbox to align items */
@@ -212,11 +215,20 @@ h1, h2, h3, h4 {
 /* Table Body Styling */
 .table td {
     padding: 1rem;
-    vertical-align: middle; /* Center content vertically */
+    padding-top: 1rem; 
     border-top: 1px solid #dee2e6;
     text-align: center;
+    align-items: center; /* Center the content vertically */
+    justify-content: center; /* Center the content horizontally */
 }
-
+.table td:not(.picture-column) {
+    padding: 1rem; /* Existing padding */
+    padding-top: 1rem; /* Add top padding for spacing */
+    border-top: 1px solid #dee2e6;
+    text-align: center;
+    align-items: center; /* Center the content vertically */
+    justify-content: center; /* Center the content horizontally */
+}
 /* Table Row Hover Effect */
 .table tbody tr:hover {
     background-color: #f1f1f1; /* Light gray on hover */
@@ -231,6 +243,8 @@ h1, h2, h3, h4 {
 /* Add Borders to Cells */
 .table td, .table th {
     border: 1px solid #dee2e6;
+   
+    
 }
  /* Target the first th element (which corresponds to # column) */
  .table th:nth-child(1),
@@ -1192,3 +1206,4 @@ body {
 .navbar-nav {
     margin-right: 20px; /* Add margin to separate from search form */
 }
+

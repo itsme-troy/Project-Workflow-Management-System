@@ -3,16 +3,18 @@
 
 {% block content %} <!-- content of all web pages go -->
 
-    <h1 class="text-center" style="margin-bottom: 150px;">Select Registration Type</h1>
+    <div class="card mx-auto shadow-lg" style="max-width: 800px; mix-height: 800px; border-radius: 15px; padding: 20px; overflow: auto;  border: 2px solid #000;"> <!-- Added padding -->
+        <h1 class="text-center" style="margin-bottom: 150px;">Select Registration Type</h1>
 
-    <div class="options-container">
-        <div class="card-option" onclick="location.href='{% url 'register_student' %}'" title="Register as a student">
-            <i class="fas fa-user-graduate fa-5x"></i>
-            <h2>Register as Student</h2>
-        </div>
-        <div class="card-option" onclick="location.href='{% url 'register_faculty' %}'" title="Register as a faculty member">
-            <i class="fas fa-chalkboard-teacher fa-5x"></i>
-            <h2>Register as Faculty</h2>
+        <div class="options-container" style="margin-bottom: 160px;">
+            <div class="card-option" onclick="location.href='{% url 'register_student' %}'" title="Register as a student">
+                <i class="fas fa-user-graduate fa-5x"></i>
+                <h2>Register as Student</h2>
+            </div>
+            <div class="card-option" onclick="location.href='{% url 'register_faculty' %}'" title="Register as a faculty member">
+                <i class="fas fa-chalkboard-teacher fa-5x"></i>
+                <h2>Register as Faculty</h2>
+            </div>
         </div>
     </div>
 

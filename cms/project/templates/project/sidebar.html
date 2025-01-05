@@ -224,22 +224,21 @@
                     </li>
             {% endif %} {% endcomment %}
 
-            {% if request.user.role == 'FACULTY' or request.user.is_current_coordinator %}
+            {% if request.user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Coordinator_tab">
                             <span class="icon"><i class="fas fa-calendar-alt icon icon-margin"></i></span> 
                             <span class="sidebar-link-text">Calendar </span> 
                         </a>
-                    <ul class="dropdown-menu">
+                        <ul class="dropdown-menu">
 
-                        {% comment %} {% if request.user.is_current_coordinator %} {% endcomment %}
-                        <li><a class="dropdown-item" href="{% url 'defense-schedule' %}"><i class="fas fa-calendar-alt icon icon-margin"></i> Schedule Defense </a></li>  
-                        <li><a class="dropdown-item" href="{% url 'view-schedule' %}"> View Mutual Availability  </a></li> 
-                        {% comment %} {% endif %} {% endcomment %}
-
-                        
-                        {% if request.user.role == 'FACULTY' %}
-                            <li><a class="dropdown-item" href="{% url 'free-schedule' %}"> Set free Schedule  </a></li> {% endif %}
+                            <li><a class="dropdown-item" href="{% url 'defense-schedule' %}"><i class="fas fa-calendar-alt icon icon-margin"></i> View Calendar </a></li>  
+                            
+                            {% if request.user.is_current_coordinator %} 
+                                <li><a class="dropdown-item" href="{% url 'view-schedule' %}"> View Mutual Availability  </a></li> 
+                            {% elif request.user.role == 'FACULTY'%}
+                                <li><a class="dropdown-item" href="{% url 'free-schedule' %}"> Set free Schedule  </a></li> 
+                            {% endif %}
                         </ul>
                     </li>
             {% endif %}

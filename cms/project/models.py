@@ -86,6 +86,11 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
     panel_eligible = models.BooleanField('Eligible as Panelist', default=False)
     is_current_coordinator = models.BooleanField('Current Coordinator', default=False)
 
+    address = models.CharField(max_length=255, blank=True, null=True)  # New field for address
+    facebook_link = models.URLField(max_length=200, blank=True, null=True)  # New field for Facebook link
+    birthday = models.DateField(blank=True, null=True)  # New field for birthday
+    gender = models.CharField(max_length=10, choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Other')], blank=True, null=True)  # New field for gender
+
     USERNAME_FIELD = "email" # user will login using their email
     EMAIL_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -312,6 +317,8 @@ class Notification(models.Model):
         ('PROJECT_DELETED', 'Project Deleted'), 
         ('PROPOSAL_DELETED', 'Proposal Deleted'), 
         ('DEFICIENCIES', 'Deficiencies Updated'), 
+        ('SCHEDULE_CREATED', 'Schedule Created'), 
+        ('SCHEDULE_UPDATED', 'Schedule Created'),
     )   
 
     recipient = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='notifications')

@@ -26,8 +26,8 @@
                 <tr> 
                     {% comment %} <th> Profile Picture </th> {% endcomment %}
                     <th scope="col"> # </th> 
-                    <th scope="col"> Last Name  </th> 
-                    <th scope="col"> First Name </th> 
+                    <th scope="col" class="picture-column">Picture</th> 
+                    <th scope="col"> Name  </th> 
                     <th scope="col"> Email </th> 
                     <th scope="col" class="deficiencies-column" >
                         Deficiencies
@@ -41,8 +41,15 @@
                     <tr data-adviser="{{ faculty.adviser_eligible|yesno:'true,false' }}" data-panelist="{{ faculty.panel_eligible|yesno:'true,false' }}" {% if faculty == user %}class="table-warning"{% endif %}>   <!-- <td> <img src="{% static 'images/default_profile_pic.jpg' %}"
                                     class="img-fluid rounded-start" alt="Profile Image">  </td> -->
                             <td> <strong> {{ forloop.counter }} </strong> </td>
-                            <td>{{ faculty.last_name }}</td> 
-                            <td>{{ faculty.first_name }}</td> 
+                            <td>
+                                {% if student.profile_image and student.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                                    <img src="{{ student.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid larger-img">
+                              {% else %}
+                                {% comment %} no {% endcomment %}
+                                    <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table larger-img"> 
+                              {% endif %}
+                            </td>
+                            <td>{{ faculty.first_name }} {{ faculty.last_name }}</td> <!-- Combined first and last name -->
                             <td>{{ faculty.email }}</td> 
                             <td class="deficiencies-cell">
                                 <div style="overflow-x: auto; white-space: nowrap;">

@@ -2,7 +2,33 @@
 @import url(https://fonts.googleapis.com/css?family=Niconne);
 @import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap'); /* Importing Roboto font */
 
+.loading-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Ensure it is on top of other elements */
+}
+.spinner {
+  border: 8px solid #f3f3f3; /* Light grey */
+  border-top: 8px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite; /* Spin animation */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 *{
   margin: 0;
   padding: 0;
@@ -95,8 +121,9 @@ body {
 }
 
 .block_container{
+  border: 2px solid #000;
   text-align: center;
-  margin: 80px 30px 20px 80px;
+  margin: 60px 8px 20px 80px;
   background-color: #fff7f7;
   padding: 50px;
   min-height: 800px;
@@ -253,10 +280,16 @@ body {
   text-decoration: none;
   display: flex;
   align-items: center;
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Added transition for smooth effect */
 }
+
 .right_menu ul li a:hover {
-  color: #007BFF;  /* Change color on hover */
+  background-color: rgba(255, 255, 255, 0.2); /* Light background on hover */
+  border-radius: 5px; /* Rounded corners for a softer look */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
 }
+
 .user-info-header{
   display: flex; 
   align-items: center;
@@ -264,6 +297,8 @@ body {
   gap: 10px; 
   cursor: pointer;
   transition: all 0.3s ease; /* Smooth transition for hover effect */
+  margin-left: 10px;
+  padding: 5px;
 }
 .user-info-header:hover {
   background-color: rgba(255, 255, 255, 0.3); /* Light background on hover */
@@ -278,14 +313,14 @@ body {
   right: 10%; 
   width: 320px;
   max-height: 0px;
-  overflow: hidden;
+  overflow: auto;
   transition: max-height 0.5s;
-  
 }
 .sub-menu-wrap.open-menu{ 
   position: absolute;
   z-index: 1000;
   max-height: 400px;
+  overflow: auto; /* Allow scrolling if content exceeds max-height */
 }
 .sub-menu {
   background: #fff;
@@ -710,75 +745,271 @@ body {
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 columns */
-  gap: 10px; /* Adjust the gap between boxes as needed */
+  grid-template-columns: 1fr 2fr; /* Adjust the fraction values as needed */
+  gap: 10px; /* Reduced gap for better spacing */
+  padding: 20px; /* Add padding around the grid */
 }
 
-.secondary, .skills, .additional {
-  border: 1px solid #ccc; /* Optional: Add a border for visibility */
-  padding: 20px; /* Optional: Add padding for content */
-  background-color: #f9f9f9; /* Optional: Background color */
-  padding-left: 0px;
+.grid-container .pic-skills-column {
+  background-color: #f9f9f9; /* Light background for the first column */
+  border-radius: 8px; /* Rounded corners */
+  padding: 20px; /* Padding inside the column */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  margin-bottom: 20px; /* Space below the column */
+  height: auto; /* Adjust height as needed */
 }
-.grid-container .userProfile {
-  position: relative;
+
+.grid-container .details-info-column {
+  background-color: #ffffff; /* White background for the second column */
+  border-radius: 8px; /* Rounded corners */
+  padding: 20px; /* Padding inside the column */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  margin-bottom: 20px; /* Space below the column */
+  height: auto; /* Adjust height as needed */
+}
+
+
+.profile_container {
+  background-color: #ffffff; /* White background for contrast */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  padding: 20px; /* Padding for spacing */
+  transition: transform 0.3s ease; /* Smooth transition for hover effect */
+}
+.profile_container:hover {
+  transform: scale(1.02); /* Slightly enlarge on hover */
+}
+.userProfile {
+  text-align: center; /* Center align content */
+  margin-bottom: 20px; /* Space below the profile section */
+}
+/* Additional styles for the profile image */
+.profile_container img {
+  border-radius: 50%; /* Circular profile image */
+  border: 2px solid #0099cc; /* Border around the image */
+  transition: transform 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.profile_container img:hover {
+  transform: scale(1.05); /* Slightly enlarge image on hover */
+}
+
+.skills-container {
+  background-color: #f9f9f9; /* Light background for contrast */
+  padding: 20px; /* Padding around the content */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.skills-heading {
+  font-family: 'Georgia', serif; /* Changed to a more elegant font */
+  font-size: 28px; /* Increased font size for better visibility */
+  color: #2c3e50; /* Darker color for better contrast */
+  margin-bottom: 15px; /* Space below the heading */
+  text-align: center; /* Center the heading */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Added text shadow for depth */
+}
+
+.skills-list {
+  list-style-type: none; /* Remove default list styling */
+  padding: 0; /* Remove padding */
+  text-align: left;
+}
+
+.skills-list li {
+  font-size: 14px; /* Font size for list items */
+  color: #555; /* Slightly lighter text color */
+  margin: 5px 0; /* Space between list items */
+}
+
+.user_details {
+  padding: 20px; /* Increased padding for better spacing */
+  margin-bottom: 20px; /* Space below the card */
+  background-color: #ffffff; /* White background for contrast */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  text-align: left;
+}
+
+.user_details .name {
+  font-family: 'Roboto', sans-serif; /* Updated font family */
+  font-size: 30px; /* Increased font size for the name */
+  color: #2c3e50; /* Darker color for better contrast */
+}
+.user_details span {
+  font-size: 16px; /* Adjusted font size for the secondary text */
+  color: #7f8c8d; /* Lighter color for secondary text */
+}
+
+.user_details p {
+  font-size: 14px; /* Font size for address */
+  color: #555; /* Slightly lighter text color */
+}
+
+.additional-info-container h1 {
+  font-family: 'Montserrat', sans-serif; /* Modern font for headings */
+  font-size: 24px; /* Increased font size */
+  color: #2c3e50; /* Darker color for better contrast */
+  margin-bottom: 15px; /* Space below the heading */
+  text-align: left; /* Align text to the left */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Styles for paragraphs in the additional information section */
+.additional-info-container p {
+  font-family: 'Roboto', sans-serif; /* Modern font for paragraphs */
+  font-size: 14px; /* Font size for better readability */
+  color: #555; /* Slightly lighter text color */
+  margin: 5px 0; /* Space between paragraphs */
+}
+
+/* Styles for the additional information container */
+.additional-info-container {
+  background-color: #ffffff; /* White background for contrast */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  padding: 20px; /* Padding for spacing */
+  transition: transform 0.3s ease; /* Smooth transition for hover effect */
+  text-align: left;
+}
+
+/* Hover effect for the additional information container */
+.additional-info-container:hover {
+  transform: scale(1.02); /* Slightly enlarge on hover */
+}
+.contact-label {
+  margin-right: 20px; /* Adjust the value as needed for the desired gap */
+}
+.role.student {
+    color: #28a745; /* Green for students */
+}
+
+.role.faculty {
+    color: #007bff; /* Blue for faculty */
+}
+
+.role.coordinator {
+    color: #ffc107; /* Yellow for coordinators */
+}
+
+
+@media (max-width: 768px) {
+  .grid-container {
+      grid-template-columns: 1fr; /* Stack columns on smaller screens */
+  }
+
+  .grid-container .pic-skills-column,
+  .grid-container .details-info-column {
+      margin-bottom: 20px; /* Add space between stacked sections */
+      padding: 10px; /* Reduce padding for smaller screens */
+  }
+
+  .top_navbar {
+      font-size: 16px; /* Adjust font size for smaller screens */
+      align-items: center; /* Center items */
+      flex-direction: row; /* Ensure items are in a row */
+      justify-content: space-between; /* Space out the hamburger and right menu */
+      padding: 0 10px; /* Add some padding for better spacing */
+  } 
+  .top_navbar .menu {
+    width: auto; /* Allow the menu to adjust its width */
+    flex-grow: 1; /* Allow the menu to take available space */
+    display: flex; /* Ensure the menu items are in a row */
+    justify-content: space-between; /* Space out the logo and right menu */
+    margin-top: 30px;
+  }
+  .top_navbar .menu .logo {
+    position: absolute;
+    margin-top: 10px;
+  }
+  .logo {
+    margin-bottom: 10px; /* Add some space below the logo */
+  }
+  .right_menu {
+    position: relative; /* Change to relative to avoid overlap */
+    top: auto; /* Reset any top positioning */
+    margin-left: auto; /* Push the right menu to the right */
+  }
+  .user-pic {
+      width: 36px; /* Reduce user picture size */
+      height: 36px; /* Maintain aspect ratio */
+  }
+
+  .hamburger {
+      width: 80px; /* Adjust hamburger menu size */
+      margin-right: auto; /* Push the hamburger to the left */
+  }
+
+  .hamburger__inner > div {
+      width: 40px; /* Adjust inner div size */
+  }
+
+  .hamburger__inner div {
+      height: 2px; /* Adjust height for smaller screens */
+  }
+
+  .right_menu {
+      padding: 3px; /* Adjust padding for smaller screens */
+  }
+
+  .right_menu ul li {
+      margin: 15px 10px; /* Reduce margin for smaller screens */
+  }
+  .right_menu ul li a i img {
+    font-size: 30px; /* Increase icon size */
+  }
+
+  .main_container {
+      margin-left: 0; /* Remove left margin on smaller screens */
+      width: 100%; /* Full width for main container */
+  }
+  .icon-label {
+    display: none; /* Hide profile name on smaller screens */
+  }
+}
+
+.larger-img {
+  width: 60px; /* Adjust width as needed */
+  height: auto; /* Maintain aspect ratio */
+  margin-left: -10px;
+}
+
+.picture-column {
+  width: 130px; /* Adjust the width as needed */
+}
+
+.user-pic-table {
+  width: 60px; /* Set a fixed width */
+  height: 60px; /* Set a fixed height */
+  border-radius: 50%; /* Keep the circular shape */
+  object-fit: cover; /* Ensure the image covers the area without distortion */
+  display: block; /* Make it a block element */
+  margin:  auto; /* Center the image horizontally */
+}
+.proponent-info {
+  display: flex; /* Use flexbox for alignment */
+  align-items: center; /* Center items vertically */
+}
+
+.proponent-info img {
+  margin-right: 10px; /* Space between image and name */
+}
+.text-left {
+  text-align: center; /* Align text to the left */
+}
+.profile-image-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0;
-  background: none;
-  backdrop-filter: none;
-  box-shadow: none;
-  width: 500px;
-} 
-
-.userProfile .profile_container figure img {
-  width: 18rem;
-  height: 18rem;
-  border-radius: 50%;
-  margin: 25px 0px 10px;
+  justify-content: center; /* Center the image */
+  align-items: center; /* Center the image vertically */
 }
 
-.grid-container .skills{
-  width: 500px;
-  margin: 0px;
-  padding: 10px 10px;
-}
-.grid-container .skills .secondary{
-  width: 480px;
-}
-.grid-container .user_details{
-  width: 1120px;
+.profile-image-container img {
+  width: 50px; /* Set a fixed width for the profile image */
+  height: 50px; /* Set a fixed height for the profile image */
+  border-radius: 50%; /* Make the image circular */
+  object-fit: cover; /* Ensure the image covers the area without distortion */
 }
 
-.skills-list{
-  text-align: left;
-}
 
-.skills .heading{
-  position: relative;
-  font-size: var(--xs-fs);
-  color: rgba(0, 0, 0, 0.6);
-  text-transform: uppercase;
-  margin-bottom: var(--m-1-5);
-}
 
-.skills .heading .heading::before {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  height: 0.1rem;
-  width: 88%;
-  background: var(--bg6-color);
-}
-
-/* ===== =====>>  User Details Css Start  <<===== ===== */
-.userDetails {
-  padding: var(--p-1-5) var(--p-2-5);
-}
-
-.userName{
-  text-align: left;
-  color: #007BFF;
-}
+/* CALENDAR CSS */

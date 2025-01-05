@@ -4,43 +4,70 @@
 {% load custom_filters %}  <!-- Load custom filters -->
 
 {% block content %}
-
 {{ block.super }}  <!-- This will include the calendar from base.html -->
- 
 {% if user.is_authenticated %}
     </br> 
 {% comment %} 
     <p> Hello, <b> {{ user }} </b> . Please Enter your Available Schedule/s. </br> </p> {% endcomment %}
-
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-5">
             <h4>Defense Schedule </h4> 
-             <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
-                <i class="fas fa-plus-circle icon" style="color: white;"></i> Create
-            </button>
-
-            <button id="delete-all-defense-schedules-btn" class="btn btn-danger btn-sm">
-                <i class="fas fa-trash"></i> Delete All
-            </button> 
-            
-            <div class="scrollable-events">
-                <ul class="list-group mt-3">
-                    {% for event in events %}
-                        <li class="list-group-item d-flex align-items-center" 
-                            style="padding-left: 10px; border-radius: 4px; background: linear-gradient(to right, {{ event.color|default:'#007BFF' }} 5px, #fff 5px);">
-                            <div style="height: 100%; width: 5px; background-color: {{ event.color|default:'#007BFF' }};"></div>
-                            <span class="ms-3">
-                                From: {{ event.start|date:"M. d, Y, g:i a" }} to {{ event.end|date:"M. d, Y, g:i a" }}
-                            </span>
-                        </li>
-                    {% empty %}
-                        <li class="list-group-item">No available schedules found.</li>
-                    {% endfor %}
-                </ul>
-            </div>
+                {% if request.user.is_current_coordinator %}
+                    <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
+                        <i class="fas fa-plus-circle icon" style="color: white;"></i> Create
+                    </button>
+                
+                    <button id="delete-all-defense-schedules-btn" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i> Delete All
+                    </button>
+                {% endif %}
+                
+                <div class="scrollable-events">
+                    <table class="table table-striped mt-3">
+                        <thead>
+                            <tr>
+                                <th>Project</th>
+                                <th>Proponents</th>
+                                <th> Adviser </th>
+                                <th> Date </th>
+                                <!-- Panel columns will be hidden initially -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for event in events %}
+                            <tr>
+                                <td style="padding-left: 10px; border-radius: 4px; background: linear-gradient(to right, {{ event.color|default:'#007BFF' }} 5px, #fff 5px);">
+                                    <div style="height: 100%; width: 5px; background-color: {{ event.color|default:'#007BFF' }}; display: inline-block;"></div>
+                                    <strong>{{ event.application }}</strong>
+                                </td>
+                                <td>{{event.application.project_group }}</td>
+                                <td>{{event.application.adviser }}</td>
+                                <td>
+                                    {% with start_date=event.start|date:"M. d, Y" %}
+                                    {% with end_date=event.end|date:"M. d, Y" %}
+                                        {% if start_date == end_date %}
+                                            {{ event.start|date:"M. d, Y" }} </br>
+                                            Start: {{ event.start|date:"g:i a" }} </br>
+                                            End: {{ event.end|date:"g:i a" }} </br> 
+                                        {% else %}
+                                            Start: {{ event.start|date:"M. d, Y, g:i a" }} </br>
+                                            End: {{ event.end|date:"M. d, Y, g:i a" }}  
+                                        {% endif %}
+                                    {% endwith %}
+                                    {% endwith %} </td> 
+                                
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">No available schedules found.</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
         </div>
         
-        <div class="col-md-8"> 
+        <div class="col-md-7"> 
             <div id='calendar'></div> 
         </div>
     </div>

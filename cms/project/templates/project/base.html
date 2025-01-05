@@ -36,6 +36,9 @@
     
   </head>
   <body class="body">
+    <div id="loadingIndicator" class="loading-indicator">
+      <div class="spinner"></div>
+    </div>
     <div class="wrapper">
       <div class="top_navbar">
         <div class="hamburger">
@@ -57,13 +60,15 @@
                 <li>
                   <a href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="ToggleMenuNotif(event)">
                     <i class="fas fa-bell icon icon-margin"></i>
-                    <span class="notification-dropdown-badge" id="notification-count">0</span> Notifications
+                    <span class="notification-dropdown-badge" id="notification-count">0</span> 
+                      
+                    <div class="icon-label"> <span> Notifications </span> </div>
                   </a>
                   <ul class="dropdown-menu notification-dropdown text-start" aria-labelledby="notificationsDropdown" id="notifDropdown">
                     <li>
                       <div class="d-flex justify-content-between align-items-center">
                         <div class="dropdown-header mb-2">
-                          <span> Notifications </span>
+                          <span class="icon-label"> Notifications </span>
                         </div>
                       </div>
                     </li>
@@ -103,20 +108,22 @@
                       <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic"> 
                     {% endif %}
                     
-                    <h5> {{ request.user.first_name }} {{ request.user.last_name }}</h5></span></div>    
+                      <div class="icon-label">
+                        <h5> {{ request.user.first_name }} {{ request.user.last_name }}</h5></span></div>    
+                      </div>
                   <div class="sub-menu-wrap" id="subMenu"> 
                     <div class="sub-menu">
-                      <div class="user-info"> 
-                        
-                        {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
-                          <img src="{{ user.profile_image.url }}" alt="profile_pic" class="user-pic">
-                        {% else %}
-                        <img src="{% static '/images/default_profile_pic.jpg' %}" class="user-pic img-fluid"> 
-                        {% endif %}
+                        <div class="user-info"> 
                           
-                        <h5> {{ request.user.first_name }} {{ request.user.last_name }}</h5>
-                        
-                      </div> 
+                            {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                              <img src="{{ user.profile_image.url }}" alt="profile_pic" class="user-pic">
+                            {% else %}
+                            <img src="{% static '/images/default_profile_pic.jpg' %}" class="user-pic img-fluid"> 
+                            {% endif %}
+                              
+                            <h5>{{ request.user.first_name }} {{ request.user.last_name }}</h5></span></div>    
+                            
+
                       <hr>
                       <a href="#" class="sub-menu-link">
                         <i class="material-icons">person</i>
@@ -195,6 +202,13 @@
 
 
     <script>
+      // Show the loading indicator when the page starts loading
+      document.getElementById("loadingIndicator").style.display = "flex";
+
+      // Hide the loading indicator when the page has fully loaded
+      window.onload = function() {
+          document.getElementById("loadingIndicator").style.display = "none";
+      };
       const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
       function ToggleMenuNotif(event) {

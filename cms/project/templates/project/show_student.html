@@ -3,202 +3,55 @@
 
     <!-- ===== ===== Remix Font Icons Cdn ===== ===== -->
     <link rel="stylesheet" href="fonts/remixicon.css">
-    <link rel="stylesheet" href="{% static 'profile_style.css' %}">
-{% block content %}
+    {% block content %}
     
     <div class="grid-container">
-             <!-- ===== ===== Work & Skills Section ===== ===== -->
-                    <!-- ===== ===== Work Container ===== ===== -->
-        <section class="userProfile card">
-            <div class="profile_container">
-                {% comment %} <figure><img src="profile.png" alt="profile" width="250px" height="250px"></figure> {% endcomment %}
-                {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
-                    <figure><img src="{{ user.profile_image.url }}" alt="profile_pic" class="img-fluid" width="250px" height="250px"></figure>
-                {% else %}
-                    <figure><img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid" width="250px" height="250px"></figure>
-                {% endif %}
-            </div>
-        </section>
-            
-        <section class="user_details card">
-            <div class="UserName">
-                <h1 class="name">{{ user.first_name}} {{ user.last_name }}</h1>
-                <span>Secondary</span>
-                <p>S34 E 65th Street <br> New York, NY 10651-78 156-187-60</p>
-            </div>
-        </section>
-                    
-        <section class="skills card">
-            <div>
-                <div class="secondary">
-                    <h1 class="heading">Skills</h1>
+        <!-- User Profile Section -->
+        <section class="pic-skills-column">
+            <subsection class="userProfile card">
+                <div class="profile_container">
+                    {% if student.profile_image and student.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                        <figure><img src="{{ student.profile_image.url }}" alt="profile_pic" class="img-fluid" width="250px" height="250px"></figure>
+                    {% else %}
+                        <figure><img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid" width="250px" height="250px"></figure>
+                    {% endif %}
+                </div>
+            </subsection>
+        
+            <subsection class="skills card">
+                <div class="skills_container">
+                    <h1 class="heading skills-heading">Skills</h1>
                     <ul class="skills-list">
-                        <li style="--i:0">Android</li>
-                        <li style="--i:1">Web-Design</li>
-                        <li style="--i:2">UI/UX</li>
-                        <li style="--i:3">Video Editing</li>
+                        <li>Android</li>
+                        <li>Web-Design</li>
+                        <li>UI/UX</li>
+                        <li>Video Editing</li>
                     </ul>
                 </div>
-            </div>
+            </subsection>
         </section>
 
-        <section class="additional_information card">
-            <div>
-               <!-- ===== ===== Additional Container ===== ===== -->
-               <div class="secondary">
-                    <h1 class="heading">Additional Info</h1>
-                    <p>Some additional information can go here.</p>
-                    <p class="card-text"><strong>First Name:</strong> {{ faculty.first_name }}</p>
-                    <p class="card-text"><strong>Last Name:</strong> {{ faculty.last_name }}</p>
-                    <p class="card-text"><strong>Course:</strong> {{ faculty.course }}</p>
-                    <p class="card-text"><strong>Email:</strong> {{ faculty.email }}</p>
-                    <p class="card-text"><strong>Contact Phone:</strong> {{ faculty.phone }}</p>
-                    <p class="card-text"><strong>Role:</strong> {{ faculty.role }}</p>
+        <!-- User Details Section -->
+        <section class="details-info-column">
+            <subsection class="user_details card">
+                <div class="UserName">
+                    <h1 class="name">{{ student.first_name}} {{ student.last_name }}</h1>
+                    <span class="role {{ student.role|lower }}">{{ student.role }}</span> </br>
+
+                    <span>Secondary</span>
+                    <p>S34 E 65th Street <br> New York, NY 10651-78 156-187-60</p>
                 </div>
-                
-            </div> <!-- End of grid container -->
+            </subsection>
+            
+            <!-- Additional Information Section -->
+            <subsection class="additional_information card">
+                <div class="additional-info-container">
+                    <h1 class="heading">Contact Information</h1>
+                    <p class="card-text"><strong class="contact-label">Phone:</strong> {{ student.phone }}</p>
+                    <p class="card-text"><strong class="contact-label">Course:</strong> {{ student.course }}</p>
+                    <p class="card-text"><strong class="contact-label">Email:</strong> {{ student.email }}</p>
+                </div>
+            </subsection>
         </section>
-            {% comment %} <span class="main_bg"></span> {% endcomment %}
-
-            <!-- ===== ===== Main-Container ===== ===== -->
-
-                <!-- ===== ===== User Main-Profile ===== ===== -->
-                {% comment %} <figure><img src="images/default_profile_pic.jpg" alt="profile" width="250px" height="250px"></figure> {% endcomment %}
-{% comment %} 
-                <!-- ===== ===== Work & Skills Section ===== ===== -->
-                <section class="work_skills card">
-
-                    <!-- ===== ===== Work Contaienr ===== ===== -->
-                    <div class="work">
-                        <h1 class="heading">work</h1>
-                        <div class="primary">
-                            <h1>Spotify New York</h1>
-                            <span>Primary</span>
-                            <p>170 William Street <br> New York, NY 10038-212-315-51</p>
-                        </div>
-
-                        <div class="secondary">
-                            <h1>Metropolitan <br> Museum</h1>
-                            <span>Secondary</span>
-                            <p>S34 E 65th Street <br> New York, NY 10651-78 156-187-60</p>
-                        </div>
-                    </div>
-
-                    <!-- ===== ===== Skills Contaienr ===== ===== -->
-                    <div class="skills">
-                        <h1 class="heading">Skills</h1>
-                        <ul>
-                            <li style="--i:0">Android</li>
-                            <li style="--i:1">Web-Design</li>
-                            <li style="--i:2">UI/UX</li>
-                            <li style="--i:3">Video Editing</li>
-                        </ul>
-                    </div>
-                </section>
-
-
-                <!-- ===== ===== User Details Sections ===== ===== -->
-                <section class="userDetails card">
-                    <div class="userName">
-                        <h1 class="name">Jeremy Rose</h1>
-                        <div class="map">
-                            <i class="ri-map-pin-fill ri"></i>
-                            <span>New York, NY</span>
-                        </div>
-                        <p>Product Designer</p>
-                    </div>
-
-                    <div class="rank">
-                        <h1 class="heading">Rankings</h1>
-                        <span>8,6</span>
-                        <div class="rating">
-                            <i class="ri-star-fill rate"></i>
-                            <i class="ri-star-fill rate"></i>
-                            <i class="ri-star-fill rate"></i>
-                            <i class="ri-star-fill rate"></i>
-                            <i class="ri-star-fill rate underrate"></i>
-                        </div>
-                    </div>
-
-                    <div class="btns">
-                        <ul>
-                            <li class="sendMsg">
-                                <i class="ri-chat-4-fill ri"></i>
-                                <a href="#">Send Message</a>
-                            </li>
-
-                            <li class="sendMsg active">
-                                <i class="ri-check-fill ri"></i>
-                                <a href="#">Contacts</a>
-                            </li>
-
-                            <li class="sendMsg">
-                                <a href="#">Report User</a>
-                            </li>
-                        </ul>
-                    </div>
-                </section>
-
-
-                <!-- ===== ===== Timeline & About Sections ===== ===== -->
-                <section class="timeline_about card">
-                    <div class="tabs">
-                        <ul>
-                            <li class="timeline">
-                                <i class="ri-eye-fill ri"></i>
-                                <span>Timeline</span>
-                            </li>
-
-                            <li class="about active">
-                                <i class="ri-user-3-fill ri"></i>
-                                <span>About</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="contact_Info">
-                        <h1 class="heading">Contact Information</h1>
-                        <ul>
-                            <li class="phone">
-                                <h1 class="label">Phone:</h1>
-                                <span class="info">+11 234 567 890</span>
-                            </li>
-
-                            <li class="address">
-                                <h1 class="label">Address:</h1>
-                                <span class="info">S34 E 65th Street <br> New York, NY 10651-78 156-187-60</span>
-                            </li>
-
-                            <li class="email">
-                                <h1 class="label">E-mail:</h1>
-                                <span class="info">hello@rsmarquetech.com</span>
-                            </li>
-
-                            <li class="site">
-                                <h1 class="label">Site:</h1>
-                                <span class="info">www.rsmarquetech.com</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="basic_info">
-                        <h1 class="heading">Basic Information</h1>
-                        <ul>
-                            <li class="birthday">
-                                <h1 class="label">Birthday:</h1>
-                                <span class="info">Dec 25, 2000</span>
-                            </li>
-
-                            <li class="sex">
-                                <h1 class="label">Gender:</h1>
-                                <span class="info">Male</span>
-                            </li>
-                        </ul>
-                    </div>
-                </section>
-            </div>
-        </div>
-    </div> {% endcomment %}
-
-
+    </div>
 {% endblock %}
