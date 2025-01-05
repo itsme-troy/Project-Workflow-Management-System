@@ -1,4 +1,5 @@
 from django.db import models
+from project.models import Faculty
 from project.models import Defense_Application
 
 
@@ -11,7 +12,7 @@ class Defense_schedule(models.Model):
     color = models.CharField(max_length=7, default='#FMXCFF')  # Store the color in hex format (e.g., #FF5733)
     created_at = models.DateTimeField(auto_now_add=True)
     application = models.ForeignKey(Defense_Application, null=True, on_delete=models.CASCADE)
-    
+    panel_members = models.ManyToManyField(Faculty, related_name='defense_schedules', blank=True)
     # def save(self, *args, **kwargs):
     #     # Only set the group name if it's not already set
     #     if not self.title:

@@ -52,38 +52,38 @@
           <div class="logo">
             <a href="{% url 'home' %}" style="text-decoration: none; color: inherit;"> &lt;/SP&gt; Management App </a>
           </div>
-          {% if user.is_authenticated%}
+         
 
             <div class="right_menu">
                 <ul>
-                
-                <li>
-                  <a href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="ToggleMenuNotif(event)">
-                    <i class="fas fa-bell icon icon-margin"></i>
-                    <span class="notification-dropdown-badge" id="notification-count">0</span> 
-                      
-                    <div class="icon-label"> <span> Notifications </span> </div>
-                  </a>
-                  <ul class="dropdown-menu notification-dropdown text-start" aria-labelledby="notificationsDropdown" id="notifDropdown">
-                    <li>
-                      <div class="d-flex justify-content-between align-items-center">
-                        <div class="dropdown-header mb-2">
-                          <span class="icon-label"> Notifications </span>
+                  {% if user.is_authenticated%}
+                  <li>
+                    <a href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="ToggleMenuNotif(event)">
+                      <i class="fas fa-bell icon icon-margin"></i>
+                      <span class="notification-dropdown-badge" id="notification-count">0</span> 
+                        
+                      <div class="icon-label"> <span> Notifications </span> </div>
+                    </a>
+                    <ul class="dropdown-menu notification-dropdown text-start" aria-labelledby="notificationsDropdown" id="notifDropdown">
+                      <li>
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div class="dropdown-header mb-2">
+                            <span class="icon-label"> Notifications </span>
+                          </div>
                         </div>
+                      </li>
+                      <div id="notification-list">
+                        <!-- Notifications will be dynamically inserted here -->
+                            <li class="dropdown-item text-muted">No notifications at the moment.</li>
                       </div>
-                    </li>
-                    <div id="notification-list">
-                      <!-- Notifications will be dynamically inserted here -->
-                          <li class="dropdown-item text-muted">No notifications at the moment.</li>
-                    </div>
-                    <li>
-                      <div class="dropdown-footer text-center">
-                        <a href="{% url 'notifications' %}" class="dropdown-item text-primary">See All Notifications</a>
-                      </div>
-                    </li>
-                  </ul>
-                </li>
-                
+                      <li>
+                        <div class="dropdown-footer text-center">
+                          <a href="{% url 'notifications' %}" class="dropdown-item text-primary">See All Notifications</a>
+                        </div>
+                      </li>
+                    </ul>
+                  </li>
+                {% endif %}  
               {% comment %}                 
                   <li> <a href="#">Features</a> </li>
                   <li> <a href="#">About</a> </li>
@@ -99,54 +99,81 @@
                   </li> {% endcomment %}
                 </ul>
                   <div><span class="user-info-header" onclick="toggleMenu()">
-                    {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
-                      {% comment %} yes {% endcomment %}
-                      {% comment %} {{ user.profile_image.url }} {% endcomment %}
-                      <img src="{{ user.profile_image.url }}" alt="profile_pic" class="user-pic img-fluid">
+                    {% if request.user.is_authenticated %}     
+                        {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                          {% comment %} yes {% endcomment %}
+                          {% comment %} {{ user.profile_image.url }} {% endcomment %}
+                          <img src="{{ user.profile_image.url }}" alt="profile_pic" class="user-pic img-fluid">
+                        {% else %}
+                          {% comment %} no {% endcomment %}
+                          <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic"> 
+                        {% endif %}
+                        <div class="icon-label">
+                          <h5> {{ request.user.first_name }} {{ request.user.last_name }}</h5></span></div>    
+                        </div>
                     {% else %}
-                      {% comment %} no {% endcomment %}
-                      <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic"> 
-                    {% endif %}
+                        <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic"> 
                     
-                      <div class="icon-label">
-                        <h5> {{ request.user.first_name }} {{ request.user.last_name }}</h5></span></div>    
-                      </div>
+                        <div class="icon-label">
+                          <h5> Guest </h5></span></div>    
+                        </div>
+                      {% endif %}
+                                     
                   <div class="sub-menu-wrap" id="subMenu"> 
                     <div class="sub-menu">
                         <div class="user-info"> 
-                          
-                            {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
-                              <img src="{{ user.profile_image.url }}" alt="profile_pic" class="user-pic">
-                            {% else %}
-                            <img src="{% static '/images/default_profile_pic.jpg' %}" class="user-pic img-fluid"> 
-                            {% endif %}
+                          {% if request.user.is_authenticated %}
+                              {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                                <img src="{{ user.profile_image.url }}" alt="profile_pic" class="user-pic">
+                              {% else %}
+                              <img src="{% static '/images/default_profile_pic.jpg' %}" class="user-pic img-fluid"> 
+                              {% endif %}
+                                
+                              <h5>{{ request.user.first_name }} {{ request.user.last_name }}</h5></span></div>    
+                          {% else %}
+                            <img src="{% static '/images/default_profile_pic.jpg' %}" class="user-pic img-fluid">
+                            <h5> Guest </h5></span></div>     
+                          {% endif %}
                               
-                            <h5>{{ request.user.first_name }} {{ request.user.last_name }}</h5></span></div>    
-                            
-
+                              <!-- Display Guest info -->
                       <hr>
-                      <a href="#" class="sub-menu-link">
-                        <i class="material-icons">person</i>
-                        <p>Edit Profile</p>
-                        <span class="material-icons">chevron_right</span>
-                      </a>
-                      
-                      <a href="#" class="sub-menu-link">
-                        <i class="material-icons">settings</i>
-                        <p>Settings and Privacy</p>
-                        <span class="material-icons">chevron_right</span>
-                      </a>
-                      
-                      <a href="{% url 'logout' %}" class="sub-menu-link">
-                        <i class="material-icons">logout</i>
-                        <p>Logout</p>
-                        <span class="material-icons">chevron_right</span>
-                      </a>
+                      {% if request.user.is_authenticated %}
+                          <a href="#" class="sub-menu-link">
+                            <i class="material-icons">person</i>
+                            <p>Edit Profile</p>
+                            <span class="material-icons">chevron_right</span>
+                          </a>
+                          
+                          <a href="#" class="sub-menu-link">
+                            <i class="material-icons">settings</i>
+                            <p>Settings and Privacy</p>
+                            <span class="material-icons">chevron_right</span>
+                          </a>
+                          
+                          <a href="{% url 'logout' %}" class="sub-menu-link">
+                            <i class="material-icons">logout</i>
+                            <p>Logout</p>
+                            <span class="material-icons">chevron_right</span>
+                          </a>
+                      {% else  %}
+                          <a href="{% url 'login' %}" class="sub-menu-link">
+                            <i class="material-icons">login</i> <!-- Updated icon for Login -->
+                            <p>Login</p>
+                            <span class="material-icons">chevron_right</span>
+                          </a>
+
+                          <a href="{% url 'select-registration' %}" class="sub-menu-link">
+                            <i class="material-icons">person_add</i> <!-- Updated icon for Register -->
+                            <p>Register an Account</p>
+                            <span class="material-icons">chevron_right</span>
+                          </a>
+                          
+                      {% endif %}
 
                     </div>
                   </div>
               </div>
-          {% endif %}
+     
         </div>
         </div>
       </div>

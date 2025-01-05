@@ -57,7 +57,7 @@ def defense_sched(request):
     # Filter for the latest defense application per project with date comparison
     defense_applications = Defense_Application.objects.annotate(
         latest_application_date=Subquery(latest_application_date_subquery)
-    ).filter(submission_date=F('latest_application_date'))
+    ).filter(submission_date=F('latest_application_date')).prefetch_related('panel').all()
 
     # Check for 'pending' verdict in the latest phase
     latest_phase_subquery = ProjectPhase.objects.filter(

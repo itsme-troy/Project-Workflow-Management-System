@@ -3,6 +3,7 @@
 {% load tz %}
 {% load custom_filters %}  <!-- Load custom filters -->
 
+
 {% block content %}
 {{ block.super }}  <!-- This will include the calendar from base.html -->
 {% if user.is_authenticated %}
@@ -11,26 +12,32 @@
     <p> Hello, <b> {{ user }} </b> . Please Enter your Available Schedule/s. </br> </p> {% endcomment %}
     <div class="row">
         <div class="col-md-5">
-            <h4>Defense Schedule </h4> 
-                {% if request.user.is_current_coordinator %}
-                    <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
-                        <i class="fas fa-plus-circle icon" style="color: white;"></i> Create
-                    </button>
-                
-                    <button id="delete-all-defense-schedules-btn" class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash"></i> Delete All
-                    </button>
-                {% endif %}
-                
-                <div class="scrollable-events">
+            
+                <div class="table-container">
+
+                    <h3>Defense Schedule </h3> 
+                    {% if request.user.is_current_coordinator %}
+                        <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
+                            <i class="fas fa-plus-circle icon" style="color: white;"></i> Create
+                        </button>
+                    
+                        <button id="delete-all-defense-schedules-btn" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i> Delete All
+                        </button>
+                    {% endif %}
+                    
+
                     <table class="table table-striped mt-3">
                         <thead>
                             <tr>
-                                <th>Project</th>
-                                <th>Proponents</th>
-                                <th> Adviser </th>
-                                <th> Date </th>
-                                <!-- Panel columns will be hidden initially -->
+                                <th scope="col"> # </th> 
+                                <th scope="col"> Project</th>
+                                <th scope="col"> Proponents</th>
+                                <th scope="col"> Adviser </th>
+                                <th scope="col" style="width: 140px;"> Date </th>
+                                <th scope="col"> Panel 1</th>  
+                                <th scope="col"> Panel 2</th>  
+                                <th scope="col"> Panel 3</th> 
                             </tr>
                         </thead>
                         <tbody>
@@ -38,7 +45,9 @@
                             <tr>
                                 <td style="padding-left: 10px; border-radius: 4px; background: linear-gradient(to right, {{ event.color|default:'#007BFF' }} 5px, #fff 5px);">
                                     <div style="height: 100%; width: 5px; background-color: {{ event.color|default:'#007BFF' }}; display: inline-block;"></div>
-                                    <strong>{{ event.application }}</strong>
+                                    <strong>{{ forloop.counter }}</strong> </td> 
+                                <td>   <strong>{{ event.application }}</strong> </td> 
+                                
                                 </td>
                                 <td>{{event.application.project_group }}</td>
                                 <td>{{event.application.adviser }}</td>
@@ -55,11 +64,53 @@
                                         {% endif %}
                                     {% endwith %}
                                     {% endwith %} </td> 
-                                
+
+                                    {% comment %} {% with counter=0 %} {% endcomment %}
+                                    {% for panelist in event.application.panel.all %}
+                                        <td>
+                                            {% if panelist %}
+                                               {{ panelist.last_name }}
+                                            {% else %}
+                                                <td>-</td> <!-- Display dash if no panelist -->
+                                            {% endif %}
+                                        </td>
+                                        {% comment %} <td> </td>
+                                        <td> </td> {% endcomment %}
+                                        {% comment %} {% with counter=forloop.counter %} {% endcomment %}
+                                        {% comment %} {% endwith %} {% endcomment %}
+                                    {% endfor %}
+                                    {% comment %}
+                                    Output the counter value
+                                    {% endcomment %}
+                               
+                                    {% comment %} {% endfor %} {% endcomment %}
+                                    {% comment %} {% endwith %} {% endcomment %}
+                                    {% comment %} {% endfor %} {% endcomment %}
+
+                                    {% comment %} {% if event.application.panel.all %}
+                                        {% for panelist in event.application.panel.all %}
+                                        <td>
+                                            {% if forloop.counter <= 3 %}
+                                                {{ panelist.last_name }}  <!-- Print the panelist's last name -->
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        {% endfor %}
+                                        {% if forloop.counter < 3 %}
+                                        {% for i in forloop.counter|add:1 to:3 %}
+                                            <td>-</td>  <!-- Fill empty panel columns with dashes -->
+                                        {% endfor %}
+                                    {% endif %}
+                                    {% else %}
+                                         <td>-</td>  <!-- Print dash if no panelists -->
+                                        <td>-</td>  <!-- Print dash for second panel column -->
+                                        <td>-</td> 
+                                    {% endif %} {% endcomment %}
                             </tr>
                         {% empty %}
                             <tr>
-                                <td colspan="4" class="text-center">No available schedules found.</td>
+                                <td colspan="8" class="text-center">No available schedules found.</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -68,8 +119,12 @@
         </div>
         
         <div class="col-md-7"> 
-            <div id='calendar'></div> 
+            <div class="my_calendar">
+                <h3> Calendar </h3>
+                <div id='calendar'></div> 
+            </div>
         </div>
+    
     </div>
 
     <!-- Debug -->

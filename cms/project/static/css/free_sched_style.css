@@ -123,9 +123,9 @@ body {
 .block_container{
   border: 2px solid #000;
   text-align: center;
-  margin: 60px 8px 20px 80px;
+  margin: 60px 8px 20px 20px;
   background-color: #fff7f7;
-  padding: 50px;
+  padding: 20px;
   min-height: 800px;
   min-width: 300px;
   transition: all 0.3s ease;

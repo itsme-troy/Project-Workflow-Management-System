@@ -2024,7 +2024,6 @@ def coordinator_projects(request):
         messages.error(request, "You are not authorized to view this page")
         return redirect('login')
 
-   
     # Grab the projects from that adviser
     approved_projects = Project.objects.filter(status='approved', is_archived=False).order_by('title')
     
