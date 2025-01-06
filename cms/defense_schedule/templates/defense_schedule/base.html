@@ -280,7 +280,8 @@
                         dataType: "json",
                         success: function (data) {
                             calendar.fullCalendar('refetchEvents');
-                            refreshEventsList(); // Refresh the events list
+                            //refreshEventsList(); // Refresh the events list
+                            location.reload(); // Refresh the page to show the new schedule
                             alert('Schedule Updated');
                         },
                         error: function (data) {
@@ -313,7 +314,8 @@
                         dataType: "json",
                         success: function (data) {
                             calendar.fullCalendar('refetchEvents');
-                            refreshEventsList(); // Refresh the events list
+                            //refreshEventsList(); // Refresh the events 
+                            location.reload(); // Refresh the page to show the new schedule
                             alert('Schedule Updated');
                         },
                         error: function (data) {
@@ -346,7 +348,8 @@
                                 console.log(data);  // Log the server response to check if it's returning the correct status
                                 if (data.status === 'success') {
                                     calendar.fullCalendar('refetchEvents');
-                                    refreshEventsList(); // Refresh the events list
+                                    //refreshEventsList(); // Refresh the events list
+                                    location.reload(); // Refresh the page to show the new schedule
                                     alert('Schedule Removed');
                                 } else {
                                     alert('There was a problem removing the schedule.');

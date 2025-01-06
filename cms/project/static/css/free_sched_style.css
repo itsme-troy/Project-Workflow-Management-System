@@ -405,6 +405,15 @@ body {
   margin-left: 80px; /* Offset for the sidebar */
   overflow: hidden; /* Defafult state */
 }
+
+.main_container .sidebar ul li.nav-item.dropdown .dropdown-menu {
+  display: none; /* Hide dropdown menu by default */
+}
+
+.main_container .sidebar ul li.nav-item.dropdown:hover .dropdown-menu {
+  display: block; /* Show dropdown menu on hover */
+}
+
 /* Show dropdown on hover and click */
 .main_container .sidebar ul li.nav-item.dropdown:hover .dropdown-menu,
 .main_container .sidebar ul li.nav-item.dropdown:focus-within .dropdown-menu {
