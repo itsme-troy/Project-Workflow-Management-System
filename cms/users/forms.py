@@ -31,13 +31,11 @@ class RegisterStudentForm(UserCreationForm):
     student_id = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
     course = forms.CharField(max_length=50, widget=forms.Select(choices=course_choices, attrs={'class':'form-select'}))
 
-
     class Meta: 
         model = User 
         fields = ('email', 'first_name', 'last_name', 'student_id', 'course',
             'password1', 'password2')
     
-        
     # tell view use this form
 
     def __init__(self, *args, **kwargs): 

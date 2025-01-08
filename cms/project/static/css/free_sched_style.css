@@ -855,7 +855,6 @@ body {
   font-size: 14px; /* Font size for address */
   color: #555; /* Slightly lighter text color */
 }
-
 .additional-info-container h1 {
   font-family: 'Montserrat', sans-serif; /* Modern font for headings */
   font-size: 24px; /* Increased font size */
@@ -1053,9 +1052,6 @@ body {
 }
 
 /* CALENDAR CSS */
-
-
-
 .user-info-link {
   text-decoration: none;
   color: inherit; /* Keeps the text and styles unchanged */
@@ -1064,4 +1060,56 @@ body {
 
 .user-info-link:hover {
   text-decoration: underline; /* Optional hover effect */
+}
+
+/* Style for the project cards container */
+.project-cards-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
+  gap: 20px; /* Spacing between cards */
+  justify-items: center; /* Center cards in their grid cells */
+  padding: 20px;
+}
+
+.project-card {
+  width: 100%; /* Ensure the card takes full width of the grid cell */
+  max-width: 250px; /* Set a max-width for the card */
+}
+
+/* Responsive Design for Smaller Screens */
+@media (max-width: 1200px) {
+  .project-cards-container {
+    grid-template-columns: repeat(2, 1fr); /* 2 cards per row on medium screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .project-cards-container {
+    grid-template-columns: 1fr; /* 1 card per row on small screens */
+  }
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 80%;
+  padding: 10px;
+}
+
+.UserName {
+  flex-direction: column;
+  gap: 10px;
+}
+
+.button-container {
+  display: flex;
+  gap: 10px; /* Space between the buttons */
+}
+
+.no-projects-message {
+  color: #999;
+  font-size: 16px;
+  text-align: center;
+  margin-top: 20px;
 }

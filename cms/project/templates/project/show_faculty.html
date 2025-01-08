@@ -4,14 +4,15 @@
     <!-- ===== ===== Remix Font Icons Cdn ===== ===== -->
     <link rel="stylesheet" href="fonts/remixicon.css">
     {% block content %}
-    
-    <div class="grid-container">
+        <!-- Back Button -->
+            
+        <div class="grid-container">
         <!-- User Profile Section -->
         <section class="pic-skills-column">
             <subsection class="userProfile card">
                 <div class="profile_container">
-                    {% if student.profile_image and student.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
-                        <figure><img src="{{ student.profile_image.url }}" alt="profile_pic" class="img-fluid" width="250px" height="250px"></figure>
+                    {% if faculty.profile_image and faculty.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                        <figure><img src="{{ faculty.profile_image.url }}" alt="profile_pic" class="img-fluid" width="250px" height="250px"></figure>
                     {% else %}
                         <figure><img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid" width="250px" height="250px"></figure>
                     {% endif %}
@@ -34,19 +35,31 @@
         <!-- User Details Section -->
         <section class="details-info-column">
             <subsection class="user_details card">
-                <div class="UserName">
-                    <h1 class="name">{{ faculty.first_name}} {{ faculty.last_name }}</h1>
-                    <span class="role {{ faculty.role|lower }}">{{ faculty.role }}</span> </br>
-
-                    <span>Secondary</span>
-                    <p>S34 E 65th Street <br> New York, NY 10651-78 156-187-60</p>
+                <div class="header-container">
+                    <div class="UserName">
+                        <h1 class="name">{{ faculty.first_name}} {{ faculty.last_name }}</h1>
+                    </div>
+                    <div class="button-container" style="display: flex; gap: 10px;">  <!-- Using gap to space out buttons -->
+                        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+                        {% if request.user.id == faculty.id %}
+                            <a href="{% url 'update-user' %}" class="btn btn-outline-secondary btn-sm">Edit Profile</a> <!-- Edit Profile Button -->
+                        {% endif %}
+                    </div>
                 </div>
+                <span class="role {{ faculty.role|lower }}" style="margin-bottom: 50px">{{ faculty.role }}</span><br>
             </subsection>
-            
+            {% comment %} <a href="{% url 'update-user' %}" class="btn btn-secondary"> Update Profile</a> </br> </br>  {% endcomment %}
             <!-- Additional Information Section -->
             <subsection class="additional_information card">
-                <div class="additional-info-container">
-                    <h1 class="heading">Contact Information</h1>
+
+                <div class="toggle-container" style="display: flex; justify-content: flex-start; margin-bottom: 10px;">
+                    <button id="aboutButton" onclick="toggleVisibility('aboutInfo', this)" class="toggle-button active-toggle" style="background-color: #4CAF50;">About</button>
+                    <button id="projectGroupButton" onclick="toggleVisibility('projectGroup', this)" class="toggle-button" style="margin-left: 10px;">Advisees</button>
+                    {% comment %} <div class="underline-indicator" id="underline" style="width: 50px; left: 0;"></div> <!-- Underline indicator --> {% endcomment %}
+                </div>
+                
+                <div id="aboutInfo" style="display:block;">
+                    <h3 class="heading"> About </h3>
                     <table class="contact-info-table">
                         <tr>
                             <td><strong class="contact-label">Phone:</strong></td>
@@ -74,9 +87,60 @@
                         </tr>
                     </table>
                 </div>
+                <div id="projectGroup" style="display:none;">
+                    <h3>Project Group</h3>
+                    <div class="project-cards-container">
+                        {% if not projects %}
+                            <p class="no-projects-message">No Advisees available at the moment.</p>
+                        {% else %}
+                            {% for project in projects %}
+                                <div class="card mb-3 project-card">
+                                    <div class="card-header">
+                                        {% comment %} Adviser: {{ project.adviser }} {% endcomment %}
+                                    Project Title: </br> {{ project.title }}
+                                    </div>
+                                    <ul class="list-group list-group-flush">
+                                        {% for student in project.proponents.proponents.all %}
+                                            <li class="list-group-item">{{ student }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+                
             </subsection>
         </section>
     </div>
+    <script>
+        function toggleVisibility(id, button) {
+            var aboutInfo = document.getElementById('aboutInfo');
+            var projectGroup = document.getElementById('projectGroup');
+        
+            // Reset button styles
+            document.getElementById('aboutButton').style.backgroundColor = '';
+            document.getElementById('projectGroupButton').style.backgroundColor = '';
+            document.getElementById('aboutButton').classList.remove('active-toggle'); // Remove active class
+            document.getElementById('projectGroupButton').classList.remove('active-toggle'); // Remove active class
+        
+            if (id === 'aboutInfo') {
+                aboutInfo.style.display = "block";
+                projectGroup.style.display = "none"; // Hide project group
+                button.style.backgroundColor = '#4CAF50'; // Highlight active button
+                button.classList.add('active-toggle'); // Add active class
+            } else if (id === 'projectGroup') {
+                projectGroup.style.display = "block";
+                aboutInfo.style.display = "none"; // Hide about info
+                button.style.backgroundColor = '#4CAF50'; // Highlight active button
+                button.classList.add('active-toggle'); // Add active class
+            }
+        }
+        // To set the default view on page load
+        window.onload = function() {
+            toggleVisibility('aboutInfo', document.getElementById('aboutButton'));
+        }
+    </script>
 {% endblock %}
 
 {% comment %} 

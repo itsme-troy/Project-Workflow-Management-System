@@ -34,17 +34,18 @@
         <!-- User Details Section -->
         <section class="details-info-column">
             <subsection class="user_details card">
-                <div class="UserName">
-                    <h1 class="name">{{ student.first_name}} {{ student.last_name }}</h1>
-                    <span class="role {{ student.role|lower }}">{{ student.role }}</span> </br>
-
-                    {% comment %} <span>Secondary</span> {% endcomment %}
-                    {% comment %} <p> </p> {% endcomment %}
-                    {% comment %} {{ student.address }} <!-- Added line to display student address --> {% endcomment %}
-                    
-                    {% comment %} <p><strong>Address:</strong> {{ student.address }}</p> {% endcomment %}
-                
+                <div class="header-container" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="UserName">
+                        <h1 class="name">{{ student.first_name}} {{ student.last_name }}</h1>
+                    </div>
+                    <div class="button-container" style="display: flex; gap: 10px;">  <!-- Using gap to space out buttons -->
+                        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+                        {% if request.user.id == student.id %}
+                            <a href="{% url 'update-user' %}" class="btn btn-outline-secondary btn-sm">Edit Profile</a> <!-- Edit Profile Button -->
+                        {% endif %}
+                    </div>
                 </div>
+                <span class="role {{ student.role|lower }}">{{ student.role }}</span> 
             </subsection>
             
             <!-- Additional Information Section -->
@@ -57,7 +58,7 @@
                 </div>
 
                 <div id="aboutInfo" style="display:block;">  <!-- Changed to display:block -->
-                    <h1 class="heading"> About </h1>
+                    <h3 class="heading"> About </h3>
                     <table class="contact-info-table">
                         <tr>
                             <td><strong class="contact-label">Phone:</strong></td>
@@ -88,19 +89,25 @@
               
                 <div id="projectGroup" style="display:none;">  <!-- Remains display:none -->
                     <h3>Project Group</h3>
-                    <div> 
-                    {% for group in project_group %}
-                        <div class="card mb-3" style="width: 18rem;">
-                            <div class="card-header">
-                                Adviser:
-                            </div>
-                            <ul class="list-group list-group-flush">
-                                {% for student in group.proponents.all %}
-                                    <li class="list-group-item">{{ student }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endfor %}
+                    <div class="project-cards-container">
+                        {% if not project_group %}
+                            <p class="no-projects-message">No Project Group available at the moment.</p>
+                        {% else %}
+                            {% for group in project_group %}
+                                <div class="card mb-3 project-card" style="width: 18rem;">
+                                       
+                                        {% comment %} <div class="card-header">
+                                            Adviser:x``
+                                        </div> {% endcomment %}
+
+                                    <ul class="list-group list-group-flush">
+                                        {% for student in group.proponents.all %}
+                                            <li class="list-group-item">{{ student }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                 </div> 
                     {% comment %} <a href="{% url 'update-user' %}" class="btn btn-secondary mt-3">Update Profile</a> {% endcomment %}
             </subsection>

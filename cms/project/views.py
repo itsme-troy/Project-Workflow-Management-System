@@ -1837,12 +1837,12 @@ def show_faculty(request, faculty_id):
     if request.user.is_authenticated: 
         # look on faculty by ID 
         faculty = Faculty.objects.get(pk=faculty_id)
-        # project_group = Project_Group.objects.filter(approved=True).filter(adviser=faculty)
+        projects = Project.objects.filter(status='approved').filter(adviser=faculty)
         
         # pass it to the page using render 
         return render(request, 'project/show_faculty.html', 
-        {'faculty': faculty}) 
-        #  'project_group': project_group}) 
+        {'faculty': faculty, 
+        'projects': projects}) 
     
     else: 
         messages.error(request, "Please Login to view this page")

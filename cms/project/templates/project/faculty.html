@@ -42,11 +42,11 @@
                                     class="img-fluid rounded-start" alt="Profile Image">  </td> -->
                             <td> <strong> {{ forloop.counter }} </strong> </td>
                             <td>
-                                {% if student.profile_image and student.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
-                                    <img src="{{ student.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid larger-img">
+                                {% if faculty.profile_image and faculty.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                                    <figure><img src="{{ faculty.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid width="250px" height="250px""></figure>
                               {% else %}
                                 {% comment %} no {% endcomment %}
-                                    <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table larger-img"> 
+                                    <figure><img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table width="250px" height="250px""> </figure>
                               {% endif %}
                             </td>
                             <td>{{ faculty.first_name }} {{ faculty.last_name }}</td> <!-- Combined first and last name -->
