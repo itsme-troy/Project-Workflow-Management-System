@@ -119,7 +119,6 @@
         </section>
         </div>
 
-
         <!-- Right Column: Calendar -->
         <div class="col-md-6"> 
             <div class="my_calendar">
@@ -132,9 +131,9 @@
             <!-- Filter by Project Form -->
         <div class="mb-6">
             <form id="filter-project-form" method="GET" class="border p-3 rounded bg-light mb-3" action="{% url 'view-schedule' %}">
-                <h5>Filter by Project</h5>
+                <h5>Filter Common Schedule Results </h5>
                 <div class="mb-2">
-                    <label for="project" class="form-label">Select Project:</label>
+                    <label for="project" class="form-label">Select Filter:</label>
                     <select name="project" id="project" class="form-control">
                         <option value="" {% if not request.GET.project %}selected{% endif %}>
                             All Faculty

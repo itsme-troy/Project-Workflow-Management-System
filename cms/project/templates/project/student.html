@@ -25,11 +25,11 @@
                     <th scope="col"> # </th>
                     <th scope="col" class="picture-column">Picture</th> 
                     <th scope="col"> Name</th>
-                    <th scope="col">Email</th>
+                    <th scope="col">Course </th>
                     <th scope="col" class="deficiencies-column" >
                         Deficiencies
                     </th>        
-                    <th>Action</th>
+                    <th style="width: 150px;">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -48,7 +48,7 @@
                             
                             <td>{{ student.first_name }} {{ student.last_name }}</td> <!-- Combined first and last name -->
                        
-                            <td>{{ student.email }}</td>
+                            <td>{{ student.course }}</td>
                             <td class="deficiencies-cell">
                                 <div style="overflow-x: auto; white-space: nowrap;">
                                     {% if student.deficiencies %}

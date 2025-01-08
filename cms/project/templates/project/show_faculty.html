@@ -1,13 +1,90 @@
 {% extends 'project/base.html' %}
+{% load static %}
+
+    <!-- ===== ===== Remix Font Icons Cdn ===== ===== -->
+    <link rel="stylesheet" href="fonts/remixicon.css">
+    {% block content %}
+    
+    <div class="grid-container">
+        <!-- User Profile Section -->
+        <section class="pic-skills-column">
+            <subsection class="userProfile card">
+                <div class="profile_container">
+                    {% if student.profile_image and student.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                        <figure><img src="{{ student.profile_image.url }}" alt="profile_pic" class="img-fluid" width="250px" height="250px"></figure>
+                    {% else %}
+                        <figure><img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid" width="250px" height="250px"></figure>
+                    {% endif %}
+                </div>
+            </subsection>
+        
+            <subsection class="skills card">
+                <div class="skills_container">
+                    <h1 class="heading skills-heading">Skills</h1>
+                    <ul class="skills-list">
+                        <li>Android</li>
+                        <li>Web-Design</li>
+                        <li>UI/UX</li>
+                        <li>Video Editing</li>
+                    </ul>
+                </div>
+            </subsection>
+        </section>
+
+        <!-- User Details Section -->
+        <section class="details-info-column">
+            <subsection class="user_details card">
+                <div class="UserName">
+                    <h1 class="name">{{ faculty.first_name}} {{ faculty.last_name }}</h1>
+                    <span class="role {{ faculty.role|lower }}">{{ faculty.role }}</span> </br>
+
+                    <span>Secondary</span>
+                    <p>S34 E 65th Street <br> New York, NY 10651-78 156-187-60</p>
+                </div>
+            </subsection>
+            
+            <!-- Additional Information Section -->
+            <subsection class="additional_information card">
+                <div class="additional-info-container">
+                    <h1 class="heading">Contact Information</h1>
+                    <table class="contact-info-table">
+                        <tr>
+                            <td><strong class="contact-label">Phone:</strong></td>
+                            <td>{{ faculty.phone }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong class="contact-label">Course:</strong></td>
+                            <td>{{ faculty.course }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong class="contact-label">Email:</strong></td>
+                            <td>{{ faculty.email }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong class="contact-label">Facebook link:</strong></td>
+                            <td>{{ faculty.facebook_link }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong class="contact-label">Birthday:</strong></td>
+                            <td>{{ faculty.birthday }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong class="contact-label">Gender:</strong></td>
+                            <td>{{ faculty.gender }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </subsection>
+        </section>
+    </div>
+{% endblock %}
+
+{% comment %} 
+
+{% extends 'project/base.html' %}
 
 {% block content %}
-<style> 
-    .card {
-        margin-left: 15px; /* Adjust as needed */
-    }
-    /* Add any additional styles from show_student.html */
-</style> 
-<body> 
+
 </br> 
 <div class="container text-left my-5">
     <div class="row ">
@@ -35,6 +112,9 @@
         </div>
     </div>
 </div>
+
+
+
 <div class="col-4"> 
     </br> 
     <h3> Advisees: </h3> 
@@ -65,4 +145,4 @@
 </body> 
 
 
-{% endblock %}
+{% endblock %} {% endcomment %}

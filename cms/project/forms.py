@@ -21,7 +21,19 @@ User = get_user_model()
 #         if project:
 #             # Limit the phases to the project-specific ones
 #             self.fields['phases'].queryset = ProjectPhase.objects.filter(project=project)
+from .models import UserSkill, PredefinedSkill
 
+class UserSkillForm(forms.ModelForm):
+    predefined_skills = forms.ModelMultipleChoiceField(
+        queryset=PredefinedSkill.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+    other_skill = forms.CharField(max_length=100, required=False)
+
+    class Meta:
+        model = UserSkill
+        fields = ['predefined_skills', 'other_skill']
 
 class UpdateDeficienciesForm(forms.ModelForm):  
 

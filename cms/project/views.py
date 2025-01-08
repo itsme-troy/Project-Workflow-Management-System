@@ -33,6 +33,10 @@ from .models import Notification
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.urls import reverse
+from .models import UserSkill, PredefinedSkill
+from .forms import UserSkillForm
+
+
 logger = logging.getLogger(__name__)
 # from .forms import PhaseForm
 # from .models import CustomPhase
@@ -42,6 +46,39 @@ logger = logging.getLogger(__name__)
 from django.contrib.auth import get_user_model 
 User = get_user_model()
 
+def manage_skills(request):
+    if request.method == 'POST':
+        form = UserSkillForm(request.POST)
+        if form.is_valid():
+            predefined_skills = form.cleaned_data['predefined_skills']
+            other_skill = form.cleaned_data['other_skill']
+            
+            # Save predefined skills
+            for skill in predefined_skills:
+                UserSkill.objects.create(user=request.user, predefined_skill=skill)
+
+            # Save other skill if provided
+            if other_skill:
+                UserSkill.objects.create(user=request.user, other_skill=other_skill)
+
+            return redirect('manage_skills')  # Redirect to the same page or another page
+    else:
+        form = UserSkillForm()
+
+    user_skills = UserSkill.objects.filter(user=request.user)  # Get skills for the logged-in user
+    predefined_skills = PredefinedSkill.objects.all()  # Get all predefined skills
+    return render(request, 'project/manage_skills.html', {'form': form, 'user_skills': user_skills, 'predefined_skills': predefined_skills})
+
+def edit_skill(request, skill_id):
+    skill = get_object_or_404(Skill, id=skill_id, user=request.user)
+    if request.method == 'POST':
+        form = SkillForm(request.POST, instance=skill)
+        if form.is_valid():
+            form.save()
+            return redirect('manage_skills')
+    else:
+        form = SkillForm(instance=skill)
+    return render(request, 'project/edit_skill.html', {'form': form})
 
 # def add_custom_phase(request, project_id):
 #     project = Project.objects.get(id=project_id)
@@ -1760,30 +1797,22 @@ def add_project_group(request):
     
 def my_profile(request, profile_id): 
     if request.user.is_authenticated: 
-        
         # look on user objects by ID 
         user = User.objects.get(pk=profile_id)
         
         if user.role == "STUDENT": 
-            #profile = Student.objects.get(user_id= profile_id)
-            project_group = Project_Group.objects.filter(approved=True).filter(proponents=user)
-            # project = ApprovedProject.objects.filter(proponents=project_group)
-            return render(request, 'project/my_student_profile.html', 
-            {'user': user, 
-            'project_group': project_group,
-            # 'project': project, 
-            #'profile': profile, 
-            })
+            student_id = user.id    
+
+            # # Get the project groups associated with this student
+            # project_group = Project_Group.objects.filter(approved=True).filter(proponents=user)
+            
+             # Redirect to show_student view, passing the student_id in the URL
+            return redirect('show-student', student_id=student_id)
         
         elif user.role =='FACULTY':
-
-            #profile = Faculty.objects.get(user_id=profile_id)     
-            projects = ApprovedProject.objects.filter(adviser=user)
-            return render(request, 'project/my_faculty_profile.html', 
-            {'user': user, 
-            'projects': projects,
-            # "profile": profile,
-            })
+            faculty_id = user.id
+             # Handle faculty profile
+            return redirect('show-faculty', faculty_id=faculty_id)
         
     else: 
         messages.error(request, "Please Login to view this page")

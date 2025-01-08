@@ -39,27 +39,27 @@
               </li>
      
         {% else %}    
-        <div class="profile">
-            <div class="img" >
-                {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
-                    {% comment %} yes {% endcomment %}
-                    <img src="{{ user.profile_image.url }}" alt="profile_pic" class="user-pic img-fluid" style="margin-left:10px;">
-                {% else %}
-                    {% comment %} no {% endcomment %}
-                    <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic" style="margin-left:10px;"> 
-                {% endif %}
+        <a href="{% url 'my-profile' request.user.id %}">
+            <div class="profile">
+                <div class="img">
+                    {% if request.user.profile_image and request.user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                        <img src="{{ request.user.profile_image.url }}" alt="profile_pic" class="user-pic img-fluid" style="margin-left:10px;">
+                    {% else %}
+                        <img src="{% static 'images/default_profile_pic.jpg' %}" class="img-fluid user-pic" style="margin-left:10px;"> 
+                    {% endif %}
+                </div>
+                <div class="profile_info">
+                    <p>Welcome</p>
+                    <p class="profile_name">{{ request.user.first_name }} {{ request.user.last_name }}</p>
+                    {% if request.user.get_role_display == "Coordinator" and not request.user.is_current_coordinator %}
+                        <span class="profile_name">(Former Coordinator)</span>
+                    {% else %}
+                        <span class="profile_name">[ {{ request.user.get_role_display }} ]</span>
+                    {% endif %}
+                </div>
             </div>
-            <div class="profile_info"> <!-- Display profile info for authenticated users -->
-                <p>Welcome</p>
-                <p class="profile_name">{{ request.user.first_name }} {{ request.user.last_name }}</p> <!-- Show logged-in user's name -->
-                {% if user.get_role_display == "Coordinator" and not user.is_current_coordinator %}
-                    <span class="profile_name">(Former Coordinator)</span>
-                {% else %}
-                    <span class="profile_name">[ {{ user.get_role_display }} ]</span>
-                {% endif %}
-            </div>
-        </div>
-    
+        </a>
+
         <p class="menu-label">
             <i class="fas fa-bars"></i> Menu
         </p>
@@ -257,7 +257,7 @@
               </ul>
           </li>
             {% endif %}
-            
+{% comment %}             
             {% if request.user.role == 'COORDINATOR' and request.user.is_current_coordinator %}
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Coordinator_tab">
@@ -266,11 +266,11 @@
                 </a>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{% url 'select-coordinator' %}"><i class="fas fa-user-plus"></i> Select New Coordinator</a></li>
-               {% comment %} <li><a class="dropdown-item" href="{% url 'create-custom-phases' %}"><i class="fas fa-file-alt"></i> Create Custom Phase </a></li> {% endcomment %}
+                <li><a class="dropdown-item" href="{% url 'create-custom-phases' %}"><i class="fas fa-file-alt"></i> Create Custom Phase </a></li> 
                 
                 </ul>
-        </li>
-            {% endif %}
+          </li>
+            {% endif %} {% endcomment %}
             
         
 

@@ -38,20 +38,106 @@
                     <h1 class="name">{{ student.first_name}} {{ student.last_name }}</h1>
                     <span class="role {{ student.role|lower }}">{{ student.role }}</span> </br>
 
-                    <span>Secondary</span>
-                    <p>S34 E 65th Street <br> New York, NY 10651-78 156-187-60</p>
+                    {% comment %} <span>Secondary</span> {% endcomment %}
+                    {% comment %} <p> </p> {% endcomment %}
+                    {% comment %} {{ student.address }} <!-- Added line to display student address --> {% endcomment %}
+                    
+                    {% comment %} <p><strong>Address:</strong> {{ student.address }}</p> {% endcomment %}
+                
                 </div>
             </subsection>
             
             <!-- Additional Information Section -->
             <subsection class="additional_information card">
-                <div class="additional-info-container">
-                    <h1 class="heading">Contact Information</h1>
-                    <p class="card-text"><strong class="contact-label">Phone:</strong> {{ student.phone }}</p>
-                    <p class="card-text"><strong class="contact-label">Course:</strong> {{ student.course }}</p>
-                    <p class="card-text"><strong class="contact-label">Email:</strong> {{ student.email }}</p>
+                
+                <div class="toggle-container" style="display: flex; justify-content: flex-start; margin-bottom: 10px;">
+                    <button id="aboutButton" onclick="toggleVisibility('aboutInfo', this)" class="toggle-button active-toggle" style="background-color: #4CAF50;">About</button>
+                    <button id="projectGroupButton" onclick="toggleVisibility('projectGroup', this)" class="toggle-button" style="margin-left: 10px;">Project Group</button>
+                    {% comment %} <div class="underline-indicator" id="underline" style="width: 50px; left: 0;"></div> <!-- Underline indicator --> {% endcomment %}
                 </div>
+
+                <div id="aboutInfo" style="display:block;">  <!-- Changed to display:block -->
+                    <h1 class="heading"> About </h1>
+                    <table class="contact-info-table">
+                        <tr>
+                            <td><strong class="contact-label">Phone:</strong></td>
+                            <td>{{ student.phone }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong class="contact-label">Course:</strong></td>
+                            <td>{{ student.course }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong class="contact-label">Email:</strong></td>
+                            <td>{{ student.email }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong class="contact-label">Facebook link:</strong></td>
+                            <td>{{ student.facebook_link }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong class="contact-label">Birthday:</strong></td>
+                            <td>{{ student.birthday }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong class="contact-label">Gender:</strong></td>
+                            <td>{{ student.gender }}</td>
+                        </tr>
+                    </table>
+                </div>
+              
+                <div id="projectGroup" style="display:none;">  <!-- Remains display:none -->
+                    <h3>Project Group</h3>
+                    <div> 
+                    {% for group in project_group %}
+                        <div class="card mb-3" style="width: 18rem;">
+                            <div class="card-header">
+                                Adviser:
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                {% for student in group.proponents.all %}
+                                    <li class="list-group-item">{{ student }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div> 
+                    {% comment %} <a href="{% url 'update-user' %}" class="btn btn-secondary mt-3">Update Profile</a> {% endcomment %}
             </subsection>
         </section>
     </div>
+
+    <script>
+        function toggleVisibility(id, button) {
+            var aboutInfo = document.getElementById('aboutInfo');
+            var projectGroup = document.getElementById('projectGroup');
+            var underline = document.getElementById('underline');
+        
+            // Reset button styles
+            document.getElementById('aboutButton').style.backgroundColor = '';
+            document.getElementById('projectGroupButton').style.backgroundColor = '';
+            document.getElementById('aboutButton').classList.remove('active-toggle'); // Remove active class
+            document.getElementById('projectGroupButton').classList.remove('active-toggle'); // Remove active class
+        
+            if (id === 'aboutInfo') {
+                aboutInfo.style.display = "block";
+                projectGroup.style.display = "none"; // Hide project group
+                button.style.backgroundColor = '#4CAF50'; // Highlight active button
+                button.classList.add('active-toggle'); // Add active class
+                underline.style.left = button.offsetLeft + 'px'; // Move underline to About button
+                underline.style.width = button.offsetWidth + 'px'; // Adjust underline width
+            } else if (id === 'projectGroup') {
+                projectGroup.style.display = "block";
+                aboutInfo.style.display = "none"; // Hide about info
+                button.style.backgroundColor = '#4CAF50'; // Highlight active button
+                button.classList.add('active-toggle'); // Add active class
+                underline.style.left = button.offsetLeft + 'px'; // Move underline to Project Group button
+                underline.style.width = button.offsetWidth + 'px'; // Adjust underline width
+            }
+        }
+        // To set the default view on page load
+        window.onload = function() {
+            toggleVisibility('aboutInfo', document.getElementById('aboutButton'));
+        }
+    </script>
 {% endblock %}

@@ -62,7 +62,6 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
 
     base_role = Role.STUDENT
     role = models.CharField(max_length=50, choices=Role.choices, default='STUDENT')
-    
     email = models.EmailField(blank=True, default='', unique=True)
     first_name = models.CharField(max_length=255, blank=True)
     last_name = models.CharField(max_length=255, blank=True )
@@ -71,6 +70,7 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
     course = models.CharField('Course', max_length=100, null=True, blank=True )
     profile_image = models.ImageField(null=True, blank=True, default='static/images/default_profile_pic.jpg', upload_to="images/")
     student_id = models.CharField(max_length=255, blank=True)
+
    
     #available_schedule = models.ManyToManyField(Available_schedule, related_name='Faculty_available', blank=True )
 
@@ -97,6 +97,8 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
 
     color = models.CharField(max_length=7, default="#007BFF")  # Hex color code
 
+
+
     def save(self, *args, **kwargs):
         # Assign a random color only if no color exists
         if not self.color:
@@ -122,6 +124,7 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
     def __str__(self):
             return self.first_name + " " + self.last_name  # return
 
+    
 class StudentManager(BaseUserManager):
     def get_queryset(self, *args, **kwargs):
         results = super().get_queryset(*args, **kwargs)
@@ -578,3 +581,19 @@ class Project_Idea(models.Model):
 
 #     def __str__(self):
 #         return self.phase_name
+
+
+
+class PredefinedSkill(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class UserSkill(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    predefined_skill = models.ForeignKey(PredefinedSkill, null=True, blank=True, on_delete=models.SET_NULL)
+    other_skill = models.CharField(max_length=100, blank=True)
+
+    def __str__(self):
+        return self.other_skill if self.other_skill else str(self.predefined_skill)

@@ -110,5 +110,8 @@ urlpatterns = [
      
     path('mark_all_read/', views.mark_all_read, name='mark_all_read'),
  
+    path('manage-skills/', views.manage_skills, name='manage_skills'),
+    
 ]
+
 

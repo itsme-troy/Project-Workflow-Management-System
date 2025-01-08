@@ -121,20 +121,23 @@
                                      
                   <div class="sub-menu-wrap" id="subMenu"> 
                     <div class="sub-menu">
+                        
                         <div class="user-info"> 
-                          {% if request.user.is_authenticated %}
-                              {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
-                                <img src="{{ user.profile_image.url }}" alt="profile_pic" class="user-pic">
-                              {% else %}
-                              <img src="{% static '/images/default_profile_pic.jpg' %}" class="user-pic img-fluid"> 
-                              {% endif %}
-                                
-                              <h5>{{ request.user.first_name }} {{ request.user.last_name }}</h5></span></div>    
-                          {% else %}
-                            <img src="{% static '/images/default_profile_pic.jpg' %}" class="user-pic img-fluid">
-                            <h5> Guest </h5></span></div>     
-                          {% endif %}
-                              
+                            {% if request.user.is_authenticated %}
+                              <a href="{% url 'my-profile' request.user.id %}" class="user-info-link"> <!-- Link for authenticated users -->
+                                    {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                                      <img src="{{ user.profile_image.url }}" alt="profile_pic" class="user-pic">
+                                    {% else %}
+                                    <img src="{% static '/images/default_profile_pic.jpg' %}" class="user-pic img-fluid"> 
+                                    {% endif %}
+                                  
+                                    <h5>{{ request.user.first_name }} {{ request.user.last_name }}</h5></span></div>  
+                                  </a>  
+                            {% else %}
+                              <img src="{% static '/images/default_profile_pic.jpg' %}" class="user-pic img-fluid">
+                              <h5> Guest </h5></span></div>     
+                            {% endif %}
+                          
                               <!-- Display Guest info -->
                       <hr>
                       {% if request.user.is_authenticated %}
@@ -146,7 +149,7 @@
                           
                           <a href="#" class="sub-menu-link">
                             <i class="material-icons">settings</i>
-                            <p>Settings and Privacy</p>
+                            <p>Settings</p> <!--  and Privacy -->
                             <span class="material-icons">chevron_right</span>
                           </a>
                           
@@ -252,6 +255,7 @@
       } 
 
       $(document).ready(function() {
+
         $(".profile_info").hide();
         // Initial setup - collapse the sidebar when the page loads
         $(".sidebar").css("width", "80px"); // Collapse sidebar width initially
@@ -282,6 +286,10 @@
             $(".profile").css("margin-bottom", "60px")
                  // Hide sidebar scrollbar
             $(".sidebar").addClass("collapsed");
+              // Close all dropdown menus when collapsing the sidebar
+            $(".nav-item.dropdown-menu.show").removeClass("show"); // Close all open dropdowns
+
+
           } else {
             // Expand sidebar - show text content
             $(".sidebar").css("width", "300px");
@@ -323,6 +331,8 @@
               // Hide dropdown arrows when collapsed
                 // Hide sidebar scrollbar
               $(".sidebar").addClass("collapsed");
+              $(".nav-item.dropdown-menu.show").removeClass("show"); // Close all open dropdowns
+
               }
           }
           

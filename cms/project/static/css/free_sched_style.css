@@ -336,21 +336,22 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Add shadow for a hover effect */
 }
 
-.user-info{
-  display: flex; 
-  align-items: center;
-  color: black
+.user-info {
+  display: flex;
+  align-items: center; /* Vertically center the items */
+
+  color: black;
 }
-.user-info h5{
+.user-info h5 {
   font-weight: 500;
+  margin-left: 10px; /* Optional: Adds space between the image and the name */
 }
 
-.user-info img{
+.user-info img {
   width: 60px;
-  border-radius: 50%;
-  margin-right: 15px;
-  margin-left: 3px;
-  
+  height: 60px; /* Keeps the image square */
+  border-radius: 50%; /* Makes the image circular */
+  margin: 0px 90px 15px; /* Optional: Adds space between the image and the name */
 }
 .sub-menu hr{
   border: 0; 
@@ -410,7 +411,7 @@ body {
   display: none; /* Hide dropdown menu by default */
 }
 
-.main_container .sidebar ul li.nav-item.dropdown:hover .dropdown-menu {
+.main_container .sidebar ul li.nav-item.dropdown:focus-within .dropdown-menu {
   display: block; /* Show dropdown menu on hover */
 }
 
@@ -433,7 +434,7 @@ body {
 
 /* New styles to keep dropdown open on click */
 .main_container .sidebar ul li.nav-item.dropdown.active .dropdown-menu {
-  display: none; /* Hide dropdown when parent is active */
+  display: block; /* Hide dropdown when parent is active */
   left: 0; /* Keep it aligned to the left */
   margin-left: 0; /* Ensure no left margin */
   transform: translateX(0); /* Prevent any movement */
@@ -1019,6 +1020,48 @@ body {
   object-fit: cover; /* Ensure the image covers the area without distortion */
 }
 
+.toggle-button {
+  background-color: #007bff; /* Primary color */
+  color: white; /* Text color */
+  border: none; /* Remove default border */
+  border-radius: 5px; /* Rounded corners */
+  padding: 10px 15px; /* Padding for better spacing */
+  font-size: 16px; /* Font size */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease; /* Smooth transitions */
+}
 
+.toggle-button:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+  transform: translateY(-2px); /* Slight lift effect */
+}
+
+.toggle-button:active {
+  transform: scale(0.95); /* Slightly scale down */
+  background-color: #004494; /* Even darker shade on active */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+}
+
+.underline-indicator {
+  height: 2px; /* Height of the underline */
+  background-color: rgb(31, 49, 254); /* Color of the underline */
+  position: relative;
+  transition: left 0.3s ease, width 0.3s ease; /* Smooth transition */
+}
+.toggle-container {
+  position: relative; /* Positioning for the underline */
+}
 
 /* CALENDAR CSS */
+
+
+
+.user-info-link {
+  text-decoration: none;
+  color: inherit; /* Keeps the text and styles unchanged */
+  display: block; /* Makes the whole section clickable */
+}
+
+.user-info-link:hover {
+  text-decoration: underline; /* Optional hover effect */
+}
