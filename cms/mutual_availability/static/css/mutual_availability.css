@@ -229,3 +229,14 @@ input[type="color"]:hover {
     margin-bottom: 20px; /* Add space between sections */
 
 }
+
+.faculty-content {
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+.faculty-content.hidden {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+}

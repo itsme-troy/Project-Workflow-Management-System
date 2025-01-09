@@ -6,6 +6,8 @@
 {% endblock %}
 
 {% block content %} <!-- content of all web pages go -->
+
+<div class="main-table-container"> 
 <h1> Projects I serve as a Panelist </h1>
 
 {% if not approved_projects_with_groups %}
@@ -100,7 +102,7 @@
         {% endif %}
     </ul>
 </nav>
-
+</div>
     <script>
         function toggleActions(row) {
             // Remove active class from all rows

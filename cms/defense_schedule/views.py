@@ -6,7 +6,6 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 import json
-
 from django.utils.timezone import localtime  
 from project.models import Defense_Application, Notification 
 from django.urls import reverse

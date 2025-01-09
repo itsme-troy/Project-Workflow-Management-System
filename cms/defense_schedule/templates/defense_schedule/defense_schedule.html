@@ -7,15 +7,18 @@
 {% block content %}
 {{ block.super }}  <!-- This will include the calendar from base.html -->
 {% if user.is_authenticated %}
-    </br> 
-{% comment %} 
-    <p> Hello, <b> {{ user }} </b> . Please Enter your Available Schedule/s. </br> </p> {% endcomment %}
+<div class="table-container"> 
+    <a href="{% url 'view-schedule' %}">
+        <button class="modern-button">
+            <i class="fas fa-calendar-alt"></i> View Common Schedules
+        </button>
+    </a>
     <div class="row">
         <div class="col-md-5">
             
-                <div class="table-container">
+                <div class="defense-table-container">
 
-                    <h3>Defense Schedule </h3> 
+                    <h3>Schedule </h3> 
                     {% if request.user.is_current_coordinator %}
                         <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
                             <i class="fas fa-plus-circle icon" style="color: white;"></i> Create
@@ -26,7 +29,6 @@
                         </button>
                     {% endif %}
                     
-
                     <table class="table table-striped mt-3">
                         <thead>
                             <tr>
@@ -74,39 +76,9 @@
                                                 <td>-</td> <!-- Display dash if no panelist -->
                                             {% endif %}
                                         </td>
-                                        {% comment %} <td> </td>
-                                        <td> </td> {% endcomment %}
-                                        {% comment %} {% with counter=forloop.counter %} {% endcomment %}
-                                        {% comment %} {% endwith %} {% endcomment %}
+            
                                     {% endfor %}
-                                    {% comment %}
-                                    Output the counter value
-                                    {% endcomment %}
-                               
-                                    {% comment %} {% endfor %} {% endcomment %}
-                                    {% comment %} {% endwith %} {% endcomment %}
-                                    {% comment %} {% endfor %} {% endcomment %}
-
-                                    {% comment %} {% if event.application.panel.all %}
-                                        {% for panelist in event.application.panel.all %}
-                                        <td>
-                                            {% if forloop.counter <= 3 %}
-                                                {{ panelist.last_name }}  <!-- Print the panelist's last name -->
-                                            {% else %}
-                                                -
-                                            {% endif %}
-                                        </td>
-                                        {% endfor %}
-                                        {% if forloop.counter < 3 %}
-                                        {% for i in forloop.counter|add:1 to:3 %}
-                                            <td>-</td>  <!-- Fill empty panel columns with dashes -->
-                                        {% endfor %}
-                                    {% endif %}
-                                    {% else %}
-                                         <td>-</td>  <!-- Print dash if no panelists -->
-                                        <td>-</td>  <!-- Print dash for second panel column -->
-                                        <td>-</td> 
-                                    {% endif %} {% endcomment %}
+         
                             </tr>
                         {% empty %}
                             <tr>
@@ -115,12 +87,19 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                </div>
+                </div> 
+
+                {% comment %} <section>
+                    <h3>Faculty Schedules</h3>
+                    <div id="faculty-schedule-container">
+                        {% include "mutual_Availability/view_schedule.html" %}
+                    </div>
+                </section> {% endcomment %}
         </div>
+
         
         <div class="col-md-7"> 
             <div class="my_calendar">
-                <h3> Calendar </h3>
                 <div id='calendar'></div> 
             </div>
         </div>
@@ -141,5 +120,6 @@
         <a href="{% url 'login' %}"> Login Here </a>
 
     {% endif %}
+</div>
 
 {% endblock %}

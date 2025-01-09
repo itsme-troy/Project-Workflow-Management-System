@@ -14,6 +14,9 @@ from datetime import datetime
 from pytz import timezone  
 import pytz
 from datetime import timedelta
+from defense_schedule.models import Defense_schedule
+from project.models import ProjectPhase, Defense_Application, Notification 
+from django.urls import reverse
 local_tz = pytz.timezone('Asia/Manila')
 
 import logging
@@ -147,17 +150,51 @@ def view_schedule(request):
     # Pass approved projects to the modal
     approved_projects = Project.objects.filter(status='approved', is_archived=False)
 
+
+
+    
+    # Pass Defense Applications to the modal
+    # Subquery to fetch the latest submission date per project
+    latest_application_date_subquery = Defense_Application.objects.filter(
+        project=OuterRef('project')
+    ).order_by('-submission_date').values('submission_date')[:1]
+
+    # Filter for the latest defense application per project with date comparison
+    defense_applications = Defense_Application.objects.annotate(
+        latest_application_date=Subquery(latest_application_date_subquery)
+    ).filter(submission_date=F('latest_application_date')).prefetch_related('panel').all()
+
+    # Check for 'pending' verdict in the latest phase
+    latest_phase_subquery = ProjectPhase.objects.filter(
+        project=OuterRef('project')
+    ).order_by('-date').values('verdict')[:1]
+
+    defense_applications = defense_applications.annotate(
+        latest_verdict=Subquery(latest_phase_subquery)
+    ).filter(latest_verdict='pending')
+
+    all_events = Defense_schedule.objects.all().order_by('-created_at')   # Order by start time descending
+    
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # Check if AJAX
         return render(request, 'mutual_availability/partials/faculty_list.html', {
             "grouped_events": grouped_events,
             "faculty_roles": faculty_roles,
             "common_schedules": common_schedules,
+
+            "events": all_events,
+            "defense_applications": defense_applications,
         })
+    
+    # Defense Schedules 
+
     return render(request, 'mutual_availability/view_schedules.html', {
         "grouped_events": grouped_events,
         "projects": approved_projects,
         "faculty_roles": faculty_roles,
         "common_schedules": common_schedules,
+
+        "events": all_events,
+        "defense_applications": defense_applications,
     })
 
 def all_sched(request):
@@ -228,9 +265,88 @@ def update_faculty_color(request):
     else:
         return JsonResponse({"success": False, "error": "Invalid request method."}, status=405)
 
+# def delete_all_defense_schedules(request):
+#     if request.method == 'POST':
+#         try:
+#             schedules = Defense_schedule.objects.all()
+#             if not schedules.exists():
+#                 return JsonResponse({'status': 'error', 'message': 'No schedules available to delete.'})
+            
+#             # Delete all schedules
+#             schedules.delete()
+#             return JsonResponse({'status': 'success'})
+#         except Exception as e:
+#             return JsonResponse({'status': 'error', 'message': str(e)})
+#     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
 
 
+# @csrf_exempt
+def create_defense_schedule(request):
+    if not request.user.is_current_coordinator: 
+        messages.error(request, "You are not authorized to perform this action.")
+        return redirect('defense-schedule')
+      
+    if request.method == 'POST' and request.user.is_authenticated:
+        # Get form data
+        start = request.POST.get('start')
+        end = request.POST.get('end')
+        color = request.POST.get('color', '#FFFFFF')  # Default to white if no color is selected
+        application_id = request.POST.get('application')
+        
+        # Validate inputs
+        if not start or not end or not application_id:
+            return JsonResponse({'error': 'Missing required fields: start, end, or title'}, status=400)
 
+         # Convert start and end times to aware datetime
+        try:
+            start_datetime = make_aware(datetime.fromisoformat(start))
+            end_datetime = make_aware(datetime.fromisoformat(end))
+
+            if end_datetime <= start_datetime:
+                return JsonResponse({'status': 'error', 'message': 'End time must be after start time'}, status=400)
+        except ValueError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid datetime format'}, status=400)
+
+         # Check if the Defense_Application exists
+        try:
+            application = Defense_Application.objects.get(id=application_id)
+        except Defense_Application.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Invalid Defense Application selected'}, status=404)
+
+        # Create the Defense Schedule
+        try:
+            schedule = Defense_schedule.objects.create(
+                start=start_datetime,
+                end=end_datetime,
+                color=color,
+                application=application
+            )
+             # Notify all proponents
+            for proponent in application.project.proponents.proponents.all():
+                Notification.objects.create(
+                    recipient=proponent,
+                    notification_type='SCHEDULE_CREATED',
+                    group=application.project.proponents,
+                    sender=request.user,
+                    message=f"A new defense schedule has been created for the project '{application.project.title}'.",
+                    redirect_url=reverse('defense-schedule')
+                )
+            # Notify the adviser
+            if application.project.adviser:
+                Notification.objects.create(
+                    recipient=application.project.adviser,
+                    notification_type='SCHEDULE_CREATED',
+                    group=application.project.proponents,
+                    sender=request.user,
+                    message=f"A new defense schedule has been created for the project '{application.project.title}'.",
+                    redirect_url=reverse('defense-schedule')
+                )
+
+            return JsonResponse({'status': 'success', 'schedule_id': schedule.id})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
+    return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=403)
 
 # def filter_schedules_by_defense(request):
 #     defense_id = request.GET.get('defense')

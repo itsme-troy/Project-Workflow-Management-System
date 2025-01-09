@@ -132,7 +132,7 @@
                                     {% endif %}
                                   
                                     <h5>{{ request.user.first_name }} {{ request.user.last_name }}</h5></span></div>  
-                                  </a>  
+                              </a>  
                             {% else %}
                               <img src="{% static '/images/default_profile_pic.jpg' %}" class="user-pic img-fluid">
                               <h5 class="icon-label" style="margin-left: -75px;"> Guest </h5></span></div>     
@@ -260,7 +260,7 @@
         // Initial setup - collapse the sidebar when the page loads
         $(".sidebar").css("width", "80px"); // Collapse sidebar width initially
         $(".profile_info, .sidebar-link-text, .sidebar-menu-text").hide(); // Hide text initially
-        $(".block_container").css("margin-left", "50px");
+        $(".block_container").css("margin-left", "10px");
         $(".profile").css("margin-bottom", "20px")
         $(".menu-label").css("margin-top", "0px")
           // Hide sidebar scrollbar
@@ -282,7 +282,7 @@
             $(".profile_info").fadeOut(200);
             $(".sidebar-link-text").fadeOut(200);
             $(".sidebar-menu-text").fadeOut(200);
-            $(".block_container").css("margin-left", "50px");
+            $(".block_container").css("margin-left", "10px");
             $(".profile").css("margin-bottom", "60px")
                  // Hide sidebar scrollbar
             $(".sidebar").addClass("collapsed");
@@ -326,7 +326,7 @@
               $(".profile_info").fadeOut(200);
               $(".sidebar-link-text").fadeOut(200);
               $(".sidebar-menu-text").fadeOut(200);
-              $(".block_container").css("margin-left", "50px");
+              $(".block_container").css("margin-left", "10px");
               $(".profile").css("margin-bottom", "60px")
               // Hide dropdown arrows when collapsed
                 // Hide sidebar scrollbar

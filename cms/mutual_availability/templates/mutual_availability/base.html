@@ -6,7 +6,6 @@
     <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
@@ -72,8 +71,7 @@
                 console.error("AJAX error:", error);
                 alert("An error occurred. Please try again.");
             });
-        }
-        
+        }  
         // utility function in JavaScript to dynamically select a text color (black or white) 
         // based on the background color's brightness.
         function getContrastYIQ(hexColor) {
@@ -137,76 +135,80 @@
         }
 
         $(document).ready(function () {
-            // Event listener for "Find Common Schedule" button
-            {% comment %} $('#find-common-schedule-btn').on('click', function () {
-                // Gather all faculty schedules
-                let facultySchedules = [];
+             // Check if the user is the current coordinator
+             const isCurrentCoordinator = {{ request.user.is_current_coordinator|yesno:"true,false" }};
+
+             // Function to open the modal and set start and end times
+             function openCreateScheduleModal(start = '', end = '',  project_id = '') {
+ 
+                 if (!isCurrentCoordinator) {
+                     alert('You do not have permission to create or edit schedules.');
+                     return; // Prevent opening the modal if not a coordinator
+                 }
+ 
+                 // Set the start and end fields if provided
+                 $('#schedule-start').val(start);
+                 $('#schedule-end').val(end);
+
+                   // Set the project ID in the modal (hidden input or visible field)
+                $('#schedule-project').val(project_id);
+
+ 
+                 // Reset other fields
+                 $('#schedule-application').val('');
+                 $('#schedule-color').val('#007bff');
+         
+                 // Open the modal 
+                 $('#createDefenseScheduleModal').modal('show');
+             }
+         
+             // Open modal without pre-filled dates when the "Create Schedule" button is clicked
+                $('#create-defense-schedule-btn').on('click', function () {
+                    const selectedProjectId = $('#project').val(); // Get selected project ID
+                    openCreateScheduleModal('', '', selectedProjectId); // Pass project ID
+                });
                 
-                $('#faculty-list-group .list-group-item').each(function () {
-                    let facultyId = $(this).data('faculty-id');
-                    let schedules = [];
+              // Handle form submission
+            $('#create-defense-schedule-form').on('submit', function (e) {
+                if (!isCurrentCoordinator) {
+                    alert('You do not have permission to create or edit schedules.');
+                    return; // Prevent opening the modal if not a coordinator
+                }
 
-                    // Collect all schedule times for the faculty
-                    $(this).find('.schedule-list li').each(function () {
-                        let startTime = $(this).data('start');
-                        let endTime = $(this).data('end');
-                        schedules.push({ start: startTime, end: endTime });
-                    });
-
-                    // Add faculty schedules to the array
-                    if (schedules.length > 0) {
-                        facultySchedules.push(schedules);
+                e.preventDefault(); // Prevent the default form submission
+        
+                // Get the CSRF token
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+                // Serialize form data
+                const formData = $(this).serialize();
+        
+                // Get the selected color
+                const selectedColor = $('#schedule-color').val();
+        
+                // Send AJAX request
+                $.ajax({
+                    url: 'create_defense_sched', // URL for the view
+                    type: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken // Include the CSRF token in the headers
+                    },
+                    data: formData + '&color=' + encodeURIComponent(selectedColor), // Append color to the serialized data
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            alert('Schedule created successfully!');
+                            location.reload(); // Refresh the page to show the new schedule
+                        } else {
+                            alert(`Failed to create schedule: ${response.message}`);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert('An error occurred. Please try again.');
                     }
                 });
+            });
 
-                // Find common time ranges among all faculty
-                let commonTimes = findCommonTimeRanges(facultySchedules);
-
-                // Display the common schedule times
-                if (commonTimes.length > 0) {
-                    alert('Common schedule times: ' + commonTimes.join(', '));
-                } else {
-                    alert('No common schedule times found.');
-                }
-            }); {% endcomment %}
-
-            // Function to find common time ranges (simplified version)
-            {% comment %} function findCommonTimeRanges(facultySchedules) {
-                // Convert the schedules to time ranges and find intersections
-                let commonTimes = [];
-                // Assume the first faculty schedules as the base
-                let baseSchedules = facultySchedules[0];
-
-                // Iterate through the rest of the faculty schedules
-                for (let i = 1; i < facultySchedules.length; i++) {
-                    let currentFacultySchedules = facultySchedules[i];
-                    let intersection = [];
-
-                    baseSchedules.forEach(baseSchedule => {
-                        currentFacultySchedules.forEach(currentSchedule => {
-                            // Check if the time ranges overlap
-                            let startMax = Math.max(new Date(baseSchedule.start).getTime(), new Date(currentSchedule.start).getTime());
-                            let endMin = Math.min(new Date(baseSchedule.end).getTime(), new Date(currentSchedule.end).getTime());
-
-                            if (startMax < endMin) {
-                                // Overlapping time range found, add to the intersection list
-                                intersection.push({
-                                    start: new Date(startMax).toISOString(),
-                                    end: new Date(endMin).toISOString()
-                                });
-                            }
-                        });
-                    });
-
-                    // Update the base schedules with the intersection times
-                    baseSchedules = intersection;
-                }
-
-                // Return the common time ranges
-                commonTimes = baseSchedules.map(schedule => `${new Date(schedule.start).toLocaleString()} - ${new Date(schedule.end).toLocaleString()}`);
-                return commonTimes;
-                } {% endcomment %}
-                    
             var calendar = $('#calendar').fullCalendar({
                 header: {
                     left: 'prev,next today',
@@ -231,32 +233,64 @@
                         }
                     });
                 },
-                selectable: false,
+                selectable: true,
                 selectHelper: false,
                 editable: false,
                 eventLimit: false,
                 //contentHeight: 'auto',
                 //height: 'auto',
-                defaultView: 'month',
-                  
+                defaultView: 'agendaWeek',
+                
+                select: function (start, end, allDay) {
+                    // Check the current view type (month, week, or day)
+                    var currentView = calendar.fullCalendar('getView').type;
+                    var project_id = $('#project').val(); // Get the selected filter (project ID)
+
+                    // Declare variables for adjusted start and end times
+                    var adjustedStart, adjustedEnd;
+                
+                     // If the current view is 'month', set the event as an all-day event
+                    // If the current view is 'month', set the event as an all-day event
+                    if (currentView === 'month') {
+                        // Adjust start and end times for all-day events (12:00 AM to 11:59 PM)
+                        var adjustedStart = start.clone().startOf('day'); // Start at 12:00 AM
+                        var adjustedEnd = end.clone().subtract(1, 'seconds').endOf('day'); // End at 11:59 PM
+                        // isAllDay = true;
+                        // Open the modal with the adjusted start and end times
+                        openCreateScheduleModal(adjustedStart.toISOString(), adjustedEnd.toISOString(), project_id);
+                    } else {
+                        // For other views (week, day), pass the original start and end times
+                        openCreateScheduleModal(start.toISOString(), end.toISOString(), project_id);
+                        // If the user selects an all-day event, pass it accordingly
+                    } 
+                    // Ensure end time is after start time
+                    if (!adjustedEnd.isAfter(adjustedStart)) {
+                        alert("End time must be after start time.");
+                        return;
+                    }
+
+                },
                 // This allows for removing events from the calendar and from the database.
                 eventRender: function (event, element) {
                     const textColor = getContrastYIQ(event.color);
                     const facultyTextColor = getContrastYIQ(event.color); // Apply same contrast to faculty name text
                     
-                    var currentView = calendar.fullCalendar('getView').type;
+                    // Format faculty name
+                    const facultyName = event.faculty 
+                        ? `${event.faculty.first_name} ${event.faculty.last_name}` 
+                        : "Unknown Faculty";
                 
-                    // Append faculty name if in 'agendaDay' view
-                
+                    // Generate display text
                     var displayText = `
                         <div style="font-size: 12px; font-weight: bold; color: ${facultyTextColor};">
                             ${moment(event.start).tz('Asia/Manila').format('hh:mm A')} - ${moment(event.end).tz('Asia/Manila').format('hh:mm A')}
                         </div>
                         <div style="font-size: 12px; color: ${facultyTextColor};">
+                            ${facultyName} <!-- Display faculty name -->
                         </div>
-                        
                     `;
-
+                
+                    // Update the event content and styles
                     element.find('.fc-content').html(displayText);
                     element.css({
                         'border': `2px solid ${event.color}`,
@@ -264,13 +298,26 @@
                         'color': textColor
                     });
                 },
-
                 
             }); // Update calendar events when the project filter is changed
-            $('#filter-project-form').submit(function(e) {
+            
+            $('#project').on('change', function () {
+                const selectedProjectId = $(this).val();
+                $('#schedule-application').val(selectedProjectId);
+            });
+            
+            $('#filter-project-form').submit(function (e) {
                 e.preventDefault();
-                calendar.fullCalendar('refetchEvents'); // Refetch events with the selected project filter
-                //refreshEventsList()
+                calendar.fullCalendar('refetchEvents');
+                const selectedProjectId = $('#project').val();
+            
+                // Update modal dropdown to show only related applications
+                $('#schedule-application option').each(function () {
+                    const optionValue = $(this).val();
+                    $(this).toggle(selectedProjectId === '' || optionValue.startsWith(selectedProjectId));
+                });
+            
+                $('#schedule-application').val(selectedProjectId); // Auto-select filtered project
             });
         });
     </script>

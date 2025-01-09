@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views 
-
+from mutual_availability.views import view_schedule, calculate_common_schedules
+from django.urls import include
 
 urlpatterns = [
     # Defenses  
@@ -12,5 +13,9 @@ urlpatterns = [
     
     path('delete_all_defense_schedules', views.delete_all_defense_schedules, name='delete_all_defense_schedules'),
     path('create_defense_schedule', views.create_defense_schedule, name='create_defense_schedule'),
-
+    # DEFENSE SCHEDULE 
+    
+    # path('view_schedule', view_schedule, name='view-schedule'),
+    # path('mutual_availability/', include('mutual_Availability.urls')),
+    
 ]

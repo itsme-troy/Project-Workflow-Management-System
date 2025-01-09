@@ -4,74 +4,75 @@
 
 {% block content %} <!-- content of all web pages go -->
 
-<div class="text-start">
-    <a href="{% url 'list-student' %}" class="btn btn-primary">
-        <i class="fas fa-users"></i> View Student List
-    </a> 
-</div> 
+<div class="main-table-container"> 
+    <center> <h1 style="display: inline-block; margin-left: -140px"> Faculty List </h1> 
+        <div class="button" style="float: left;">
+            <a href="{% url 'list-student' %}" class="btn btn-primary">
+                <i class="fas fa-users icon"> </i> View Student List
+            </a> 
+        </div> 
+    </center> 
 
-    <h1 class="text-center"> Faculty List </h1> 
+        <div class="btn-group" role="group" aria-label="Faculty Filter">
+            <button type="button" class="btn btn-secondary" onclick="filterFaculty('all')">All Faculty</button>
+            <button type="button" class="btn btn-secondary" onclick="filterFaculty('adviser')">Eligible Advisers</button>
+            <button type="button" class="btn btn-secondary" onclick="filterFaculty('panelist')">Eligible Panelists</button>
+        </div> 
+        
+        <div class="table-responsive"> <br/> 
+            <table class="table table-hover table-bordered"> 
+                <caption class="text-center">Faculty List</caption>
+        
+                <thead class="thead-dark"> 
+                    <tr> 
+                        {% comment %} <th> Profile Picture </th> {% endcomment %}
+                        <th scope="col"> # </th> 
+                        <th scope="col" class="picture-column">Picture</th> 
+                        <th scope="col"> Name  </th> 
+                        <th scope="col"> Email </th> 
+                        <th scope="col" class="deficiencies-column" >
+                            Deficiencies
+                        </th>     
+                        <th scope="col" style="width: 150px;"> Action </th> 
+                    </tr> 
+                </thead>  
+                <tbody>
+                    {% for faculty in facultys %}
+                        {% if faculty.role == 'FACULTY' %}
+                        <tr data-adviser="{{ faculty.adviser_eligible|yesno:'true,false' }}" data-panelist="{{ faculty.panel_eligible|yesno:'true,false' }}" {% if faculty == user %}class="table-warning"{% endif %}>   <!-- <td> <img src="{% static 'images/default_profile_pic.jpg' %}"
+                                        class="img-fluid rounded-start" alt="Profile Image">  </td> -->
+                                <td> <strong> {{ forloop.counter }} </strong> </td>
+                                <td>
+                                    {% if faculty.profile_image and faculty.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                                        <figure><img src="{{ faculty.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid width="250px" height="250px""></figure>
+                                {% else %}
+                                    {% comment %} no {% endcomment %}
+                                        <figure><img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table width="250px" height="250px""> </figure>
+                                {% endif %}
+                                </td>
+                                <td>{{ faculty.first_name }} {{ faculty.last_name }}</td> <!-- Combined first and last name -->
+                                <td>{{ faculty.email }}</td> 
+                                <td class="deficiencies-cell">
+                                    <div style="overflow-x: auto; white-space: nowrap;">
+                                        {% if student.deficiencies %}
+                                                {{ student.deficiencies }}
+                                        {% else %}
+                                            <span class="text-muted">No deficiencies</span>
+                                        {% endif %}
+                                    </div> 
+                                </td>
+                                <td>
+                                    <a href="{% url 'show-faculty' faculty.id %}" class="btn btn-outline-primary btn-sm">View Profile</a>
 
-    <div class="btn-group" role="group" aria-label="Faculty Filter">
-        <button type="button" class="btn btn-secondary" onclick="filterFaculty('all')">All Faculty</button>
-        <button type="button" class="btn btn-secondary" onclick="filterFaculty('adviser')">Eligible Advisers</button>
-        <button type="button" class="btn btn-secondary" onclick="filterFaculty('panelist')">Eligible Panelists</button>
-    </div> 
-    
-    <div class="table-responsive"> <br/> 
-        <table class="table table-hover table-bordered"> 
-            <caption class="text-center">Faculty List</caption>
-     
-            <thead class="thead-dark"> 
-                <tr> 
-                    {% comment %} <th> Profile Picture </th> {% endcomment %}
-                    <th scope="col"> # </th> 
-                    <th scope="col" class="picture-column">Picture</th> 
-                    <th scope="col"> Name  </th> 
-                    <th scope="col"> Email </th> 
-                    <th scope="col" class="deficiencies-column" >
-                        Deficiencies
-                    </th>     
-                    <th scope="col" style="width: 150px;"> Action </th> 
-                </tr> 
-            </thead>  
-            <tbody>
-                {% for faculty in facultys %}
-                    {% if faculty.role == 'FACULTY' %}
-                    <tr data-adviser="{{ faculty.adviser_eligible|yesno:'true,false' }}" data-panelist="{{ faculty.panel_eligible|yesno:'true,false' }}" {% if faculty == user %}class="table-warning"{% endif %}>   <!-- <td> <img src="{% static 'images/default_profile_pic.jpg' %}"
-                                    class="img-fluid rounded-start" alt="Profile Image">  </td> -->
-                            <td> <strong> {{ forloop.counter }} </strong> </td>
-                            <td>
-                                {% if faculty.profile_image and faculty.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
-                                    <figure><img src="{{ faculty.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid width="250px" height="250px""></figure>
-                              {% else %}
-                                {% comment %} no {% endcomment %}
-                                    <figure><img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table width="250px" height="250px""> </figure>
-                              {% endif %}
-                            </td>
-                            <td>{{ faculty.first_name }} {{ faculty.last_name }}</td> <!-- Combined first and last name -->
-                            <td>{{ faculty.email }}</td> 
-                            <td class="deficiencies-cell">
-                                <div style="overflow-x: auto; white-space: nowrap;">
-                                    {% if student.deficiencies %}
-                                            {{ student.deficiencies }}
-                                    {% else %}
-                                        <span class="text-muted">No deficiencies</span>
-                                    {% endif %}
-                                </div> 
-                            </td>
-                            <td>
-                                <a href="{% url 'show-faculty' faculty.id %}" class="btn btn-outline-primary btn-sm">View Profile</a>
-
-                            </td>
-                        </tr> 
-                    {% endif %}
-                {% endfor %}
-            </tbody>
-        </table> 
-    </div>
-    <br> <hr/> 
-    
+                                </td>
+                            </tr> 
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table> 
+        </div>
+        <br> <hr/> 
+</div>
 <!-- 
 {{ students }} </br> 
 Has Previous: {{ students.has_previous }} <br/> 

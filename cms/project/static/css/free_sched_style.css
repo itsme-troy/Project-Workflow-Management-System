@@ -123,7 +123,7 @@ body {
 .block_container{
   border: 2px solid #000;
   text-align: center;
-  margin: 60px 8px 20px 20px;
+  margin: 40px 4px 0px 0px;
   background-color: #fff7f7;
   padding: 20px;
   min-height: 800px;
@@ -1112,4 +1112,111 @@ body {
   font-size: 16px;
   text-align: center;
   margin-top: 20px;
+}
+
+
+
+/*  Toggle links section */
+/* Styling the toggle button */
+#toggleButton {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#toggleButton:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+/* Links section styling */
+#linksSection {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+#linksSection ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+#linksSection li {
+  margin-bottom: 5px;
+}
+
+#linksSection a {
+  text-decoration: none;
+  color: #007bff;
+  font-weight: bold;
+  transition: color 0.2s ease;
+}
+
+#linksSection a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* Initially hidden section */
+.hidden {
+  display: none;
+}
+
+/* Smooth fade-in animation for showing links */
+.show {
+  display: block;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(-10px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+
+
+/* Modern button styling */
+.modern-button {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between icon and text */
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #007bff; /* Primary blue color */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modern-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2); /* Slightly deeper shadow */
+}
+
+.modern-button:active {
+  background-color: #003f7f; /* Even darker blue on click */
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Reduced shadow */
+}
+
+.modern-button i {
+  font-size: 18px; /* Icon size */
 }

@@ -2,9 +2,13 @@
 
 {% block content %} <!-- content of all web pages go -->
  
-    <h1> Projects </h1> 
 
+
+<div class="main-table-container"> 
+
+    <h1> Projects </h1> 
 {% if not projects %} <!-- Check if projects list is empty -->
+    
     <center> 
         <div class="alert alert-danger text-center" role="alert">
             <h4> No Projects Available </h4>
@@ -13,7 +17,8 @@
 
     <br/> 
 {% else %} 
-    <div class="table-container"> 
+
+
         <table class ="table table-hover table-bordered table"> 
         <thead> 
             <tr> 

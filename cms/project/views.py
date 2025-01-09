@@ -1814,6 +1814,11 @@ def my_profile(request, profile_id):
              # Handle faculty profile
             return redirect('show-faculty', faculty_id=faculty_id)
         
+        elif user.is_current_coordinator: 
+            id = user.id
+              # Handle Coordinator profile
+            return redirect('show-faculty', faculty_id=faculty_id)
+        
     else: 
         messages.error(request, "Please Login to view this page")
         return redirect('home')
