@@ -13,7 +13,8 @@ urlpatterns = [
     # path('add_sched', views.add_sched, name='add_sched'),
     # path('delete_all_defense_schedules', views.delete_all_defense_schedules, name='delete_all_defense_schedules'),
     path('create_defense_sched', views.create_defense_schedule, name='create_defense_schedule'),
-    
+    path('update-common-schedule-color/', views.update_common_schedule_color, name='update-common-schedule-color'),
+
     # path('add_sched', views.add_sched, name='add_sched'),
     # path('update_sched', views.update_sched, name='update_sched'),
     # path('remove_sched', views.remove_sched, name='remove_sched'),

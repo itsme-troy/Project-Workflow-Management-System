@@ -1,83 +1,66 @@
-{% extends 'project/base.html'%} <!-- use the base file -->
-
+{% extends 'project/base.html' %}
 {% load static %}
-{% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <script src="{% static 'js/custom.js' %}"></script>
 
-    <title>Coordinator Dashboard</title>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light shadow-sm">
-        
-    </nav>
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 
-    <div class="container mt-4">
-        <h1 class="text-center">Coordinator Dashboard</h1>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h2>Pending Approvals</h2>
+{% block content %} 
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+                <button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
+            </nav>
+
+            <div class="container-fluid">
+                <h1 class="mt-4">Coordinator Dashboard</h1>
+                <p>Welcome, {{ request.user.first_name }}! Here are the main actions you can perform:</p>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-user-graduate fa-2x text-primary"></i>
+                                <h5 class="card-title mt-2">Manage Students</h5>
+                                <p class="card-text">View, edit, and approve student accounts.</p>
+                                <a href="{% url 'list-student' %}" class="btn btn-primary">View Students</a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'coordinator-approval-student' %}">
-                                    <i class="fas fa-user-check"></i> Student Approvals
-                                </a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'coordinator-approval-faculty' %}">
-                                    <i class="fas fa-user-tie"></i> Faculty Approvals
-                                </a>
-                            </li>
-                        </ul>
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-layer-group fa-2x text-success"></i>
+                                <h5 class="card-title mt-2">Project Groups</h5>
+                                <p class="card-text">Manage and view project groups.</p>
+                                <a href="{% url 'list-project-group' %}" class="btn btn-success">View Groups</a>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h2>Project Overview</h2>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'coordinator-projects' %}">
-                                    <i class="fas fa-project-diagram"></i> View Projects
-                                </a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'list-defense-applications' %}">
-                                    <i class="fas fa-file-invoice"></i> Defense Applications
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h2>Settings</h2>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="{% url 'coordinator-settings' %}">
-                                    <i class="fas fa-cog"></i> Settings
-                                </a>
-                            </li>
-                        </ul>
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-check-circle fa-2x text-warning"></i>
+                                <h5 class="card-title mt-2">Defense Applications</h5>
+                                <p class="card-text">Approve or review defense applications.</p>
+                                <a href="{% url 'list-defense-applications' %}" class="btn btn-warning">View Applications</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                <!-- Additional Rows -->
             </div>
         </div>
+        <!-- /#page-content-wrapper -->
     </div>
-</body>
-</html>
+    <!-- /#wrapper -->
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script>
+        document.getElementById("menu-toggle").addEventListener("click", function() {
+            document.getElementById("wrapper").classList.toggle("toggled");
+        });
+    </script>
 {% endblock %}

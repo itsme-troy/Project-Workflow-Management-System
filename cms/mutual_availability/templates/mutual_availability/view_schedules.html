@@ -3,15 +3,33 @@
 {% load custom_filters %}
 {% load tz %}
 
+
+
 {% block content %}
 {{ block.super }}
 
+
+<div class="table-container" style="overflow-x: hidden;"> 
+
 {% if user.is_authenticated %}
 
-    <h2 class="mb-4">Faculty Schedule Management</h2>
-    <a href="{% url 'defense-schedule' %}">
-        <button>View Defense Schedules</button>
-    </a>
+    <center> <h1 style="display: inline-block; margin-left: -140px"> Faculty Schedule Management </h1> 
+        {% if request.user.is_current_coordinator %}
+            <div class="btn-m" style="float: left;">
+                    <a href="{% url 'defense-schedule' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-calendar-alt icon icon-margin"></i>View Defense Schedules
+                    </a>
+            </div> 
+            <div class="btn-m" style="float: right;">
+                <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
+                    <i class="fas fa-plus-circle icon" style="color: white;"></i> Create Schedule
+                </button>
+            </div> 
+        {% endif %}
+       
+    </center> 
+
+   
     <div class="row">
         
     <!-- Left Column: Filter and Faculty Schedules -->
@@ -20,7 +38,7 @@
     <section id="faculty-schedule" class="faculty-schedule-container mb-6 border p-3 rounded bg-light mb-3">
         <!-- Faculty Schedules -->
         <div class="d-flex justify-content-between align-items-center">
-            <h4>Faculty Schedules</h4>
+            <h4>Available Schedules</h4>
             <button id="toggle-button" class="btn btn-sm btn-secondary">Minimize</button>
         </div>
             <div id="faculty-content" class="faculty-content">
@@ -160,7 +178,7 @@
             <div class="mb-4">
                 <section class="common-schedule-container mb-6 border p-3 rounded bg-light mb-3">
                     <h5 class="form-label text-center mb-3">Common Schedule</h5>
-        
+                    
                     <ul id="common-schedule-list" class="list-group">
                         {% for start, end in common_schedules %}
                             <li class="list-group-item d-flex align-items-center">
@@ -171,6 +189,8 @@
                                     <strong>From:</strong> {{ start|date:"M. d, Y, g:i A" }} <br>
                                     <strong>To:</strong> {{ end|date:"M. d, Y, g:i A" }}
                                 </div>
+                                 <!-- Link to redirect to calendar with view set to 'agendaDay' -->
+                                <a href="{% url 'view-schedule' %}?start={{ start|date:'Y-m-d H:i' }}&end={{ end|date:'Y-m-d H:i' }}&view=agendaDay" class="stretched-link" data-start="{{ start|date:'Y-m-d H:i' }}" data-end="{{ end|date:'Y-m-d H:i' }}"></a>
                             </li>
                         {% empty %}
                             <li class="list-group-item text-center">No common schedules available</li>

@@ -176,8 +176,7 @@ def coordinator_dashboard(request):
         messages.error(request, "Please login to view this page")
         return redirect('login')    
 
-
-    if request.user.role != 'COORDINATOR':
+    if not request.user.is_current_coordinator:
         messages.error(request, "You're not authorized to view this page")
         return redirect('home')    
 

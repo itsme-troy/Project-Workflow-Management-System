@@ -150,9 +150,6 @@ def view_schedule(request):
     # Pass approved projects to the modal
     approved_projects = Project.objects.filter(status='approved', is_archived=False)
 
-
-
-    
     # Pass Defense Applications to the modal
     # Subquery to fetch the latest submission date per project
     latest_application_date_subquery = Defense_Application.objects.filter(
@@ -348,77 +345,18 @@ def create_defense_schedule(request):
 
     return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=403)
 
-# def filter_schedules_by_defense(request):
-#     defense_id = request.GET.get('defense')
-#     defenses = Defense_Application.objects.all()
+def update_common_schedule_color(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        color = data.get('color')
 
-#     # Fetch schedules related to the selected defense application
-#     if defense_id:
-#         selected_defense = get_object_or_404(Defense_Application, id=defense_id)
-#         schedules = Available_schedule.objects.filter(defense_application=selected_defense)  # Adjust field names
-#     else:
-#         schedules = Available_schedule.objects.none()  # Return no schedules if no defense is selected
+        # Logic to update color in the database
+        # Assuming you have a model or a settings object where you store the highlight color
+        user = request.user
+        user.profile.highlight_color = color  # Example of updating the user's profile color
+        user.profile.save()
 
-#     context = {
-#         'defenses': defenses,
-#         'events': schedules,
-#     }
-#     return render(request, 'free_schedule/schedule_list.html', context)
+        return JsonResponse({'success': True})
 
-# # def find_common_schedule 
-# # def find_common_schedule(request): 
-# #     schedules = Available_schedule.objects.all()  # or filter by some criteria
-# #     common_slots = {}
-# #     # Here, add logic to find overlapping time slots
-# #     for schedule in schedules:
-# #         start_time = schedule.start
-# #         end_time = schedule.end
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
 
-# #      # Assuming common_slots is a dictionary where keys are start times and values are lists of events
-# #         if (start_time, end_time) in common_slots:
-# #             common_slots[(start_time, end_time)].append(schedule)
-        
-# #         else:
-# #             common_slots[(start_time, end_time)] = [schedule]
-
-# #     # Prepare the response in the required format
-# #     events = []
-# #     for (start, end), schedules in common_slots.items():
-# #         events.append({
-# #             'title': 'Common Slot',
-# #             'start': start.strftime("%Y-%m-%d %H:%M:%S"),
-# #             'end': end.strftime("%Y-%m-%d %H:%M:%S"),
-# #         })
-
-# #     return JsonResponse(events, safe=False)
-
-# def view_free_schedules(request): 
-#     users = request.GET.getlist('users', [])  # List of user IDs
-#     defense_application = request.GET.get('defense_application')  # ID of a defense application
-    
-#     schedules = Available_schedule.objects.all()
-
-#     if users:
-#         schedules = schedules.filter(faculty__id__in=users)
-#     if defense_application:
-#         schedules = schedules.filter(defense_application__id=defense_application)
-    
-#     context = {'schedules': schedules}
-#     return render(request, 'free_schedule/view_schedules.html', context)
-
-# def filter_schedules_by_defense(request):
-#     defense_id = request.GET.get('defense')
-#     defenses = Defense_Application.objects.all()
-
-#     # Fetch schedules related to the selected defense application
-#     if defense_id:
-#         selected_defense = get_object_or_404(Defense_Application, id=defense_id)
-#         schedules = Schedule.objects.filter(defense_application=selected_defense)  # Adjust field names
-#     else:
-#         schedules = Schedule.objects.none()  # Return no schedules if no defense is selected
-
-#     context = {
-#         'defenses': defenses,
-#         'events': schedules,
-#     }
-#     return render(request, 'free_schedule/schedule_list.html', context)

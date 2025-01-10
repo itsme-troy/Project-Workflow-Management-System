@@ -17,23 +17,11 @@
 .icon-margin {
     margin-right: 10px; /* can adjust value as needed */
 }
-.main-table-container {
-    min-height: 750px;
-    max-height: 750px;
-    padding: 10px;
-    overflow-x: auto;  /* Enable horizontal scrolling */
-    max-width: 100%;   /* Set max width */
-    border: 1px solid #dee2e6; /* Light border around the container */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    background-color: #ffffff; /* White background for content */
-    margin-top: 20px; /* Space above the table */
-}
 
 .table-container {
-    min-height: 750px;
     max-height: 750px;
     padding: 10px;
+    overflow-y: none; 
     overflow-x: auto;  /* Enable horizontal scrolling */
     max-width: 100%;   /* Set max width */
     border: 1px solid #dee2e6; /* Light border around the container */
@@ -418,7 +406,6 @@ textarea {
 
 /* Hover effect */
 .btn:hover {
-    background-color: #0056b3; /* Darker blue on hover */
     border-color: #0056b3; /* Adjust the border color on hover */
     transform: scale(1.05); /* Slight zoom effect on hover */
 }
@@ -438,7 +425,7 @@ textarea {
 /* Outline style for btn-outline-primary */
 .btn-outline-primary {
     background-color: transparent;
-    color: #007bff;
+    color: #fdfdfd;
     border: 2px solid #007bff;
 }
 
@@ -579,7 +566,6 @@ tr.active .action-buttons {
 
 /* Button hover effects */
 .action-buttons .btn:hover {
-    background-color: rgba(0, 0, 0, 0.1);  /* Light hover effect */
     transform: scale(1.05);  /* Slight scale effect */
 }
 
@@ -1361,4 +1347,5 @@ body {
         font-size: 0.9em !important;
     }
 }
+
 

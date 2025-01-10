@@ -113,10 +113,16 @@ def login_user(request):
         user = authenticate(request, email=email, password=password)
     
         if user is not None:
-            login(request, user)
-            # Personalize the success message with the user's name
-            messages.success(request, f"Login Success! Welcome back, {user.first_name}!")
-            return redirect('home')
+            if user.is_current_coordinator: 
+                login(request, user)
+                # Personalize the success message with the user's name
+                messages.success(request, f"Login Success! Welcome back, {user.first_name}!")
+                return redirect('coordinator-dashboard')
+            else: 
+                login(request, user)
+                # Personalize the success message with the user's name
+                messages.success(request, f"Login Success! Welcome back, {user.first_name}!")
+                return redirect('home')
         
         else:
             messages.error(request, "There was an error logging in. Please try again.")

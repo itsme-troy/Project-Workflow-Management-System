@@ -18,20 +18,20 @@
     </div>
   </div> </br> {% endcomment %}
 
-<div class="text-start"> 
-    <a href="{% url 'coordinator-approval-faculty' %}" class="btn btn-primary">
-        <i class="fas fa-chalkboard-teacher icon icon-margin"></i> Go to Faculty Approval
-    </a> 
-</div> </br> 
-
   <form action="" method=POST> 
     {% csrf_token %} 
 
     <center>
     <h1 style="display: inline-block;"> Student Eligibility Approval Form </h1> 
+    <div class="text-start" style="float: left;">
+        <a href="{% url 'coordinator-approval-faculty' %}" class="btn btn-primary">
+            <i class="fas fa-chalkboard-teacher icon icon-margin"></i> Go to Faculty Approval
+        </a> 
+    </div> 
+    
     <div class="text-end" style="margin-left: 20px; float: right;"> <!-- Changed to float right -->
         <button class="btn btn-success mb-3" type="submit">Save All Changes</button>
-    </div> </center> 
+    </div> </center> </br>
 
 
 <table class="table table-hover table-bordered">  

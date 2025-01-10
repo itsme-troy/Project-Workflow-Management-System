@@ -8,6 +8,9 @@
 {% endblock %}
 {% block content %}
 
+
+<div class="table-container"> 
+
 <div style="display: flex; justify-content: space-between; align-items: center;"> <!-- Flex container for header and button -->
     <h1 style="display: inline-block;">My Submitted Defense Application</h1> <!-- Keep the title inline -->
     {% comment %} {% if request.user.is_authenticated and user_group and project and project.status == 'approved' and not pending_phases_count >= 1 %}
@@ -67,5 +70,5 @@
     {% endif %}
 {% endif %}
 
-
+    </div>
 {% endblock %}

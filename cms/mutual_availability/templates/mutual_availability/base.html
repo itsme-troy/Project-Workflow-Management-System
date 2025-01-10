@@ -138,7 +138,7 @@
              // Check if the user is the current coordinator
              const isCurrentCoordinator = {{ request.user.is_current_coordinator|yesno:"true,false" }};
 
-             // Function to open the modal and set start and end times
+             // Function to open the modal and set start and end times and project_id
              function openCreateScheduleModal(start = '', end = '',  project_id = '') {
  
                  if (!isCurrentCoordinator) {
@@ -208,7 +208,12 @@
                     }
                 });
             });
-
+                // Retrieve the `view` URL parameter (either 'agendaDay' or 'agendaWeek')
+            var urlParams = new URLSearchParams(window.location.search);
+            var viewParam = urlParams.get('view') || 'agendaWeek'; // Default to 'agendaWeek' if no view is specified
+            var startParam = urlParams.get('start');
+            var endParam = urlParams.get('end');
+       
             var calendar = $('#calendar').fullCalendar({
                 header: {
                     left: 'prev,next today',
@@ -216,7 +221,8 @@
                     right: 'month,agendaWeek,agendaDay'
                 },
                 timezone: 'Asia/Manila', // Align with server timezone
-                
+                defaultView: viewParam,  // Set the default view based on the URL parameter
+
                 events: function(start, end, timezone, callback) {
                     // Get the selected project ID from the filter form
                     var project_id = $('#project').val();
@@ -239,11 +245,14 @@
                 eventLimit: false,
                 //contentHeight: 'auto',
                 //height: 'auto',
-                defaultView: 'agendaWeek',
+                // defaultView: 'agendaWeek',
+                minTime: '06:00:00', // This line ensures that the calendar starts at 7 AM
                 
                 select: function (start, end, allDay) {
+
                     // Check the current view type (month, week, or day)
                     var currentView = calendar.fullCalendar('getView').type;
+                    // Get the selected project ID
                     var project_id = $('#project').val(); // Get the selected filter (project ID)
 
                     // Declare variables for adjusted start and end times
@@ -301,6 +310,38 @@
                 
             }); // Update calendar events when the project filter is changed
             
+
+            // Automatically open the correct view when the page loads, based on the URL
+            if (startParam && endParam) {
+                var startMoment = moment(startParam);
+                var endMoment = moment(endParam);
+
+                // Ensure calendar loads in the correct day and time range
+                calendar.fullCalendar('gotoDate', startMoment);
+                var highlightEvent = {
+                    title: 'Common Schedule Highlight',
+                    start: startMoment,
+                    end: endMoment,
+                    color: '#ffcc00', // Highlight color
+                    rendering: 'background', // Background highlight
+                    allDay: false
+                };
+                calendar.fullCalendar('renderEvent', highlightEvent, true);
+            }
+
+            // Handle common schedule list click events (redirecting to calendar with params)
+            $('#common-schedule-list .stretched-link').on('click', function (e) {
+                e.preventDefault();
+
+                var start = $(this).data('start');
+                var end = $(this).data('end');
+                var selectedProjectId = $('#project').val(); // Get the selected project ID
+
+               // Redirect with the correct start, end, view, and project parameters
+                window.location.href = "{% url 'view-schedule' %}?start=" + start + "&end=" + end + "&view=agendaDay" + "&project=" + selectedProjectId;
+            });
+
+            // Update calendar events when the project filter is changed
             $('#project').on('change', function () {
                 const selectedProjectId = $(this).val();
                 $('#schedule-application').val(selectedProjectId);

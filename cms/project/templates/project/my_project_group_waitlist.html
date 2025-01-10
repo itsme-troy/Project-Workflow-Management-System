@@ -6,6 +6,9 @@
 
 {% block content %}
 
+
+<div class="table-container"> 
+    
 <center> <h1 style="display: inline-block;"> My Project Group Waitlist </h1> 
     <div class="button-container" style="float: right;">
         <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm" 
@@ -13,6 +16,7 @@
     </div> </center> 
     <br/>
     
+
 
 {% if not groups_with_all_members%}
     <center>
@@ -185,6 +189,7 @@
         {% endfor %}
     {% endif %}
 {% endif %}
+</div>
 
 <script>
     function toggleActions(row) {

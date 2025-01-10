@@ -3,6 +3,8 @@
 
 {% block content %} <!-- content of all web pages go -->
 
+<div class="table-container"> 
+
 <div style="display: flex; justify-content: space-between; align-items: center;">
     <h1 style="display: inline-block;"> Senior Project Ideas </h1>
     {% if request.user.role == "FACULTY" %}
@@ -98,6 +100,7 @@
 
 </ul>
 </nav> 
+</div>
   
 
     <script>

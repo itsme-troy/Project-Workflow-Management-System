@@ -3,6 +3,7 @@
 
 {% block content %} <!-- content of all web pages go -->
 
+<div class="table-container"> 
     <h1 style="display: inline-block;"> My Submitted Proposals </h1>
     <div class="button-container" style="float: right;">
         <a href="{% url 'add-project' %}" class="btn btn-add-proposal">
@@ -89,7 +90,7 @@
         <li class="page-item ml-auto disabled"><a href="#" class="page-link"> Page {{ projects.number }} of {{ students.paginator.num_pages }} </a></li>
         </ul>
     </nav>
-
+</div>
 
 <script>
     function toggleActions(row) {

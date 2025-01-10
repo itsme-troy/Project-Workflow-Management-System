@@ -4,7 +4,7 @@
 
 {% block content %} <!-- content of all web pages go -->
 
-<div class="main-table-container"> 
+<div class="table-container"> 
     <center> <h1 style="display: inline-block; margin-left: -140px"> Faculty List </h1> 
         <div class="button" style="float: left;">
             <a href="{% url 'list-student' %}" class="btn btn-primary">
@@ -72,7 +72,7 @@
             </table> 
         </div>
         <br> <hr/> 
-</div>
+
 <!-- 
 {{ students }} </br> 
 Has Previous: {{ students.has_previous }} <br/> 
@@ -81,30 +81,30 @@ Current Page: {{ students.number }} <br/>
 Number of Pages: {{ students.paginator.num_pages }} <br/> 
 <hr><br/><br/> -->
 
-<nav aria-label="Page navigation example">
-    <ul class="pagination justify-content-center">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
 
-    {% if facultys.has_previous %}
-        <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
-        <li class="page-item"><a class="page-link" href="?page={{facultys.previous_page_number}}">Previous</a></li>
-    {% endif %}
+        {% if facultys.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{facultys.previous_page_number}}">Previous</a></li>
+        {% endif %}
 
- 
-    {% for i in nums %}
-    <li class="page-item {% if forloop.counter == facultys.number %}disabled{% endif %}">
-    <a class="page-link" href="?page={{forloop.counter}}">{{ forloop.counter }}</a>
-</li>
-    {% endfor %}
-    {% if facultys.has_next %}
-        <li class="page-item"> <a class="page-link" href="?page={{facultys.next_page_number}}">Next</a></li>
-        <li class="page-item"> <a class="page-link" href="?page={{facultys.paginator.num_pages}}">Last &raquo;</a></li>
-    {% endif %}
     
-    <li class="page-item ml-auto disabled"><a href="#" class="page-link"> Page {{ facultys.number }} of {{ students.paginator.num_pages }} </a></li>
+        {% for i in nums %}
+        <li class="page-item {% if forloop.counter == facultys.number %}disabled{% endif %}">
+        <a class="page-link" href="?page={{forloop.counter}}">{{ forloop.counter }}</a>
+    </li>
+        {% endfor %}
+        {% if facultys.has_next %}
+            <li class="page-item"> <a class="page-link" href="?page={{facultys.next_page_number}}">Next</a></li>
+            <li class="page-item"> <a class="page-link" href="?page={{facultys.paginator.num_pages}}">Last &raquo;</a></li>
+        {% endif %}
+        
+        <li class="page-item ml-auto disabled"><a href="#" class="page-link"> Page {{ facultys.number }} of {{ students.paginator.num_pages }} </a></li>
 
-</ul>
-</nav>
-
+    </ul>
+    </nav>
+</div>
 <script>
     function filterFaculty(type) {
         const rows = document.querySelectorAll('tbody tr');

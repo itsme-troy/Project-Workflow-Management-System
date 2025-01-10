@@ -3,6 +3,8 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap'); /* Importing Roboto font */
+@import url("https://fonts.googleapis.com/css?family=Sofia");
+
 
 .loading-indicator {
   position: fixed;
@@ -668,6 +670,20 @@ body {
   color: #fff;
 }
 
+/* Custom scrollbar styles for modern look */
+.sidebar::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: #f8f8f8; /* Color of the scrollbar thumb */
+  border-radius: 10px; /* Rounded corners for the thumb */
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color of the scrollbar track */
+  border-radius: 10px; /* Rounded corners for the track */
+}
 
 .sidebar .profile_info, .sidebar-link-text, .sidebar-menu-text {
   transition: opacity 0.3s ease;
@@ -1190,33 +1206,3 @@ body {
 
 
 
-/* Modern button styling */
-.modern-button {
-  display: flex;
-  align-items: center;
-  gap: 8px; /* Space between icon and text */
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #ffffff;
-  background-color: #007bff; /* Primary blue color */
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.modern-button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
-  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2); /* Slightly deeper shadow */
-}
-
-.modern-button:active {
-  background-color: #003f7f; /* Even darker blue on click */
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Reduced shadow */
-}
-
-.modern-button i {
-  font-size: 18px; /* Icon size */
-}
