@@ -7,26 +7,17 @@
 {% block content %}
 {{ block.super }}  <!-- This will include the calendar from base.html -->
 {% if user.is_authenticated %}
-
-
-<div class="table-container" style="overflow-x: hidden;"> 
-
-    <center> <h1 style="display: inline-block; margin-left: -140px">Calendar </h1> 
-        {% if request.user.is_current_coordinator %}
-            <div style="float: left;">
-                <a href="{% url 'view-schedule' %}" class="btn btn-primary">
-                    <i class="fas fa-calendar-alt icon icon-margin"></i> View Common Schedules
-                </a>
-            </div> 
-        {% endif %}
-    </center> 
-
+    </br> 
+{% comment %} 
+    <p> Hello, <b> {{ user }} </b> . Please Enter your Available Schedule/s. </br> </p> {% endcomment %}
     <div class="row">
         <div class="col-md-5">
-            
+            {% comment %} <button id="toggle-defense-schedule" class="btn btn-primary btn-sm">Defense Schedule</button>
+            <button id="toggle-filter-common-schedule" class="btn btn-secondary btn-sm"> Common Schedule</button>
+                 {% endcomment %}
                 <div class="table-container">
 
-                    <h3>Schedule </h3> 
+                    <h3>Defense Schedule </h3> 
                     {% if request.user.is_current_coordinator %}
                         <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
                             <i class="fas fa-plus-circle icon" style="color: white;"></i> Create
@@ -37,6 +28,7 @@
                         </button>
                     {% endif %}
                     
+
                     <table class="table table-striped mt-3">
                         <thead>
                             <tr>
@@ -108,6 +100,7 @@
         
         <div class="col-md-7"> 
             <div class="my_calendar">
+                <h3> Calendar </h3>
                 <div id='calendar'></div> 
             </div>
         </div>
@@ -128,6 +121,5 @@
         <a href="{% url 'login' %}"> Login Here </a>
 
     {% endif %}
-</div>
 
 {% endblock %}

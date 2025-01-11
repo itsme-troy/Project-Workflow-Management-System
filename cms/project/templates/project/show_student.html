@@ -37,6 +37,7 @@
                 <div class="header-container" style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="UserName">
                         <h1 class="name">{{ student.first_name}} {{ student.last_name }}</h1>
+                        <span class="role {{ student.role|lower }}">{{ student.role }}</span> 
                     </div>
                     <div class="button-container" style="display: flex; gap: 10px;">  <!-- Using gap to space out buttons -->
                         <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
@@ -45,7 +46,12 @@
                         {% endif %}
                     </div>
                 </div>
-                <span class="role {{ student.role|lower }}">{{ student.role }}</span> 
+               
+                <div class="bio-section" style="margin-top: 20px;">
+                    <h4 class="text-center">About Me:</h4>
+                    <p>{{ student.bio }}</p> <!-- Displaying the bio content -->
+                </div>
+                
             </subsection>
             
             <!-- Additional Information Section -->
@@ -61,6 +67,10 @@
                     <h3 class="heading"> About </h3>
                     <table class="contact-info-table">
                         <tr>
+                            <td><strong class="contact-label">Student ID:</strong></td>
+                            <td>{{ student.student_id }}</td>
+                        </tr>
+                        <tr>
                             <td><strong class="contact-label">Phone:</strong></td>
                             <td>{{ student.phone }}</td>
                         </tr>
@@ -69,20 +79,12 @@
                             <td>{{ student.course }}</td>
                         </tr>
                         <tr>
-                            <td><strong class="contact-label">Email:</strong></td>
+                            <td><strong class="contact-label">Gbox:</strong></td>
                             <td>{{ student.email }}</td>
                         </tr>
                         <tr>
                             <td><strong class="contact-label">Facebook link:</strong></td>
                             <td>{{ student.facebook_link }}</td>
-                        </tr>
-                        <tr>
-                            <td><strong class="contact-label">Birthday:</strong></td>
-                            <td>{{ student.birthday }}</td>
-                        </tr>
-                        <tr>
-                            <td><strong class="contact-label">Gender:</strong></td>
-                            <td>{{ student.gender }}</td>
                         </tr>
                     </table>
                 </div>

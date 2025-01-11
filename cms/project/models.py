@@ -15,6 +15,13 @@ from django.contrib.auth import get_user_model
 # Users cannot change their role (defined at user creation)
 # Students and Teachers require separate profile data 
 
+# Create a Skill model to hold available skills
+class Skill(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+    
 class AppUserManager(UserManager):
     def _create_user(self, email, password, **extra_fields):
         # Check if user provided email
@@ -70,10 +77,10 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
     course = models.CharField('Course', max_length=100, null=True, blank=True )
     profile_image = models.ImageField(null=True, blank=True, default='static/images/default_profile_pic.jpg', upload_to="images/")
     student_id = models.CharField(max_length=255, blank=True)
-
-   
+    skills = models.ManyToManyField(Skill, related_name='user_skills')
     #available_schedule = models.ManyToManyField(Available_schedule, related_name='Faculty_available', blank=True )
-
+    bio = models.TextField(blank=True, null=True)  # The bio field allows long paragraphs'
+    
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -96,7 +103,6 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
     REQUIRED_FIELDS = []
 
     color = models.CharField(max_length=7, default="#007BFF")  # Hex color code
-
 
 
     def save(self, *args, **kwargs):

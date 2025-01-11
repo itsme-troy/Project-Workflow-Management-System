@@ -1,16 +1,199 @@
 {% extends 'project/base.html' %}
 {% load static %}
 
+
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 
 {% block content %} 
-    <div class="d-flex" id="wrapper">
+    {% comment %} <div class="sidebar-menu">
+        <ul>
+            <li>
+                <a href=""><span class="las la-igloo"></span>
+                    <span>Dashboard</span></a>
+            </li>
+
+            <li> {% endcomment %}
+    <div class="main-content">
+        <header>
+            <h2> 
+                <label for="">
+                    <span class="material-symbols-outlined">dashboard</span>
+                </label>  
+                Coordinator Dashboard
+            </h2>
+
+            <div class="search-wrapper"> 
+                <span class="material-symbols-outlined">search</span>
+                <input type="search" placeholder="Search here" />
+            </div> 
+
+        </header>
+        </div>
+
+    <main> 
+        <div class="cards"> 
+            <div class="card-single"> 
+                <div>
+                    <h1> 54 </h1>
+                    <span> Users </span>
+                </div>
+                <div>
+                    <span class="material-symbols-outlined"> group</span>
+                </div>
+            </div>
+
+            <div class="card-single"> 
+                <div>
+                    <h1> 79 </h1>
+                    <span> Projects </span>
+                </div>
+                <div>
+                    <span class="material-symbols-outlined">folder</span>
+                </div>
+            </div>
+
+            <div class="card-single"> 
+                <div>
+                    <h1> 124 </h1>
+                    <span> Defense Applications  </span>
+                </div>
+                <div>
+                    <span class="material-symbols-outlined">description</span>
+                </div>
+            </div>
+
+            <div class="card-single"> 
+                <div>
+                    <h1> $5k  </h1>
+                    <span> Defense Schedules </span>
+                </div>
+                <div>
+                    <span class="material-symbols-outlined">event</span>
+                </div>
+            </div>
+        </div> 
+
+
+        <div class="recent-grid">
+            <div class="projects"> 
+                <div class="card">
+                    <div class="card-header"> 
+                        <h3> Recent Projects</h3>
+
+                        <button>
+                            See All 
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </button>
+                    </div>
+
+                    <div class="card-body"> 
+                        <div class="table-responsive">
+                            <table width="100%">
+                                <thead>
+                                    <tr>
+                                        <td> Project </td>
+                                        <td> Adviser </td>
+                                        <td> Status </td>
+                                    </tr>
+                                </thead>
+    
+                                <tbody>
+                                    <tr>
+                                        <td> Calculator App </td>
+                                        <td> Akeem Arcayera </td>
+                                        <td style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <span class="status pink"></span>
+                                            <span>review</span>
+                                        </td>
+                                        
+                                    </tr> 
+                                </tbody>
+                            </table>
+                        </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="customers"> 
+            <div class="card">
+                <div class="card-header">
+                    <h3> Recent Activity </h3>
+
+                    <button>
+                        See All 
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                    </button>
+                </div>
+                    <div class="card-body">
+                        <div class="customer"> 
+                            <div class="info">
+                                <img src="{% static '/images/default_profile_pic.jpg' %}" width="40px"
+                                    height="40px" alt=""> 
+                                <div> 
+                                <h4> Leobert Troy Teodoro </h4>
+                                <small> STUDENT </small> 
+                                </div>
+                            </div>
+                            <div class="contact">
+                                <span class="fa fa-user-circle"></span>
+                                <span class="fa fa-comment"></span>
+                                <span class="fa fa-phone"></span>
+                            </div>
+
+
+                        </div>
+
+                        <div class="customer"> 
+                            <div class="info">
+                                <img src="{% static '/images/default_profile_pic.jpg' %}" width="40px"
+                                    height="40px" alt=""> 
+                                <div> 
+                                <h4> Leobert Troy Teodoro </h4>
+                                <small> STUDENT </small> 
+                                </div>
+                            </div>
+                            <div class="contact">
+                                <span class="fa fa-user-circle"></span>
+                                <span class="fa fa-comment"></span>
+                                <span class="fa fa-phone"></span>
+                            </div>
+
+                            
+                        </div>
+
+                        <div class="customer"> 
+                            <div class="info">
+                                <img src="{% static '/images/default_profile_pic.jpg' %}" width="40px"
+                                    height="40px" alt=""> 
+                                <div> 
+                                <h4> Leobert Troy Teodoro </h4>
+                                <small> STUDENT </small> 
+                                </div>
+                            </div>
+                            <div class="contact">
+                                <span class="fa fa-user-circle"></span>
+                                <span class="fa fa-comment"></span>
+                                <span class="fa fa-phone"></span>
+                            </div>
+
+                            
+                        </div>
+
+                    </div>
+
+    </main>
+
+
+
+    {% comment %} <div class="d-flex" id="wrapper"> {% endcomment %}
         <!-- Sidebar -->
 
         <!-- /#sidebar-wrapper -->
 
         <!-- Page Content -->
-        <div id="page-content-wrapper">
+  
+    
+        {% comment %} <div id="page-content-wrapper">
             <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
                 <button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
             </nav>
@@ -18,7 +201,7 @@
             <div class="container-fluid">
                 <h1 class="mt-4">Coordinator Dashboard</h1>
                 <p>Welcome, {{ request.user.first_name }}! Here are the main actions you can perform:</p>
-                <div class="row">
+              <div class="row">
                     <div class="col-md-4">
                         <div class="card text-center">
                             <div class="card-body">
@@ -54,13 +237,13 @@
             </div>
         </div>
         <!-- /#page-content-wrapper -->
-    </div>
+    </div> {% endcomment %}
     <!-- /#wrapper -->
 
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    {% comment %} <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
     <script>
         document.getElementById("menu-toggle").addEventListener("click", function() {
             document.getElementById("wrapper").classList.toggle("toggled");
         });
-    </script>
+    </script> {% endcomment %}
 {% endblock %}

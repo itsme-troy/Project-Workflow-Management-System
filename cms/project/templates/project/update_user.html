@@ -1,19 +1,47 @@
 {% extends 'project/base.html' %}
 
 {% block content %}
-
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <h1 class="text-center mb-4">Update User</h1>
             <form method="POST" action="" enctype="multipart/form-data" class="bg-light p-4 rounded shadow-sm">
                 {% csrf_token %}
+                
+                <!-- User details form -->
                 <div class="form-group">
+                    <h5 class="text-muted">Personal Information</h5>
                     {{ user_form.as_p }}
                 </div>
+
+                <!-- Profile Picture and Clear Option -->
                 <div class="form-group">
-                    {{ profile_form.as_p }}
+                    <h5 class="text-muted">Profile Picture</h5>
+                    
+                    <div class="mb-3">
+                        <!-- Display the current profile image if it exists -->
+                        {% if profile_form.instance.profile_image %}
+                            <img src="{{ profile_form.instance.profile_image.url }}" alt="Profile Image" class="img-thumbnail mb-2" style="max-width: 150px;">
+                        {% else %}
+                            <p>No profile image uploaded.</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Profile Image Upload Field -->
+                    <div class="mb-3">
+                        {{ profile_form.profile_image }}
+                    </div>
+                    
+                    <!-- Clear Profile Image Checkbox -->
+                    <div class="form-check">
+                        {{ profile_form.clear_profile_image }}
+                        <label class="form-check-label" for="id_clear_profile_image">
+                            Clear Profile Image
+                        </label>
+                    </div>
                 </div>
+
+                <!-- Submit Button -->
                 <button type="submit" class="btn btn-primary btn-block mt-3">
                     Save All Changes
                 </button>
@@ -21,5 +49,4 @@
         </div>
     </div>
 </div>
-
 {% endblock %}

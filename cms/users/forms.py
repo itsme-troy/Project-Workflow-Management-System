@@ -6,13 +6,62 @@ User = get_user_model()
 
 from django import forms 
 
+class UpdateFacultyProfileForm(forms.ModelForm):
+    bio = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}), required=False)
+    
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'bio', 'facebook_link']
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateFacultyProfileForm, self).__init__(*args, **kwargs)
+        
+        # Add 'form-control' class to each field
+        self.fields['first_name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['last_name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['email'].widget.attrs.update({'class': 'form-control'})
+        self.fields['bio'].widget.attrs.update({'class': 'form-control'})
+        self.fields['facebook_link'].widget.attrs.update({'class': 'form-control'}) 
+
+class UpdateStudentProfileForm(forms.ModelForm):
+    bio = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}), required=False)
+    
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'bio', 'facebook_link']
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateStudentProfileForm, self).__init__(*args, **kwargs)
+        
+        # Add 'form-control' class to each field
+        self.fields['first_name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['last_name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['email'].widget.attrs.update({'class': 'form-control'})
+        self.fields['bio'].widget.attrs.update({'class': 'form-control'})
+        self.fields['facebook_link'].widget.attrs.update({'class': 'form-control'}) 
+
+
 # Profile Extras Form
 class ProfilePicForm(forms.ModelForm): 
-    profile_image = forms.ImageField(label="Profile Picture")
+    profile_image = forms.ImageField(label="Profile Picture", required=False)
+    clear_profile_image = forms.BooleanField(required=False, label="Clear Profile Image", initial=False)
 
     class Meta: 
         model = User
         fields = ('profile_image', )
+
+    def save(self, commit=True):
+        instance = super(ProfilePicForm, self).save(commit=False)
+        
+        # If the 'Clear Profile Image' checkbox is checked, set the profile image to None
+        if self.cleaned_data.get('clear_profile_image'):
+            instance.profile_image = None
+        
+        if commit:
+            instance.save()
+        return instance
+
+
 
 class RegisterStudentForm(UserCreationForm):
 

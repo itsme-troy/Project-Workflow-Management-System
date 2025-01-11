@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages 
 from django.contrib.auth.forms import UserCreationForm
 from .forms import RegisterFacultyForm, RegisterStudentForm
+from .forms import UpdateStudentProfileForm, UpdateFacultyProfileForm
 from .forms import ProfilePicForm
 from django.contrib.auth import get_user_model 
 
@@ -13,10 +14,10 @@ def update_user(request):
     if request.user.is_authenticated:
         current_user = User.objects.get(id=request.user.id)
         if current_user.role=="STUDENT":
-            user_form = RegisterStudentForm(request.POST or None, request.FILES or None, instance=current_user)
+            user_form = UpdateStudentProfileForm(request.POST or None, request.FILES or None, instance=current_user)
             profile_form = ProfilePicForm(request.POST or None, request.FILES or None, instance=current_user)
         else:
-            user_form = RegisterFacultyForm(request.POST or None,  request.FILES or None, instance=current_user)
+            user_form = UpdateFacultyProfileForm(request.POST or None,  request.FILES or None, instance=current_user)
             profile_form = ProfilePicForm(request.POST or None, request.FILES or None, instance=current_user)
         if user_form.is_valid() and profile_form.is_valid: 
             user_form.save()
@@ -25,7 +26,8 @@ def update_user(request):
             login(request, current_user)
             
             messages.success(request, ("Your Profile has been Successfully Updated! "))
-            return redirect('home')
+            return redirect('my-profile', profile_id=current_user.id)
+        
         return render(request, 'project/update_user.html', {
             "user_form": user_form, 
             "profile_form": profile_form

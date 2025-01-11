@@ -345,6 +345,7 @@ def create_defense_schedule(request):
 
     return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=403)
 
+@csrf_exempt
 def update_common_schedule_color(request):
     if request.method == "POST":
         data = json.loads(request.body)
