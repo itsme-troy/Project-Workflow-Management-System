@@ -231,6 +231,7 @@ class ProjectGroupForm(ModelForm):
         }
     
     def __init__(self, *args, **kwargs):
+        num_proponents = kwargs.pop('num_proponents', 3)  # Default to 3 if not passed
         user = kwargs.pop('user', None)  # Retrieve the logged-in user from the view
         approved_users = kwargs.pop('approved_users', [])  # List of users with approved project groups
         super(ProjectGroupForm, self).__init__(*args, **kwargs)
@@ -255,6 +256,10 @@ class ProjectGroupForm(ModelForm):
     def clean_proponents(self):
         proponents = self.cleaned_data.get('proponents')
 
+        # Ensure that the number of proponents does not exceed the set limit
+        if len(proponents) > self.num_proponents:
+            raise ValidationError(f'You can only select up to {self.num_proponents} proponents, including yourself.')
+        
         # Get the logged-in user's ID from the initial data
         user_id = self.initial.get('proponents', [None])[0]  # Get the first proponent's ID or None if not set
 

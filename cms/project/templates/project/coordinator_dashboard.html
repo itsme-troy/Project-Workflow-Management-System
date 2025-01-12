@@ -22,16 +22,60 @@
                 Coordinator Dashboard
             </h2>
 
+            <button id="settings-btn" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                <i class="material-icons">settings</i> Settings
+            </button>
+
             <div class="search-wrapper"> 
                 <span class="material-symbols-outlined">search</span>
                 <input type="search" placeholder="Search here" />
             </div> 
-
+            
         </header>
         </div>
 
     <main> 
         <div class="cards"> 
+            <div class="card-single"> 
+                <div>
+                    <h1> 54 </h1>
+                    <span> Students </span>
+                </div>
+                <div>
+                    <span class="material-symbols-outlined"> group</span>
+                </div>
+            </div>
+
+            <div class="card-single"> 
+                <div>
+                    <h1> 54 </h1>
+                    <span> Adviser </span>
+                </div>
+                <div>
+                    <span class="material-symbols-outlined"> group</span>
+                </div>
+            </div> 
+
+            <div class="card-single"> 
+                <div>
+                    <h1> 54 </h1>
+                    <span> Panelist </span>
+                </div>
+                <div>
+                    <span class="material-symbols-outlined"> group</span>
+                </div>
+            </div>
+
+            <div class="card-single"> 
+                <div>
+                    <h1> 54 </h1>
+                    <span> Project Group </span>
+                </div>
+                <div>
+                    <span class="material-symbols-outlined"> group</span>
+                </div>
+            </div>
+
             <div class="card-single"> 
                 <div>
                     <h1> 54 </h1>
@@ -183,7 +227,8 @@
 
     </main>
 
-
+    {% include 'project/modals/settings_modal.html' %}
+    
 
     {% comment %} <div class="d-flex" id="wrapper"> {% endcomment %}
         <!-- Sidebar -->
@@ -246,4 +291,34 @@
             document.getElementById("wrapper").classList.toggle("toggled");
         });
     </script> {% endcomment %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const settingsModal = document.getElementById('settingsModal');
+            const numProponentsInput = document.getElementById('numProponents');
+            const saveSettingsButton = document.getElementById('saveSettingsButton');
+    
+            // Load the saved number of proponents from a global variable or local storage if needed
+            let numProponents = localStorage.getItem('numProponents') || 3;  // Default to 3 if not set
+            numProponentsInput.value = numProponents;
+    
+            // Save the number of proponents setting when clicking the "Save" button
+            saveSettingsButton.addEventListener('click', function() {
+                numProponents = numProponentsInput.value;
+                localStorage.setItem('numProponents', numProponents); // Save to local storage or send to server
+                settingsModal.modal('hide');  // Close the modal
+            });
+    
+            // Enforce the number of proponents limit on the form
+            const proponentsSelect = document.getElementById('id_proponents');
+            proponentsSelect.addEventListener('change', function() {
+                let selectedOptions = [...proponentsSelect.selectedOptions];
+                if (selectedOptions.length > numProponents) {
+                    alert(`You can only select up to ${numProponents} proponents, including yourself.`);
+                    selectedOptions[selectedOptions.length - 1].selected = false; // Deselect the last selected option
+                }
+            });
+        });
+    </script>
+    
 {% endblock %}

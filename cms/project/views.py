@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import ProjectForm, CapstoneSubmissionForm, AddCommentsForm, ProjectGroupForm, ProjectGroupInviteForm
 from .forms import  VerdictForm, CoordinatorForm, SelectPanelistForm, CoordinatorSelectPanelistForm
 from .models import AppUserManager, Defense_Application
-from .models import Student, Faculty, ApprovedProjectGroup,  Project_Group
+from .models import Student, Faculty, Coordinator, ApprovedProjectGroup,  Project_Group
 from .models import StudentProfile, FacultyProfile, CoordinatorProfile, Coordinator
 from .models import Project_Idea
 from .forms import ProjectIdeaForm, UpdateDeficienciesForm, UpdateDeficienciesFacultyForm
@@ -1815,8 +1815,9 @@ def my_profile(request, profile_id):
         
         elif user.is_current_coordinator: 
             id = user.id
+            return redirect('show-faculty', faculty_id=id)
               # Handle Coordinator profile
-            return redirect('show-faculty', faculty_id=faculty_id)
+            # return redirect('show-faculty', faculty_id=faculty_id)
         
     else: 
         messages.error(request, "Please Login to view this page")
@@ -1839,15 +1840,25 @@ def show_student(request, student_id):
 
 def show_faculty(request, faculty_id): 
     if request.user.is_authenticated: 
-        # look on faculty by ID 
-        faculty = Faculty.objects.get(pk=faculty_id)
-        projects = Project.objects.filter(status='approved').filter(adviser=faculty)
         
-        # pass it to the page using render 
-        return render(request, 'project/show_faculty.html', 
-        {'faculty': faculty, 
-        'projects': projects}) 
-    
+        user = User.objects.get(pk=faculty_id)
+
+        # Check if the user is a current coordinator
+        if user.is_current_coordinator:
+            # Pass it to the page using render
+            return render(request, 'project/show_coordinator.html', {
+                'faculty': user, 
+            })
+        
+        elif user.role=='FACULTY': # Look up faculty by ID
+            faculty = Faculty.objects.get(pk=faculty_id)
+            projects = Project.objects.filter(status='approved', adviser=faculty)
+            
+            # Pass it to the page using render
+            return render(request, 'project/show_faculty.html', {
+                'faculty': faculty, 
+                'projects': projects,
+            })
     else: 
         messages.error(request, "Please Login to view this page")
         return redirect('login')

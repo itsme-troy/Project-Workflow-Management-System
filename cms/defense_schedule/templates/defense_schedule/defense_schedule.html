@@ -7,16 +7,24 @@
 {% block content %}
 {{ block.super }}  <!-- This will include the calendar from base.html -->
 {% if user.is_authenticated %}
-    </br> 
-{% comment %} 
-    <p> Hello, <b> {{ user }} </b> . Please Enter your Available Schedule/s. </br> </p> {% endcomment %}
+
+<div class="table-container" style="margin: 0px;"> 
+
+    <center> <h1 style="display: inline-block; margin-left: -140px"> Calendar </h1> 
+        {% if request.user.is_current_coordinator %}
+            <div class="btn-sm" style="float: left;">
+                    <a href="{% url 'view-schedule' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-calendar-alt icon icon-margin"></i>View Common Schedule
+                    </a>
+            </div> 
+        {% endif %} 
+    </center> 
     <div class="row">
         <div class="col-md-5">
-            {% comment %} <button id="toggle-defense-schedule" class="btn btn-primary btn-sm">Defense Schedule</button>
-            <button id="toggle-filter-common-schedule" class="btn btn-secondary btn-sm"> Common Schedule</button>
-                 {% endcomment %}
-                <div class="table-container">
-
+            {% comment %} <button id="toggle-defense-schedule" class="btn btn-primary btn-sm">Defense Schedule</button> {% endcomment %}
+            {% comment %} <button id="toggle-filter-common-schedule" class="btn btn-secondary btn-sm"> Common Schedule</button> {% endcomment %}
+                <div class="table-container" style="margin-top: 0px; min-height: 0px">
+                    
                     <h3>Defense Schedule </h3> 
                     {% if request.user.is_current_coordinator %}
                         <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
@@ -99,8 +107,7 @@
 
         
         <div class="col-md-7"> 
-            <div class="my_calendar">
-                <h3> Calendar </h3>
+            <div class="my_calendar" style="margin-top: 0px">
                 <div id='calendar'></div> 
             </div>
         </div>
@@ -121,5 +128,5 @@
         <a href="{% url 'login' %}"> Login Here </a>
 
     {% endif %}
-
+</div>
 {% endblock %}

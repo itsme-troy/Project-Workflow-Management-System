@@ -914,7 +914,7 @@ body {
 }
 
 .role.coordinator {
-    color: #ffc107; /* Yellow for coordinators */
+    color: #ff7300; /* Yellow for coordinators */
 }
 
 
@@ -1111,6 +1111,7 @@ body {
   width: 100%;
   height: 70%;
   padding: 10px;
+  justify-content: space-between; 
 }
 
 .UserName {

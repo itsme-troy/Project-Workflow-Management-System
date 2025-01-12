@@ -9,11 +9,10 @@
 {{ block.super }}
 
 
-<div class="table-container" style="overflow-x: hidden;"> 
+<div class="table-container" style="overflow-x: hidden; margin: 0px;"> 
 
 {% if user.is_authenticated %}
-
-    <center> <h1 style="display: inline-block; margin-left: -140px"> Faculty Schedule Management </h1> 
+   <center> <h1 style="display: inline-block; margin-left: -140px"> Faculty Schedule Management </h1> 
         {% if request.user.is_current_coordinator %}
             <div class="btn-m" style="float: left;">
                     <a href="{% url 'defense-schedule' %}" class="btn btn-primary btn-sm">
@@ -26,10 +25,7 @@
                 </button>
             </div> 
         {% endif %}
-       
     </center> 
-
-   
     <div class="row">
         
     <!-- Left Column: Filter and Faculty Schedules -->
@@ -145,8 +141,7 @@
       
         <!-- Right Column: Calendar -->
         <div class="col-md-6"> 
-            <div class="my_calendar" style="margin-top: -4px">
-                <h3> Calendar </h3>
+            <div class="my_calendar" style="margin-top: 0px">
                 <div id='calendar'></div> 
             </div>
         </div>

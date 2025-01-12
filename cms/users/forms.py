@@ -23,6 +23,9 @@ class UpdateFacultyProfileForm(forms.ModelForm):
         self.fields['bio'].widget.attrs.update({'class': 'form-control'})
         self.fields['facebook_link'].widget.attrs.update({'class': 'form-control'}) 
 
+         # Change label for the email field to 'Gbox'
+        self.fields['email'].label = 'Gbox'
+
 class UpdateStudentProfileForm(forms.ModelForm):
     bio = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}), required=False)
     
@@ -40,7 +43,8 @@ class UpdateStudentProfileForm(forms.ModelForm):
         self.fields['bio'].widget.attrs.update({'class': 'form-control'})
         self.fields['facebook_link'].widget.attrs.update({'class': 'form-control'}) 
 
-
+         # Change label for the email field to 'Gbox'
+        self.fields['email'].label = 'Gbox'
 # Profile Extras Form
 class ProfilePicForm(forms.ModelForm): 
     profile_image = forms.ImageField(label="Profile Picture", required=False)

@@ -60,7 +60,7 @@
 
                 <div class="toggle-container" style="display: flex; justify-content: flex-start; margin-bottom: 10px;">
                     <button id="aboutButton" onclick="toggleVisibility('aboutInfo', this)" class="toggle-button active-toggle" style="background-color: #4CAF50;">About</button>
-                    <button id="projectGroupButton" onclick="toggleVisibility('projectGroup', this)" class="toggle-button" style="margin-left: 10px;">Advisees</button>
+                    {% comment %} <button id="projectGroupButton" onclick="toggleVisibility('projectGroup', this)" class="toggle-button" style="margin-left: 10px;">Advisees</button> {% endcomment %}
                     {% comment %} <div class="underline-indicator" id="underline" style="width: 50px; left: 0;"></div> <!-- Underline indicator --> {% endcomment %}
                 </div>
                 
@@ -71,10 +71,7 @@
                             <td><strong class="contact-label">Phone:</strong></td>
                             <td>{{ faculty.phone }}</td>
                         </tr>
-                        <tr>
-                            <td><strong class="contact-label">Course:</strong></td>
-                            <td>{{ faculty.course }}</td>
-                        </tr>
+                     
                         <tr>
                             <td><strong class="contact-label">Email:</strong></td>
                             <td>{{ faculty.email }}</td>
@@ -83,17 +80,10 @@
                             <td><strong class="contact-label">Facebook link:</strong></td>
                             <td>{{ faculty.facebook_link }}</td>
                         </tr>
-                        <tr>
-                            <td><strong class="contact-label">Birthday:</strong></td>
-                            <td>{{ faculty.birthday }}</td>
-                        </tr>
-                        <tr>
-                            <td><strong class="contact-label">Gender:</strong></td>
-                            <td>{{ faculty.gender }}</td>
-                        </tr>
+                    
                     </table>
                 </div>
-                <div id="projectGroup" style="display:none;">
+                {% comment %} <div id="projectGroup" style="display:none;">
                     <h3>Project Group</h3>
                     <div class="project-cards-container">
                         {% if not projects %}
@@ -102,7 +92,7 @@
                             {% for project in projects %}
                                 <div class="card mb-3 project-card">
                                     <div class="card-header">
-                                        {% comment %} Adviser: {{ project.adviser }} {% endcomment %}
+                                         Adviser: {{ project.adviser }}
                                     Project Title: </br> {{ project.title }}
                                     </div>
                                     <ul class="list-group list-group-flush">
@@ -114,12 +104,12 @@
                             {% endfor %}
                         {% endif %}
                     </div>
-                </div>
+                </div> {% endcomment %}
                 
             </subsection>
         </section>
     </div>
-    <script>
+    {% comment %} <script>
         function toggleVisibility(id, button) {
             var aboutInfo = document.getElementById('aboutInfo');
             var projectGroup = document.getElementById('projectGroup');
@@ -146,7 +136,7 @@
         window.onload = function() {
             toggleVisibility('aboutInfo', document.getElementById('aboutButton'));
         }
-    </script>
+    </script> {% endcomment %}
 {% endblock %}
 
 {% comment %} 
