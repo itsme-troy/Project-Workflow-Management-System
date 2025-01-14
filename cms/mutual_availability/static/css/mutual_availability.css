@@ -1,0 +1,247 @@
+.container {
+    width: 100%; /* Default width */
+    max-width: 100%; /* Maximum width the container can grow */
+    min-width: 200px; /* Minimum width the container can shrink to */
+    padding: 40px;
+    margin: 40px auto;
+    background-color: #ffffff; /* White background for content */
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    text-align: center;
+    
+    /* Enable resizing horizontally */
+    resize: both; /* Allow resizing both horizontally and vertically */
+    overflow: auto; /* Allow overflow content if the element is resized */
+}
+
+/* Dropdown menu styling with high z-index */
+.dropdown-menu {
+    position: absolute;
+    top: 0; /* Position the dropdown above the icon */
+    right: 0;
+    z-index: 9999; /* Ensure dropdown is above other elements */
+    display: none; /* Hide by default */
+    background-color: #f8f9fa; /* Light gray background */
+    border: 1px solid #e0e0e0; /* Subtle border */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    padding: 15px; /* Add padding for better layout */
+    max-width: 300px; /* Ensure the dropdown doesn't become too wide */
+    padding-bottom: 50px; /* Ensure there's space for the button */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Smooth transition */
+.dropdown-menu.show {
+    display: block;
+    transition: opacity 0.3s ease;
+}
+
+.dropdown-menu .fas.fa-times {
+    transition: color 0.3s ease;
+}
+
+.dropdown-menu .fas.fa-times:hover {
+    color: #dc3545; /* Red color on hover */
+}
+
+/* Ensure cog icon is visible */
+.fas.fa-cog {
+    visibility: visible !important;
+    color: #000 !important; /* Adjust color if necessary */
+}
+/* Styles for color preview circle */
+.color-preview {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+/* Styles for the schedule dot */
+.schedule-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 10px;
+    background-color: #007bff; /* Default color */
+}
+
+/* Close Icon Styling */
+.fas.fa-times {
+    transition: color 0.3s ease;
+}
+.fas.fa-times:hover {
+    color: #dc3545; /* Red on hover */
+}
+/* Color Picker Styling */
+input[type="color"] {
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Small shadow */
+    transition: box-shadow 0.3s ease;
+}
+input[type="color"]:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Larger shadow on hover */
+}
+
+/* Button Styling */
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+/* Improve spacing and alignment */
+.dropdown-menu .form-label {
+    margin: 0; /* Remove default margin */
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #333;
+}
+/* Color Picker Styling */
+.dropdown-menu input[type="color"] {
+    margin-bottom: 15px; /* Space between color picker and button */
+    cursor: pointer;
+    width: 80px; /* Smaller size for better layout */
+}
+/* Button Styling */
+.dropdown-menu button {
+    width: 100%; /* Ensure button is full width */
+    padding: 10px; /* Increase padding for better click area */
+    margin-top: 10px; /* Space between color picker and button */
+}
+
+
+.schedule-list {
+    min-height: 150px;
+    min-width: 300px; /* Adjust as necessary */
+    border: 1px solid #ddd; /* Optional: for visibility */
+    padding: 10px; /* Optional: for spacing */
+    background-color: #f9f9f9; /* Optional: for a subtle background */
+    border-radius: 5px; /* Optional: for rounded corners */
+}
+
+.schedule-list li {
+    margin-bottom: 5px; /* Space between items */
+}
+
+.schedule-list .text-muted {
+    font-style: italic; /* Different style for "No schedules available" */
+}
+
+/* Container Styling */
+.common-schedule-container {
+    background: linear-gradient(90deg, #f8f9fa, #e9ecef); /* Subtle gradient background */
+    border: 1px solid #dee2e6; /* Soft border for contrast */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effects */
+    height: 500px;
+}
+
+/* Hover Effect */
+.common-schedule-container:hover {
+    transform: translateY(-5px); /* Slight lift on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
+}
+
+
+/* Button Styling */
+#find-common-schedule-btn {
+    font-size: 1rem; /* Readable font size */
+    font-weight: bold; /* Emphasize button text */
+    padding: 12px; /* Add padding for a large click area */
+    border-radius: 8px; /* Rounded edges for a modern look */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition effects */
+}
+
+#find-common-schedule-btn:hover {
+    background-color: #007bff; /* Highlighted blue on hover */
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2); /* Shadow effect */
+}
+
+/* Schedule List */
+#common-schedule-list {
+    max-height: 400px; /* Limit height for long lists */
+    overflow-y: auto; /* Scroll if content exceeds container */
+    padding: 10px;
+    margin: 0;
+    border: 1px solid #dee2e6; /* Define border for clarity */
+    background-color: #ffffff; /* White background for contrast */
+}
+
+#common-schedule-list .list-group-item {
+    padding: 10px 15px; /* Spacious padding */
+    font-size: 0.95rem; /* Adjust font size for readability */
+    background-color: #f8f9fa; /* Light gray background */
+    border: 1px solid #dee2e6; /* Add borders for distinction */
+}
+
+#common-schedule-list .list-group-item:hover {
+    background-color: #e9ecef; /* Highlight item on hover */
+    cursor: pointer; /* Show pointer to indicate interactivity */
+}
+
+/* Empty State Message */
+#common-schedule-list .empty-state {
+    font-style: italic;
+    color: #6c757d; /* Subtle gray text */
+    font-size: 0.9rem;
+}
+
+#common-schedule-list::-webkit-scrollbar {
+    width: 6px; /* Narrow scrollbar */
+}
+#common-schedule-list::-webkit-scrollbar-thumb {
+    background: #007bff; /* Blue scrollbar */
+    border-radius: 3px;
+}
+#common-schedule-list::-webkit-scrollbar-thumb:hover {
+    background: #0056b3; /* Darker blue on hover */
+}
+@media (max-width: 768px) {
+    .common-schedule-container {
+        padding: 15px;
+        font-size: 0.9rem;
+    }
+    #find-common-schedule-btn {
+        font-size: 0.85rem;
+        padding: 10px;
+    }
+}
+
+/* Make the faculty schedule container scrollable */
+.faculty-schedule-container {
+    background-color: #ffffff; /* White background for content */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    padding: 15px;
+    max-height: 670px; /* Adjust height based on the content */
+    overflow-y: auto; /* Allow vertical scrolling if content exceeds the max height */
+    border: 1px solid #ddd; /* Subtle border for definition */
+    margin-bottom: 20px; /* Add space between sections */
+
+}
+
+.faculty-content {
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+.faculty-content.hidden {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.fc-event .highlighted {
+    background-color: #ffcc00 !important;
+    border-color: #ffcc00 !important;
+}

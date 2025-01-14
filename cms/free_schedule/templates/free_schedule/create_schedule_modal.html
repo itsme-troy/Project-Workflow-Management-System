@@ -1,0 +1,35 @@
+<div class="modal fade" id="createScheduleModal" tabindex="-1" aria-labelledby="createScheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-m modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="createScheduleModalLabel">Create Available Schedule</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="create-schedule-form">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="schedule-start" class="form-label">Start Time</label>
+                        <input type="datetime-local" class="form-control" id="schedule-start" name="start" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="schedule-end" class="form-label">End Time</label>
+                        <input type="datetime-local" class="form-control" id="schedule-end" name="end" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="schedule-color" class="form-label">Event Color</label>
+                        <div class="d-flex align-items-center">
+                            <!-- Color Picker Input -->
+                            <input type="color" class="form-control form-control-color" id="schedule-color" name="color" value="#007bff" title="Choose your color">
+                            <!-- Button to Randomly Generate a Color -->
+                            <button type="button" class="btn btn-sm btn-secondary ms-2" id="random-color-btn">
+                                <i class="fas fa-random icon"></i> Random Color
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Create Schedule</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

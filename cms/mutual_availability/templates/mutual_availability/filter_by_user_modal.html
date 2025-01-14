@@ -1,0 +1,23 @@
+<div class="modal fade" id="filterByUsersModal" tabindex="-1" aria-labelledby="filterByUsersModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="filterByUsersModalLabel">Filter by Users</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="filter-by-users-form" method="GET" action="{% url 'filter_schedules_by_users' %}">
+                    <div class="form-group">
+                        <label for="users">Select Users:</label>
+                        <select id="users" name="users" class="form-select" multiple>
+                            {% for user_option in users %}
+                                <option value="{{ user_option.id }}">{{ user_option.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Filter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

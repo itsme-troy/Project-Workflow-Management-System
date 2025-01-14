@@ -1,0 +1,75 @@
+{% extends 'project/base.html'%} <!-- use the base file -->
+{% load static %} 
+
+
+{% block content %} <!-- content of all web pages go -->
+
+    <br> 
+    <h1 class="text-center my-4"> Adviser List </h1> 
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered"> 
+            <caption class="text-center">List of Faculty Members Eligible as Adviser</caption>
+            <thead class="thead-dark"> 
+                <tr> 
+                    {% comment %} <th> Profile Picture </th> {% endcomment %}
+                    <th scope="col"> Last Name  </th> 
+                    <th scope="col"> First Name </th> 
+                    <th scope="col"> Email </th> 
+                    <th scope="col"> Action </th> 
+                </tr> 
+            </thead>  
+            <tbody>
+                {% for faculty in facultys %}
+                    {% if faculty.role == 'FACULTY' %}
+                        <tr>
+                            <!-- <td> <img src="{% static 'images/default_profile_pic.jpg' %}"
+                                    class="img-fluid rounded-start" alt="Profile Image">  </td> -->
+                            <td>{{ faculty.last_name }}</td> 
+                            <td>{{ faculty.first_name }}</td> 
+                            <td>{{ faculty.email }}</td> 
+                            <td>
+                                <a href="{% url 'show-faculty' faculty.id %}">  
+                                    <button type="button" class="btn btn-outline-primary btn-sm">View Profile</button>
+                                </a>
+                            </td>
+                        </tr> 
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table> 
+    </div>
+    <br> <hr/> 
+    
+<!-- 
+{{ students }} </br> 
+Has Previous: {{ students.has_previous }} <br/> 
+Has Next: {{ students.has_next }} <br/> 
+Current Page: {{ students.number }} <br/> 
+Number of Pages: {{ students.paginator.num_pages }} <br/> 
+<hr><br/><br/> -->
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+
+    {% if facultys.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{facultys.previous_page_number}}">Previous</a></li>
+    {% endif %}
+
+ 
+    {% for i in nums %}
+    <li class="page-item {% if forloop.counter == facultys.number %}disabled{% endif %}">
+    <a class="page-link" href="?page={{forloop.counter}}">{{ forloop.counter }}</a>
+</li>
+    {% endfor %}
+    {% if facultys.has_next %}
+        <li class="page-item"> <a class="page-link" href="?page={{facultys.next_page_number}}">Next</a></li>
+        <li class="page-item"> <a class="page-link" href="?page={{facultys.paginator.num_pages}}">Last &raquo;</a></li>
+    {% endif %}
+    
+    <li class="page-item ml-auto disabled"><a href="#" class="page-link"> Page {{ facultys.number }} of {{ students.paginator.num_pages }} </a></li>
+
+</ul>
+</nav>
+    
+{% endblock %}

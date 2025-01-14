@@ -1,0 +1,226 @@
+{% extends 'project/base.html' %}
+{% load static %}
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+
+
+<div class="table-container"> 
+    
+<center> <h1 style="display: inline-block;"> My Project Group Waitlist </h1> 
+    <div class="button-container" style="float: right;">
+        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm" 
+        style="float: right;"> Back </a> 
+    </div> </center> 
+    <br/>
+
+{% if not groups_with_all_members%}
+    <center>
+        <div class="alert custom-info-alert" role="alert">
+            <h4> No Project Group Invitations Available at the moment. </h4s> 
+        </div> 
+    </center> 
+
+{% else %}
+
+    {% if groups_with_all_members %}
+        {% for group_data in groups_with_all_members %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Project Group</h5>
+                </div>
+                <div class="card-body">   
+                    <table class="table">
+                        <thead>
+
+                            <tr>
+                                <th scope="col"> # </th>
+                                <th scope="col" class="picture-column">Picture</th> 
+                                <th scope="col"> Proponent </th>
+                                <th scope="col"> Status </th>
+                                <th scope="col"> Actions</th>
+                            
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for proponent in group_data.current_proponents %}
+                                <tr {% if user == proponent %}class="table-warning"{% endif %} onclick="toggleActions(this)">
+                                    <td> <strong> {{ forloop.counter }} </strong> </td>
+                                    <td>
+                                        {% if proponent.profile_image and proponent.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                                            <img src="{{ proponent.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid larger-img">
+                                      {% else %}
+                                        {% comment %} no {% endcomment %}
+                                            <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table larger-img"> 
+                                      {% endif %}
+                                    </td>
+                                    
+                                    <td>
+                                        {{ proponent.get_full_name }}
+                                        {% if user == proponent %}
+                                            <span class="badge bg-info ms-2">You</span>
+                                        {% endif %}
+                                        {% if proponent == group_data.group.creator %}
+                                            <span class="badge bg-primary">Leader</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><span class="badge bg-success">Approved</span></td>
+                                    <td>
+                                        {% if user == proponent %}
+                                            <span class="hint-button">Click row to show actions</span>
+                                            <div class="action-buttons">
+                                                <a href="{% url 'leave-group' group_data.group.id %}" class="btn btn-outline-danger btn-sm"
+                                                    onclick="return confirm('Are you sure you want to leave this group? {% if group_data.current_proponents.count > 1 %}The creator role will be transferred to another member.{% else %}The group will be deleted as you are the only member.{% endif %}')">
+                                                    Leave Group
+                                                </a>
+                                                {% if user == group_data.group.creator %}
+                                                    <a href="{% url 'transfer-creator' group_data.group.id %}" class="btn btn-outline-primary btn-sm">
+                                                        Transfer Leader role
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                            {% for pending in group_data.pending_proponents %}
+                                <tr {% if user == pending %}class="table-warning"{% endif %} onclick="toggleActions(this)">
+                                    
+                                    <td> <strong> {{ forloop.counter }} </strong> </td>
+                                    <td>
+                                        {% if proponent.profile_image and proponent.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                                            <img src="{{ proponent.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid larger-img">
+                                      {% else %}
+                                        {% comment %} no {% endcomment %}
+                                            <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table larger-img"> 
+                                      {% endif %}
+                                    </td>
+                                    
+                                    <td>
+                                        {{ pending.get_full_name }}
+                                        {% if user == pending %}
+                                            <span class="badge bg-info ms-2">You</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><span class="badge bg-warning text-dark">Pending</span></td>
+                                    <td>
+                                        {% if user == pending %}    
+                                            <span class="hint-button">Click row to show actions</span>
+                                            <div class="action-buttons">
+                                            <a href="{% url 'approve-group-membership' group_data.group.id %}" class="btn btn-outline-success btn-sm" onclick="return confirm('Are you sure you want to accept this invitation? By accepting this invitation, all other project group invitations will be automatically declined.')">Accept Invitation</a>
+                                            <a href="{% url 'reject-group-membership' group_data.group.id %}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to reject this invitation?')">Reject Invitation</a>
+                                        {% endif %}
+                                            {% if user == group_data.group.creator %}
+                                            <span class="hint-button">Click row to show actions</span>
+                                            <div class="action-buttons">
+                                                <a href="{% url 'remove-member' group_data.group.id pending.id %}" class="btn btn-outline-danger btn-sm"
+                                                    onclick="return confirm('Are you sure you want to remove this member?')">Remove Member</a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                            {% for declined in group_data.declined_proponents %}
+                                <tr {% if user == declined %}class="table-warning"{% endif %} onclick="toggleActions(this)">
+                                    <td> <strong> {{ forloop.counter }} </strong> </td>
+                                    <td>
+                                        {% if proponent.profile_image and proponent.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                                            <img src="{{ proponent.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid larger-img">
+                                      {% else %}
+                                        {% comment %} no {% endcomment %}
+                                            <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table larger-img"> 
+                                      {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ declined.get_full_name }}
+                                    {% if user == declined %}
+                                        <span class="badge bg-info ms-2">You</span>
+                                    {% endif %}
+                                </td>
+                                    <td><span class="badge bg-danger">Declined</span></td>
+                                    <td>
+                                        {% if user == group_data.group.creator %}
+                                        <span class="hint-button">Click row to show actions</span>
+                                        <div class="action-buttons">
+                                                <a href="{% url 'remove-member' group_data.group.id declined.id %}" class="btn btn-outline-danger btn-sm"
+                                                    onclick="return confirm('Are you sure you want to remove this member?')">Remove Member</a>
+                                            </div> 
+                                            {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                            {% if user == group_data.group.creator and group_data.join_requests %}
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Join Group Requests</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for request_user in group_data.join_requests %}
+                                            <tr onclick="toggleActions(this)">
+                                                <td>{{ request_user.get_full_name }}</td>
+                                                <td>
+                                                    <span class="hint-button">Click row to show actions</span>
+                                                    <div class="action-buttons">
+                                                        <a href="{% url 'accept-join-request' group_data.group.id request_user.id %}" class="btn btn-outline-success btn-sm">Accept</a>
+                                                        <a href="{% url 'decline-join-request' group_data.group.id request_user.id %}" class="btn btn-outline-danger btn-sm">Decline</a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% endif %}
+                                
+                        </tbody>
+                    </table>
+
+                    {% if user == group_data.group.creator and not group_data.group.approved %}
+                        <div class="mt-3">
+                            {% if group_data.current_proponents.count >= 1 and group_data.pending_proponents.count == 0 and group_data.declined_proponents.count == 0 %}
+                                <a href="{% url 'finalize-group' group_data.group.id %}" class="btn btn-success" 
+                                    onclick="return confirm('Are you sure you want to Create Group with the current members? This action cannot be undone.')">
+                                    Create Group with Current Members
+                                </a>
+                            {% endif %}
+                            
+                            {% if group_data.current_proponents.count == 1 and group_data.pending_proponents.count <= 1 and group_data.declined_proponents.count < 2 or group_data.current_proponents.count == 2 and group_data.pending_proponents.count == 0 and group_data.declined_proponents.count == 0 %} 
+                                <a href="{% url 'invite-more-members' group_data.group.id %}" class="btn btn-primary"
+                                    onclick="return confirm('Are you sure you want to invite more members to this group?')">
+                                Invite More Members
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <hr>
+        {% endfor %}
+    {% endif %}
+{% endif %}
+</div>
+
+<script>
+    function toggleActions(row) {
+        // Remove active class from all rows
+        document.querySelectorAll('tr').forEach(tr => tr.classList.remove('active'));
+        // Add active class to clicked row
+        row.classList.add('active');
+    }
+
+    // Add click handler to close rows when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('tr')) {
+            document.querySelectorAll('tr').forEach(tr => tr.classList.remove('active'));
+        }
+    });
+</script>
+
+{% endblock %}

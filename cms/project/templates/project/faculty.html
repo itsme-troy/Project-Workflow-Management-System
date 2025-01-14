@@ -1,0 +1,142 @@
+{% extends 'project/base.html'%} <!-- use the base file -->
+{% load static %} 
+
+
+{% block content %} <!-- content of all web pages go -->
+
+<div class="table-container"> 
+    <center> <h1 style="display: inline-block; margin-left: -60px"> Faculty List </h1> 
+        <div class="button" style="float: left;">
+            <a href="{% url 'list-student' %}" class="btn btn-primary">
+                <i class="fas fa-users icon"> </i> View Student List
+            </a> 
+        </div> 
+        <div class="button-container" style="float: right;">  <!-- Using gap to space out buttons -->
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+        </div>
+    </center> 
+
+        <div class="btn-group" role="group" aria-label="Faculty Filter">
+            <button type="button" class="btn btn-secondary" onclick="filterFaculty('all')">All Faculty</button>
+            <button type="button" class="btn btn-secondary" onclick="filterFaculty('adviser')">Eligible Advisers</button>
+            <button type="button" class="btn btn-secondary" onclick="filterFaculty('panelist')">Eligible Panelists</button>
+        </div> 
+        
+        <div class="table-responsive"> <br/> 
+            <table class="table table-hover table-bordered"> 
+                <caption class="text-center">Faculty List</caption>
+        
+                <thead class="thead-dark"> 
+                    <tr> 
+                        {% comment %} <th> Profile Picture </th> {% endcomment %}
+                        <th scope="col"> # </th> 
+                        <th scope="col" class="picture-column">Picture</th> 
+                        <th scope="col"> Name  </th> 
+                        <th scope="col"> Email </th> 
+                        <th scope="col" class="deficiencies-column" >
+                            Deficiencies
+                        </th>     
+                        {% comment %} <th scope="col" style="width: 150px;"> Action </th>  {% endcomment %}
+                    </tr> 
+                </thead>  
+                <tbody>
+                    {% for faculty in facultys %}
+                        {% if faculty.role == 'FACULTY' %}
+                        <tr data-adviser="{{ faculty.adviser_eligible|yesno:'true,false' }}" 
+                            data-panelist="{{ faculty.panel_eligible|yesno:'true,false' }}"
+                            {% if faculty == user %}class="table-warning"{% endif %} 
+                            onclick="location.href='{% url 'show-faculty' faculty.id %}'" 
+                            style="cursor: pointer;">  
+                                      
+                                <td> <strong> {{ forloop.counter }} </strong> </td>
+                                <td>
+                                    {% if faculty.profile_image and faculty.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                                        <figure><img src="{{ faculty.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid width="250px" height="250px""></figure>
+                                {% else %}
+                                    {% comment %} no {% endcomment %}
+                                        <figure><img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table width="250px" height="250px""> </figure>
+                                {% endif %}
+                                </td>
+                                <td>{{ faculty.first_name }} {{ faculty.last_name }}</td> <!-- Combined first and last name -->
+                                <td>{{ faculty.email }}</td> 
+                                <td class="deficiencies-cell">
+                                    <div style="overflow-x: auto; white-space: nowrap;">
+                                        {% if student.deficiencies %}
+                                                {{ student.deficiencies }}
+                                        {% else %}
+                                            <span class="text-muted">No deficiencies</span>
+                                        {% endif %}
+                                    </div> 
+                                </td>
+                                {% comment %} <td>
+                                    <a href="{% url 'show-faculty' faculty.id %}" class="btn btn-outline-primary btn-sm">View Profile</a>
+                                </td> {% endcomment %}
+                            </tr> 
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table> 
+        </div>
+        <br> <hr/> 
+
+<!-- 
+{{ students }} </br> 
+Has Previous: {{ students.has_previous }} <br/> 
+Has Next: {{ students.has_next }} <br/> 
+Current Page: {{ students.number }} <br/> 
+Number of Pages: {{ students.paginator.num_pages }} <br/> 
+<hr><br/><br/> -->
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+
+        {% if facultys.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{facultys.previous_page_number}}">Previous</a></li>
+        {% endif %}
+
+    
+        {% for i in nums %}
+        <li class="page-item {% if forloop.counter == facultys.number %}disabled{% endif %}">
+        <a class="page-link" href="?page={{forloop.counter}}">{{ forloop.counter }}</a>
+    </li>
+        {% endfor %}
+        {% if facultys.has_next %}
+            <li class="page-item"> <a class="page-link" href="?page={{facultys.next_page_number}}">Next</a></li>
+            <li class="page-item"> <a class="page-link" href="?page={{facultys.paginator.num_pages}}">Last &raquo;</a></li>
+        {% endif %}
+        
+        <li class="page-item ml-auto disabled"><a href="#" class="page-link"> Page {{ facultys.number }} of {{ students.paginator.num_pages }} </a></li>
+
+    </ul>
+    </nav>
+</div>
+<script>
+    function filterFaculty(type) {
+        const rows = document.querySelectorAll('tbody tr');
+        const buttons = document.querySelectorAll('.btn-group .btn');
+
+        // Remove 'active' class from all buttons
+        buttons.forEach(button => button.classList.remove('active'));
+
+        // Add 'active' class to the clicked button
+        document.querySelector(`.btn-group .btn[onclick="filterFaculty('${type}')"]`).classList.add('active');
+
+        rows.forEach(row => {
+            const isAdviser = row.dataset.adviser === 'true';
+            const isPanelist = row.dataset.panelist === 'true';
+
+            if (type === 'all') {
+                row.style.display = '';
+            } else if (type === 'adviser' && isAdviser) {
+                row.style.display = '';
+            } else if (type === 'panelist' && isPanelist) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
+    
+{% endblock %}

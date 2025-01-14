@@ -1,0 +1,29 @@
+<!-- project/templates/project/manage_skills.html -->
+{% extends 'project/base.html' %}
+{% block content %}
+    <h1>Manage Skills</h1>
+    <form method="post">
+        {% csrf_token %}
+        <h2>Select Predefined Skills</h2>
+        {{ form.predefined_skills }}
+        
+        <h2>Other Skill</h2>
+        <label for="id_other_skill">If your skill is not listed, please enter it here:</label>
+        {{ form.other_skill }}
+
+        <button type="submit">Add Skills</button>
+    </form>
+
+    <h2>Your Skills</h2>
+    <ul>
+        {% for skill in user_skills %}
+            <li>
+                {% if skill.predefined_skill %}
+                    {{ skill.predefined_skill.name }}
+                {% else %}
+                    {{ skill.other_skill }}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

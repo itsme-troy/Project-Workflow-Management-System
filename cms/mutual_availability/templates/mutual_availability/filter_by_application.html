@@ -1,0 +1,24 @@
+<!-- Filter By Defense Modal -->
+<div class="modal fade" id="filterByDefenseModal" tabindex="-1" aria-labelledby="filterByDefenseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="filterByDefenseModalLabel">Filter by Defense Application</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="filter-by-defense-form" method="GET" action="{% url 'filter_schedules_by_defense' %}">
+                    <div class="form-group">
+                        <label for="defense">Select Defense Application:</label>
+                        <select id="defense" name="defense" class="form-select">
+                            {% for defense in defenses %}
+                                <option value="{{ defense.id }}">{{ defense.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Filter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

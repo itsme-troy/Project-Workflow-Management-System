@@ -1,0 +1,92 @@
+{% extends 'project/base.html' %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+    <div class="card mx-auto shadow-lg" style="max-width: 1000px; border-radius: 15px; padding: 15px; margin-top: 10px">
+
+        <div class="text-center">
+            <h1 class="display-4">Register A Project Group</h1>
+            <hr class="my-4">
+        </div>
+
+        <p class="text-muted">
+            Please select{{ max_proponents }} proponents, including yourself.
+        </p>
+
+        {% if submitted %}
+            <div class="alert alert-success text-center" role="alert">
+                <h3>Your Project Group Was Submitted Successfully!</h3>
+            </div>
+        {% else %}
+            <form action="" method="POST" class="mt-4 w-100">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
+                <a href="{% url 'list-project-group' %}" class="btn btn-danger btn-lg btn-block">Cancel</a> <!-- Cancel button -->
+            </form>
+        {% endif %}
+    </div>
+
+    <style>
+        #id_proponents {
+            height: 250px; /* Adjust the height as needed */
+        }
+        #id_proponents option:checked {
+            background-color: #d1e7dd; /* Highlight color for selected options */
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectElement = document.querySelector('select[data-selectable="true"]');
+            let loggedInUserId = "{{ user.id }}";
+            let proponentsSelect = document.getElementById('id_proponents');
+
+            if (selectElement) {
+                selectElement.addEventListener('click', function(event) {
+                    const option = event.target;
+                    if (option.tagName === 'OPTION') {
+                        option.selected = !option.selected;  // Toggle selection
+                        option.classList.toggle('highlighted', option.selected);  // Toggle highlight
+                    }
+                });
+            }
+            for (let option of proponentsSelect.options) {
+                if (option.value === loggedInUserId) {
+                    option.disabled = true;
+                }
+            }
+
+            proponentsSelect.addEventListener('click', function(event) {
+                let option = event.target;
+                if (option.tagName === 'OPTION') {
+                    option.selected = !option.selected; // Toggle selection
+                }
+            });
+
+            proponentsSelect.addEventListener('change', function() {
+                let selectedOptions = [...proponentsSelect.selectedOptions];
+                if (selectedOptions.length > {{ max_proponents}} ) {
+                    alert("You can only select up to {{ max_proponents }} proponents, including yourself.");
+                    selectedOptions[selectedOptions.length - 1].selected = false; // Deselect the last selected option
+                }
+            });
+        });
+    </script>
+    <style>
+        /* Add some CSS to highlight selected options */
+        select[data-selectable="true"] option.highlighted {
+            background-color: #d3d3d3;  /* Light gray background for highlighted options */
+        }
+        </style>
+{% else %}
+    <div class="container mt-5 text-center">
+        <h1>Sorry. Please Login to view this Page.</h1>
+        <a href="{% url 'login' %}" class="btn btn-link">Login Here!</a>
+    </div>
+{% endif %}
+
+{% endblock %}

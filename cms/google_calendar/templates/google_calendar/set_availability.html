@@ -1,0 +1,74 @@
+{% comment %} {% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Set Your Availability</h2>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Start Time</label>
+            <input type="datetime-local" name="start_time" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+            <label>End Time</label>
+            <input type="datetime-local" name="end_time" class="form-control" required>
+        </div>
+        
+        <div class="form-check">
+            <input type="checkbox" name="recurring" class="form-check-input" id="recurring">
+            <label class="form-check-label" for="recurring">Recurring Weekly</label>
+        </div>
+        
+        <div class="form-group" id="day-select" style="display: none;">
+            <label>Day of Week</label>
+            <select name="day_of_week" class="form-control">
+                <option value="0">Monday</option>
+                <option value="1">Tuesday</option>
+                <option value="2">Wednesday</option>
+                <option value="3">Thursday</option>
+                <option value="4">Friday</option>
+                <option value="5">Saturday</option>
+                <option value="6">Sunday</option>
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Set Availability</button>
+    </form>
+
+    <h3 class="mt-4">Your Current Availabilities</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Recurring</th>
+                <th>Day of Week</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for availability in availabilities %}
+            <tr>
+                <td>{{ availability.start_time }}</td>
+                <td>{{ availability.end_time }}</td>
+                <td>{{ availability.recurring|yesno:"Yes,No" }}</td>
+                <td>
+                    {% if availability.recurring %}
+                        {{ availability.get_day_of_week_display }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+document.getElementById('recurring').addEventListener('change', function() {
+    document.getElementById('day-select').style.display = this.checked ? 'block' : 'none';
+});
+</script>
+{% endblock %} {% endcomment %}

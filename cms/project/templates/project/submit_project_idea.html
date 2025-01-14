@@ -1,0 +1,94 @@
+{% extends 'project/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<div class="card mx-auto shadow-lg" style="max-width: 800px; border-radius: 15px; padding: 10px; margin-top: 30px">
+
+    <h1 class="text-center">Senior Project Idea Submission</h1>
+    <hr class="my-4">
+
+    {% if user.is_authenticated %}
+
+        {% if submitted %}
+            <div class="alert alert-dismissible fade show alert-success" role="alert">
+                 Your Project Idea Submitted Successfully
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            
+        {% else %}
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li> Please Fix Errors in {{ field.label }} Field </li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                {% endif %}
+
+                <form method="post" id="projectIdeaForm" class="w-100">
+                    {% csrf_token %}
+                    
+                    {{ form.as_p }} <!-- Render form fields and errors as paragraphs -->
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <a href="{% url 'all-project-ideas' %}" class="btn btn-outline-danger btn-sm"> Cancel </a>
+                </form>
+        {% endif %}
+
+    {% else %}
+        <h1> Sorry. Please Login to view this Page. </h1> 
+
+        <a href="{% url 'login' %}">Login Here! </a> 
+    {% endif %}
+</div>
+
+{% comment %} 
+    <form method="post" id="ideaForm">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_title" class="form-label">Project Title</label>
+            <input type="text" class="form-control" id="id_title" name="title" required>
+        </div>
+        <div class="mb-3">
+            <label for="id_description" class="form-label">Project Description</label>
+            <textarea class="form-control" id="id_description" name="description" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="id_faculty" class="form-label">Submitted by Faculty</label>
+            <select class="form-select" id="id_faculty" name="faculty" required>
+                <!-- Assuming you have a context variable 'faculties' passed to the template -->
+                {% for faculty in faculties %}
+                <option value="{{ faculty.id }}">{{ faculty.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Idea</button>
+    </form>
+
+    <h2 class="mt-5">Submitted Project Ideas</h2>
+    <ul class="list-group mt-3">
+        {% for idea in ideas %}
+        <li class="list-group-item">
+            <strong>{{ idea.title }}</strong> <span class="text-muted">- Submitted by {{ idea.faculty_name }} on {{ idea.created_at|date:"M j, Y" }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+</div> {% endcomment %}
+
+<script>
+    document.getElementById('projectIdeaForm').onsubmit = function() {
+        // Additional form handling can be added here if needed
+        document.querySelector('select[name="faculty"]').removeAttribute('disabled');
+    };
+
+    
+
+</script>
+{% endblock %}

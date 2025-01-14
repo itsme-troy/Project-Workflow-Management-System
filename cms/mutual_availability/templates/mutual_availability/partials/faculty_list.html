@@ -1,0 +1,110 @@
+
+{% load static %}
+{% load custom_filters %}
+{% load tz %}
+
+{% block content %}
+
+<ul id="faculty-list-group" class="list-group">
+    {% for faculty, schedules in grouped_events.items %}
+        <li class="list-group-item">
+        
+            <div class="d-flex align-items-center">
+                <!-- Color Circle -->
+                <span id="color-preview-{{ faculty.id }}" 
+                    class="me-2 color-preview" 
+                    style="background-color: {{ faculty.color }};">
+                </span>
+                    <!-- Faculty Name -->
+                    <strong>{{ faculty.first_name }} {{ faculty.last_name }}</strong>
+
+                    <!-- Display Role Badge -->
+                    {% if faculty in faculty_roles %}
+                        <span class="badge ms-4 {% if faculty_roles|get_item:faculty == 'panelist' %}bg-primary{% elif faculty_roles|get_item:faculty == 'adviser' %}bg-success{% endif %}">
+                            {% if faculty_roles|get_item:faculty == 'panelist' %}Panelist{% elif faculty_roles|get_item:faculty == 'adviser' %}Adviser{% endif %}
+                        </span>
+                    {% endif %}
+                            
+
+                <!-- Expand/Collapse Icon -->
+                <i id="toggle-icon-{{ faculty.id }}" 
+                   class="fas fa-chevron-down ms-2" 
+                   style="cursor: pointer;" 
+                   onclick="toggleSchedules({{ faculty.id }})">
+                </i>
+
+                <!-- Settings Icon and Color Picker (Positioned to the Right) -->
+                <div class="ms-auto d-flex align-items-center" style="position: relative;">
+                    <!-- Cog Icon -->
+                    <i id="cog-icon-{{ faculty.id }}" 
+                        class="fas fa-cog me-2" 
+                        style="cursor: pointer;" 
+                        onclick="toggleColorPicker({{ faculty.id }})">
+                    </i>
+
+                    <!-- Color Picker Dropdown (Initially Hidden) -->
+                    <div id="color-picker-dropdown-{{ faculty.id }}" 
+                        class="dropdown-menu dropdown-menu-end p-3 text-center" 
+                        style="display: none; min-width: 240px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+
+                        <!-- Label and Close Icon in the Same Row -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <!-- Label -->
+                            <label for="color-picker-{{ faculty.id }}" 
+                                class="form-label fw-bold mb-0" 
+                                style="font-size: 1.1rem; color: #333;">
+                                Update Color
+                            </label>
+
+                            <!-- Close Icon -->
+                            <i class="fas fa-times" 
+                            style="cursor: pointer; font-size: 1.2rem; color: #333;" 
+                            onclick="closeDropdown({{ faculty.id }})">
+                            </i>
+                        </div>
+
+                        <!-- Centered Color Picker with Spacing -->
+                        <input type="color" id="color-picker-{{ faculty.id }}" 
+                            class="form-control mx-auto mb-3 border-0 shadow-sm" 
+                            style="width: 100px; height: 50px; cursor: pointer;">
+
+                        <!-- Centered Button at the Bottom -->
+                        <button class="btn btn-primary btn-lg mx-auto d-block mb-2" 
+                            onclick="updateColor({{ faculty.id }})" 
+                            style="width: 120px;">
+                            Update
+                        </button>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Faculty Schedules List (Initially Hidden) -->
+            <ul id="schedule-list-{{ faculty.id }}" class="mt-2 ps-4" style="display: none;">
+                {% for event in schedules %}
+                    <li>
+                        <div class="schedule-dot" style="background-color: {{ faculty.color }};"></div>
+                        From: {{ event.start|date:"M. d, Y, g:i A" }} 
+                        To: {{ event.end|date:"M. d, Y, g:i A" }}
+                    </li>
+                {% empty %}
+                    <li class="text-muted">No schedules available.</li>
+                {% endfor %}
+            </ul>
+
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% if common_schedules %}
+        {% for start, end in common_schedules %}
+            <li class="list-group-item">
+                {{ start|time:"H:i" }} - {{ end|time:"H:i" }}
+            </li>
+        {% endfor %}
+    {% else %}
+        <li class="list-group-item text-center">No common schedules available</li>
+    {% endif %}
+
+{% endblock %}

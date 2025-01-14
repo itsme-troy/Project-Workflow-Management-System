@@ -1,0 +1,22 @@
+{% extends 'project/base.html' %} <!-- use the base file -->
+{% load static %}
+
+{% block content %} <!-- content of all web pages go -->
+
+    <div class="card mx-auto shadow-lg" style="max-width: 800px; mix-height: 800px; border-radius: 15px; padding: 20px; overflow: auto;  border: 2px solid #000;"> <!-- Added padding -->
+        <h1 class="text-center" style="margin-bottom: 150px;">Select Registration Type</h1>
+
+        <div class="options-container" style="margin-bottom: 160px;">
+            <div class="card-option" onclick="location.href='{% url 'register_student' %}'" title="Register as a student">
+                <i class="fas fa-user-graduate fa-5x"></i>
+                <h2>Register as Student</h2>
+            </div>
+            <div class="card-option" onclick="location.href='{% url 'register_faculty' %}'" title="Register as a faculty member">
+                <i class="fas fa-chalkboard-teacher fa-5x"></i>
+                <h2>Register as Faculty</h2>
+            </div>
+        </div>
+    </div>
+
+<script src="{% static 'js/custom.js' %}"></script>
+{% endblock %}

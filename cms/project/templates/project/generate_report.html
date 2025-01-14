@@ -1,0 +1,83 @@
+{% extends 'project/base.html' %}
+{% load custom_filters %}
+{% load static %}
+
+{% block content %}
+
+<div class="table-container">
+
+<center>
+  <h1 style="display: inline-block;"> Projects Defense Progress </h1> 
+
+  <div style="margin-right: 10px; float: right;"> <!-- Changed to float right -->
+      
+      <div class="button-container" style="float: right; margin-left: 15px;">  <!-- Using gap to space out buttons -->
+          <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+      </div>
+  </div> 
+
+</center>
+
+
+{% if not projects_with_phases %}
+  <center> 
+    <div class="alert alert-danger" role="alert">
+      <h4> No projects Available at the moment. </h4> 
+    </div> 
+  </center> 
+
+{% else %}
+  
+  <table class="table table-hover table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">Project Name</th>
+            <th scope="col">Proponents</th> 
+            <th scope="col">Adviser</th>
+            <th scope="col">Proposal Defense</th>
+            <th scope="col">Design Defense</th>
+            <th scope="col">Preliminary Defense</th>
+            <th scope="col">Final Defense</th>
+        </tr>
+    </thead>
+    <tbody>
+      {% for project_data in projects_with_phases %}
+      {% if project_data.project.status == 'approved' %}
+          <tr>
+              <td>{{ project_data.project }}</td>
+              <td>{{ project_data.project.proponents }}</td>
+              <td>{{ project_data.project.adviser }}</td>
+              
+              <td class="verdict-{{ project_data.defense_results.proposal|lower|slugify_filter }}">
+                  <span class="badge badge-{{ project_data.defense_results.proposal|lower|slugify_filter }}">
+                      {{ project_data.defense_results.proposal }}
+                  </span>
+                  <!-- Debugging  tool -->
+                  {% comment %} <small>Class: badge-{{ project_data.defense_results.proposal|lower|slugify_filter }}</small> {% endcomment %}
+              </td>
+              <td class="verdict-{{ project_data.defense_results.design|lower|slugify_filter }}">
+                  <span class="badge badge-{{ project_data.defense_results.design|lower|slugify_filter }}">
+                      {{ project_data.defense_results.design }}
+                  </span>
+              </td>
+              <td class="verdict-{{ project_data.defense_results.preliminary|lower|slugify_filter }}">
+                  <span class="badge badge-{{ project_data.defense_results.preliminary|lower|slugify_filter }}">
+                      {{ project_data.defense_results.preliminary }}
+                  </span>
+                  <!-- Debugging  tool -->
+                  {% comment %} <small>Class: badge-{{ project_data.defense_results.preliminary|lower|slugify_filter }}</small> {% endcomment %}
+              </td>
+              <td class="verdict-{{ project_data.defense_results.final|lower|slugify_filter }}">
+                  <span class="badge badge-{{ project_data.defense_results.final|lower|slugify_filter }}">
+                      {{ project_data.defense_results.final }}
+                  </span>
+              </td>
+          </tr>
+      {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>  <hr/> </br>
+{% endif %}
+
+</div>
+{% endblock %}

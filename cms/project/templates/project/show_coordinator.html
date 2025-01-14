@@ -1,0 +1,208 @@
+{% extends 'project/base.html' %}
+{% load static %}
+
+    <!-- ===== ===== Remix Font Icons Cdn ===== ===== -->
+    <link rel="stylesheet" href="fonts/remixicon.css">
+    {% block content %}
+        <!-- Back Button -->
+            
+        <div class="grid-container">
+        <!-- User Profile Section -->
+        <section class="pic-skills-column">
+            <subsection class="userProfile card">
+                <div class="profile_container">
+                    {% if faculty.profile_image and faculty.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                        <figure><img src="{{ faculty.profile_image.url }}" alt="profile_pic" class="img-fluid" width="250px" height="250px"></figure>
+                    {% else %}
+                        <figure><img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid" width="250px" height="250px"></figure>
+                    {% endif %}
+                </div>
+            </subsection>
+        
+            <subsection class="skills card">
+                <div class="skills_container">
+                    <h1 class="heading skills-heading">Skills</h1>
+                    <ul class="skills-list">
+                        <li>Android</li>
+                        <li>Web-Design</li>
+                        <li>UI/UX</li>
+                        <li>Video Editing</li>
+                    </ul>
+                </div>
+            </subsection>
+        </section>
+
+        <!-- User Details Section -->
+        <section class="details-info-column">
+            <subsection class="user_details card">
+                <div class="header-container">
+                    <div class="UserName">
+                        <h1 class="name">{{ faculty.first_name}} {{ faculty.last_name }}</h1>
+                        <span class="role {{ faculty.role|lower }}">{{ faculty.role }}</span>
+                    </div>
+                    <div class="button-container" style="display: flex; gap: 10px;">  <!-- Using gap to space out buttons -->
+                        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+                        {% if request.user.id == faculty.id %}
+                            <a href="{% url 'update-user' %}" class="btn btn-outline-secondary btn-sm">Edit Profile</a> <!-- Edit Profile Button -->
+                        {% endif %}
+                    </div>
+                </div>
+               
+                <div class="bio-section" style="margin-top: 20px;">
+                    <h4 class="text-center">About Me:</h4>
+                    <p>{{ faculty.bio }}</p> <!-- Displaying the bio content -->
+                </div>
+
+            </subsection>
+            {% comment %} <a href="{% url 'update-user' %}" class="btn btn-secondary"> Update Profile</a> </br> </br>  {% endcomment %}
+            <!-- Additional Information Section -->
+            <subsection class="additional_information card">
+
+                <div class="toggle-container" style="display: flex; justify-content: flex-start; margin-bottom: 10px;">
+                    <button id="aboutButton" onclick="toggleVisibility('aboutInfo', this)" class="toggle-button active-toggle" style="background-color: #4CAF50;">About</button>
+                    {% comment %} <button id="projectGroupButton" onclick="toggleVisibility('projectGroup', this)" class="toggle-button" style="margin-left: 10px;">Advisees</button> {% endcomment %}
+                    {% comment %} <div class="underline-indicator" id="underline" style="width: 50px; left: 0;"></div> <!-- Underline indicator --> {% endcomment %}
+                </div>
+                
+                <div id="aboutInfo" style="display:block;">
+                    <h3 class="heading"> About </h3>
+                    <table class="contact-info-table">
+                        <tr>
+                            <td><strong class="contact-label">Phone:</strong></td>
+                            <td>{{ faculty.phone }}</td>
+                        </tr>
+                     
+                        <tr>
+                            <td><strong class="contact-label">Gbox:</strong></td>
+                            <td>{{ faculty.email }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong class="contact-label">Facebook link:</strong></td>
+                            <td>{{ faculty.facebook_link }}</td>
+                        </tr>
+                    
+                    </table>
+                </div>
+                {% comment %} <div id="projectGroup" style="display:none;">
+                    <h3>Project Group</h3>
+                    <div class="project-cards-container">
+                        {% if not projects %}
+                            <p class="no-projects-message">No Advisees available at the moment.</p>
+                        {% else %}
+                            {% for project in projects %}
+                                <div class="card mb-3 project-card">
+                                    <div class="card-header">
+                                         Adviser: {{ project.adviser }}
+                                    Project Title: </br> {{ project.title }}
+                                    </div>
+                                    <ul class="list-group list-group-flush">
+                                        {% for student in project.proponents.proponents.all %}
+                                            <li class="list-group-item">{{ student }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div> {% endcomment %}
+                
+            </subsection>
+        </section>
+    </div>
+    {% comment %} <script>
+        function toggleVisibility(id, button) {
+            var aboutInfo = document.getElementById('aboutInfo');
+            var projectGroup = document.getElementById('projectGroup');
+        
+            // Reset button styles
+            document.getElementById('aboutButton').style.backgroundColor = '';
+            document.getElementById('projectGroupButton').style.backgroundColor = '';
+            document.getElementById('aboutButton').classList.remove('active-toggle'); // Remove active class
+            document.getElementById('projectGroupButton').classList.remove('active-toggle'); // Remove active class
+        
+            if (id === 'aboutInfo') {
+                aboutInfo.style.display = "block";
+                projectGroup.style.display = "none"; // Hide project group
+                button.style.backgroundColor = '#4CAF50'; // Highlight active button
+                button.classList.add('active-toggle'); // Add active class
+            } else if (id === 'projectGroup') {
+                projectGroup.style.display = "block";
+                aboutInfo.style.display = "none"; // Hide about info
+                button.style.backgroundColor = '#4CAF50'; // Highlight active button
+                button.classList.add('active-toggle'); // Add active class
+            }
+        }
+        // To set the default view on page load
+        window.onload = function() {
+            toggleVisibility('aboutInfo', document.getElementById('aboutButton'));
+        }
+    </script> {% endcomment %}
+{% endblock %}
+
+{% comment %} 
+
+{% extends 'project/base.html' %}
+
+{% block content %}
+
+</br> 
+<div class="container text-left my-5">
+    <div class="row ">
+        <div class="col-md-8">
+            <h1 class="display-4 text-primary">{{ faculty.first_name }} {{ faculty.last_name }}'s Profile</h1>
+            <div class="card mt-4 p-4 shadow">
+                {% if faculty.profile_image %}
+                    <img src= "{{ faculty.profile_image.url }}"
+                    width=300 height=300 class="rounded-circle"> <br/> </br>  
+                {% else %} </br> 
+                    <img src= "/static/images/default_profile_pic.jpg"
+                    width=250 height=250 class="rounded-circle"> <br/> </br>  
+                {% endif %}
+            
+                <div class="card-body">
+                    <h5 class="card-title">Profile Details</h5>
+                    <p class="card-text"><strong>First Name:</strong> {{ faculty.first_name }}</p>
+                    <p class="card-text"><strong>Last Name:</strong> {{ faculty.last_name }}</p>
+                    <p class="card-text"><strong>Course:</strong> {{ faculty.course }}</p>
+                    <p class="card-text"><strong>Email:</strong> {{ faculty.email }}</p>
+                    <p class="card-text"><strong>Contact Phone:</strong> {{ faculty.phone }}</p>
+                    <p class="card-text"><strong>Role:</strong> {{ faculty.role }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="col-4"> 
+    </br> 
+    <h3> Advisees: </h3> 
+    {% for group in project_group %}
+        <div class="card" style="width: 20rem;">
+            <div class="card-header">
+            Adviser: {{ group.adviser }} </br> 
+            </div>
+            {% for faculty in group.proponents.all %}
+                <ul class="list-group list-group-flush">
+                <li class="list-group-item"> {{ faculty }} </br> </li>
+                </ul>
+            {% endfor %}
+        </div>
+    </br> 
+    {% endfor %}
+    </br>   </br> 
+    <a href="{% url 'update-user' %}" class="btn btn-secondary"> Update Profile</a> </br> </br> 
+</div>
+<div> 
+</div> 
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body> 
+
+
+{% endblock %} {% endcomment %}

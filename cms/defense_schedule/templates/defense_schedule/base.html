@@ -1,0 +1,400 @@
+{% extends 'project/base.html' %}
+{% load static %}
+{% load custom_filters %} 
+{% block styles %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css" />
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
+     
+    <link rel="stylesheet" href="{% static 'free_schedule/css/free_sched.css' %}">
+    <link rel="stylesheet" href="{% static 'free_schedule/css/style_calendar.css' %}">
+    
+    <!-- FullCalendar JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
+    
+    <!-- Custom JS -->
+    {% comment %} <script src="{% static 'project/js/custom.js' %}"></script> {% endcomment %}
+{% endblock %}
+
+{% block content %}  
+    {{ block.super }}
+
+    <script>
+
+        function formatDate(date) {
+            return moment(date).toISOString(); // Use ISO format
+        }
+
+        // Function to get the contrast color (either black or white)
+        function getContrastYIQ(hexColor) {
+            if (!hexColor) return '#000000'; // Default to black if no color is provided
+            hexColor = hexColor.replace('#', '');
+            const r = parseInt(hexColor.substr(0, 2), 16);
+            const g = parseInt(hexColor.substr(2, 2), 16);
+            const b = parseInt(hexColor.substr(4, 2), 16);
+            const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+            return yiq >= 128 ? '#000000' : '#FFFFFF'; // Return black for light colors and white for dark colors
+        }
+        
+        function refreshEventsList() {
+            $.ajax({
+                type: "GET",
+                url: 'all_sched',  
+                dataType: "json",
+                
+                success: function (data) {
+                    var list = $('.list-group');
+                    list.empty(); // Clear the existing list
+        
+                    if (data.length > 0) {
+                        $.each(data, function (index, event) {
+                            // Adjust the displayed times to Asia/Manila timezone
+                            
+                            if (event.start && event.end && event.application   ) {
+                                var startFormatted = moment(event.start).tz('Asia/Manila').format("MMM. D, YYYY h:mm A");
+                                var endFormatted = moment(event.end).tz('Asia/Manila').format("MMM. D, YYYY h:mm A");
+            
+                                // Create the list item
+                                var listItem= `
+                                    <li class="list-group-item d-flex align-items-center"
+                                        style="padding-left: 10px; border-radius: 4px; background: linear-gradient(to right, ${event.color || '#007BFF'} 5px, #fff 5px);">
+
+                                          <div style="font-size: 14px; font-weight: bold;" >
+                                                ${event.application}
+                                            </div>
+                                        <div style="height: 100%; width: 5px; background-color: ${event.color || '#007BFF'};"></div>
+                                        <span class="ms-3">
+                                             Start: ${startFormatted}</br> End:  ${endFormatted}
+                                        </span>
+                                    </li>
+                                `;
+                                // Append the list item to the list
+                                list.append(listItem);
+                            }else {
+                                console.warn("Event missing required properties:", event);
+                            }
+                        });
+                    } else {
+                        list.append('<li class="list-group-item">No Defense Schedules found.</li>');
+                    }
+                },
+                error: function (data) {
+                    console.error(data); // Log the error response
+                    alert('There was a problem fetching the events list!');
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            // Check if the user is the current coordinator
+            const isCurrentCoordinator = {{ request.user.is_current_coordinator|yesno:"true,false" }};
+
+            
+            // Function to open the modal and set start and end times
+            function openCreateScheduleModal(start = '', end = '') {
+
+                if (!isCurrentCoordinator) {
+                    alert('You do not have permission to create or edit schedules.');
+                    return; // Prevent opening the modal if not a coordinator
+                }
+
+                // Set the start and end fields if provided
+                $('#schedule-start').val(start);
+                $('#schedule-end').val(end);
+
+                // Reset other fields
+                $('#schedule-application').val('');
+                $('#schedule-color').val('#007bff');
+        
+                // Open the modal 
+                $('#createDefenseScheduleModal').modal('show');
+            }
+        
+            //   // Open modal without pre-filled dates when the "Create Schedule" button is clicked
+            $('#create-defense-schedule-btn').on('click', function () {
+                openCreateScheduleModal(); // No dates passed
+            });
+        
+            // Handle form submission
+            $('#create-defense-schedule-form').on('submit', function (e) {
+                if (!isCurrentCoordinator) {
+                    alert('You do not have permission to create or edit schedules.');
+                    return; // Prevent opening the modal if not a coordinator
+                }
+
+                e.preventDefault(); // Prevent the default form submission
+        
+                // Get the CSRF token
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+                // Serialize form data
+                const formData = $(this).serialize();
+        
+                // Get the selected color
+                const selectedColor = $('#schedule-color').val();
+        
+                // Send AJAX request
+                $.ajax({
+                    url: 'create_defense_schedule', // URL for the view
+                    type: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken // Include the CSRF token in the headers
+                    },
+                    data: formData + '&color=' + encodeURIComponent(selectedColor), // Append color to the serialized data
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            alert('Schedule created successfully!');
+                            location.reload(); // Refresh the page to show the new schedule
+                        } else {
+                            alert(`Failed to create schedule: ${response.message}`);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            });
+            // Initialize FullCalendar
+            var calendar = $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                timezone: 'Asia/Manila', // Align with server timezone
+                events: 'all_sched',  // Load events from this endpoint
+                selectable: true,  // Enable selection on the calendar
+                selectHelper: false,  // Disable "helper" selection UI
+                editable: true,  // Allow event editing
+                eventLimit: false, // // Disable event limit per day
+                //contentHeight: 'auto',
+                //height: 'auto',
+                defaultView: 'agendaWeek', // Default view is the week view
+                minTime: '06:00:00',
+                
+                select: function (start, end, allDay) {
+                    // Check the current view type (month, week, or day)
+                    var currentView = calendar.fullCalendar('getView').type;
+                
+                    // Declare variables for adjusted start and end times
+                    var adjustedStart, adjustedEnd;
+                
+                     // If the current view is 'month', set the event as an all-day event
+                    // If the current view is 'month', set the event as an all-day event
+                    if (currentView === 'month') {
+                        // Adjust start and end times for all-day events (12:00 AM to 11:59 PM)
+                        var adjustedStart = start.clone().startOf('day'); // Start at 12:00 AM
+                        var adjustedEnd = end.clone().subtract(1, 'seconds').endOf('day'); // End at 11:59 PM
+                        // isAllDay = true;
+                        // Open the modal with the adjusted start and end times
+                        openCreateScheduleModal(adjustedStart.toISOString(), adjustedEnd.toISOString(), true);
+                    } else {
+                        // For other views (week, day), pass the original start and end times
+                        openCreateScheduleModal(start.toISOString(), end.toISOString());
+                        // If the user selects an all-day event, pass it accordingly
+                    } 
+                
+                    // Ensure end time is after start time
+                    if (!adjustedEnd.isAfter(adjustedStart)) {
+                        alert("End time must be after start time.");
+                        return;
+                    }
+
+                },
+                
+                eventRender: function (event, element) {
+                    console.log("Rendering event:", event); // Log the event to check the times and data
+                    
+                     // Get the background color for the event, fallback to blue if not provided
+                    const eventColor = event.color || '#007BFF';
+                    // Get the contrast color for the text (either black or white)
+                    const textColor = getContrastYIQ(eventColor);
+
+                    // Format start and end times in the local timezone (Asia/Manila)
+                    var startFormatted = moment(event.start).tz('Asia/Manila').format('hh:mm A');
+                    var endFormatted = moment(event.end).tz('Asia/Manila').format('hh:mm A');
+                    var timeText = startFormatted + ' - </br>' + endFormatted; 
+                
+                    // Construct the content to display project title first, followed by the time
+                    var displayContent = `
+                        <div style="font-size: 14px; font-weight: bold; color: ${textColor}; text-align: center;" >
+                            ${event.application}
+                        </div>  <div style="font-size: 14px; font-weight: bold; color: ${textColor};" >
+                        </div>
+                        <div style="font-size: 12px; color: ${textColor};">
+                            ${timeText}
+                        </div>
+                    `;
+                    // Ensure that the time and title are inserted into the event's element
+                    element.find('.fc-content').html(displayContent);
+                
+                    // Apply the color to the event's border and background
+                    element.css({
+                        'border': `2px solid ${eventColor}`,
+                        'background-color': eventColor,
+                        'color': textColor // Apply the calculated text color to the event
+                    });
+                    
+                    var startMoment = moment(event.start).tz('Asia/Manila');
+                    var endMoment = moment(event.end).tz('Asia/Manila');
+                
+                    // Example: If the event spans exactly from 00:00:00 on Dec 17 to 00:00:00 on Dec 18
+                    var specificStart = moment('2024-12-17 00:00:00', 'YYYY-MM-DD HH:mm:ss').tz('Asia/Manila');
+                    var specificEnd = moment('2024-12-18 00:00:00', 'YYYY-MM-DD HH:mm:ss').tz('Asia/Manila');
+                
+                    if (startMoment.isSame(specificStart) && endMoment.isSame(specificEnd)) {
+                        event.allDay = true; // Mark the event as all-day
+                    }
+                
+                    // Handle all-day events
+                    if (event.allDay) {
+                        element.addClass('fc-day-grid-event'); // Ensure it appears in the all-day section
+                    }
+                },
+                        
+                //  When resizing an event, the start and end times are converted to UTC before being sent to the server.
+                eventResize: function (event) {
+                    if (!isCurrentCoordinator) {
+                        calendar.fullCalendar('refetchEvents');
+                        alert('You do not have permission to create or edit schedules.');
+                        return; // Prevent opening the modal if not a coordinator
+                    }
+                
+                    var startFormatted = formatDate(event.start); 
+                    var endFormatted = formatDate(event.end); 
+                    var id = event.id;
+
+                    $.ajax({
+                        type: "GET",
+                        url: 'update_sched',
+                        data: {
+                            'start': startFormatted, 
+                            'end': endFormatted,
+                            'id': id, 
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            calendar.fullCalendar('refetchEvents');
+                            //refreshEventsList(); // Refresh the events list
+                            location.reload(); // Refresh the page to show the new schedule
+                            alert('Schedule Updated');
+                        },
+                        error: function (data) {
+                            alert('There is a problem!!!');
+                        }
+                    });
+                    
+                },
+                // When dropping an event to a new position, the times are converted to UTC and saved.
+                eventDrop: function (event) {
+                    if (!isCurrentCoordinator) {
+                        alert('You do not have permission to create or edit schedules.');
+                        calendar.fullCalendar('refetchEvents');
+                        return; // Prevent opening the modal if not a coordinator
+                    }
+
+                    var startFormatted = formatDate(event.start); 
+                    var endFormatted = formatDate(event.end); 
+                    var id = event.id;
+
+                    $.ajax({
+                        type: "GET",
+                        url: 'update_sched',
+                        data: {
+                            'start': startFormatted, 
+                            'end': endFormatted, 
+                            'id': id
+                        },
+                        
+                        dataType: "json",
+                        success: function (data) {
+                            calendar.fullCalendar('refetchEvents');
+                            //refreshEventsList(); // Refresh the events 
+                            location.reload(); // Refresh the page to show the new schedule
+                            alert('Schedule Updated');
+                        },
+                        error: function (data) {
+                            alert('There is a problem!!!');
+                            
+                        }
+                    });
+                },
+
+                
+                // This allows for removing events from the calendar and from the database.
+                eventClick: function (event) {
+                    if (!isCurrentCoordinator) {
+                        alert('You do not have permission to create or edit schedules.');
+                        return; // Prevent opening the modal if not a coordinator
+                    }
+
+                    if (confirm("Are you sure you want to remove this event?")) {
+                        var id = event.id;
+                        $.ajax({
+                            type: "GET",
+                            url: 'remove_sched',
+                            data: {
+                                'id': id,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}',  // Include CSRF token for safety
+                            },
+                            
+                            dataType: "json",
+                            success: function (data) {
+                                console.log(data);  // Log the server response to check if it's returning the correct status
+                                if (data.status === 'success') {
+                                    calendar.fullCalendar('refetchEvents');
+                                    //refreshEventsList(); // Refresh the events list
+                                    location.reload(); // Refresh the page to show the new schedule
+                                    alert('Schedule Removed');
+                                } else {
+                                    alert('There was a problem removing the schedule.');
+                                }
+                            },
+                            error: function (data) {
+                                console.error(data); // Log the error response
+                                alert('There is a problem removing the schedule!');
+                            }
+                        });
+                    }
+                },
+            });
+
+            $('#delete-all-defense-schedules-btn').on('click', function () {
+                if (!isCurrentCoordinator) {
+                    alert('You do not have permission to create or edit schedules.');
+                    return; // Prevent opening the modal if not a coordinator
+                }
+
+                if (confirm('Are you sure you want to delete all Defense schedules? This action cannot be undone.')) {
+                    $.ajax({
+                        url: '{% url "delete_all_defense_schedules" %}',  // Define this view in your Django project
+                        type: 'POST',
+                        data: {
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                alert('All schedules deleted successfully.');
+                                location.reload();  // Refresh the page to update the UI
+                            } else {
+                                alert(response.message || 'Failed to delete schedules. Please try again.');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(xhr.responseText);
+                            alert('An error occurred. Please try again.');
+                        }
+                    });
+                }
+            });
+            
+        });
+    
+    </script>
+{% endblock %}

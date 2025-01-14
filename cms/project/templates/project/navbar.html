@@ -1,0 +1,204 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% comment %} <link rel="stylesheet" href="{% static 'css/custom-navbar.css' %}"> {% endcomment %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <script src="{% static 'js/custom.js' %}"></script>
+</head>
+
+  <body>
+  <nav class="navbar navbar-expand-lg navbar-light shadow-sm"> <!-- Light background with shadow for depth -->
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <img src="{% static 'images/logo.png' %}" alt="Logo" style="height: 35px; margin:0 padding: 0;">
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          {% if user.is_authenticated %}
+            {% if user.role != 'COORDINATOR' %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'my-profile' request.user.id %}">
+                    <i class="fas fa-user"></i> My Profile
+                  </a>
+                </li>
+              {% endif %}
+
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-users"></i> Users
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'list-student' %}">Students</a></li>
+                {% comment %} <li><a class="dropdown-item" href="{% url 'list-student-waitlist' %}">Student Waitlist</a></li> {% endcomment %}
+                
+                <li><a class="dropdown-item" href="{% url 'list-faculty' %}">Faculty</a></li>
+              </ul>
+            </li>
+            
+          {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Project Groups 
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'list-project-group' %}"> Show Project Groups </a></li>
+                {% if user.role == 'STUDENT' %}
+                    <li><a class="dropdown-item" href="{% url 'my-project-group-waitlist' %}"> My Project Group Waitlist </a></li>
+                    <li><a class="dropdown-item" href="{% url 'join-group-list' %}">Join a Group</a></li>
+                    <li><a class="dropdown-item" href="{% url 'add-project-group' %}"> Register a Project Group  </a></li>
+                {% endif %}
+              
+              </ul>
+            </li> {% endif %}
+
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Projects
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'list-projects' %}"> All Projects  </a></li>
+                
+                {% if user.is_authenticated %}
+                  {% if user.role == 'STUDENT' %}
+                    <li><a class="dropdown-item" href="{% url 'my-project' %}"> My Project  </a></li> 
+                    <li><a class="dropdown-item" href="{% url 'list-proposals' %}"> All Proposals  </a></li> 
+                    <li><a class="dropdown-item" href="{% url 'add-project' %}"> Add Proposal  </a></li>
+                  {% endif %}
+                {% endif  %}
+                
+              </ul>
+            </li>
+          
+            {% if user.role == 'STUDENT' %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Defense Application
+                </a>
+                <ul class="dropdown-menu">
+                
+                  <li><a class="dropdown-item" href="{% url 'my-defense-application' %}">  My Defense Application </a></li>
+                  <li><a class="dropdown-item" href="{% url 'submit-defense-application' %}"> Submit Defense Application </a></li>
+                  
+                </ul>
+            </li> {% endif %}
+            
+
+            {% if user.role == 'FACULTY' %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Faculty Tab
+                </a>
+                <ul class="dropdown-menu">
+                
+                  <li><a class="dropdown-item" href="{% url 'adviser-projects' %}"> My Advisory Projects  </a></li>
+                  <li><a class="dropdown-item" href="{% url 'adviser-proposals' %}"> My Received Proposals  </a></li>
+                  <li><a class="dropdown-item" href="{% url 'panel-projects' %}"> Projects I serve as Panelist  </a></li>
+                  <li><a class="dropdown-item" href="{% url 'generate-report' %}"> Report Generation  </a></li>
+                  <li><a class="dropdown-item" href="{% url 'free-schedule' %}"> Set Available Schedule  </a></li>
+                  
+                </ul>
+            </li>
+            {% endif %}
+
+            {% if request.user.role == 'COORDINATOR' %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'coordinator-dashboard' %}"> Coordinator Dashboard</a>
+            </li>
+            {% endif %}
+
+            {% if request.user.role == 'COORDINATOR' and request.user.is_current_coordinator %}
+            
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Coordinator Tab
+              </a>
+              <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}"><i class="fas fa-check-circle"></i> Approved Projects</a></li>
+                  <li><a class="dropdown-item" href="{% url 'coordinator-approval-student' %}"><i class="fas fa-user-check"></i> Student Approval Form</a></li>
+                  <li><a class="dropdown-item" href="{% url 'coordinator-approval-faculty' %}"><i class="fas fa-user-tie"></i> Faculty Approval Form</a></li>
+                  <li><a class="dropdown-item" href="{% url 'list-defense-applications' %}"><i class="fas fa-file-invoice"></i> All Defense Applications</a></li>
+                  <li><a class="dropdown-item" href="{% url 'common-sched-calendar' %}"><i class="fas fa-calendar-alt"></i> View Common Available Schedule</a></li>
+                  <li><a class="dropdown-item" href="{% url 'select-coordinator' %}"><i class="fas fa-user-plus"></i> Select New Coordinator</a></li>
+                  <li><a class="dropdown-item" href="{% url 'list-archived-projects' %}"><i class="fas fa-archive"></i> Archived Projects</a></li>
+                  <li><a class="dropdown-item" href="{% url 'generate-report' %}"><i class="fas fa-file-alt"></i> Report Generation</a></li>
+                  {% comment %} <li><a class="dropdown-item" href="{% url 'create-custom-phases' %}"><i class="fas fa-file-alt"></i> Create Custom Phase </a></li> {% endcomment %}
+                  
+                </ul>
+          </li>
+            {% endif %}
+
+            {% if request.user.is_authenticated %}
+            
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Project Ideas 
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'all-project-ideas' %}"> All Project Ideas   </a></li>
+                {% if request.user.role == 'FACULTY'%}
+                  <li><a class="dropdown-item" href="{% url 'submit-project-idea' %}"> Submit Project Idea </a></li>  {% endif %}
+              </ul>
+          </li>
+            {% endif %}
+        
+          {% comment %} <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Notifications
+                <span class="badge bg-danger notification-count" style="display: none;">0</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end notification-menu" aria-labelledby="notificationDropdown" style="width: 300px; max-height: 400px; overflow-y: auto;">
+                <div class="notifications-list">
+                    <!-- Notifications will be inserted here by JavaScript -->
+                </div>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item text-center" href="#">View All Notifications</a>
+            </div>
+        </li> {% endcomment %}
+        <li><a class="nav-link" href="{% url 'notifications' %}">  Notifications </a></li>
+        
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </a>
+        </li>
+
+      {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'login' %}">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </a>
+        </li>
+        
+        {% comment %} <li class="nav-item">
+          <a class="nav-link" href="{% url 'select-registration' %}">
+            <i class="fas fa-user-plus"></i> Register
+          </a>
+        </li> {% endcomment %}
+
+        {% comment %} <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user-plus"></i> Register
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'register_student' %}">Register as Student</a></li>
+            <li><a class="dropdown-item" href="{% url 'register_faculty' %}">Register as Faculty</a></li>
+          </ul>
+        </li> {% endcomment %}
+      {% endif %}
+    </ul>
+    <form id="searchForm" class="d-flex ms-auto" method="POST" action="{% url 'search-projects' %}" role="search">
+      {% csrf_token %}
+      <input class="form-control me-2" type="search" placeholder="Search Projects" aria-label="Search" name="searched">
+      <button id="searchButton" class="btn btn-outline-primary" type="submit">Search</button>
+    </form>
+  
+  </div>
+  </div>
+  </nav>
+</body> 
+</html>
