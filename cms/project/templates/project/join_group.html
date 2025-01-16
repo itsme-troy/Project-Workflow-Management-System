@@ -1,155 +1,33 @@
 {% extends 'project/base.html' %}
 
 {% block styles %}
-<style>
-    .action-buttons {
-        display: none;
-    }
-    tr.active .action-buttons {
-        display: flex;
-        gap: 0.5rem;
-    }
-    .hint-button {
-        color: #6c757d;
-        background: none;
-        border: none;
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
-        cursor: pointer;
-    }
-    .hint-button::before {
-        content: "↗";
-        margin-right: 0.25rem;
-    }
-    .groups-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 1rem;
-    }
 
-    .compact-table {
-        font-size: 0.875rem;
-    }
-
-    .compact-table td, .compact-table th {
-        padding: 0.5rem;
-    }
-
-    .card-header {
-        padding: 0.75rem 1rem;
-        background-color: #f8f9fa; /* Light background for header */
-        border-bottom: 1px solid #dee2e6;
-    }
-
-    .card-body {
-        padding: 0.75rem;
-        background-color: #ffffff; /* White background for body */
-    }
-
-    .badge {
-        font-size: 0.75rem;
-        margin-right: 0.5rem; /* Add margin to the right of the badge */
-    }
-
-    .compact-heading {
-        font-size: 1rem;
-        margin-bottom: 0.5rem;
-    }
-    .card {
-        height: 350px;
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        border: 1px solid #dee2e6;
-        border-radius: 0.25rem;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
-    }
-
-    .card-body {
-        padding: 0.75rem;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
-        position: relative; /*
-    }
-    .action-buttons {
-        position: absolute;
-        bottom: 0.75rem;
-        right: 0.75rem;
-    }
-
-
-    .table-container {
-        flex: 1;
-        min-height: 0;
-        overflow-y: auto;
-    }
-
-    .compact-table {
-        font-size: .95rem;
-        margin-bottom: 0;
-    }
-
-    .table-sm {
-        margin-bottom: 0;
-    }
-
-    .card-actions {
-        position: absolute;
-        margin-top: auto;
-        padding-top: 0.75rem;
-    }
-
-    .pending-requests td {
-        padding-bottom: 0.5rem;
-    }
-
-    /* Button styles */
-    .btn {
-        border-radius: 0.25rem;
-        transition: background-color 0.3s, box-shadow 0.3s;
-    }
-    .btn:hover {
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-    .btn-xs {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.75rem;
-        margin-left: 0.5rem; /* Add margin to the left of the button */
-        margin-top: 0.25rem;
-    }
-
-
-</style>
 {% endblock %}
 
 {% block content %}
 
-<div class="card"style="min-height: 900px;"> 
 
     <center> <h1 style="display: inline-block; margin-left: -60px"> Available Project Groups </h1> 
         <div class="button-container" style="float: right;">  <!-- Using gap to space out buttons -->
             <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
         </div>
     </center> 
-
     <br>
 
     {% if not groups_with_all_members %}
-        <div class="alert custom-error-alert text-center" role="alert">
+        <div class="alert custom-info-alert text-center" role="alert">
             <h3> No Project Groups Available at the moment. </h3>
         </div>
     {% else %}
      
             {% if groups_with_all_members %}
-                <div class="groups-grid">
+                <div class="groups-grid" style="max-width: 500px">
                     {% for group in groups_with_all_members %}
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="card-title mb-0">Group {{ forloop.counter }}</h5>
                                 <small class="text-muted">
-                                    {{ group.current_proponents|length }}/3
+                                    {{ group.current_proponents|length }}/{{group.max_proponents}}
                                 </small>
                             </div>
                             <div class="card-body">
@@ -174,7 +52,7 @@
                                             </tr>
                                         {% endfor %}
 
-                                        {% with total_slots=3 %}
+                                        {% with total_slots=group.max_proponents %}
                                             {% for _ in ""|center:total_slots %}
                                                 {% if forloop.counter > group.current_proponents|length %}
                                                 <tr>
@@ -245,7 +123,7 @@
                                                 <button type="submit" 
                                                         class="btn btn-sm btn-primary"
                                                         onclick="return confirm('Are you sure you want to request to join this group?')"
-                                                        {% if group.current_proponents|length >= 3 %}disabled{% endif %}>
+                                                        {% if group.current_proponents|length >= group.max_proponents %} disabled{% endif %}>
                                                     Request to Join
                                                 </button>
                                             </form>
@@ -264,5 +142,4 @@
             {% endif %}
         </div>
     {% endif %}
-    </div>
 {% endblock %}

@@ -36,7 +36,7 @@
                         <thead>
 
                             <tr>
-                                <th scope="col"> # </th>
+                                {% comment %} <th scope="col"> # </th> {% endcomment %}
                                 <th scope="col" class="picture-column">Picture</th> 
                                 <th scope="col"> Proponent </th>
                                 <th scope="col"> Status </th>
@@ -47,7 +47,7 @@
                         <tbody>
                             {% for proponent in group_data.current_proponents %}
                                 <tr {% if user == proponent %}class="table-warning"{% endif %} onclick="toggleActions(this)">
-                                    <td> <strong> {{ forloop.counter }} </strong> </td>
+                                    {% comment %} <td> <strong> {{ forloop.counter }} </strong> </td> {% endcomment %}
                                     <td>
                                         {% if proponent.profile_image and proponent.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
                                             <img src="{{ proponent.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid larger-img">
@@ -89,14 +89,14 @@
                             {% for pending in group_data.pending_proponents %}
                                 <tr {% if user == pending %}class="table-warning"{% endif %} onclick="toggleActions(this)">
                                     
-                                    <td> <strong> {{ forloop.counter }} </strong> </td>
+                                    {% comment %} <td> <strong> {{ forloop.counter }} </strong> </td> {% endcomment %}
                                     <td>
                                         {% if proponent.profile_image and proponent.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
                                             <img src="{{ proponent.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid larger-img">
-                                      {% else %}
+                                        {% else %}
                                         {% comment %} no {% endcomment %}
                                             <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table larger-img"> 
-                                      {% endif %}
+                                        {% endif %}
                                     </td>
                                     
                                     <td>
@@ -191,8 +191,9 @@
                                 </a>
                             {% endif %}
                             
-                            {% if group_data.current_proponents.count == 1 and group_data.pending_proponents.count <= 1 and group_data.declined_proponents.count < 2 or group_data.current_proponents.count == 2 and group_data.pending_proponents.count == 0 and group_data.declined_proponents.count == 0 %} 
-                                <a href="{% url 'invite-more-members' group_data.group.id %}" class="btn btn-primary"
+                              <!-- Only allow inviting more members if the total members are less than max_proponents -->
+                            {% if group_data.total_members < group_data.max_proponents %}
+                                <a href="{% url 'invite-more-members' group_data.group.id %}" class="btn btn-primary btn-lg"
                                     onclick="return confirm('Are you sure you want to invite more members to this group?')">
                                 Invite More Members
                                 </a>

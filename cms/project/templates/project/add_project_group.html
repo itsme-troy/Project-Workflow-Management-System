@@ -11,13 +11,14 @@
         </div>
 
         <p class="text-muted">
-            Please select{{ max_proponents }} proponents, including yourself.
+            Please select {{ max_proponents }} proponents, including yourself.
         </p>
 
         {% if submitted %}
             <div class="alert alert-success text-center" role="alert">
                 <h3>Your Project Group Was Submitted Successfully!</h3>
             </div>
+            
         {% else %}
             <form action="" method="POST" class="mt-4 w-100">
                 {% csrf_token %}

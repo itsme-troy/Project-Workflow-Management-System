@@ -434,6 +434,9 @@ body {
   visibility: visible; /* Make interactable */
 
 }
+.sidebar a {
+  text-decoration: none; /* Removes underline from all links */
+}
 
 .main_container .sidebar{ 
   position: fixed;
@@ -505,6 +508,7 @@ body {
 
 /* Menu items styling */
 .main_container .sidebar ul li a {
+  text-decoration: none;
   display: flex;
   padding: 15px 10px;
   color: #fff;

@@ -733,6 +733,10 @@ def join_group_list(request):
         messages.error(request, "Only Eligible Students are able to request to join a Project Group. Please Contact Coordinator to for assistance with Eligibility Concerns")
         return redirect('home')
     
+    # Get max_proponents value
+    max_proponents = ProjectGroupSettings.get_max_proponents()
+
+
     # Get all unapproved groups that aren't full
     available_groups = Project_Group.objects.filter(approved=False)
 
@@ -746,6 +750,8 @@ def join_group_list(request):
             'join_requests': group.join_requests.all(), # Join requests
             'declined_requests': group.declined_requests.all(), # Declined requests.
             'requests': group.requests.all(), # Requests sent to this group
+            'max_proponents': max_proponents,  # Pass max_proponents value
+        
         } for group in available_groups
     ]
 
@@ -1277,6 +1283,9 @@ def my_project_group_waitlist(request):
         # Get groups where user has approved
         groups_where_user_approved = Project_Group.objects.filter(approved_by_students=request.user)
     
+        # Get max_proponents value
+        max_proponents = ProjectGroupSettings.get_max_proponents()
+
         # Consolidate groups and avoid duplicates
         all_groups = list(set(pending_groups) | set(groups_where_user_is_creator) | set(groups_where_user_approved))
 
@@ -1289,7 +1298,8 @@ def my_project_group_waitlist(request):
                 'declined_proponents': group.declined_proponents.all(), # Declined members
                 'declined_requests': group.declined_requests.all(), # Declined requests
                 'join_requests': group.join_requests.all(), # Join requests
-
+                'total_members': group.proponents.count() + group.pending_proponents.count() + group.declined_proponents.count(),  # Calculate total members
+                'max_proponents': max_proponents,  # Pass max_proponents value
             } for group in all_groups
         ]
 
@@ -1300,7 +1310,7 @@ def my_project_group_waitlist(request):
     else:
         messages.success(request, "Please Login to view this page")
         return redirect('home')
-    
+
     
 def update_deficiencies(request, user_id ): 
     # Authentication and permissions check
@@ -1699,6 +1709,9 @@ def finalize_group(request, group_id):
     return redirect('my-project-group-waitlist')
 
 def invite_more_members(request, group_id):
+    # Retrieve the max_proponents value
+    max_proponents = ProjectGroupSettings.get_max_proponents()
+
     group = get_object_or_404(Project_Group, id=group_id)
     
     if request.user != group.creator:
@@ -1708,7 +1721,7 @@ def invite_more_members(request, group_id):
     # Calculate the total number of current, pending, and declined members
     total_members = group.proponents.count() + group.pending_proponents.count() + group.declined_proponents.count()
     
-    if total_members > 2:
+    if total_members >= max_proponents:
         messages.error(request, "Cannot invite more members. The group already has the maximum number of members.")
         return redirect('my-project-group-waitlist')
     
@@ -1773,6 +1786,7 @@ def invite_more_members(request, group_id):
         'group': group,
         'current_members': group.proponents.all(),
         'pending_members': group.pending_proponents.all(),
+        'max_proponents': max_proponents,
     })
 
 from django.contrib.auth.decorators import login_required
@@ -1899,6 +1913,7 @@ def add_project_group(request):
         'submitted':submitted,
         'max_proponents': max_proponents,
     })
+
     
 def my_profile(request, profile_id): 
     if request.user.is_authenticated: 

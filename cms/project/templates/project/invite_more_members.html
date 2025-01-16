@@ -3,18 +3,19 @@
 {% block content %}
 
 {% if user.is_authenticated %}
+<div class="card mx-auto shadow-lg" style="max-width: 1000px; border-radius: 15px; padding: 15px; margin-top: 10px">
 
-{{ approved_users }}
-        <center> 
-            <h1> Invite more members to your Group </h1> 
-            <br/> <br/> 
-        </center>  
-    
+    <center> <h1 style="display: inline-block;"> Invite more members to your Group</h1> 
+        <div class="button-container" style="float: right; margin-left: 15px;">  <!-- Using gap to space out buttons -->
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+        </div>
+    </center> 
+
         {% if submitted %}
             <h3> Additional Student was Invited Successfully! </br> </h3> 
            
         {% else %}
-            <form action="" method=POST> 
+            <form action="" method="POST" class="mt-4 w-100"> 
                 {% csrf_token %}
 
                 {{ form.as_p }}
@@ -42,5 +43,6 @@
 
         <a href="{% url 'login' %}">Login Here! </a> 
     {% endif %}
+</div>
 {% endblock %}
 

@@ -151,15 +151,18 @@ class ProjectGroupInviteForm(ModelForm):
             'proponents': 'Select Additional Members',
         }
         help_texts = {
-            'proponents': 'Hold "Ctrl" button to select multiple panelists',
+            'proponents': 'Hold "Ctrl" button to select multiple students',
         }
         widgets = {
             'proponents': forms.SelectMultiple(attrs={'class': 'form-select', 'placeholder': 'Select Proponents', 'size': '10'}),
         }
         
     def __init__(self, *args, **kwargs):
+        max_proponents = kwargs.pop('max_proponents', ProjectGroupSettings.get_max_proponents())  # Get the limit from settings
         group = kwargs.pop('group', None)  # Get the existing group
         super(ProjectGroupInviteForm, self).__init__(*args, **kwargs)
+
+        self.max_proponents = max_proponents  # Store the value in an instance variable
 
         # Add Bootstrap class to help text
         for field in self.fields.values():
@@ -179,10 +182,18 @@ class ProjectGroupInviteForm(ModelForm):
             # Store group reference for use in clean_proponents
             self.group = group
 
-             # If the group already has 3 members (pending + approved), disable new selections
-            if len(existing_members) >= 3:
+            # Calculate available slots
+            available_slots = self.max_proponents - len(existing_members)
+
+
+             # If the group already has # of members (pending + approved) greater than or equal to max proponents, disable new selections
+            if len(existing_members) >= self.max_proponents:
                 self.fields['proponents'].widget.attrs['disabled'] = 'disabled'
-                self.fields['proponents'].help_text = 'Maximum group size (3) reached'
+                self.fields['proponents'].help_text = f'Maximum group size {self.max_proponents} reached'
+
+            else:
+                # Dynamically update help text with available slots
+                self.fields['proponents'].help_text = f'You can add {available_slots} more member{"s" if available_slots != 1 else ""}.'
 
             # Set the queryset to exclude existing members and users in approved groups
             self.fields['proponents'].queryset = (
@@ -194,22 +205,22 @@ class ProjectGroupInviteForm(ModelForm):
             # Pre-select existing members and make them unselectable in the frontend
             self.fields['proponents'].initial = existing_member_ids
             
-            # Add data attributes for JavaScript to handle disabled selections
+            # Add data attributes for JavaScFript to handle disabled selections
             self.fields['proponents'].widget.attrs['data-existing-members'] = ','.join(map(str, existing_member_ids))
 
     def clean_proponents(self):
         proponents = self.cleaned_data.get('proponents')
         group = getattr(self, 'group', None)
 
-        if group:
+        if group:   
              # Get existing members (both pending and approved)
             existing_members = list(group.pending_proponents.all()) + list(group.proponents.all())
             
             # Calculate how many new members can be added
-            available_slots = 3 - len(existing_members)
+            available_slots = self.max_proponents - len(existing_members)
             
             if available_slots <= 0 and proponents:
-                raise ValidationError('The group already has the maximum number of members (3).')
+                raise ValidationError(f'The group already has the maximum number of members {self.max_proponents}.')
             
             if len(proponents) > available_slots:
                 raise ValidationError(f'You can only add {available_slots} more member{"s" if available_slots != 1 else ""} to this group.')
@@ -236,7 +247,7 @@ class ProjectGroupForm(ModelForm):
         approved_users = kwargs.pop('approved_users', [])  # List of users with approved project groups
         super(ProjectGroupForm, self).__init__(*args, **kwargs)
 
-        self.max_proponents = max_proponents  # Store the value in an instance variable
+        self.max_proponents = max_proponents - 1  # Store the value in an instance variable
         if user:
             # Ensure user is cast to the actual user object if it's a SimpleLazyObject
             if hasattr(user, '_wrapped') and isinstance(user._wrapped, object):
