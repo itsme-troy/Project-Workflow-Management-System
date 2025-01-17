@@ -342,7 +342,6 @@ body {
 .user-info {
   display: flex;
   align-items: center; /* Vertically center the items */
-
   color: black;
 }
 .user-info h5 {
@@ -370,11 +369,15 @@ body {
   align-items: center;
   text-decoration: none;
   color: #525252; 
+  position: relative;
+  text-decoration: none;
 }
 .sub-menu-link p{
+  text-decoration: none;
   margin-top: 10px;
   width: 100%;
   font-family: 'sans-serif';
+  transition: font-weight 0.3s ease; /* Smooth transition for font-weight */
 }
 .sub-menu-link img{
   width: 40px;
@@ -384,18 +387,32 @@ body {
 }
 .sub-menu-link span{
   font-size: 22px;
-  transition: transform 0.5s; 
+  transition: transform 0.5s ease; /* Smooth transition for transform */
 }
-.sub-menu-link:hover span{
+.sub-menu-link:hover span {
   transition: translateX(5px);
+
 }
 .sub-menu-link:hover p{
   font-weight: 600;
+  text-decoration: none;
 }
 .sub-menu-link i, .sub-menu-link span {
   margin-right: 8px; /* Adjust spacing as needed */
   font-size: 20px;   /* Adjust size as needed */
 }
+.sub-menu-link i {
+  color: #525252; /* Default color for icons */
+  margin-bottom: 8px;
+}
+.sub-menu-link span {
+  color: #525252; /* Default color for spans */
+}
+/* Optional: Optionally, adjust icon behavior */
+.sub-menu-link:hover i, .sub-menu-link:hover span {
+  color: #525252; /* Keep the color consistent on hover */
+}
+
 
 .top_navbar .menu .right_menu ul li .fas{
   font-size: 15px;

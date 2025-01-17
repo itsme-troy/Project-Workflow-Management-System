@@ -1818,7 +1818,7 @@ def add_project_group(request):
         return redirect('login')
 
     if request.user.is_authenticated and request.user.eligible == False: 
-        messages.error(request, "Only Eligible Students are able to register a Project Group. Please Contact Coordinator to for assistance with Eligibility Concerns")
+        messages.error(request, "Only Eligible Students are able to register a Project Group.") #Please Contact Coordinator to for assistance with Eligibility Concerns
         return redirect('home')
     
     # Fetch max proponents setting
