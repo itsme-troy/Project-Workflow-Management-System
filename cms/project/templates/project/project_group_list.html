@@ -1,5 +1,7 @@
 {% extends 'project/base.html' %}
 {% load static %}
+{% load custom_filters %}
+
 <head>
     <link rel="stylesheet" href="{% static 'css/custom-navbar.css' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -7,8 +9,8 @@
 
 {% block content %}
 
-<div class="table-container"> 
-
+<div class="card mx-auto shadow-lg" style="max-width: 1000px; border-radius: 15px; padding: 15px; margin-top: 10px">
+{{ max_proponents }}
     <center> <h1 style="display: inline-block; margin-left: 120px"> Project Group List </h1> 
         <div class="button-container" style="float: right;">  <!-- Using gap to space out buttons -->
             <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
@@ -23,17 +25,18 @@
     </center>
 {% else %}
 
+
     <table class="table table-hover table-bordered">
         <thead class="thead-dark">
             <tr>
                 <th scope="col"> # </th>
-                <th scope="col">Proponent 1</th>
-                <th scope="col">Proponent 2</th>
-                <th scope="col">Proponent 3</th>
+                {% for i in max_members_in_any_group|to_range %}
+                    <th scope="col">Proponent {{ i }}</th>
+                {% endfor %}
+                
                 {% if user.is_current_coordinator %}
                     <th scope="col" class="action-column"> Action </th> 
                 {% endif %}
-
             </tr>
         </thead>
         <tbody>

@@ -6,9 +6,11 @@
     {% endblock %}
 {% block content %} <!-- content of all web pages go -->
 
+<div class="card mx-auto shadow-lg" style="max-width: 1000px; border-radius: 15px; padding: 15px; margin-top: 10px">
+
     {% if user.is_authenticated %}
-            
-        <center> <h1 style="display: inline-block;"> Submit A Project Proposal </h1> 
+
+        <center> <h1 style="display: inline-block; margin-left: 200px"> Submit A Project Proposal </h1> 
             <div class="button-container" style="float: right;">
                 <a href="javascript:history.back()" class="btn btn-outline-danger btn-sm" 
                 style="float: right;"> Cancel </a> 
@@ -38,7 +40,7 @@
                         </div>
                {% endif %}
         
-                <form method="post" id="projectForm">
+                <form method="post" id="projectForm" class="mt-4 w-100">
                     {% csrf_token %}
                     
                     {{ form.as_p }} <!-- Render form fields and errors as paragraphs -->
@@ -59,4 +61,5 @@
             document.querySelector('select[name="adviser"]').removeAttribute('disabled');
         };
     </script>
+</div>
 {% endblock %}

@@ -253,26 +253,29 @@
             {% endif %} {% endcomment %}
 
             {% if request.user.is_authenticated %}
-                  {% if request.user.role == 'STUDENT' %}
-                  <li>    
-                    <a href="{% url 'defense-schedule' %}" class="sidebar-link">
-                        <span class="icon"><i class="fas fa-calendar-alt icon icon-margin"></i></span> 
-                        <span class="sidebar-link-text"> Schedule   </span>
-                    </a>
-                </li>
-                  {% else %}
+                    {% if request.user.role == 'STUDENT' %}
+                        <li>    
+                            <a href="{% url 'view-defense-schedule' %}" class="sidebar-link">
+                                <span class="icon"><i class="fas fa-calendar-alt icon icon-margin"></i></span> 
+                                <span class="sidebar-link-text"> Schedule   </span>
+                            </a>
+                        </li>
+                    {% else %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Coordinator_tab">
                                 <span class="icon"><i class="fas fa-calendar-alt icon icon-margin"></i></span> 
                                 <span class="sidebar-link-text">Calendar </span> 
                             </a>
                             <ul class="dropdown-menu">
-
-                                <li><a class="dropdown-item" href="{% url 'defense-schedule' %}"><i class="fas fa-calendar-alt icon icon-margin"></i> Calendar </a></li>  
-                                
+                           
                                 {% if request.user.is_current_coordinator %} 
-                                    <li><a class="dropdown-item" href="{% url 'view-schedule' %}"> Mutual Availability  </a></li> 
+                                    <li><a class="dropdown-item" href="{% url 'view-defense-schedule' %}"><i class="fas fa-calendar-check icon icon-margin"></i> View Schedule </a></li>  
+                                    <li><a class="dropdown-item" href="{% url 'defense-schedule' %}"><i class="fas fa-calendar-alt icon icon-margin"></i> View Calendar </a></li>  
+                                    <li><a class="dropdown-item" href="{% url 'view-schedule' %}">   <i class="fas fa-users icon icon-margin"></i> Mutual Availability </a></li> 
+                                
+
                                 {% elif request.user.role == 'FACULTY'%}
+                                    <li><a class="dropdown-item" href="{% url 'view-defense-schedule' %}"> View Schedule  </a></li> 
                                     <li><a class="dropdown-item" href="{% url 'free-schedule' %}"> Set free Schedule  </a></li> 
                                 {% endif %}
                             </ul>

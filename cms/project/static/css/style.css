@@ -288,9 +288,11 @@ h1, h2, h3, h4 {
 
 /* Add Borders to Cells */
 .table td, .table th {
-    border: 1px solid #dee2e6;
-   
-    
+    border: 1px solid #dee2e6; /* Consistent border color */
+}
+.table td:empty, .table th:empty {
+    border: 1px solid #dee2e6; /* Match the border color */
+  
 }
  /* Target the first th element (which corresponds to # column) */
  .table th:nth-child(1),
@@ -864,22 +866,20 @@ a:hover, a:focus {
 
 }
 
-
-
 /* General Alert Styling */
 body.custom-sky-blue-bg {
     background-color: #87CEEB; /* Custom sky blue color */
 }
 
 .alert {
-    padding: 25px 20px; /* Increase padding slightly for more space around text */
+    padding: 15px 15px; /* Increase padding slightly for more space around text */
     margin-top: 15px; /* Remove the top margin */
     margin-bottom: 15px; /* Remove bottom margin */
     border-radius: 8px;
     font-family: 'Arial', sans-serif;
     font-size: 1.1em; /* Slightly larger font size for better readability */
     font-weight: 600; /* Make text bolder for emphasis */
-    line-height: 1.5; /* Increased line height for better readability */
+    line-height: 1; /* Increased line height for better readability */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
@@ -1012,6 +1012,11 @@ body.custom-sky-blue-bg {
     line-height: 1;
     opacity: 1;
 }
+h4 {
+    margin: 0; /* Remove default margins for better alignment */
+    display: inline-block;
+    vertical-align: middle; /* Ensures the text aligns with icon vertically */
+}
 
 /* Custom Error Alert */
 .custom-error-alert {
@@ -1064,7 +1069,7 @@ body.custom-sky-blue-bg {
     background-color: #d1ecf1; /* Custom info background */
     border-color: #bee5eb; /* Custom border color */
     color: #0c5460; /* Custom text color */
-    padding: 15px 30px; /* Adjust padding to make it larger */
+    padding: 15px 15px; /* Adjust padding to make it larger */
     border-radius: 5px; /* Slightly rounded corners */
     position: relative; /* To position the close button */
 }
@@ -1092,7 +1097,7 @@ body.custom-sky-blue-bg {
 /* Icon for info alert */
 .custom-info-alert::before {
     content: "ℹ️"; /* Info icon */
-    font-size: 2em;
+    font-size: 1.5em;
     color: #17a2b8; /* Teal blue */
 }
 /*

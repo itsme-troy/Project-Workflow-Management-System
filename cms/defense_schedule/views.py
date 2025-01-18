@@ -73,6 +73,16 @@ def defense_sched(request):
         "defense_applications": defense_applications,
     })
 
+def view_defense_schedule(request): 
+    if not request.user.is_authenticated: 
+        messages.error(request, "Please login to view this page")
+        return redirect('login')   
+
+    all_events = Defense_schedule.objects.all().order_by('start')   # Order by start time descending
+    return render(request, 'defense_schedule/schedule_table.html', {
+        "events": all_events,
+    }) 
+
 
 def all_sched(request): # still return 
     all_events = Defense_schedule.objects.all().order_by('-created_at') 

@@ -1211,30 +1211,10 @@ def delete_project_group(request, group_id):
     return redirect('list-project-group')
     
 
-# def reject_project_group(request, group_id): 
-#     project_group = Project_Group.objects.get(pk=group_id)
-#     if request.user == project_group.adviser: 
-#         project_group.approved = False
-#         project_group.save()
-#         messages.success(request, "Project Group has been rejected Succesfully! ")
-#         return redirect('adviser-projects')
-#     else:
-#         messages.success(request, "You Aren't Authorized to do this action")
-#         return redirect('adviser-projects')
-
-# def approve_project_group(request, group_id): 
-#      # look on projects by ID 
-#     project_group = Project_Group.objects.get(pk=group_id)
-#     if request.user == project_group.adviser: 
-#         project_group.approved = True
-#         project_group.save()
-#         messages.success(request, "Project Group Accepted Succesfully! ")
-#         return redirect('adviser-projects')
-#     else:
-#         messages.success(request, "You Aren't Authorized to Accept this Proposal!")
-#         return redirect('adviser-projects')
-
 def list_project_group(request): 
+     # Fetch max proponents setting
+    # max_proponents = ProjectGroupSettings.get_max_proponents()
+    
     if request.user.is_authenticated: 
         # Get all project groups (filtered to those not approved)
         project_groups = Project_Group.objects.filter(approved=True)
@@ -1242,14 +1222,24 @@ def list_project_group(request):
         # Prepare project groups with proponents padded to at least 3
         project_groups_with_proponents = []
 
+        max_members_in_any_group = 0  # Track the max number of proponents in any group
+
         for group in project_groups:
-            # Convert queryset to a list and pad with None if there are fewer than 3 proponents
-            proponents = list(group.proponents.all())
-            proponents += [None] * (3 - len(proponents))  # Pad the list to have exactly 3 proponents
+            proponents = list(group.proponents.all())  # Get actual proponents list without padding
+            group_proponents_count = len(proponents)
+            
+            # Update max_members_in_any_group if this group has more proponents
+            max_members_in_any_group = max(max_members_in_any_group, group_proponents_count)
+            
             project_groups_with_proponents.append({
                 'group': group,
-                'proponents': proponents
+                'proponents': proponents,
+                'proponents_count': group_proponents_count,  # Store count of proponents
             })
+
+          # Set max_proponents to the maximum number found
+        # max_members_in_any_group = max(max_proponents, max_members_in_any_group)
+
 
         # Paginate the project groups
         p = Paginator(project_groups_with_proponents, 8)  # Show 6 project groups per page
@@ -1265,6 +1255,7 @@ def list_project_group(request):
             'project_groups_with_proponents': paginated_groups,
             'nums': nums, 
             'start_index': start_index, 
+            'max_members_in_any_group': max_members_in_any_group,
         })
     else:
         messages.success(request, "Please Login to view this page")

@@ -8,9 +8,11 @@
 {{ block.super }}  <!-- This will include the calendar from base.html -->
 {% if user.is_authenticated %}
 
-<div class="table-container" style="margin: 0px;"> 
+<!-- Increase the container size by setting a larger width and padding -->
+<div class="table-container" style="margin: 0px; padding: 30px; width: 100%; max-width: 1600px;">
 
-    <center> <h1 style="display: inline-block; margin-left: -80px"> Calendar </h1> 
+
+    <center> <h1 style="display: inline-block; margin-left: -80px"> Defense Schedule </h1> 
         {% if request.user.is_current_coordinator %}
             <div class="btn-sm" style="float: left;">
                     <a href="{% url 'view-schedule' %}" class="btn btn-primary btn-sm">
@@ -25,12 +27,11 @@
 
     </center> 
     <div class="row">
-        <div class="col-md-5">
+        <div class="col-md-12">
             {% comment %} <button id="toggle-defense-schedule" class="btn btn-primary btn-sm">Defense Schedule</button> {% endcomment %}
             {% comment %} <button id="toggle-filter-common-schedule" class="btn btn-secondary btn-sm"> Common Schedule</button> {% endcomment %}
                 <div class="table-container" style="margin-top: 0px; min-height: 0px">
                     
-                    <h3>Defense Schedule </h3> 
                     {% if request.user.is_current_coordinator %}
                         <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
                             <i class="fas fa-plus-circle icon" style="color: white;"></i> Create
@@ -58,8 +59,7 @@
                         <tbody>
                             {% for event in events %}
                             <tr>
-                                <td style="padding-left: 10px; border-radius: 4px; background: linear-gradient(to right, {{ event.color|default:'#007BFF' }} 5px, #fff 5px);">
-                                    <div style="height: 100%; width: 5px; background-color: {{ event.color|default:'#007BFF' }}; display: inline-block;"></div>
+                                <td>
                                     <strong>{{ forloop.counter }}</strong> </td> 
                                 <td>   <strong>{{ event.application }}</strong> </td> 
                                 
@@ -110,12 +110,7 @@
                 </section> {% endcomment %}
         </div>
 
-        
-        <div class="col-md-7"> 
-            <div class="my_calendar" style="margin-top: 0px">
-                <div id='calendar'></div> 
-            </div>
-        </div>
+    
     
     </div>
 

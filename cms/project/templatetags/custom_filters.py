@@ -46,3 +46,21 @@ def range_filter(value):
 def slugify_filter(value):
     return slugify(value)
 
+# Custom filter to create a range for template loops
+@register.filter
+def rangefilter(value):
+    """Returns a range from 1 to `value` (inclusive)."""
+    try:
+        value = int(value)
+        return range(1, value + 1)
+    except (ValueError, TypeError):
+        return []
+    
+@register.filter
+def to_range(value):
+    """
+    Custom filter to generate a range of numbers from 1 to the given value.
+    Example: 
+        {{ max_proponents|to_range }}
+    """
+    return range(1, value + 1)

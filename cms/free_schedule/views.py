@@ -43,7 +43,7 @@ def free_sched(request): # index
         messages.error(request, "Please login to view this page")
         return redirect('login')    
     
-    all_events = Available_schedule.objects.filter(faculty=request.user.id).order_by('-created_at')   # Order by start time descending
+    all_events = Available_schedule.objects.filter(faculty=request.user.id).order_by('start')   # Order by start time descending
     return render(request, 'free_schedule/free_schedule.html', {
         "events": all_events,
     })
