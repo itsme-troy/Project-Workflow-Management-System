@@ -7,7 +7,7 @@
 <div class="table-container"> 
 
     <center>
-        <h1 style="display: inline-block;"> Approved Projects </h1> 
+        <h1 style="display: inline-block;"> Projects </h1> 
         <div style="margin-right: 10px; float: right;"> <!-- Changed to float right -->
             <div class="button-container" style="float: right; margin-left: 15px;">  <!-- Using gap to space out buttons -->
                 <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
@@ -43,7 +43,11 @@
                     <th scope="col">Panel 1</th>
                     <th scope="col">Panel 2</th>
                     <th scope="col">Panel 3</th>
-                    <th scope="col"> Actions</th>
+                    
+                    {% if user.is_current_coordinator %}
+                        <th scope="col">Actions</th>
+                    {% endif %}
+                    
                     <th scope="col">Status </th>
                 
                 </tr>
@@ -66,10 +70,9 @@
                             </td>
                         {% endfor %}
                             
+                                {% if user.role == 'COORDINATOR' %}
                                 <td> 
-                                    {% if user.role == 'COORDINATOR' %}
                                         <span class="hint-button" onclick="showActions(this)">Click to show actions</span>
-                                        
                                         
                                         <!-- Action buttons container, initially hidden -->
                                         <div class="action-buttons" style="display: none;">
@@ -88,7 +91,7 @@
                                             class=" btn btn-outline-danger btn-sm"
                                             onclick="return confirm('Are you sure you want to delete this project?');">Delete Project</a>  {% endcomment %}
                                         </div> 
-                                    {% endif %} </td> 
+                                   </td>   {% endif %}
 
                                     <td>
                                         <span class="badge 

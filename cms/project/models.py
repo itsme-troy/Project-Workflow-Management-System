@@ -90,7 +90,7 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
     course = models.CharField('Course', max_length=100, null=True, blank=True )
     profile_image = models.ImageField(null=True, blank=True, default='static/images/default_profile_pic.jpg', upload_to="images/")
     student_id = models.CharField(max_length=255, blank=True)
-    skills = models.ManyToManyField(Skill, related_name='user_skills', blank=True)
+    skills = models.TextField(blank=True, null=True)  # Skills entered as free text
     #available_schedule = models.ManyToManyField(Available_schedule, related_name='Faculty_available', blank=True )
     bio = models.TextField(blank=True, null=True)  # The bio field allows long paragraphs'
     
@@ -601,16 +601,3 @@ class Project_Idea(models.Model):
 
 
 
-class PredefinedSkill(models.Model):
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-class UserSkill(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    predefined_skill = models.ForeignKey(PredefinedSkill, null=True, blank=True, on_delete=models.SET_NULL)
-    other_skill = models.CharField(max_length=100, blank=True)
-
-    def __str__(self):
-        return self.other_skill if self.other_skill else str(self.predefined_skill)

@@ -17,8 +17,19 @@ def update_user(request):
             user_form = UpdateStudentProfileForm(request.POST or None, request.FILES or None, instance=current_user)
             profile_form = ProfilePicForm(request.POST or None, request.FILES or None, instance=current_user)
         else:
-            user_form = UpdateFacultyProfileForm(request.POST or None,  request.FILES or None, instance=current_user)
-            profile_form = ProfilePicForm(request.POST or None, request.FILES or None, instance=current_user)
+            user_form = UpdateFacultyProfileForm(
+                request.POST or None,
+                request.FILES or None, 
+                instance=current_user,
+                user=request.user, 
+            )
+            
+            profile_form = ProfilePicForm(
+                request.POST or None, 
+                request.FILES or None, 
+                instance=current_user
+            )
+        
         if user_form.is_valid() and profile_form.is_valid: 
             user_form.save()
             profile_form.save()
@@ -30,7 +41,8 @@ def update_user(request):
         
         return render(request, 'project/update_user.html', {
             "user_form": user_form, 
-            "profile_form": profile_form
+            "profile_form": profile_form,
+         
         })
     
     else: 

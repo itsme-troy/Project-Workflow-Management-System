@@ -166,14 +166,14 @@
                     {% endif %}
 
                     {% if user.role == 'FACULTY' %}
-                        <li><a class="dropdown-item" href="{% url 'list-projects' %}"><i class="fas fa-list icon icon-margin"></i> All Projects  </a></li>
+                        <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}"><i class="fas fa-list icon icon-margin"></i> All Projects  </a></li>
                         <li><a class="dropdown-item" href="{% url 'adviser-projects' %}">  Advisory Projects  </a></li>
                         <li><a class="dropdown-item" href="{% url 'adviser-proposals' %}">  Received Proposals  </a></li>
                         <li><a class="dropdown-item" href="{% url 'panel-projects' %}"> Panel Projects </a></li>
                     {% endif %}
                     
                     {% if request.user.is_current_coordinator %}
-                            <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}"><i class="fas fa-check-circle icon icon-margin"></i> Approved Projects</a></li>
+                            <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}"><i class="fas fa-check-circle icon icon-margin"></i> View Projects</a></li>
                             <li><a class="dropdown-item" href="{% url 'list-archived-projects' %}"><i class="fas fa-archive  icon icon-margin"></i> Archived Projects</a></li>
                     {% endif %}
 

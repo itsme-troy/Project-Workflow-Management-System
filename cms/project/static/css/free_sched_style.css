@@ -779,6 +779,9 @@ body {
   grid-template-columns: 1fr 2fr; /* Adjust the fraction values as needed */
   gap: 10px; /* Reduced gap for better spacing */
   padding: 20px; /* Add padding around the grid */
+  max-height: 800px; /* Set a maximum height */
+  overflow: auto; /* Allows scrolling when content overflows */
+
 }
 
 .grid-container .pic-skills-column {
@@ -788,6 +791,7 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
   margin-bottom: 20px; /* Space below the column */
   height: auto; /* Adjust height as needed */
+  max-width: 500px;
 }
 
 .grid-container .details-info-column {
@@ -826,10 +830,14 @@ body {
 }
 
 .skills-container {
+  max-width: 400px;  /* Adjust max-width as needed */
+  height: 200px;  /* Adjust height as needed */
+  overflow-y: auto;  /* Adds vertical scrollbar when content overflows */
   background-color: #f9f9f9; /* Light background for contrast */
   padding: 20px; /* Padding around the content */
   border-radius: 8px; /* Rounded corners */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  border: 1px solid #ddd;  /* Optional border for styling */
 }
 
 .skills-heading {
@@ -844,13 +852,11 @@ body {
 .skills-list {
   list-style-type: none; /* Remove default list styling */
   padding: 0; /* Remove padding */
-  text-align: left;
 }
 
 .skills-list li {
-  font-size: 14px; /* Font size for list items */
-  color: #555; /* Slightly lighter text color */
-  margin: 5px 0; /* Space between list items */
+  padding: 5px 0;  /* Adds spacing between each list item */
+  font-size: 14px;  /* Adjust font size if needed */
 }
 
 .user_details {

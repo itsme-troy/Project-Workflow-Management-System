@@ -21,12 +21,15 @@
         
             <subsection class="skills card">
                 <div class="skills_container">
-                    <h1 class="heading skills-heading">Skills</h1>
+                    <h1 class="heading skills-heading">Additional Info</h1>
                     <ul class="skills-list">
-                        <li>Android</li>
-                        <li>Web-Design</li>
-                        <li>UI/UX</li>
-                        <li>Video Editing</li>
+                        {% if faculty.skills %}
+                            {% for skill in faculty.skills.splitlines %}
+                                <li>{{ skill }}</li>
+                            {% endfor %}
+                        {% else %}
+                            <li>No information Available yet</li>
+                        {% endif %}
                     </ul>
                 </div>
             </subsection>
@@ -49,7 +52,7 @@
                 </div>
                
                 <div class="bio-section" style="margin-top: 20px;">
-                    <h4 class="text-center">About Me:</h4>
+                    <h4 class="text-center"></h4>
                     <p>{{ faculty.bio }}</p> <!-- Displaying the bio content -->
                 </div>
 

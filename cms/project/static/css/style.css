@@ -260,6 +260,8 @@ h1, h2, h3, h4 {
 }
 /* Table Body Styling */
 .table td {
+    min-height: 50px; /* Adjust as necessary */
+    vertical-align: middle; /* Align content in the middle */
     padding: 1rem;
     padding-top: 1rem; 
     border-top: 1px solid #dee2e6;
@@ -1365,4 +1367,6 @@ body {
         font-size: 0.9em !important;
     }
 }
+
+
 

@@ -8,12 +8,16 @@ from django import forms
 
 class UpdateFacultyProfileForm(forms.ModelForm):
     bio = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}), required=False)
-    
+    skills = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}), required=False)  # Add skills field
+
+
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'bio', 'facebook_link']
+        fields = ['first_name', 'last_name', 'email', 'bio', 'facebook_link', 'skills']
 
     def __init__(self, *args, **kwargs):
+        # Extract the `user` argument from kwargs
+        user = kwargs.pop('user', None)
         super(UpdateFacultyProfileForm, self).__init__(*args, **kwargs)
         
         # Add 'form-control' class to each field
@@ -22,16 +26,22 @@ class UpdateFacultyProfileForm(forms.ModelForm):
         self.fields['email'].widget.attrs.update({'class': 'form-control'})
         self.fields['bio'].widget.attrs.update({'class': 'form-control'})
         self.fields['facebook_link'].widget.attrs.update({'class': 'form-control'}) 
+        self.fields['skills'].widget.attrs.update({'class': 'form-control'})  # Add class to skills field
 
          # Change label for the email field to 'Gbox'
         self.fields['email'].label = 'Gbox'
+        
+        # Change the label for 'skills' to 'Additional Information' if user is a coordinator
+        if user and getattr(user, 'is_current_coordinator', False):
+            self.fields['skills'].label = 'Additional Information'
 
 class UpdateStudentProfileForm(forms.ModelForm):
     bio = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}), required=False)
-    
+    skills = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}), required=False)  # Add skills field
+
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'bio', 'facebook_link']
+        fields = ['first_name', 'last_name', 'email', 'bio', 'facebook_link', 'skills']
 
     def __init__(self, *args, **kwargs):
         super(UpdateStudentProfileForm, self).__init__(*args, **kwargs)
@@ -42,9 +52,11 @@ class UpdateStudentProfileForm(forms.ModelForm):
         self.fields['email'].widget.attrs.update({'class': 'form-control'})
         self.fields['bio'].widget.attrs.update({'class': 'form-control'})
         self.fields['facebook_link'].widget.attrs.update({'class': 'form-control'}) 
+        self.fields['skills'].widget.attrs.update({'class': 'form-control'})  # Add class to skills field
 
          # Change label for the email field to 'Gbox'
         self.fields['email'].label = 'Gbox'
+
 # Profile Extras Form
 class ProfilePicForm(forms.ModelForm): 
     profile_image = forms.ImageField(label="Profile Picture", required=False)

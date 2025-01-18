@@ -59,7 +59,6 @@ def to_local(utc_time):
     except Exception as e:
         raise ValueError(f"Error converting time to local: {e}")
 
-
 def calculate_common_schedules(schedules):
     """
     Calculate common time ranges from a list of schedules.
@@ -105,6 +104,9 @@ def calculate_common_schedules(schedules):
         if len(ongoing_ranges[-1][2]) > 1:
             common_ranges.append((ongoing_ranges[-1][0], ongoing_ranges[-1][1]))
 
+    # Step 3: Sort common_ranges by start time
+    common_ranges.sort(key=lambda x: x[0])
+    
     return common_ranges
 
     # group events by faculty and pass them to template 

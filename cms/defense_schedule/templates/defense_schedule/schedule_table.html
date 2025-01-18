@@ -80,18 +80,26 @@
                                     {% endwith %}
                                     {% endwith %} </td> 
 
-                                    {% comment %} {% with counter=0 %} {% endcomment %}
-                                    {% for panelist in event.application.panel.all %}
-                                        <td>
-                                            {% if panelist %}
-                                               {{ panelist.last_name }}
-                                            {% else %}
-                                                <td>-</td> <!-- Display dash if no panelist -->
-                                            {% endif %}
-                                        </td>
-            
-                                    {% endfor %}
-         
+                                    
+                                    {% with max_panelists=3 %}
+                                    {% with extra_cells=max_panelists|add:"-"|add:event.application.panel.all.count %}
+                                        {% for panelist in event.application.panel.all %}
+                                            <td>
+                                                {% if panelist %}
+                                                    {{ panelist.last_name }}
+                                                {% else %}
+                                                    &nbsp; <!-- Display non-breaking space if no panelist -->
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                
+                                        <!-- Calculate and add extra cells for missing panelists -->
+                                        {% for _ in extra_cells %}
+                                            <td>&nbsp;</td> <!-- Add empty cells for missing panelists -->
+                                        {% endfor %}
+                                    {% endwith %}
+                                {% endwith %}
+                                    
                             </tr>
                         {% empty %}
                             <tr>

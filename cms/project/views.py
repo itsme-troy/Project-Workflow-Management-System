@@ -34,8 +34,6 @@ from .models import Notification
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.urls import reverse
-from .models import UserSkill, PredefinedSkill
-from .forms import UserSkillForm
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -1218,24 +1216,37 @@ def list_project_group(request):
     if request.user.is_authenticated: 
         # Get all project groups (filtered to those not approved)
         project_groups = Project_Group.objects.filter(approved=True)
+        max_members_in_any_group = 0  # Track the max number of proponents in any group
+
 
         # Prepare project groups with proponents padded to at least 3
         project_groups_with_proponents = []
 
-        max_members_in_any_group = 0  # Track the max number of proponents in any group
 
+        # First pass: determine the maximum number of members in any group
         for group in project_groups:
-            proponents = list(group.proponents.all())  # Get actual proponents list without padding
+            proponents = list(group.proponents.all())  # Get actual proponents list
             group_proponents_count = len(proponents)
             
             # Update max_members_in_any_group if this group has more proponents
             max_members_in_any_group = max(max_members_in_any_group, group_proponents_count)
             
+        # Second pass: calculate extra cells for each group and prepare data
+        for group in project_groups:
+            proponents = list(group.proponents.all())  # Get the list of proponents
+            group_proponents_count = len(proponents)
+
+             # Calculate the number of extra cells needed for this group
+            extra_cells = max_members_in_any_group - group_proponents_count
+            
+
             project_groups_with_proponents.append({
                 'group': group,
                 'proponents': proponents,
                 'proponents_count': group_proponents_count,  # Store count of proponents
-            })
+                'extra_cells': extra_cells,  # Include empty cells for padding
+        
+        })
 
           # Set max_proponents to the maximum number found
         # max_members_in_any_group = max(max_proponents, max_members_in_any_group)
@@ -1247,7 +1258,7 @@ def list_project_group(request):
         paginated_groups = p.get_page(page)
         nums = "a" * paginated_groups.paginator.num_pages
 
-           # Calculate the start index for the current page
+        # Calculate the start index for the current page
         start_index = (paginated_groups.number - 1) * paginated_groups.paginator.per_page
 
 
@@ -1256,6 +1267,7 @@ def list_project_group(request):
             'nums': nums, 
             'start_index': start_index, 
             'max_members_in_any_group': max_members_in_any_group,
+            'start_index': start_index,
         })
     else:
         messages.success(request, "Please Login to view this page")
@@ -2175,10 +2187,10 @@ def coordinator_projects(request):
         messages.error(request, "Please Login to view this page")
         return redirect('home')
     
-    if request.user.role !='COORDINATOR': 
+    if request.user.role not in ['COORDINATOR', 'FACULTY']:
         messages.error(request, "You are not authorized to view this page")
         return redirect('login')
-
+    
     # Grab the projects from that adviser
     approved_projects = Project.objects.filter(status='approved', is_archived=False).order_by('title')
     
@@ -3414,17 +3426,19 @@ def show_proposal(request, project_id):
         messages.error(request, "Please Login to view this page")
         return redirect('login')
 
-# def delete_notification(request): 
-#     if request.method == 'GET':
-#         id = request.GET.get("id", None)
-#         try:
-#             notification = Notification.objects.get(id=id)
-#             print(f"Deleting event: {notification}")  # Debug print to ensure the event is found
-#             notification.delete()
-#             return JsonResponse({'status': 'success', 'message': 'Notification removed successfully'})
-#         except Notification.DoesNotExist:
-#             return JsonResponse({'status': 'error', 'message': 'Notification not found'})
-#         except Exception as e:
-#             return JsonResponse({'status': 'error', 'message': str(e)})
-#     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+@login_required
+def delete_account(request, user_id):
+    if not request.user.is_authenticated: 
+        messages.error(request, "You're not authorized to perform this Action")
+        return redirect('home')
+    
+    try:
+        user_to_delete = User.objects.get(pk=user_id)
+        user_to_delete.delete()
+        messages.success(request, "Your account has been deleted successfully.")
 
+    except User.DoesNotExist:
+        messages.error(request, "User does not exist.")
+
+        
+    return redirect('home')  # In case of GET request, you can redirect to home (if needed)

@@ -6,14 +6,14 @@ urlpatterns = [
 #   path('profile/<int:pk>', views.profile, name='profile'),
 
     path("", views.home, name="home"),
-    path('projects', views.all_projects, name="list-projects"),
+    path('list_projects', views.all_projects, name="list-projects"),
     path('proposals', views.all_proposals, name="list-proposals"),
     path('show_project/<project_id>', views.show_project, name='show-project'),
     path('show_proposal/<project_id>', views.show_proposal, name='show-proposal'),
     path('add_project', views.add_project, name="add-project"),
     path('my_project', views.my_project, name='my-project'), 
   
-    path('delet_user/<user_id>', views.delete_user, name='delete-user'), 
+    path('delete_user/<user_id>', views.delete_user, name='delete-user'), 
 
     path('list-faculty', views.list_faculty, name="list-faculty"),
     path('list-student', views.list_student, name="list-student"),
@@ -114,6 +114,8 @@ urlpatterns = [
     path('dashboard', views.coordinator_dashboard, name='coordinator-dashboard'), 
     path('save_project_group_settings/', views.save_project_group_settings, name='save_project_group_settings'),
     path('project-group-settings/', views.get_project_group_settings, name='project_group_settings'),
+
+    path('delete-account/<user_id>', views.delete_account, name='delete-account'),
 ]   
 
 

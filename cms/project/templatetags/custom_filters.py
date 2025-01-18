@@ -64,3 +64,13 @@ def to_range(value):
         {{ max_proponents|to_range }}
     """
     return range(1, value + 1)
+
+
+@register.filter
+def add_extra_cells(panel_count, max_panel_count):
+    """
+    Custom filter to calculate the number of extra cells needed to match the max panel count.
+    """
+    if isinstance(panel_count, int) and isinstance(max_panel_count, int):
+        return max_panel_count - panel_count
+    return 0
