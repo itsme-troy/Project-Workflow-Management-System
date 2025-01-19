@@ -57,48 +57,40 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for event in events %}
+                            {% for event_data in events_with_panel %}
                             <tr>
                                 <td>
                                     <strong>{{ forloop.counter }}</strong> </td> 
-                                <td>   <strong>{{ event.application }}</strong> </td> 
+                                <td>   <strong>{{ event_data.event.application }}</strong> </td> 
                                 
                                 </td>
-                                <td>{{event.application.project_group }}</td>
-                                <td>{{event.application.adviser }}</td>
+                                <td>{{event_data.event.application.project_group }}</td>
+                                <td>{{event_data.event.application.adviser }}</td>
                                 <td>
-                                    {% with start_date=event.start|date:"M. d, Y" %}
-                                    {% with end_date=event.end|date:"M. d, Y" %}
+                                    {% with start_date=event_data.event.start|date:"M. d, Y" %}
+                                    {% with end_date=event_data.event.end|date:"M. d, Y" %}
                                         {% if start_date == end_date %}
-                                            {{ event.start|date:"M. d, Y" }} </br>
-                                            Start: {{ event.start|date:"g:i a" }} </br>
-                                            End: {{ event.end|date:"g:i a" }} </br> 
+                                            {{ event_data.event.start|date:"M. d, Y" }} </br>
+                                            Start: {{ event_data.event.start|date:"g:i a" }} </br>
+                                            End: {{ event_data.event.end|date:"g:i a" }} </br> 
                                         {% else %}
-                                            Start: {{ event.start|date:"M. d, Y, g:i a" }} </br>
-                                            End: {{ event.end|date:"M. d, Y, g:i a" }}  
+                                            Start: {{ event_data.event.start|date:"M. d, Y, g:i a" }} </br>
+                                            End: {{ event_data.event.end|date:"M. d, Y, g:i a" }}  
                                         {% endif %}
                                     {% endwith %}
                                     {% endwith %} </td> 
-
                                     
-                                    {% with max_panelists=3 %}
-                                    {% with extra_cells=max_panelists|add:"-"|add:event.application.panel.all.count %}
-                                        {% for panelist in event.application.panel.all %}
-                                            <td>
-                                                {% if panelist %}
-                                                    {{ panelist.last_name }}
-                                                {% else %}
-                                                    &nbsp; <!-- Display non-breaking space if no panelist -->
-                                                {% endif %}
-                                            </td>
-                                        {% endfor %}
-                                
-                                        <!-- Calculate and add extra cells for missing panelists -->
-                                        {% for _ in extra_cells %}
-                                            <td>&nbsp;</td> <!-- Add empty cells for missing panelists -->
-                                        {% endfor %}
-                                    {% endwith %}
-                                {% endwith %}
+                                  <!-- Loop through the panelists and display their last name -->
+                                    {% for panelist in event_data.event.application.panel.all %}
+                                        <td>
+                                            {{ panelist.last_name }}
+                                        </td>
+                                    {% endfor %}
+
+                                    <!-- Add extra cells for missing panelists -->
+                                    {% for _ in event_data.extra_cells|to_range %}
+                                        <td>&nbsp;</td> <!-- Add empty cells for missing panelists -->
+                                    {% endfor %}
                                     
                             </tr>
                         {% empty %}

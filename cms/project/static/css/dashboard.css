@@ -181,21 +181,28 @@ button span {
 
 table {
     border-collapse: collapse;
+    width: 100%; /* Ensures the table occupies full width */
 }
 
 thead tr{
     border-top: 1px solid #f0f0f0;
     border-bottom: 1px solid #f0f0f0;
 }
-thead td{
+thead td {
     font-weight: 700;
+    color: #333;
+    padding: 10px;
+    text-align: left; /* Aligns headers to the left */
 }
 
-td{
-    padding: .5rem 1rem;
-    font-size: .9rem;
-    color: #222;
-  
+td {
+    padding: 10px;
+    color: #333;
+    text-align: left; /* Aligns text to the left */
+    max-width: 200px; /* Adjust max width of td cells */
+    overflow: hidden;  /* Hide the overflow content */
+    text-overflow: ellipsis; /* Add ellipsis for overflow text */
+    white-space: nowrap; /* Prevent text from wrapping */
 }
 
 td .status{
@@ -206,6 +213,15 @@ td .status{
     margin-right: 1rem;
     flex-shrink: 0; /* Prevent shrinking */
 }
+td.role {
+    color: #555;            /* Set the text color to a dark grey */
+    text-align: left;       /* Align the text to the left */
+    padding-bottom: 50px;
+    padding: 25px 0px 26px;
+    font-size: 1rem;        /* Adjust font size */
+    flex-shrink: 0; /* Prevent shrinking */
+
+}
 .recent-grid  td:last-child{
     display: flex;
     align-items: center;
@@ -213,47 +229,58 @@ td .status{
     gap: 0.5rem; /* Optional: Adds spacing between items */
     
 } 
+.status.green {
+    background-color: green; /* Approved */
+}
+.status.yellow {
+    background-color: #FFC107; /* pending-Amber -  */
+}
+.status.red {
+    background-color: red; /* Declined */
+}
 
-.status.purple{
-    background: rebeccapurple;
-}
-.status.pink{
-    background: deeppink;
-}
-.status.orange{
-    background: orangered;
-}
-
-.table-responsive{
-    width: 100%;
-    overflow-x: auto;
-}
 
 .customer{
-    display: flex;
     justify-content: space-between;
     align-items: center;   
     padding: .5rem .7rem;
 }
 
-.info{ 
-    display: flex;
-    align-items: center;
-}
-
-.info img{
+.info img {
     border-radius: 50%;
     margin-right: 1rem;
+    width: 40px; /* Make the profile picture size consistent */
+    height: 40px;
+    object-fit: cover; /* Ensures the image is properly cropped */
+    padding-left: 10px;
 }
-.info h4 { 
-    font-size: .8rem;
-    font-weight: 600;
-    color: #222; 
+.info h4 {
+    font-size: 1rem; /* Adjusts font size for name */
+    font-weight: 600; /* Bold text */
+    color: #222; /* Dark color */
+    margin-bottom: 0; /* Removes bottom margin */
 }
+
 .info small{
     font-weight: 600;
     color: var(--text-grey);
 }
+/* Optional: Add hover effect for rows */
+tbody tr:hover {
+    background-color: #f1f1f1; /* Light background on hover */
+}
+/* Add table responsiveness */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+td.scrollable {
+    overflow-x: auto;  /* Horizontal scroll */
+    max-width: 200px;  /* Set a max width */
+    white-space: nowrap; /* Prevent text wrap */
+}
+
+
 .contact span{
     font-size: 1.2rem;
     display: inline-block;
@@ -364,6 +391,43 @@ td .status{
 
 .gap-panelist {
     margin-left: 10px;
+}
+
+.see-all-button { 
+    background: none; /* Remove default button styling */
+    border: none;     /* Remove border */
+    color: black;     /* Set font color to black */
+    font-size: 16px;  /* Adjust font size for readability */
+    cursor: pointer;  /* Change cursor to pointer */
+    display: flex;    /* Align text and arrow */
+    align-items: center; /* Center vertically */
+    gap: 10px;        /* Add spacing between text and arrow */
+    font-weight: bold; /* Make the text bold */
+    padding: 5px 10px; /* Add some padding for click area */
+    text-decoration: none; /* No underline by default */
+}
+
+.see-all-button:hover .see-all-text {
+    text-decoration: underline; /* Add underline to text */
+    text-decoration-color: blue; /* Set underline color to blue */
+}
+.see-all-button span.material-symbols-outlined {
+    font-size: 20px; /* Adjust the arrow icon size */
+    color: black;    /* Ensure the arrow icon is black */
+    text-decoration: none;
+}
+.see-all-text {
+    color: black;     /* Set font color to black */
+    font-size: 16px;  /* Adjust font size for readability */
+}
+.see-all-button span.material-symbols-outlined {
+    font-size: 20px; /* Adjust the arrow icon size */
+    color: black;    /* Ensure the arrow icon is black */
+}
+
+.material-symbols-outlined {
+    font-size: 20px; /* Adjust the arrow icon size */
+    color: black;    /* Ensure the arrow icon is black */
 }
 
 

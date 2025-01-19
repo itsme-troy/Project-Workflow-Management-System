@@ -110,43 +110,53 @@
                </a>
            </div> 
    
-   
            <div class="recent-grid">
                <div class="projects"> 
                    <div class="card">
                        <div class="card-header"> 
                            <h3> Recent Projects</h3>
    
-                           <button>
-                               See All 
-                               <span class="material-symbols-outlined">arrow_forward</span>
-                           </button>
+                           <button class="see-all-button" onclick="window.location.href='{% url 'coordinator-projects' %}'">
+                                <span class="see-all-text">See All</span>
+                                <span class="material-symbols-outlined">arrow_forward</span>
+                            </button>
                        </div>
    
                        <div class="card-body"> 
                            <div class="table-responsive">
-                               <table width="100%">
-                                   <thead>
-                                       <tr>
-                                           <td> Project </td>
-                                           <td> Adviser </td>
-                                           <td> Status </td>
-                                       </tr>
-                                   </thead>
-       
-                                   <tbody>
-                                       <tr>
-                                           <td> Calculator App </td>
-                                           <td> Akeem Arcayera </td>
-                                           <td style="display: flex; align-items: center; gap: 0.5rem;">
-                                               <span class="status pink"></span>
-                                               <span>review</span>
-                                           </td>
-                                           
-                                       </tr> 
-                                   </tbody>
-                               </table>
-                           </div>
+                            <table width="100%">
+                                <thead>
+                                    <tr>
+                                        <td>Project</td>
+                                        <td>Adviser</td>
+                                        <td>Status</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for project in latest_projects %}
+                                        <tr>
+                                            <td>{{ project.title }}</td>
+                                            <td>
+                                                {{ project.adviser.get_full_name|default:"No Adviser" }}
+                                            </td>
+                                            <td style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <span class="status 
+                                                    {% if project.status == 'pending' %}yellow
+                                                    {% elif project.status == 'approved' %}green
+                                                    {% elif project.status == 'declined' %}red
+                                                    {% endif %}
+                                                "></span>
+                                                <span>{{ project.status|title }}</span>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="3" class="text-center">No projects available.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                    </div>
                </div>
            </div>
@@ -154,70 +164,51 @@
            <div class="customers"> 
                <div class="card">
                    <div class="card-header">
-                       <h3> Recent Activity </h3>
+                       <h3> Recent Users </h3>
    
-                       <button>
-                           See All 
-                           <span class="material-symbols-outlined">arrow_forward</span>
-                       </button>
+                       <button class="see-all-button" onclick="window.location.href='{% url 'list-student' %}'">
+                            <span class="see-all-text">See All</span>
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </button>
                    </div>
-                       <div class="card-body">
-                           <div class="customer"> 
-                               <div class="info">
-                                   <img src="{% static '/images/default_profile_pic.jpg' %}" width="40px"
-                                       height="40px" alt=""> 
-                                   <div> 
-                                   <h4> Leobert Troy Teodoro </h4>
-                                   <small> STUDENT </small> 
-                                   </div>
-                               </div>
-                               <div class="contact">
-                                   <span class="fa fa-user-circle"></span>
-                                   <span class="fa fa-comment"></span>
-                                   <span class="fa fa-phone"></span>
-                               </div>
-   
-   
-                           </div>
-   
-                           <div class="customer"> 
-                               <div class="info">
-                                   <img src="{% static '/images/default_profile_pic.jpg' %}" width="40px"
-                                       height="40px" alt=""> 
-                                   <div> 
-                                   <h4> Leobert Troy Teodoro </h4>
-                                   <small> STUDENT </small> 
-                                   </div>
-                               </div>
-                               <div class="contact">
-                                   <span class="fa fa-user-circle"></span>
-                                   <span class="fa fa-comment"></span>
-                                   <span class="fa fa-phone"></span>
-                               </div>
-   
-                               
-                           </div>
-   
-                           <div class="customer"> 
-                               <div class="info">
-                                   <img src="{% static '/images/default_profile_pic.jpg' %}" width="40px"
-                                       height="40px" alt=""> 
-                                   <div> 
-                                   <h4> Leobert Troy Teodoro </h4>
-                                   <small> STUDENT </small> 
-                                   </div>
-                               </div>
-                               <div class="contact">
-                                   <span class="fa fa-user-circle"></span>
-                                   <span class="fa fa-comment"></span>
-                                   <span class="fa fa-phone"></span>
-                               </div>
-   
-                               
-                           </div>
-   
-                       </div>
-        </div>
+
+                   <div class="card-body"> 
+                        <table width="100%">
+                                <thead>
+                                    <tr>
+                                        <td>Picture</td>
+                                        <td>Name</td>
+                                        <td>Role</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in recent_users %}
+                                        <tr class="projects">
+                                            <td> 
+                                                   <!-- Display the profile image, defaulting to the static default image if not set -->
+                                                {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                                                        <img src="{{ user.profile_image.url }}" alt="profile_pic" class="user-pic img-fluid"style="margin-left: 0px;">
+                                                {% else %}
+                                                        <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic" style="margin-left: 0px;"> 
+                                                {% endif %} </td> 
+
+                                            <td class="info"><!-- Display the user's full name -->
+                                                {{ user.get_full_name }} </td>
+                                            
+                                            <!-- Display the user's role -->
+                                            <td class="role"> <small> {{ user.get_role_display }} </small></td> 
+                                            
+                                        </tr> 
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="3" class="text-center">No recent users found.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody> 
+                            </table> 
+                    </div>  
+                </div>
+            </div>
 
         {% include 'project/modals/settings_modal.html' %}
     </main>

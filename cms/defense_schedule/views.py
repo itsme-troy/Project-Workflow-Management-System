@@ -67,23 +67,57 @@ def defense_sched(request):
         latest_verdict=Subquery(latest_phase_subquery)
     ).filter(latest_verdict='pending')
 
-    all_events = Defense_schedule.objects.all().order_by('-created_at')   # Order by start time descending
+    all_events = Defense_schedule.objects.all().order_by('start')   # Order by start time descending
+    max_panelist = 3
+    events_with_panel=[]
+
+    for event in all_events: 
+        # Count the number of panelists for the current event
+        panelist_count = event.application.panel.count()
+
+            # Calculate the extra cells required
+        extra_cells = max_panelist - panelist_count  # This gives the number of extra cells needed
+        
+            # Append the event and extra_cells to the list
+        events_with_panel.append({
+            'event': event,
+            'extra_cells': extra_cells,  # Include extra cells needed for padding
+        })
+
     return render(request, 'defense_schedule/defense_schedule.html', {
-        "events": all_events,
+        "events_with_panel": events_with_panel,
         "defense_applications": defense_applications,
     })
+
+
 
 def view_defense_schedule(request): 
     if not request.user.is_authenticated: 
         messages.error(request, "Please login to view this page")
         return redirect('login')   
 
-    all_events = Defense_schedule.objects.all().order_by('start')   # Order by start time descending
-    
-    return render(request, 'defense_schedule/schedule_table.html', {
-        "events": all_events,
-    }) 
 
+    all_events = Defense_schedule.objects.all().order_by('start')   # Order by start time descending
+
+    max_panelist = 3
+    events_with_panel=[]
+
+    for event in all_events: 
+        # Count the number of panelists for the current event
+        panelist_count = event.application.panel.count()
+
+         # Calculate the extra cells required
+        extra_cells = max_panelist - panelist_count  # This gives the number of extra cells needed
+        
+          # Append the event and extra_cells to the list
+        events_with_panel.append({
+            'event': event,
+            'extra_cells': extra_cells,  # Include extra cells needed for padding
+        })
+
+    return render(request, 'defense_schedule/schedule_table.html', {
+        "events_with_panel": events_with_panel,
+    }) 
 
 def all_sched(request): # still return 
     all_events = Defense_schedule.objects.all().order_by('-created_at') 

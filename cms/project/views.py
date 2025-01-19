@@ -71,39 +71,6 @@ def save_project_group_settings(request):
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
             
-def manage_skills(request):
-    if request.method == 'POST':
-        form = UserSkillForm(request.POST)
-        if form.is_valid():
-            predefined_skills = form.cleaned_data['predefined_skills']
-            other_skill = form.cleaned_data['other_skill']
-            
-            # Save predefined skills
-            for skill in predefined_skills:
-                UserSkill.objects.create(user=request.user, predefined_skill=skill)
-
-            # Save other skill if provided
-            if other_skill:
-                UserSkill.objects.create(user=request.user, other_skill=other_skill)
-
-            return redirect('manage_skills')  # Redirect to the same page or another page
-    else:
-        form = UserSkillForm()
-
-    user_skills = UserSkill.objects.filter(user=request.user)  # Get skills for the logged-in user
-    predefined_skills = PredefinedSkill.objects.all()  # Get all predefined skills
-    return render(request, 'project/manage_skills.html', {'form': form, 'user_skills': user_skills, 'predefined_skills': predefined_skills})
-
-def edit_skill(request, skill_id):
-    skill = get_object_or_404(Skill, id=skill_id, user=request.user)
-    if request.method == 'POST':
-        form = SkillForm(request.POST, instance=skill)
-        if form.is_valid():
-            form.save()
-            return redirect('manage_skills')
-    else:
-        form = SkillForm(instance=skill)
-    return render(request, 'project/edit_skill.html', {'form': form})
 
 # def add_custom_phase(request, project_id):
 #     project = Project.objects.get(id=project_id)
@@ -147,15 +114,6 @@ def notifications_api(request):
         }
         return JsonResponse(data)
     return JsonResponse({"error": "Not authenticated"}, status=401)
-
-def defense_settings(request): 
-    return render(request, 'project/setting_defenses.html', {})
-
-
-def coordinator_settings(request): 
-
-    return render(request, 'project/coordinator_settings.html', {} )
-
 
 # def create_phases(request): 
 
@@ -203,7 +161,8 @@ def coordinator_dashboard(request):
     if not request.user.is_current_coordinator:
         messages.error(request, "You're not authorized to view this page")
         return redirect('home')    
-    
+
+
     adviser_count = Faculty.objects.filter(role='FACULTY').filter(adviser_eligible=True).count
     student_count = Student.objects.filter(role='STUDENT').filter(eligible=True ).count 
     project_group_count = Project_Group.objects.count 
@@ -217,7 +176,9 @@ def coordinator_dashboard(request):
     project_group_count = Project_Group.objects.count
     unapproved_project_group_count = Project_Group.objects.filter(approved=False).count
 
+    latest_projects = Project.objects.all().order_by('-created_at')[:15]
     project_count = Project.objects.filter(status='approved').count
+    recent_users = User.objects.all().order_by('-created_at')[:10]
 
     # Subquery to fetch the latest submission date per project
     latest_application_date_subquery = Defense_Application.objects.filter(
@@ -273,6 +234,8 @@ def coordinator_dashboard(request):
         "project_count":  project_count,
         "defense_applications_count": defense_applications_count, 
         "defense_schedule_count": defense_schedule_count, 
+        "latest_projects": latest_projects,
+        "recent_users": recent_users,
     })
 
 
@@ -1238,14 +1201,12 @@ def list_project_group(request):
 
              # Calculate the number of extra cells needed for this group
             extra_cells = max_members_in_any_group - group_proponents_count
-            
 
             project_groups_with_proponents.append({
                 'group': group,
                 'proponents': proponents,
                 'proponents_count': group_proponents_count,  # Store count of proponents
                 'extra_cells': extra_cells,  # Include empty cells for padding
-        
         })
 
           # Set max_proponents to the maximum number found

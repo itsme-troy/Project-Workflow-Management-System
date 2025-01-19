@@ -28,13 +28,6 @@ class ProjectGroupSettings(models.Model):
         return f"Max Proponents: {self.max_proponents}"
 
 
-# Create a Skill model to hold available skills
-class Skill(models.Model):
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-    
 class AppUserManager(UserManager):
     def _create_user(self, email, password, **extra_fields):
         # Check if user provided email
@@ -117,6 +110,7 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
 
     color = models.CharField(max_length=7, default="#007BFF")  # Hex color code
 
+    created_at = models.DateTimeField(auto_now_add=True)  # Automatically set timestamp when the user is created
 
     def save(self, *args, **kwargs):
         # Assign a random color only if no color exists
@@ -420,7 +414,6 @@ class Project(models.Model):
 
     # when somebody adds a project, whatever his ID is the owner of the project
     owner = models.IntegerField("Project Owner", blank=False, default=24)
-    # defense_progress = models.CharField(max_length=50, choices=DEFENSE_PROGRESS, default="topic")   
 
     STATUS_CHOICES = [
         ('pending', 'Pending'),
@@ -428,12 +421,12 @@ class Project(models.Model):
         ('declined', 'Declined'),
     ]
 
-    # defense_order = models.ForeignKey(Defense_order, null=True, on_delete=models.SET_NULL)
-
     # determines whether a project is a approved project or a proposal 
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     is_archived = models.BooleanField(default=False)
     
+      # Automatically track the creation timestamp
+    created_at = models.DateTimeField(auto_now_add=True)
     # allows to use model in admin area.
     def __str__(self):
         return str(self.title) if self.title else "No Project"

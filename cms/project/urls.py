@@ -2,8 +2,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-#    path('profile_list/', views.profile_list, name='profile_list'),
-#   path('profile/<int:pk>', views.profile, name='profile'),
 
     path("", views.home, name="home"),
     path('list_projects', views.all_projects, name="list-projects"),
@@ -64,7 +62,6 @@ urlpatterns = [
     path('reject-group-membership/<int:group_id>/', views.reject_group_membership, name='reject-group-membership'),
     path('finalize-group/<int:group_id>/', views.finalize_group, name='finalize-group'),
     path('invite-more-members/<int:group_id>/', views.invite_more_members, name='invite-more-members'),
-    # path('replace-member/<int:group_id>/<int:member_id>/', views.replace_member, name='replace-member'),
     path('remove-member/<int:group_id>/<int:member_id>/', views.remove_member, name='remove-member'),
     path('leave-group/<int:group_id>/', views.leave_group, name='leave-group'),
     
@@ -75,18 +72,12 @@ urlpatterns = [
     path('decline-join-request/<int:group_id>/<int:user_id>/', views.decline_join_request, name='decline-join-request'),
     path('transfer-creator/<int:group_id>/', views.transfer_creator, name='transfer-creator'),
     
-    # path('my_student_profile/<profile_id>', views.my_student_profile, name="my-student-profile"), 
     path('my_profile/<profile_id>', views.my_profile, name="my-profile"), 
     path('show_faculty/<faculty_id>', views.show_faculty, name='show-faculty'),
     path('update_deficiencies/<user_id>', views.update_deficiencies, name='update-deficiencies'), 
     
-    # path('approve_project_group/<group_id>', views.approve_project_group, name='approve-project-group'), 
-    # path('reject_project_group/<group_id>', views.reject_project_group, name='reject-project-group'),
     path('delete_project_group/<group_id>', views.delete_project_group, name='delete-project-group'),
 
-    # path('get_notifications/', views.get_notifications, name='get_notifications'),
-    # path('mark_notification_read/<int:notification_id>/', views.mark_notification_read, name='mark_notification_read'),
-    
     path('reject-panel-invitation/<int:project_id>/', views.reject_panel_invitation, name='reject-panel-invitation'),
 
     path('submit_project_idea', views.submit_project_idea, name='submit-project-idea'), 
@@ -98,10 +89,6 @@ urlpatterns = [
     # path('create_custom_phase/<project_id>', views.create_custom_phase, name='create-custom-phase'),  
     # path('create_custom_phases', views.create_custom_phases, name='create-custom-phases'),  
  
-    path('settings', views.coordinator_settings, name = 'coordinator-settings'),
-    path('defense_settings', views.defense_settings, name = 'defense-settings'),
-
-
     path('notifications/', views.notifications_view, name='notifications'), 
     path('notifications_api/', views.notifications_api, name='notifications_api'),    
     path('mark_read_unread/<int:notification_id>/', views.mark_read_unread, name='mark_read_unread'),
@@ -110,7 +97,6 @@ urlpatterns = [
      
     path('mark_all_read/', views.mark_all_read, name='mark_all_read'),
  
-    path('manage-skills/', views.manage_skills, name='manage_skills'),
     path('dashboard', views.coordinator_dashboard, name='coordinator-dashboard'), 
     path('save_project_group_settings/', views.save_project_group_settings, name='save_project_group_settings'),
     path('project-group-settings/', views.get_project_group_settings, name='project_group_settings'),
