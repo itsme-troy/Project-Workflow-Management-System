@@ -115,6 +115,13 @@ def register_student(request):
 #         })
 
 def login_user(request): 
+    # If the user is already logged in, redirect them to the appropriate page
+    if request.user.is_authenticated:
+        messages.info(request, "You are already logged in.")
+        return redirect('home')  # Or redirect to 'coordinator-dashboard' based on the user's role
+
+
+
     if request.method == "POST": 
         email = request.POST["email"]
         password = request.POST["password"]

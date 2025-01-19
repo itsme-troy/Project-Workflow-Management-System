@@ -166,15 +166,29 @@
                     {% endif %}
 
                     {% if user.role == 'FACULTY' %}
-                        <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}"><i class="fas fa-list icon icon-margin"></i> All Projects  </a></li>
-                        <li><a class="dropdown-item" href="{% url 'adviser-projects' %}">  Advisory Projects  </a></li>
-                        <li><a class="dropdown-item" href="{% url 'adviser-proposals' %}">  Received Proposals  </a></li>
-                        <li><a class="dropdown-item" href="{% url 'panel-projects' %}"> Panel Projects </a></li>
-                    {% endif %}
+                        <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}">
+                            <i class="fas fa-tasks icon icon-margin"></i> All Projects  
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'adviser-projects' %}">
+                            <i class="fas fa-clipboard-list icon icon-margin"></i> Advisory Projects  
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'adviser-proposals' %}">
+                            <i class="fas fa-paper-plane icon icon-margin"></i> Received Proposals  
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'panel-projects' %}">
+                            <i class="fas fa-chalkboard icon icon-margin"></i> Panel Projects 
+                        </a></li>
+                        {% endif %}
                     
                     {% if request.user.is_current_coordinator %}
-                            <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}"><i class="fas fa-check-circle icon icon-margin"></i> View Projects</a></li>
-                            <li><a class="dropdown-item" href="{% url 'list-archived-projects' %}"><i class="fas fa-archive  icon icon-margin"></i> Archived Projects</a></li>
+                            <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}">
+                                <i class="fas fa-check-circle icon icon-margin"></i> View Projects
+                            </a></li>
+
+                            <li><a class="dropdown-item" href="{% url 'list-archived-projects' %}">
+                                <i class="fas fa-archive icon icon-margin"></i> Archived Projects
+                            </a></li>
+                    
                     {% endif %}
 
                 {% endif  %}
@@ -275,8 +289,16 @@
                                 
 
                                 {% elif request.user.role == 'FACULTY'%}
-                                    <li><a class="dropdown-item" href="{% url 'view-defense-schedule' %}"> View Schedule  </a></li> 
-                                    <li><a class="dropdown-item" href="{% url 'free-schedule' %}"> Set free Schedule  </a></li> 
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'view-defense-schedule' %}">
+                                                <i class="fas fa-calendar-alt icon icon-margin"></i> View Schedule
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'free-schedule' %}">
+                                                <i class="fas fa-calendar-plus icon icon-margin"></i> Set Free Schedule
+                                            </a>
+                                        </li>
                                 {% endif %}
                             </ul>
                         </li>

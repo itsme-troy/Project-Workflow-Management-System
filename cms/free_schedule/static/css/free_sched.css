@@ -1,6 +1,3 @@
-
-
-
 .scrollable-events {
     max-height: 600px; /* Restrict the height for scrollable content */
     overflow-y: auto; /* Enable vertical scrolling */
@@ -12,7 +9,6 @@
     margin-top: 25px; /* Space above the container */
     transition: background-color 0.3s ease; /* Smooth background transition */
 }
-
 
 /* Style list items inside the scrollable container */
 .scrollable-events .list-group-item {

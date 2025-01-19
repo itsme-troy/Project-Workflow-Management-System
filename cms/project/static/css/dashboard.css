@@ -9,20 +9,20 @@
     font-family: 'Poppins', sans-serif;
 }
 
-root{
+:root{
     --color-dark: #1D2231; 
     --text-grey: #8390A2; 
     --main-color: #DD2F6E;
 }
 
 /* Improve heading style */
-h1, h2, h3 {
+.dashboard h1, h2, h3 {
     font-weight: 600;
     color: #333;
 }
 
 /* Icon buttons */
-button i, .icon i {
+.dashboard button i, .icon i {
     margin-right: 0.5rem;
 }
 
@@ -32,12 +32,12 @@ button i, .icon i {
     background: var(--main-color);
 } */
 
-.main-content{ 
+.dashboard .main-content{ 
     margin-left: 50px;
     padding: 2rem 1rem;
 }
 
-header{
+.dashboard .main-content header{
     display: flex;
     justify-content: space-between;
     padding: 1rem;
@@ -47,18 +47,18 @@ header{
 }
 
 
-header h2{
+.dashboard header h2{
     color: #555; 
     display: flex; /* Make the h2 element a flex container */
     align-items: center; /* Align items vertically */
     gap: 0.5rem; /* Add space between the icon and text */
 }
-header label span{
+.dashboard label span{
     font-size: 1.7rem;
     padding: 0;
 }
 
-.search-wrapper{
+.dashboard .search-wrapper{
     border: 1px solid #f0f0f0;
     border-radius: 30px;
     height: 50px;
@@ -66,56 +66,57 @@ header label span{
     align-items: center;
     overflow: hidden;
 }
-.search-wrapper span{
+.dashboard .search-wrapper span{
     display: inline-block;
     padding: 0rem 1rem; 
     font-size: 1.5rem;
 }
 
-.search-wrapper input{
+.dashboard .search-wrapper input{
     height: 100%;
     padding: .5rem;
     border: none;
     outline: none;
 }
 
-main{
+.dashboard main{
     margin-top: 15px;
     padding: 2rem 1.5rem;
     background: #f1f5f9;
     min-height: calc(100vh - 90px);
 }
 
-.cards{
+.dashboard .cards{
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-gap: 2rem;
     margin-top: 1rem;
 }
 
-.card-single{
+.dashboard .card-single{
     display: flex;
     justify-content: space-between;
     background: #fff;
-    padding: 2rem;
+    padding: 1.5rem;
     min-height: 220px;  /* Ensures cards have at least this height */
-    border-radius: 10px;
+    border-radius: 8px;
     transition: all 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
 }
-.card-single:hover {
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+.dashboard .card-single:hover {
+    transform: translateY(-5px);    /* Slight upward lift on hover */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Stronger shadow effect */
 }
 
-.card-single div:last-child span{
+.dashboard .card-single div:last-child span{
     font-size: 3rem;
     color: var(--main-color);
 }
 
-.card-single div:first-child span,
-.card-single:div:last-child span,
-.card-single:last-child div:last-child span{
+.dashboard .card-single div:first-child span,
+.dashboard .card-single:div:last-child span,
+.dashboard .card-single:last-child div:last-child span{
     color: var(--text-grey)
 }
 
@@ -126,51 +127,52 @@ main{
 .dashboard .card-link:hover {
     color: #0056b3;
 }
+
+.dashboard .card-single h1 {
+    font-size: 2rem;                /* Make the count bigger and prominent */
+    color: #DD2F6E;                 /* Use a vibrant color for emphasis */
+    font-weight: 700;               /* Bold for the count */
+    margin-bottom: 0.5rem;          /* Space between count and title */
+}
 /* Add styles for text inside card-single */
-.dashboard .card-single span,
-.dashboard .card-single h1,
-.dashboard .card-single p5 {
+.dashboard .card-single span{
     color: #333;
 }
 
-/* button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem; 
-    padding: 0.5rem 1rem;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
-    border-radius: 5px;
+.dashboard .card-single p5 {
+    font-size: 1rem;                /* Regular size for the text */
+    color: #8390A2;                 /* Lighter grey for the subtext */
+    display: block;                 /* Make it a block-level element */
+    margin-top: 1rem;               /* Space between title and subtext */
 }
 
-button span {
-    font-size: 1.2rem; 
-} */
+.dashboard .card-single .icon {
+    font-size: 2rem;                /* Large icon to balance the text */
+    color: #DD2F6E;                 /* Same color as the title */
+    margin-left: 1rem;              /* Add space between text and icon */
+}
 
-.recent-grid {
+.dashboard .recent-grid {
     margin-top: 3.5rem;
     display: grid;
     grid-gap: 2rem;
     grid-template-columns: 65% auto;
 }
 
-.card{
+.dashboard .card{
     background: #fff;
     border-radius: 5px;
 }
-.card-header{
+.dashboard .card-header{
     padding: 1rem;
 }
-.card-header{
+.dashboard .card-header{
    display: flex;
    justify-content: space-between;
    align-items: center;
    border-bottom: 1px solid #f0f0f0;
 }
-.card-header button{
+.dashboard .card-header button{
     background: var(--main-color);
     border-radius: 10px;
     color: #fff; 
@@ -179,23 +181,23 @@ button span {
     border: 1px solid var(--main-color);
 }
 
-table {
+.dashboard table {
     border-collapse: collapse;
     width: 100%; /* Ensures the table occupies full width */
 }
 
-thead tr{
+.dashboard thead tr{
     border-top: 1px solid #f0f0f0;
     border-bottom: 1px solid #f0f0f0;
 }
-thead td {
+.dashboard thead td {
     font-weight: 700;
     color: #333;
     padding: 10px;
     text-align: left; /* Aligns headers to the left */
 }
 
-td {
+.dashboard td {
     padding: 10px;
     color: #333;
     text-align: left; /* Aligns text to the left */
@@ -205,7 +207,7 @@ td {
     white-space: nowrap; /* Prevent text from wrapping */
 }
 
-td .status{
+.dashboard td .status{
     display: inline-block;
     height: 20px;
     width: 20px;
@@ -213,7 +215,7 @@ td .status{
     margin-right: 1rem;
     flex-shrink: 0; /* Prevent shrinking */
 }
-td.role {
+.dashboard td.role {
     color: #555;            /* Set the text color to a dark grey */
     text-align: left;       /* Align the text to the left */
     padding-bottom: 50px;
@@ -222,31 +224,31 @@ td.role {
     flex-shrink: 0; /* Prevent shrinking */
 
 }
-.recent-grid  td:last-child{
+.dashboard .recent-grid  td:last-child{
     display: flex;
     align-items: center;
     flex-direction: row; /* Ensures horizontal alignment */
     gap: 0.5rem; /* Optional: Adds spacing between items */
     
 } 
-.status.green {
+.dashboard .status.green {
     background-color: green; /* Approved */
 }
-.status.yellow {
+.dashboard .status.yellow {
     background-color: #FFC107; /* pending-Amber -  */
 }
-.status.red {
+.dashboard .status.red {
     background-color: red; /* Declined */
 }
 
 
-.customer{
+.dashboard .customer{
     justify-content: space-between;
     align-items: center;   
     padding: .5rem .7rem;
 }
 
-.info img {
+.dashboard .info img {
     border-radius: 50%;
     margin-right: 1rem;
     width: 40px; /* Make the profile picture size consistent */
@@ -254,90 +256,78 @@ td.role {
     object-fit: cover; /* Ensures the image is properly cropped */
     padding-left: 10px;
 }
-.info h4 {
+.dashboard .info h4 {
     font-size: 1rem; /* Adjusts font size for name */
     font-weight: 600; /* Bold text */
     color: #222; /* Dark color */
     margin-bottom: 0; /* Removes bottom margin */
 }
 
-.info small{
+.dashboard .info small{
     font-weight: 600;
     color: var(--text-grey);
 }
-/* Optional: Add hover effect for rows */
-tbody tr:hover {
-    background-color: #f1f1f1; /* Light background on hover */
-}
+
 /* Add table responsiveness */
-.table-responsive {
+.dashboard .table-responsive {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
-td.scrollable {
+.dashboard td.scrollable {
     overflow-x: auto;  /* Horizontal scroll */
     max-width: 200px;  /* Set a max width */
     white-space: nowrap; /* Prevent text wrap */
 }
 
-
-.contact span{
-    font-size: 1.2rem;
-    display: inline-block;
-    margin-left: .5rem;
-    color: var(--main-color);
-}
-
-
 /* SETTINGS */
 
 /* Settings Modal Styling */
-.settings-section {
+.dashboard .settings-section {
     padding: 1rem 0;
     border-bottom: 1px solid #eee;
 }
 
-.settings-section:last-child {
+.dashboard .settings-section:last-child {
     border-bottom: none;
 }
 
-.settings-heading {
+.dashboard .settings-heading {
     color: #495057;
     margin-bottom: 1rem;
     font-weight: 600;
 }
 
-.form-check-input:checked {
+.dashboard .form-check-input:checked {
     background-color: #007bff;
     border-color: #007bff;
 }
 
-.form-select:focus {
+.dashboard .form-select:focus {
     border-color: #007bff;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 /* Modal Animation */
-.modal.fade .modal-dialog {
+.dashboard .modal.fade .modal-dialog {
     transition: transform 0.3s ease-out;
 }
 
-.modal.show .modal-dialog {
+.dashboard .modal.show .modal-dialog {
     transform: none;
 }
 
 /* Custom Switch Styling */
-.form-switch .form-check-input {
+.dashboard .form-switch .form-check-input {
     width: 2.5em;
     margin-left: -2.5em;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280, 0, 0, 0.25%29'/%3e%3c/svg%3e");
 }
 
-.form-switch .form-check-input:checked {
+.dashboard .form-switch .form-check-input:checked {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
 }
 
-#settings-btn {
+.dashboard #settings-btn {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -347,12 +337,12 @@ td.scrollable {
     color: #495057;
 }
 
-#settings-btn:hover {
+.dashboard #settings-btn:hover {
     background-color: #e9ecef;
     transform: translateY(-1px);
 }
 
-#settings-btn i {
+.dashboard #settings-btn i {
     font-size: 20px;
     color: #495057;
 }
@@ -393,71 +383,74 @@ td.scrollable {
     margin-left: 10px;
 }
 
-.see-all-button { 
-    background: none; /* Remove default button styling */
-    border: none;     /* Remove border */
-    color: black;     /* Set font color to black */
-    font-size: 16px;  /* Adjust font size for readability */
-    cursor: pointer;  /* Change cursor to pointer */
-    display: flex;    /* Align text and arrow */
-    align-items: center; /* Center vertically */
-    gap: 10px;        /* Add spacing between text and arrow */
-    font-weight: bold; /* Make the text bold */
-    padding: 5px 10px; /* Add some padding for click area */
-    text-decoration: none; /* No underline by default */
+.dashboard .see-all-button {
+    background: none;               /* Remove default button styling */
+    border: none;                   /* Remove border */
+    color: black;                   /* Set font color to black */
+    font-size: 16px;                 /* Adjust font size for readability */
+    cursor: pointer;                /* Change cursor to pointer */
+    display: flex;                   /* Align text and arrow */
+    align-items: center;             /* Center vertically */
+    gap: 10px;                       /* Add spacing between text and arrow */
+    font-weight: bold;               /* Make the text bold */
+    padding: 5px 10px;               /* Add some padding for click area */
+    text-decoration: none;           /* No underline by default */
+    transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s ease; /* Smooth transitions */
+}
+.dashboard .see-all-button:hover {
+    background-color: #f0f0f0;       /* Light background on hover */
+    color: #007bff;                  /* Change text color on hover (blue) */
+    transform: scale(1.05);           /* Slightly enlarge the button */
 }
 
-.see-all-button:hover .see-all-text {
-    text-decoration: underline; /* Add underline to text */
-    text-decoration-color: blue; /* Set underline color to blue */
+.dashboard .see-all-button:hover .see-all-text {
+    color: #007bff;                  /* Change text color on hover */
+    text-decoration: underline;       /* Underline text on hover */
 }
-.see-all-button span.material-symbols-outlined {
-    font-size: 20px; /* Adjust the arrow icon size */
-    color: black;    /* Ensure the arrow icon is black */
+
+.dashboard .see-all-button span.material-symbols-outlined {
+    font-size: 20px;                 /* Adjust the arrow icon size */
+    color: black;                    /* Ensure the arrow icon is black */
     text-decoration: none;
+    transition: color 0.3s ease;      /* Smooth transition for the icon color */
 }
-.see-all-text {
-    color: black;     /* Set font color to black */
-    font-size: 16px;  /* Adjust font size for readability */
-}
-.see-all-button span.material-symbols-outlined {
-    font-size: 20px; /* Adjust the arrow icon size */
-    color: black;    /* Ensure the arrow icon is black */
+.dashboard .see-all-button:hover span.material-symbols-outlined {
+    color: #007bff;                  /* Change icon color on hover */
 }
 
-.material-symbols-outlined {
-    font-size: 20px; /* Adjust the arrow icon size */
-    color: black;    /* Ensure the arrow icon is black */
+.dashboard .see-all-text {
+    color: whitesmoke;
+    font-size: 16px;  /* Adjust font size for readability */
 }
 
 
 @media only screen and (max-width: 1200px){
-    .cards {
+    .dashboard .cards {
         grid-template-columns: repeat(3, 1fr);
     }
 
-    .recent-grid{
+    .dashboard .recent-grid{
         grid-template-columns: 60% 40%; 
     }
 }
 
 @media only screen and (max-width: 768px){
-    .cards {
+    .dashboard .cards {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .recent-grid{
+    .dashboard .recent-grid{
         grid-template-columns: 100% 
     }
-    .search-wrapper{
+    .dashboard .search-wrapper{
         display: none;
     }
-    header h2 {
+    .dashboard header h2 {
         display: flex;
         align-items: center;
     }
 
-    header h2 label {
+    .dashboard header h2 label {
         display: inline-block;
         background: var(--main-color);
         padding-left: 0rem;
@@ -470,19 +463,19 @@ td.scrollable {
         align-items: center;
         justify-content: center !important;
     }
-    header h2 span{
+    .dashboard header h2 span{
         text-align: center;
         padding-right: 0rem;    
     }
 
-    header h2{
+    .dashboard header h2{
         font-size: 1.1rem;
     }
-    .main-content{
+    .dashboard .main-content{
         width: 100%;
         margin-left: 0rem;
     }
-    header{
+    .dashboard header{
         width: 100% !important;
         left: 0 !important;
     }
@@ -490,8 +483,32 @@ td.scrollable {
 }   
 
 @media only screen and (max-width: 560px){
-    .cards{
+    .dashboard .cards{
         grid-template-columns: 100%;
     }
 
+}
+
+
+.dashboard .card-title {
+    font-size: 1.5rem;               /* Larger font size for a prominent title */
+    font-weight: 600;                /* Semi-bold font weight for a modern feel */
+    color: #333;                    /* Dark grey color for the title */
+    text-transform: uppercase;      /* Makes the title all uppercase for emphasis */
+    letter-spacing: 1px;            /* Slightly increase spacing between letters */
+    margin-top: 1rem;               /* Space between the count and title */
+    position: relative;             /* Needed for pseudo-element */
+    display: block;                 /* Ensure block-level behavior */
+    padding: 0 10px;                /* Adds padding around the title */
+}
+
+.dashboard .card-title::after {
+    content: '';                    /* Adds an empty content for the line */
+    position: absolute;             /* Position it below the title */
+    bottom: -5px;                   /* Positions it slightly below */
+    left: 0;
+    width: 100%;                    /* Full width line */
+    height: 2px;                    /* Thickness of the line */
+    background-color: var(--main-color); /* Use the main color or a contrasting color */
+    opacity: 0.7;                   /* Slight opacity for a subtle effect */
 }

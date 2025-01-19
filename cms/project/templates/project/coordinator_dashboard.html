@@ -1,3 +1,4 @@
+
 {% extends 'project/base.html' %}
 {% load static %}
 
@@ -5,8 +6,10 @@
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 
 {% block content %} 
+
+<div class="dashboard">
     <div class="main-content">
-        <header>
+        <header class="header-container">
             <h2> 
                 <label for="">
                     <span class="material-symbols-outlined">dashboard</span>
@@ -14,20 +17,24 @@
                 Coordinator Dashboard
             </h2>
 
-            <button id="settings-btn" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#settingsModal">
-                <i class="material-icons">settings</i> Settings
-            </button>
-
-            <div class="search-wrapper"> 
-                <span class="material-symbols-outlined">search</span>
-                <input type="search" placeholder="Search here" />
-            </div> 
+            <div class="right-side">
+                    <button id="settings-btn" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                        <i class="material-icons">settings</i> Settings
+                    </button>
             
-        </header>
+                    <form id="searchForm" class="d-flex ms-auto" method="POST" action="{% url 'search-projects' %}" role="search">
+                        {% csrf_token %}
+                        <div class="search-wrapper">
+                            <span class="material-symbols-outlined search-icon">search</span>
+                            <input type="search" name="searched" placeholder="Search a project" class="form-control me-2" aria-label="Search" />
+                        </div>
+                        <button id="searchButton" class="btn btn-outline-primary" type="submit">Search</button>
+                    </form>
+                </div>
+            </header>
         </div>
 
     <main> 
-        <div class="dashboard">
         
             <div class="cards"> 
                 <!-- Wrap the card with an anchor tag to add the link -->
@@ -35,7 +42,7 @@
                    <div class="card-single"> 
                        <div>
                            <h1> {{ student_count }} </h1>
-                           <span>  Students </span>
+                           <span class="card-title">  Students </span>
                            </br>
                            <p5> <span> Approval Required: {{ student_uneligible_count }} </span> </p5>
                        </div>
@@ -49,7 +56,7 @@
                    <div class="card-single"> 
                        <div>
                            <h1> {{ faculty_count}} </h1>
-                           <span>  Faculty </span> </br>
+                           <span class="card-title">  Faculty </span> </br>
                            <span> Approval Required: </span> 
                            <span>  Adviser: {{ adviser_uneligible_count }}</span> 
                            <span> Panelist: {{ panel_uneligible_count }} </span> </br>
@@ -65,7 +72,7 @@
                    <div class="card-single"> 
                        <div>
                            <h1> {{ project_group_count }} </h1>
-                           <span>  Project Groups </span>
+                           <span class="card-title">  Project Groups </span>
                        </div>
                        <div>
                            <span class="icon"><i class="fas fas fa-users icon icon-margin"></i></span> 
@@ -77,10 +84,10 @@
                    <div class="card-single"> 
                        <div>
                            <h1> {{ project_count }} </h1>
-                           <span> Projects </span>
+                           <span class="card-title"> Projects </span>
                        </div>
                        <div>
-                           <span <i class="fas fa-project-diagram icon icon-margin"></i></span>
+                           <span class="icon"><i class="fas fa-project-diagram icon icon-margin"></i></span>
                        </div>
                    </div>
                </a>
@@ -89,7 +96,7 @@
                    <div class="card-single"> 
                        <div>
                            <h1> {{ defense_applications_count }} </h1>
-                           <span> Defense Applications </span>
+                           <span class="card-title"> Defense Applications </span>
                        </div>
                        <div>
                            <span class="icon"><i class="fas fa-shield-alt icon icon-margin"></i> </span> 
@@ -101,7 +108,7 @@
                    <div class="card-single"> 
                        <div>
                            <h1> {{ defense_schedule_count }} </h1>
-                           <span> Defense Schedules  </span>
+                           <span class="card-title"> Defense Schedules  </span>
                        </div>
                        <div>
                            <span class="icon"><i class="fas fa-calendar-alt icon icon-margin"></i></span> 
@@ -117,7 +124,7 @@
                            <h3> Recent Projects</h3>
    
                            <button class="see-all-button" onclick="window.location.href='{% url 'coordinator-projects' %}'">
-                                <span class="see-all-text">See All</span>
+                                <span class="see-all-text">View all</span>
                                 <span class="material-symbols-outlined">arrow_forward</span>
                             </button>
                        </div>
@@ -167,7 +174,7 @@
                        <h3> Recent Users </h3>
    
                        <button class="see-all-button" onclick="window.location.href='{% url 'list-student' %}'">
-                            <span class="see-all-text">See All</span>
+                            <span class="see-all-text">View All</span>
                             <span class="material-symbols-outlined">arrow_forward</span>
                         </button>
                    </div>
@@ -214,70 +221,7 @@
     </main>
 
 
-    
-
-    {% comment %} <div class="d-flex" id="wrapper"> {% endcomment %}
-        <!-- Sidebar -->
-
-        <!-- /#sidebar-wrapper -->
-
-        <!-- Page Content -->
-  
-    
-        {% comment %} <div id="page-content-wrapper">
-            <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-                <button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
-            </nav>
-
-            <div class="container-fluid">
-                <h1 class="mt-4">Coordinator Dashboard</h1>
-                <p>Welcome, {{ request.user.first_name }}! Here are the main actions you can perform:</p>
-              <div class="row">
-                    <div class="col-md-4">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <i class="fas fa-user-graduate fa-2x text-primary"></i>
-                                <h5 class="card-title mt-2">Manage Students</h5>
-                                <p class="card-text">View, edit, and approve student accounts.</p>
-                                <a href="{% url 'list-student' %}" class="btn btn-primary">View Students</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <i class="fas fa-layer-group fa-2x text-success"></i>
-                                <h5 class="card-title mt-2">Project Groups</h5>
-                                <p class="card-text">Manage and view project groups.</p>
-                                <a href="{% url 'list-project-group' %}" class="btn btn-success">View Groups</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <i class="fas fa-check-circle fa-2x text-warning"></i>
-                                <h5 class="card-title mt-2">Defense Applications</h5>
-                                <p class="card-text">Approve or review defense applications.</p>
-                                <a href="{% url 'list-defense-applications' %}" class="btn btn-warning">View Applications</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Additional Rows -->
-            </div>
-        </div>
-        <!-- /#page-content-wrapper -->
-    </div> {% endcomment %}
-    <!-- /#wrapper -->
-
-    {% comment %} <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-    <script>
-        document.getElementById("menu-toggle").addEventListener("click", function() {
-            document.getElementById("wrapper").classList.toggle("toggled");
-        });
-    </script> {% endcomment %}
-
+    <div >
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const settingsModal = document.getElementById('settingsModal');

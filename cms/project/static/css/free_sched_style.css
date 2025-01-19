@@ -929,6 +929,8 @@ body {
 }
 
 
+
+
 @media (max-width: 768px) {
   .grid-container {
       grid-template-columns: 1fr; /* Stack columns on smaller screens */
@@ -1124,6 +1126,57 @@ body {
   padding: 10px;
   justify-content: space-between; 
 }
+/* Left side of the header (Coordinator Dashboard) */
+.header-container h2 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+/* Right side container for settings and search */
+.right-side {
+  display: flex;
+  align-items: center;
+  gap: 20px;  /* Add space between settings button and search form */
+}
+/* Ensure the search-wrapper has relative positioning */
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%; /* Ensure it takes up the available space */
+}
+
+/* Position the icon inside the input field */
+.search-icon {
+    position: absolute;
+    pointer-events: none; /* Prevent the icon from blocking input */
+    right: 15px; /* Position the icon 10px from the right */
+}
+
+/* Adjust the input padding to create space for the icon */
+.search-wrapper input {
+    padding-left: 35px; /* Adjust this based on the size of your icon */
+    width: 100%; /* Ensure the input takes up the full width */
+}
+
+/* Styling for the search form */
+#searchForm {
+  display: flex;
+  align-items: center;
+  gap: 10px;  /* Space between the search icon, input, and button */
+}
+
+/* Optional: Additional styling for buttons and search form */
+#searchButton {
+  margin-left: 10px;
+}
+
+#settings-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;  /* Space between icon and text */
+}
+
 
 .UserName {
   flex-direction: column;
@@ -1252,4 +1305,5 @@ button[type="submit"] {
   font-size: 16px;
   padding: 12px 20px;
 }
+
 
