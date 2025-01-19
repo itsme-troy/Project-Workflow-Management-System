@@ -7,6 +7,8 @@ urlpatterns = [
     path('list_projects', views.all_projects, name="list-projects"),
     path('proposals', views.all_proposals, name="list-proposals"),
     path('show_project/<project_id>', views.show_project, name='show-project'),
+    path('show_application/<application_id>', views.show_application, name='show-application'),
+    
     path('show_proposal/<project_id>', views.show_proposal, name='show-proposal'),
     path('add_project', views.add_project, name="add-project"),
     path('my_project', views.my_project, name='my-project'), 

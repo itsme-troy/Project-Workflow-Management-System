@@ -1249,11 +1249,11 @@ body {
 
 #linksSection ul {
   list-style-type: none;
-  padding: 0;
+  padding: 2px;
 }
 
 #linksSection li {
-  margin-bottom: 5px;
+  margin-bottom: 5px 0;
 }
 
 #linksSection a {

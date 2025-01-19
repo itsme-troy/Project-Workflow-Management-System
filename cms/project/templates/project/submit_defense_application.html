@@ -47,9 +47,9 @@
                 {% csrf_token %}
                 
             <!-- Show last phase and next phase -->
-            <p><strong>Last Phase:</strong> {{ last_phase.phase_type}} <strong> verdict: </strong>  {{ last_phase.verdict }}  {% if last_phase %} {% else %} None </p> {%endif %}
+            {% comment %} <p><strong>Last Phase:</strong> {{ last_phase.phase_type}} <strong> verdict: </strong>  {{ last_phase.verdict }}  {% if last_phase %} {% else %} None </p> {%endif %}
             <p><strong>Next Phase:</strong> {{ next_phase_type }}</p>
-                
+                 {% endcomment %}
                 <!-- Render form fields -->
             {{ form.as_p }}
 

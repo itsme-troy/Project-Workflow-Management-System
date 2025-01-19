@@ -41,19 +41,20 @@ class UpdateStudentProfileForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'bio', 'facebook_link', 'skills']
+        fields = ['student_id','first_name', 'last_name', 'email', 'bio', 'facebook_link', 'skills']
 
     def __init__(self, *args, **kwargs):
         super(UpdateStudentProfileForm, self).__init__(*args, **kwargs)
         
-        # Add 'form-control' class to each field
+        # Add 'form-control' class to each field    
+        self.fields['student_id'].widget.attrs.update({'class': 'form-control'})  # Add class to student_id
         self.fields['first_name'].widget.attrs.update({'class': 'form-control'})
         self.fields['last_name'].widget.attrs.update({'class': 'form-control'})
         self.fields['email'].widget.attrs.update({'class': 'form-control'})
         self.fields['bio'].widget.attrs.update({'class': 'form-control'})
         self.fields['facebook_link'].widget.attrs.update({'class': 'form-control'}) 
         self.fields['skills'].widget.attrs.update({'class': 'form-control'})  # Add class to skills field
-
+      
          # Change label for the email field to 'Gbox'
         self.fields['email'].label = 'Gbox'
 

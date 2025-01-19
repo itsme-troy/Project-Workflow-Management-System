@@ -89,8 +89,6 @@ def defense_sched(request):
         "defense_applications": defense_applications,
     })
 
-
-
 def view_defense_schedule(request): 
     if not request.user.is_authenticated: 
         messages.error(request, "Please login to view this page")
@@ -105,7 +103,8 @@ def view_defense_schedule(request):
     for event in all_events: 
         # Count the number of panelists for the current event
         panelist_count = event.application.panel.count()
-
+        is_panelist = request.user in event.application.panel.all()
+        is_adviser = request.user == event.application.adviser  # Check if the user is the adviser
          # Calculate the extra cells required
         extra_cells = max_panelist - panelist_count  # This gives the number of extra cells needed
         
@@ -113,6 +112,8 @@ def view_defense_schedule(request):
         events_with_panel.append({
             'event': event,
             'extra_cells': extra_cells,  # Include extra cells needed for padding
+            'is_panelist': is_panelist,
+            'is_adviser': is_adviser,
         })
 
     return render(request, 'defense_schedule/schedule_table.html', {

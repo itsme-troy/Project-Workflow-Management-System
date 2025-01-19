@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 import random
 from django.contrib.auth import get_user_model
+import os
 
 # Multiple User types 
 # Users can have 1 role only, (Admin, Coordinator, Faculty, Student)
@@ -535,6 +536,16 @@ class Not_ApprovedProject(Project):
     class Meta: 
         proxy = True 
 
+
+def submission_upload_path(instance, filename):
+    # Organize files under 'submissions/<project_title>/<field_name>/<filename>'
+    return os.path.join(
+        'submissions', 
+        instance.project.title.replace(' ', '_'),
+        instance._meta.get_field(instance._current_field).name,
+        filename
+    )
+
 class Defense_Application(models.Model): 
     TITLE_CHOICES = [
             ('proposal', 'Proposal Defense'),
@@ -551,16 +562,26 @@ class Defense_Application(models.Model):
     adviser = models.ForeignKey(Approved_Adviser, related_name='application_adviser', null=True, on_delete=models.SET_NULL) # If adviser deletes profile, then the projects' adviser will be set to null 
     panel = models.ManyToManyField(Approved_panel, related_name='capplication_panel', blank=True)
  
-    manuscript = models.FileField(upload_to='submissions/manuscript', null=True, blank=True )
-    revision_form = models.FileField(upload_to='submissions/revision_form', null=True, blank=True )
-    payment_receipt = models.ImageField(upload_to='submissions/payment_receipt', null=True, blank=True )
-    adviser_confirmation = models.ImageField(upload_to='submissions/adviser_confirmation', null=True, blank=True )
-    
+    manuscript = models.FileField(upload_to=submission_upload_path, null=True, blank=True)
+    revision_form = models.FileField(upload_to=submission_upload_path, null=True, blank=True)
+    payment_receipt = models.FileField(upload_to=submission_upload_path, null=True, blank=True)
+    adviser_confirmation = models.FileField(upload_to=submission_upload_path, null=True, blank=True)
+
     submission_date = models.DateTimeField(auto_now_add=True, null=True)
+
+     # Use this property to track the current field being uploaded
+    _current_field = None
 
     def __str__(self):
         return f"{self.project}" if self.project else "No Project Assigned"
-        
+    
+    def save(self, *args, **kwargs):
+        # Update the `_current_field` dynamically during save
+        for field in ['manuscript', 'revision_form', 'payment_receipt', 'adviser_confirmation']:
+            if getattr(self, field):
+                self._current_field = field
+                break
+        super().save(*args, **kwargs)
     # def __str__(self): 
     #     return f"{self.title} by {self.project_group}"
     

@@ -1,0 +1,125 @@
+{% extends 'project/base.html' %} <!-- use the base file -->
+
+{% block content %} <!-- content of all web pages go -->
+
+<div class="table-container my-4">
+
+    <center> <h1 style="display: inline-block; margin-left: 60px">Show Defense Application</h1> 
+        <div class="button-container" style="float: right;">  <!-- Using gap to space out buttons -->
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+        </div>
+    </center>
+
+
+   {% if application %} 
+    <div class="card border-0 mt-1 shadow-lg" style="border-radius: 10px;"> <!-- Removed dark border, added rounded corners -->
+        <div class="card-header text-center" style="background-color: #007bff; color: #ffffff; padding: 1rem;">
+            <h5 class="card-title" style="font-size: 1.5em;">{{ application.project }}</h5>
+        </div>
+        <div class="card-body text-center" style="background-color: #f8f9fa; padding: 2rem; border-radius: 0 0 10px 10px;">
+            <table class="table table-hover" style="margin: auto; width: 50%; border-collapse: separate; border-spacing: 0; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                <tbody>
+                    <tr>
+                        <th scope="row" style="color: white; min-width: 250px;" >Adviser</th>
+                        <td>{{ application.project.adviser.first_name }} {{ application.project.adviser.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="color: white;">Proponents</th>
+                        <td>
+                            {{ application.project_group }}
+                        </td>
+                    </tr>
+            
+                    <tr>
+                        <th scope="row" style="color: white;">Panel Members</th>
+                        <td>
+                            <ul class="list-unstyled" style="padding-left:   0;">
+                                {% for panelist in application.project.panel.all %}
+                                <li>{{ panelist.first_name }} {{ panelist.last_name }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <th scope="row" style="color: white;">Submitted by</th>
+                        <td>
+                            {% if owner_user %}
+                                {{ owner_user }} <!-- Display username -->
+                            {% else %}
+                                Unknown User
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="color: white;">Project Type</th>
+                        <td>{{ application.project.project_type }}</td>
+                    </tr>
+                    {% comment %} <tr>
+                        <th scope="row" style="color: white;">Comments</th>
+                        <td>{{ application.project.comments }}</td>
+                    </tr> {% endcomment %}
+                    <tr>
+                        <th scope="row" style="color: white;">Description</th>
+                        <td>{{ application.project.description }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="color: white;"> Manuscript</th>
+                        <td>
+                            {% if application.manuscript %}
+                                <a href="{{ application.manuscript.url }}" target="_blank"> View Manuscript</a>
+                            {% else %}
+                                Not Uploaded
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="color: white;">Revision form</th>
+
+                        <td>
+                            {% if application.revision_form %}
+                                <a href="{{ application.revision_form.url }}" target="_blank"> View Revision Form</a>
+                            {% else %}
+                                Not Uploaded
+                            {% endif %}
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <th scope="row" style="color: white;">Payment Receipt </th>
+                        <td>
+                            {% if application.payment_receipt %}
+                                <a href="{{ application.payment_receipt.url }}" target="_blank">View Payment Receipt</a>
+                            {% else %}
+                                Not Uploaded
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="color: white;">Adviser Confirmation</th>
+                        <td>
+                            {% if application.adviser_confirmation %}
+                                <a href="{{ application.adviser_confirmation.url }}" target="_blank">View Adviser Confirmation</a>
+                            {% else %}
+                                Not Uploaded
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row" style="color: white;"> Date Submitted </th>
+                        <td>{{ application.submission_date }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div> 
+  </div>
+    {% else %}
+    <div class="alert alert-warning text-center" role="alert" style="font-size: 1.25rem;">
+        <h5> Application is not Available</h5>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

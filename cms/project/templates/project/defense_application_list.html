@@ -31,7 +31,9 @@
                     <th scope="col"> Proponents </th> <!-- New column for Proponents -->
                     <th scope="col"> Adviser </th>
                     <th scope="col"> Date Submitted </th>
+                    <th scope="col"> Action </th>
                     <th scope="col"> Verdict </th>
+                   
                 </tr>
             </thead>
             <tbody>
@@ -49,6 +51,12 @@
                     <td>{{ application.adviser }}</td>
                     
                     <td>{{ application.submission_date|date:"M j, Y g:i A" }}</td> 
+                    
+                    <td>
+                        <a href="{% url 'show-application' application.id %}"
+                        class="btn btn-outline-secondary btn-sm">View Application</a> 
+                    </td>
+
                     <td>
                         {% with form=verdict_forms|get_item:application.id %}
                         {% if form %}
@@ -68,6 +76,7 @@
                         {% endif %}
                         {% endwith %}
                     </td>
+                 
                 </tr>
                 {% endif %}
                 {% endfor %}

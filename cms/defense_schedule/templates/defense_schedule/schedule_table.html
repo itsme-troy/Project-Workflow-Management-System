@@ -12,7 +12,7 @@
 <div class="table-container" style="overflow-x: auto; width: 100%; height: 100vh; margin: 0px;">
 
 
-    <center> <h1 style="display: inline-block; margin-left: 30px"> Defense Schedule </h1> 
+    <center> <h1 style="display: inline-block; margin-left: -200px"> Defense Schedule </h1> 
         {% if request.user.is_current_coordinator %}
             <div class="btn-sm" style="float: left;">
                     <a href="{% url 'view-schedule' %}" class="btn btn-primary btn-sm">
@@ -32,28 +32,19 @@
             {% comment %} <button id="toggle-filter-common-schedule" class="btn btn-secondary btn-sm"> Common Schedule</button> {% endcomment %}
                 <div class="table-container" style="margin-top: 0px; min-height: 0px">
                     
-                    {% if request.user.is_current_coordinator %}
-                        <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
-                            <i class="fas fa-plus-circle icon" style="color: white;"></i> Create
-                        </button>
-                    
-                        <button id="delete-all-defense-schedules-btn" class="btn btn-danger btn-sm">
-                            <i class="fas fa-trash"></i> Delete All
-                        </button>
-                    {% endif %}
-                    
-
+       
                     <table class="table table-striped mt-3">
                         <thead>
                             <tr>
                                 <th scope="col"> # </th> 
                                 <th scope="col"> Project</th>
-                                <th scope="col"> Proponents</th>
+                                <th scope="col"style="width: 140px;"> Proponents</th>
                                 <th scope="col"> Adviser </th>
                                 <th scope="col" style="width: 140px;"> Date </th>
                                 <th scope="col"> Panel 1</th>  
                                 <th scope="col"> Panel 2</th>  
-                                <th scope="col"> Panel 3</th> 
+                                <th scope="col"> Panel 3</th>
+                                <th scope="col" style="width: 140px;"> Action </th>  
                             </tr>
                         </thead>
                         <tbody>
@@ -91,7 +82,13 @@
                                     {% for _ in event_data.extra_cells|to_range %}
                                         <td>&nbsp;</td> <!-- Add empty cells for missing panelists -->
                                     {% endfor %}
-                                    
+                                <td>
+                                    {% if event_data.is_panelist or event_data.is_adviser or request.user.is_current_coordinator %} 
+                                            <a href="{% url 'show-application' event_data.event.application.id %}"
+                                            class="btn btn-outline-secondary btn-sm">View Application</a> 
+                                    {% endif %}
+                                </td>
+            
                             </tr>
                         {% empty %}
                             <tr>
@@ -115,7 +112,7 @@
     </div>
 
     <!-- Debug -->
-    {% comment %} {% for event in events %}
+{% comment %} {% for event in events %}
         <p>{{ event.title }} - {{ event.start|localtime }} to {{ event.end|localtime }}</p>
     {% endfor %}   
     {% endcomment %}

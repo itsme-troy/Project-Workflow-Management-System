@@ -180,7 +180,7 @@ def coordinator_dashboard(request):
     project_count = Project.objects.filter(status='approved').count
     recent_users = User.objects.all().order_by('-created_at')[:10]
 
-    # Subquery to fetch the latest submission date per project
+# Subquery to fetch the latest submission date per project
     latest_application_date_subquery = Defense_Application.objects.filter(
         project=OuterRef('project')
     ).order_by('-submission_date').values('submission_date')[:1]
@@ -996,8 +996,6 @@ def submit_defense_application(request):
 
             application.panel.set(panel_members.values_list('id', flat=True))
             form.save_m2m()
-
-            
 
             # Send notifications to all proponents except the logged-in user
             for proponent in project.proponents.proponents.all().exclude(id=request.user.id):
@@ -2184,7 +2182,6 @@ def coordinator_projects(request):
                 # 'status': project.status,
             })
 
-
     return render(request, 'project/coordinator_projects.html', {
         "approved_projects_with_groups": approved_projects_with_groups,
         "approved_page_obj": approved_page_obj,
@@ -2717,8 +2714,8 @@ def update_project_idea(request, project_id):
         messages.error(request, "Please Login to view this page")
         return redirect('login')
     
-    if request.user.role == 'FACULTY' :
-        messages.error(request, "You are not authorized to view this page")
+    if request.user.role == 'STUDENT' :
+        messages.error(request, "You are not authorized to perform this action.")
         return redirect('home')
 
      # Attempt to look up the project by ID
@@ -3355,6 +3352,27 @@ def show_project(request, project_id):
         return render(request, 'project/show_project.html', 
         {'project': project, 
         'project_owner': project_owner})
+    else: 
+        messages.error(request, "Please Login to view this page")
+        return redirect('login')
+    
+def show_application(request, application_id): 
+    if request.user.is_authenticated: 
+        # look on faculty by ID 
+        application = Defense_Application.objects.get(pk=application_id)        
+          # Get the user object using the owner field
+        try:
+            owner_user = User.objects.get(pk=application.owner)
+        except User.DoesNotExist:
+            owner_user = None
+       
+       
+        # pass it to the page using render
+        return render(request, 'project/show_application.html', {
+            'application': application, 
+            'owner_user':  owner_user,
+        })
+    
     else: 
         messages.error(request, "Please Login to view this page")
         return redirect('login')

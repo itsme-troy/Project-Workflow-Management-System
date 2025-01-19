@@ -8,7 +8,21 @@
 {% block content %} <!-- content of all web pages go -->
 
 <div class="table-container"> 
-<h1> Projects I serve as a Panelist </h1>
+    <center> <h1 style="display: inline-block; margin-left: -140px">Projects I serve as a Panelist </h1> 
+        <div class="button" style="float: left;">
+            <!-- Toggle Button to Show/Hide Links -->
+            <button id="toggleButton" onclick="toggleLinks()">Projects</button>
+
+            <!-- Links Section (Initially hidden) -->
+            <div id="linksSection" class="hidden "style="float: left;">
+                <ul>
+                    <li><a href="{% url 'adviser-projects' %}"> Projects</a></li>
+                    <li><a href="{% url 'adviser-proposals' %}"> Proposals</a></li>
+                    <li><a href="{% url 'panel-projects' %}">Panel Projects</a></li>
+                </ul>
+            </div>
+        </div> 
+    </center> 
 
 {% if not approved_projects_with_groups %}
     <center>
@@ -131,6 +145,21 @@
                 document.querySelectorAll('.action-buttons').forEach(btns => btns.style.display = 'none');
             }
         });
+
+        function toggleLinks() {
+            var linksSection = document.getElementById("linksSection");
+            var button = document.getElementById("toggleButton");
+            
+            if (linksSection.classList.contains("hidden")) {
+                linksSection.classList.remove("hidden");
+                linksSection.classList.add("show");
+                button.innerText = "close"; // Change button text when links are visible
+            } else {
+                linksSection.classList.remove("show");
+                linksSection.classList.add("hidden");
+                button.innerText = "Projects"; // Change button text when links are hidden
+            }
+        }
     </script>
 
 {% endblock %}
