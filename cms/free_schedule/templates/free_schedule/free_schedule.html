@@ -9,7 +9,7 @@
  
 {% if user.is_authenticated %}
 
-<div class="table-container" style="margin: 0px; min-height: 1000px;"> 
+<div class="table-container" style="margin: 0px; min-height: 1000px; width: 100%;"> 
     <center> <h1 style="display: inline-block; margin-left: -60px">  Set Free Schedule  </h1> 
     
         <div class="button-container" style="float: right;">  <!-- Using gap to space out buttons -->
@@ -17,43 +17,44 @@
         </div>
     </center> 
 
-    <div class="row">
-        <div class="col-md-4">
-            <div class="scrollable-events">
-
-                <h4>Your Available Schedules</h4> 
-                <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px;">
-                    <button id="create-schedule-btn" class="btn btn-success btn-sm">
-                        <i class="fas fa-plus-circle icon" style="color: white;"></i> Create
-                    </button>
-                
-                    <button id="delete-all-free-schedules-btn" class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash"></i> Delete All
-                    </button>
-                </div>
-            
-                <ul class="list-group mt-3">
-                    {% for event in events %}
-                        <li class="list-group-item d-flex align-items-center" 
-                            style="padding-left: 10px; border-radius: 4px; background: linear-gradient(to right, {{ event.color|default:'#007BFF' }} 5px, #fff 5px);">
-                            <div style="height: 100%; width: 5px; background-color: {{ event.color|default:'#007BFF' }};"></div>
-                            <span class="ms-3">
-                                From: {{ event.start|date:"M. d, Y, g a" }} to {{ event.end|date:"M. d, Y, g a" }}
-                            </span>
-                        </li>
-                    {% empty %}
-                        <li class="list-group-item">No available schedules found.</li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-        </div>
+    <div class="row">        
         <div class="col-md-8"> 
             <div class="my_calendar">
                 <h3> Calendar </h3>
                 <div id='calendar'></div>
             </div> 
         </div>
+  
+
+    <div class="col-md-4">
+        <div class="scrollable-events">
+
+            <h4>Your Available Schedules</h4> 
+            <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px;">
+                <button id="create-schedule-btn" class="btn btn-success btn-sm">
+                    <i class="fas fa-plus-circle icon" style="color: white;"></i> Create
+                </button>
+            
+                <button id="delete-all-free-schedules-btn" class="btn btn-danger btn-sm">
+                    <i class="fas fa-trash"></i> Delete All
+                </button>
+            </div>
+        
+            <ul class="list-group mt-3">
+                {% for event in events %}
+                    <li class="list-group-item d-flex align-items-center" 
+                        style="padding-left: 10px; border-radius: 4px; background: linear-gradient(to right, {{ event.color|default:'#007BFF' }} 5px, #fff 5px);">
+                        <div style="height: 100%; width: 5px; background-color: {{ event.color|default:'#007BFF' }};"></div>
+                        <span class="ms-3">
+                            From: {{ event.start|date:"M. d, Y, g a" }} to {{ event.end|date:"M. d, Y, g a" }}
+                        </span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item">No available schedules found.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
     </div>
 
     <!-- Debug -->

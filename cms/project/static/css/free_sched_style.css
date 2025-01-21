@@ -5,6 +5,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap'); /* Importing Roboto font */
 @import url("https://fonts.googleapis.com/css?family=Sofia");
 
+.logo {
+  overflow: visible; /* Allow logo to exceed container boundaries */
+  display: inline-block;
+  position: relative;
+}
+
+.logo img {
+  height: 50px; /* Adjust the base size of the logo */
+  padding: 2px;
+  transition: transform 0.3s ease;
+}
+
+.logo img:hover {
+  transform: scale(1.5);
+}
 
 .loading-indicator {
   position: fixed;

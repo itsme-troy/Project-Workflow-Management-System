@@ -19,6 +19,7 @@
     margin-right: 10px; /* can adjust value as xneeded */
 }
 
+
 .table-container {
     min-height: 750px;
     max-height: 750px;
@@ -874,7 +875,7 @@ body.custom-sky-blue-bg {
 }
 
 .alert {
-    padding: 15px 15px; /* Increase padding slightly for more space around text */
+    padding: 15px 40px; /* Increase padding slightly for more space around text */
     margin-top: 15px; /* Remove the top margin */
     margin-bottom: 15px; /* Remove bottom margin */
     border-radius: 8px;

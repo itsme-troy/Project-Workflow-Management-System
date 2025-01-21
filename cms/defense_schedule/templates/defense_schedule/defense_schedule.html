@@ -3,12 +3,23 @@
 {% load tz %}
 {% load custom_filters %}  <!-- Load custom filters -->
 
+<head>
+    
+    <style>
+        #maximize-defense-schedule {
+            margin-top: 10px; /* Adjust spacing if needed */
+        }
+        .button-container button {
+            margin-left: 5px; /* Add spacing between buttons */
+        }
+    </style>
+</head> 
 
 {% block content %}
 {{ block.super }}  <!-- This will include the calendar from base.html -->
 {% if user.is_authenticated %}
 
-<div class="table-container" style="margin: 0px;"> 
+<div class="table-container" style="margin: 0px; overflow-x: hidden; height=100%" > 
 
     <center> <h1 style="display: inline-block; margin-left: -80px"> Calendar </h1> 
         {% if request.user.is_current_coordinator %}
@@ -19,31 +30,40 @@
             </div> 
         {% endif %}
             
-        <div class="button-container" style="float: right;">  <!-- Using gap to space out buttons -->
+        <div class="button-container" style="float: right;"> <!-- Using gap to space out buttons -->
+            <button class="btn btn-sm btn-outline-secondary" id="toggle-defense-schedule-btn">
+                <i class="fas fa-compress"></i> Minimize Defense Schedule
+            </button>
+            <button class="btn btn-sm btn-outline-secondary d-none" id="maximize-defense-schedule-btn">
+                <i class="fas fa-expand"></i> Maximize Defense Schedule
+            </button>
             <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
         </div>
-
+     
     </center> 
     <div class="row">
-        <div class="col-md-5">
-            {% comment %} <button id="toggle-defense-schedule" class="btn btn-primary btn-sm">Defense Schedule</button> {% endcomment %}
-            {% comment %} <button id="toggle-filter-common-schedule" class="btn btn-secondary btn-sm"> Common Schedule</button> {% endcomment %}
-                <div class="table-container" style="margin-top: 0px; min-height: 0px">
-                    
-                    <h3>Defense Schedule </h3> 
-                    {% if request.user.is_current_coordinator %}
-                        <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
-                            <i class="fas fa-plus-circle icon" style="color: white;"></i> Create
-                        </button>
-                    
-                        <button id="delete-all-defense-schedules-btn" class="btn btn-danger btn-sm">
-                            <i class="fas fa-trash"></i> Delete All
-                        </button>
-                    {% endif %}
-                    
-
-                    <table class="table table-striped mt-3">
-                        <thead>
+        <div class="col-md-7" id="calendar-column" style="position: relative; margin-left: 0px;">
+    
+            <div class="my_calendar" style="margin-top: 0px;">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    
+    <!-- Defense Schedule Section -->
+    <div class="col-md-5" id="defense-schedule-column">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            
+                <h3>Defense Schedule</h3>
+                {% if request.user.is_current_coordinator %}
+                    <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
+                        <i class="fas fa-plus-circle icon" style="color: white;"></i> Create
+                    </button>
+                {% endif %}
+            </div>
+        
+            <div id="defense-schedule-container" class="table-container" style="margin-top: 0px; min-height: 0px;">
+                <table class="table table-striped mt-3">
+                    <thead>
                             <tr>
                                 <th scope="col"> # </th> 
                                 <th scope="col"> Project</th>
@@ -100,29 +120,11 @@
                         </tbody>
                     </table>
                 </div> 
-
-                {% comment %} <section>
-                    <h3>Faculty Schedules</h3>
-                    <div id="faculty-schedule-container">
-                        {% include "mutual_Availability/view_schedule.html" %}
-                    </div>
-                </section> {% endcomment %}
-        </div>
-
-        
-        <div class="col-md-7"> 
-            <div class="my_calendar" style="margin-top: 0px">
-                <div id='calendar'></div> 
             </div>
+            <!-- Maximize Button -->
+          
         </div>
     
-    </div>
-
-    <!-- Debug -->
-    {% comment %} {% for event in events %}
-        <p>{{ event.title }} - {{ event.start|localtime }} to {{ event.end|localtime }}</p>
-    {% endfor %}   
-    {% endcomment %}
     <!-- Include the modal -->
     {% include 'defense_schedule/create_defense_schedule_modal.html' %}
     
@@ -132,5 +134,33 @@
         <a href="{% url 'login' %}"> Login Here </a>
 
     {% endif %}
-</div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggleButton = document.getElementById("toggle-defense-schedule-btn");
+            const maximizeButton = document.getElementById("maximize-defense-schedule-btn");
+            const defenseScheduleColumn = document.getElementById("defense-schedule-column");
+            const calendarColumn = document.getElementById("calendar-column");
+    
+            toggleButton.addEventListener("click", function () {
+                // Minimize the defense schedule
+                defenseScheduleColumn.style.display = "none";
+                calendarColumn.classList.remove("col-md-7");
+                calendarColumn.classList.add("col-md-12");
+                toggleButton.classList.add("d-none"); // Hide minimize button
+                maximizeButton.classList.remove("d-none"); // Show maximize button
+            });
+    
+            maximizeButton.addEventListener("click", function () {
+                // Maximize the defense schedule
+                defenseScheduleColumn.style.display = "block";
+                calendarColumn.classList.remove("col-md-12");
+                calendarColumn.classList.add("col-md-7");
+                maximizeButton.classList.add("d-none"); // Hide maximize button
+                toggleButton.classList.remove("d-none"); // Show minimize button
+            });
+        });
+    </script>
+    
+    
 {% endblock %}

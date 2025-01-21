@@ -120,8 +120,6 @@ def login_user(request):
         messages.info(request, "You are already logged in.")
         return redirect('home')  # Or redirect to 'coordinator-dashboard' based on the user's role
 
-
-
     if request.method == "POST": 
         email = request.POST["email"]
         password = request.POST["password"]
@@ -134,16 +132,27 @@ def login_user(request):
         user = authenticate(request, email=email, password=password)
     
         if user is not None:
+            login(request, user)
+
             if user.is_current_coordinator: 
-                login(request, user)
                 # Personalize the success message with the user's name
                 messages.success(request, f"Login Success! Welcome back, {user.first_name}!")
                 return redirect('coordinator-dashboard')
-            else: 
-                login(request, user)
+            
+            elif user.role=='FACULTY': 
+                messages.success(request, f"Login Success! Welcome back, {user.first_name}!")
+                return redirect('home-faculty')
+            
+            elif user.role=='STUDENT': 
                 # Personalize the success message with the user's name
                 messages.success(request, f"Login Success! Welcome back, {user.first_name}!")
+                return redirect('home-student')
+            else: 
+                messages.success(request, f"Login Success! Welcome back, {user.first_name}!")
                 return redirect('home')
+
+
+    
         
         else:
             messages.error(request, "There was an error logging in. Please try again.")

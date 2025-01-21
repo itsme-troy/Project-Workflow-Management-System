@@ -52,9 +52,26 @@
            </div>
         </div>
         <div class="menu"> <!-- hero -->
-          <div class="logo">
-            <a href="{% url 'home' %}" style="text-decoration: none; color: inherit;"> &lt;/SP&gt; </a> <!-- Management App --> 
+          <div class="logo" style="overflow: visible; display: inline-block;">
+              {% if user.role == 'STUDENT' %}
+                  <a href="{% url 'home-student' %}" style="text-decoration: none; color: inherit;">
+                      <img src="{% static 'images/logo.png' %}" alt="SP Hub Logo" class="logo-img">
+                  </a>
+              {% elif user.role == 'FACULTY' %}
+                  <a href="{% url 'home-faculty' %}" style="text-decoration: none; color: inherit;">
+                      <img src="{% static 'images/logo.png' %}" alt="SP Hub Logo" class="logo-img">
+                  </a>
+              {% elif user.is_current_coordinator %}
+                  <a href="{% url 'coordinator-dashboard' %}" style="text-decoration: none; color: inherit;">
+                      <img src="{% static 'images/logo.png' %}" alt="SP Hub Logo" class="logo-img">
+                  </a>
+              {% else %}
+                  <a href="{% url 'home' %}" style="text-decoration: none; color: inherit;">
+                      <img src="{% static 'images/logo.png' %}" alt="SP Hub Logo" class="logo-img">
+                  </a>
+              {% endif %}
           </div>
+      </div>
          
 
             <div class="right_menu">

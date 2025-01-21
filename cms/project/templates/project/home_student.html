@@ -1,0 +1,143 @@
+{% extends 'project/base.html' %}
+{% load static %}
+
+{% block content %} 
+<div class="hero-section text-center py-5" style="background: linear-gradient(to bottom, #ffafbd, #ffc3a0); color: black;">
+    <h1 class="display-4" style="color:black">Welcome, {{user}}</h1>
+    <p class="lead" style="color:black">Access your tools and streamline your Senior Project journey</p>
+</div>
+<div class="home_container mt-5 modern-container">
+    <div class="row g-4 text-center">
+        <!-- Advisory Projects Card -->
+        <div class="col-md-4">
+            <a href="{% url 'list-project-group' %}" class="card-link text-decoration-none text-dark">
+                <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
+                    <div class="card-body">
+                        <i class="fas fa-layer-group fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">All Project Groups</h5>
+                        <p class="card-text">Browse all project groups and their details.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+           <!-- My Group Waitlist Card -->
+        <div class="col-md-4">
+            <a href="{% url 'my-project-group-waitlist' %}" class="card-link text-decoration-none text-dark">
+                <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
+                    <div class="card-body">
+                        <i class="fas fa-hourglass-half fa-3x mb-3 text-warning"></i>
+                        <h5 class="card-title">My Group Waitlist</h5>
+                        <p class="card-text">Check the status of your project group waitlist.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+          <!-- Join a Group Card -->
+          <div class="col-md-4">
+            <a href="{% url 'join-group-list' %}" class="card-link text-decoration-none text-dark">
+                <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
+                    <div class="card-body">
+                        <i class="fas fa-user-plus fa-3x mb-3 text-success"></i>
+                        <h5 class="card-title">Join a Group</h5>
+                        <p class="card-text">Find and join an available project group.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+          <!-- Register Group Card -->
+        <div class="col-md-4">
+            <a href="{% url 'add-project-group' %}" class="card-link text-decoration-none text-dark">
+                <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
+                    <div class="card-body">
+                        <i class="fas fa-plus-circle fa-3x mb-3 text-danger"></i>
+                        <h5 class="card-title">Register Group</h5>
+                        <p class="card-text">Create and register your project group.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- My Project Card -->
+        <div class="col-md-4">
+            <a href="{% url 'my-project' %}" class="card-link text-decoration-none text-dark">
+                <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
+                    <div class="card-body">
+                        <i class="fas fa-tasks fa-3x mb-3 text-info"></i>
+                        <h5 class="card-title">My Project</h5>
+                        <p class="card-text">View and manage your assigned project.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+         <!-- Submit Proposal Card -->
+         <div class="col-md-4">
+            <a href="{% url 'add-project' %}" class="card-link text-decoration-none text-dark">
+                <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
+                    <div class="card-body">
+                        <i class="fas fa-file-upload fa-3x mb-3 text-success"></i>
+                        <h5 class="card-title">Submit Proposal</h5>
+                        <p class="card-text">Upload and submit your project proposal.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+
+        <!-- Defense Schedule Card -->
+        <div class="col-md-4">
+            <a href="{% url 'view-defense-schedule' %}" class="card-link text-decoration-none text-dark">
+                <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
+                    <div class="card-body">
+                        <i class="fas fa-calendar-alt fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">Defense Schedule</h5>
+                        <p class="card-text">View the schedule for your project defense.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+          <!-- My Defense Application Card -->
+          <div class="col-md-4">
+            <a href="{% url 'my-defense-application' %}" class="card-link text-decoration-none text-dark">
+                <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
+                    <div class="card-body">
+                        <i class="fas fa-file-contract fa-3x mb-3 text-warning"></i>
+                        <h5 class="card-title">My Defense Application</h5>
+                        <p class="card-text">Review your submitted defense application.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Submit Defense Application Card -->
+        <div class="col-md-4">
+            <a href="{% url 'submit-defense-application' %}" class="card-link text-decoration-none text-dark">
+                <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
+                    <div class="card-body">
+                        <i class="fas fa-file-upload fa-3x mb-3 text-danger"></i>
+                        <h5 class="card-title">Submit Defense Application</h5>
+                        <p class="card-text">Submit a new application for project defense.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<footer class="footer mt-5 py-3 bg- text-white">
+    <div class="home_container text-center">
+        <p>Contact us at: SP Hub.com</p>
+        <div>
+            <a href="#" class="text-black mx-2"><i class="fab fa-facebook fa-lg"></i></a>
+            <a href="#" class="text-black mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+            <a href="#" class="text-black mx-2"><i class="fab fa-instagram fa-lg"></i></a>
+        </div>
+    </div>
+</footer>
+
+{% endblock %}

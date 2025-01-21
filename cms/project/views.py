@@ -52,7 +52,11 @@ User = get_user_model()
 def get_project_group_settings(request):
     settings = ProjectGroupSettings.objects.first()
     max_proponents = settings.max_proponents if settings else 3
-    return JsonResponse({'maxProponents': max_proponents})
+    allow_defense_applications = settings.allow_defense_applications if settings else True
+    return JsonResponse({
+        'maxProponents': max_proponents,
+        'allowDefenseApplications': allow_defense_applications,
+    })
 
 def save_project_group_settings(request):
     if request.method == 'POST':
@@ -60,17 +64,18 @@ def save_project_group_settings(request):
             # Parse JSON data from the request body
             data = json.loads(request.body)
             max_proponents = int(data.get('numProponents', 3))  # Default to 3 if not provided
+            allow_defense_applications = data.get('allowDefenseApplications', True)  # Default to True if not provided
 
             # Fetch or create the settings record
             settings, created = ProjectGroupSettings.objects.get_or_create(id=1)
             settings.max_proponents = max_proponents
+            settings.allow_defense_applications = allow_defense_applications
             settings.save()
 
             # Return success response
             return JsonResponse({'success': True})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
-            
 
 # def add_custom_phase(request, project_id):
 #     project = Project.objects.get(id=project_id)
@@ -886,6 +891,12 @@ def submit_verdict(request, application_id):
 
 def submit_defense_application(request):
 
+    settings = ProjectGroupSettings.objects.first()
+    if settings and not settings.allow_defense_applications:
+        messages.info(request, "Currently not accepting Defense Applications.")
+        return redirect('my-defense-application')
+        
+    
     if not request.user.is_authenticated: 
         messages.error(request, "You are not authorized to view this page. Please login")
         return redirect('home')
@@ -916,7 +927,7 @@ def submit_defense_application(request):
     # Check for any two pending project phase
     pending_phases_count = project.phases.filter(verdict='pending').count()
     if pending_phases_count >= 2:
-        messages.error(request, "There is already a pending Defense Application for your project group. Please wait for a Verdict to be given.")
+        messages.success(request, "There is already a pending Defense Application for your project group. Please wait for a Verdict to be given.")
         return redirect('my-defense-application')
 
     # Fetch custom phases if they exist
@@ -957,7 +968,7 @@ def submit_defense_application(request):
         # Ensure no pending phase exists before proceeding
         pending_phases = project.phases.filter(verdict='pending').exclude(first_phase=True)
         if pending_phases.exists():
-            messages.error(request, "There is already a pending Defense Application for your project group. Please wait for a verdict.")
+            messages.success(request, "There is already a pending Defense Application for your project group. Please wait for a verdict.")
             return redirect('my-defense-application')  # Redirect if a pending phase exists
 
         form = CapstoneSubmissionForm(request.POST, request.FILES)
@@ -1037,7 +1048,7 @@ def submit_defense_application(request):
                 )
                 return HttpResponseRedirect('/submit_defense_application?submitted=True')
             else:
-                messages.error(request, "There is already a pending Defense Application for your project group. Please wait for a verdict.")
+                messages.success(request, "There is already a pending Defense Application for your project group. Please wait for a verdict.")
                 return redirect('my-defense-application')   
     else:
         form = CapstoneSubmissionForm(initial={
@@ -2153,7 +2164,7 @@ def coordinator_projects(request):
     # Grab the projects from that adviser
     approved_projects = Project.objects.filter(status='approved', is_archived=False).order_by('title')
     
-    approved_paginator = Paginator(approved_projects, 5)  # Show 10 projects per page
+    approved_paginator = Paginator(approved_projects, 10)  # Show 10 projects per page
     approved_page_number = request.GET.get('approved_page')
     approved_page_obj = approved_paginator.get_page(approved_page_number)  
     approved_nums = "a" * approved_page_obj.paginator.num_pages
@@ -3289,6 +3300,12 @@ def add_project(request):
 
 def home(request):
     return render(request, "project/home.html", {})
+
+def home_faculty(request):
+    return render(request, "project/home_faculty.html", {})
+
+def home_student(request):
+    return render(request, "project/home_student.html", {})
 
 
 def all_projects(request):

@@ -1,5 +1,7 @@
 from pathlib import Path
 import os 
+from pyngrok import ngrok  # Import Ngrok
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,9 +16,18 @@ SECRET_KEY = "django-insecure-dnm=7q)@1=$9+8g^@m(i*@--6$2@)*7%egj0cg2w^uv8foy3nc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.9', 'localhost', '127.0.0.1']
-# ALLOWED_HOSTS = ['*']
+#ALLOWED_HOSTS = ['192.168.1.9', 'localhost', '127.0.0.1', '192.168.182.206']
+ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.ngrok-free.app'
+]
+
+# Dynamically add the Ngrok URL to ALLOWED_HOSTS
+if os.getenv("RUN_MAIN", None) != "true":  # Prevent duplicate Ngrok connections
+    public_url = ngrok.connect(8000).public_url  # Replace 8000 with your Django server port
+    print(f"Ngrok URL: {public_url}")
+    ALLOWED_HOSTS.append(public_url.replace("https://", "").replace("http://", ""))
 # Application definition
 
 INSTALLED_APPS = [

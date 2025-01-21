@@ -1,0 +1,106 @@
+{% extends 'project/base.html' %}
+{% load static %}
+
+{% block content %} 
+<div class="hero-section text-center py-5" style="background: linear-gradient(to bottom right, #6a11cb, #2575fc); color: white;">
+    <h1 class="display-4" style="color: white; font-weight: bold; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);">
+        Welcome, {{ user.first_name }}
+    </h1>
+    <p class="lead" style="color: white; font-size: 1.25rem; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);">
+        Streamline your project management tasks effortlessly.
+    </p>
+</div>
+
+<div class="home_container mt-5 modern-container">
+    <div class="row g-4 text-center">
+        <!-- Advisory Projects Card -->
+        <div class="col-md-4">
+            <a href="{% url 'adviser-projects' %}" class="card-link text-decoration-none text-dark">
+                <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
+                    <div class="card-body">
+                        <i class="fas fa-users-cog fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">Advisory Projects</h5>
+                        <p class="card-text">View and manage your advisory groups.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Received Proposals Card -->
+        <div class="col-md-4">
+            <a href="{% url 'adviser-proposals' %}" class="card-link text-decoration-none text-dark">
+                <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
+                    <div class="card-body">
+                        <i class="fas fa-paper-plane fa-3x mb-3 text-success"></i>
+                        <h5 class="card-title">Received Proposals</h5>
+                        <p class="card-text">Review project proposals submitted by students.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Panel Projects Card -->
+        <div class="col-md-4">
+            <a href="{% url 'panel-projects' %}" class="card-link text-decoration-none text-dark">
+                <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
+                    <div class="card-body">
+                        <i class="fas fa-chalkboard fa-3x mb-3 text-warning"></i>
+                        <h5 class="card-title">Panel Projects</h5>
+                        <p class="card-text">Evaluate and provide feedback on panel-assigned projects.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Set Free Schedule Card -->
+        <div class="col-md-4">
+            <a href="{% url 'free-schedule' %}" class="card-link text-decoration-none text-dark">
+                <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
+                    <div class="card-body">
+                        <i class="fas fa-calendar-plus fa-3x mb-3 text-info"></i>
+                        <h5 class="card-title">Set Free Schedule</h5>
+                        <p class="card-text">Specify your availability for defense schedules.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a href="{% url 'generate-report' %}" class="card-link text-decoration-none text-dark">
+                <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
+                    <div class="card-body">
+                        <i class="fas fa-chart-line fa-3x mb-3 text-success"></i>
+                        <h5 class="card-title">Project Reports</h5>
+                        <p class="card-text">Track defense progress and review project performance reports.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- View Project Ideas Card -->
+        <div class="col-md-4">
+            <a href="{% url 'all-project-ideas' %}" class="card-link text-decoration-none text-dark">
+                <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
+                    <div class="card-body">
+                        <i class="fas fa-lightbulb fa-3x mb-3 text-danger"></i>
+                        <h5 class="card-title">View Project Ideas</h5>
+                        <p class="card-text">Browse and contribute to innovative project ideas.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<footer class="footer mt-5 py-3 bg- text-white">
+    <div class="home_container text-center">
+        <p>Contact us at: SP Hub.com</p>
+        <div>
+            <a href="#" class="text-black mx-2"><i class="fab fa-facebook fa-lg"></i></a>
+            <a href="#" class="text-black mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+            <a href="#" class="text-black mx-2"><i class="fab fa-instagram fa-lg"></i></a>
+        </div>
+    </div>
+</footer>
+
+{% endblock %}

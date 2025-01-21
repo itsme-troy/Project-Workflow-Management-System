@@ -15,7 +15,8 @@
             </div>
         </div>
                 <p class="menu-label">
-                    <i class="fas fa-bars"></i> Menu
+                    Menu  
+                    {% comment %}  <i class="fas fa-bars"></i> {% endcomment %}
                 </p>
         <ul class="sidebar-list">
 
@@ -65,7 +66,8 @@
         </a>
 
         <p class="menu-label">
-            <i class="fas fa-bars"></i> Menu
+          Menu
+          {% comment %}   <i class="fas fa-bars"></i>  {% endcomment %}
         </p>
         
         <ul class="sidebar-list">
@@ -80,12 +82,29 @@
                     </a>
                 </li>
             {% else %}
-                <li>    
+            <li>
+                {% if user.role == 'STUDENT' %}
+                    <a href="{% url 'home-student' %}" class="sidebar-link" data-title="Home">
+                        <span class="icon"><i class="fas fa-home icon icon-margin"></i></span>
+                        <span class="sidebar-link-text">Home</span>
+                    </a>
+                {% elif user.role == 'FACULTY' %}
+                    <a href="{% url 'home-faculty' %}" class="sidebar-link" data-title="Home">
+                        <span class="icon"><i class="fas fa-home icon icon-margin"></i></span>
+                        <span class="sidebar-link-text">Home</span>
+                    </a>
+                {% elif user.role == 'COORDINATOR' %}
+                    <a href="{% url 'coordinator-dashboard' %}" class="sidebar-link" data-title="Home">
+                        <span class="icon"><i class="fas fa-home icon icon-margin"></i></span>
+                        <span class="sidebar-link-text">Home</span>
+                    </a>
+                {% else %}
                     <a href="{% url 'home' %}" class="sidebar-link" data-title="Home">
                         <span class="icon"><i class="fas fa-home icon icon-margin"></i></span>
-                        <span class="sidebar-link-text">Home </span>
+                        <span class="sidebar-link-text">Home</span>
                     </a>
-                </li>
+                {% endif %}
+            </li>
             {% endif %}
 
         {% if not request.user.is_current_coordinator %}    

@@ -18,6 +18,7 @@ import os
 
 class ProjectGroupSettings(models.Model):
     max_proponents = models.IntegerField(default=3, help_text="Maximum number of students allowed per project group")
+    allow_defense_applications = models.BooleanField(default=True)  
     
     @classmethod
     def get_max_proponents(cls):
@@ -562,10 +563,10 @@ class Defense_Application(models.Model):
     adviser = models.ForeignKey(Approved_Adviser, related_name='application_adviser', null=True, on_delete=models.SET_NULL) # If adviser deletes profile, then the projects' adviser will be set to null 
     panel = models.ManyToManyField(Approved_panel, related_name='capplication_panel', blank=True)
  
-    manuscript = models.FileField(upload_to=submission_upload_path, null=True, blank=True)
-    revision_form = models.FileField(upload_to=submission_upload_path, null=True, blank=True)
-    payment_receipt = models.FileField(upload_to=submission_upload_path, null=True, blank=True)
-    adviser_confirmation = models.FileField(upload_to=submission_upload_path, null=True, blank=True)
+    manuscript = models.FileField(upload_to=submission_upload_path, null=True, blank=False)
+    revision_form = models.FileField(upload_to=submission_upload_path, null=True, blank=False)
+    payment_receipt = models.FileField(upload_to=submission_upload_path, null=True, blank=False)
+    adviser_confirmation = models.FileField(upload_to=submission_upload_path, null=True, blank=False)
 
     submission_date = models.DateTimeField(auto_now_add=True, null=True)
 

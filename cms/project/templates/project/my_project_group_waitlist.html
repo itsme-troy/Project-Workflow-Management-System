@@ -126,7 +126,7 @@
 
                             {% for declined in group_data.declined_proponents %}
                                 <tr {% if user == declined %}class="table-warning"{% endif %} onclick="toggleActions(this)">
-                                    <td> <strong> {{ forloop.counter }} </strong> </td>
+                                  
                                     <td>
                                         {% if proponent.profile_image and proponent.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
                                             <img src="{{ proponent.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid larger-img">

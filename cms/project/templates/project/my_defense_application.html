@@ -19,6 +19,9 @@
             <a href="{% url 'submit-defense-application' %}" class="btn btn-add-proposal">
                 <i class="fas fa-plus"></i> Submit Defense Application
             </a>
+            <div class="button-container" style="float: right;">  <!-- Using gap to space out buttons -->
+                <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+            </div>
         </div>
     {% comment %} {% endif %} {% endcomment %}
 </div>
@@ -42,6 +45,7 @@
                     <th>Date Submitted</th> <!-- column for submission date -->
                     <th>Status</th>
                     <th>Status Updated On</th> <!-- Column for status update date -->
+                    <th scope="col"> Action </th>
                 </tr>
             </thead>
             <tbody>
@@ -63,6 +67,11 @@
                     <td>
                         {{ data.latest_phase.date|date:"M j, Y g:i A" }}
                     </td> <!-- Display status update date -->
+
+                    <td>
+                        <a href="{% url 'show-application' data.application.id %}"
+                        class="btn btn-outline-secondary btn-sm">View Application</a> 
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
