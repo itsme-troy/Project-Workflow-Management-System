@@ -22,6 +22,8 @@ from django.db.models import Subquery, OuterRef, Max, Q, F
 
 logger = logging.getLogger(__name__)
 from django.utils.timezone import make_aware, localtime
+from django.contrib.auth import get_user_model 
+User = get_user_model()
 # from django.utils import timezone
 
 def convert_to_utc(date_str):
@@ -93,9 +95,9 @@ def view_defense_schedule(request):
     if not request.user.is_authenticated: 
         messages.error(request, "Please login to view this page")
         return redirect('login')   
-
-
+   
     all_events = Defense_schedule.objects.all().order_by('start')   # Order by start time descending
+     # Get the toggle filter from query parameters
 
     max_panelist = 3
     events_with_panel=[]

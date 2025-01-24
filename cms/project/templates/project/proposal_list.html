@@ -6,7 +6,7 @@
 <div class="table-container"> 
     <h1 style="display: inline-block;"> My Submitted Proposals </h1>
     <div class="button-container" style="float: right;">
-        <a href="{% url 'add-project' %}" class="btn btn-add-proposal">
+        <a href="{% url 'add-project' %}" class="btn btn-outline-success btn-sm">
             <i class="fas fa-plus"></i> Submit Proposal
         </a>
     </div>
@@ -14,9 +14,11 @@
 
         <!-- Alert for no projects -->
     {% if not projects %}
-        <div class="alert custom-info-alert text-center" role="alert">
+    <center>
+        <div class="alert custom-info-alert" role="alert">
             <h4> No proposals submitted yet!</h4>
         </div>
+    </center> 
     {% endif %}
 
    

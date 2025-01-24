@@ -10,9 +10,9 @@
 
         <center> <h1 style="display: inline-block; margin-left: 200px"> Submit A Project Proposal </h1> 
             <div class="button-container" style="float: right;">
-                <a href="javascript:history.back()" class="btn btn-outline-danger btn-sm" 
-                style="float: right;"> Cancel </a> 
-                <a href="{% url 'list-proposals' %}" class="btn btn-outline-primary btn-sm" style="float: right; margin-left: 10px;"> View All Proposals </a>
+                <a href="javascript:history.back()" class="btn btn-outline-danger btn-sm">
+                     Cancel </a> 
+                <a href="{% url 'list-proposals' %}" class="btn btn-outline-primary btn-sm"> View All Proposals </a>
             </div> 
         
         </center> 
@@ -24,7 +24,7 @@
             </div>
         {% else %}
                 {% if form.errors %}
-                    <div class="alert alert-danger">
+                    <div class="alert custom-info-alert">
                         <ul>
                             {% for error in form.non_field_errors %}
                                     <li>{{ error }}</li>

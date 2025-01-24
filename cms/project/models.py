@@ -10,6 +10,7 @@ from django.core.exceptions import ValidationError
 import random
 from django.contrib.auth import get_user_model
 import os
+import uuid
 
 # Multiple User types 
 # Users can have 1 role only, (Admin, Coordinator, Faculty, Student)
@@ -75,9 +76,13 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
         FACULTY = "FACULTY", "Faculty"
         STUDENT = "STUDENT", "Student"
 
+    email = models.EmailField(blank=True, default='', unique=True)
+    is_email_verified = models.BooleanField(default=False)
+    email_verification_token = models.UUIDField(default=uuid.uuid4, editable=False)
+    is_active = models.BooleanField(default=False)  # Prevent login before verification
+
     base_role = Role.STUDENT
     role = models.CharField(max_length=50, choices=Role.choices, default='STUDENT')
-    email = models.EmailField(blank=True, default='', unique=True)
     first_name = models.CharField(max_length=255, blank=True)
     last_name = models.CharField(max_length=255, blank=True )
     username = models.CharField(max_length=255, blank=True)
@@ -114,6 +119,7 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
 
     created_at = models.DateTimeField(auto_now_add=True)  # Automatically set timestamp when the user is created
 
+ 
     def save(self, *args, **kwargs):
         # Assign a random color only if no color exists
         if not self.color:
@@ -405,6 +411,7 @@ RESULT_CHOICES = [
         # return self.name
 
 class Project(models.Model): 
+    name = models.CharField('Name', max_length=120, null=True) 
     title = models.CharField('Title', max_length=120, null=True) # 120 characters
     project_type = models.CharField('Project Type', null=True, max_length=50 )
     description = models.TextField(null=True) # we dont have to put a description if we do not want to
@@ -563,10 +570,10 @@ class Defense_Application(models.Model):
     adviser = models.ForeignKey(Approved_Adviser, related_name='application_adviser', null=True, on_delete=models.SET_NULL) # If adviser deletes profile, then the projects' adviser will be set to null 
     panel = models.ManyToManyField(Approved_panel, related_name='capplication_panel', blank=True)
  
-    manuscript = models.FileField(upload_to=submission_upload_path, null=True, blank=False)
-    revision_form = models.FileField(upload_to=submission_upload_path, null=True, blank=False)
-    payment_receipt = models.FileField(upload_to=submission_upload_path, null=True, blank=False)
-    adviser_confirmation = models.FileField(upload_to=submission_upload_path, null=True, blank=False)
+    manuscript = models.FileField(upload_to=submission_upload_path, null=True, blank=True)
+    revision_form = models.FileField(upload_to=submission_upload_path, null=True, blank=True)
+    payment_receipt = models.FileField(upload_to=submission_upload_path, null=True, blank=True)
+    adviser_confirmation = models.FileField(upload_to=submission_upload_path, null=True, blank=True)
 
     submission_date = models.DateTimeField(auto_now_add=True, null=True)
 

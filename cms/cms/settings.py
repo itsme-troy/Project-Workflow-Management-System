@@ -6,21 +6,19 @@ from pyngrok import ngrok  # Import Ngrok
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-dnm=7q)@1=$9+8g^@m(i*@--6$2@)*7%egj0cg2w^uv8foy3nc"
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True  # Change to False for production
 
-#ALLOWED_HOSTS = ['192.168.1.9', 'localhost', '127.0.0.1', '192.168.182.206']
+# ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://*.ngrok-free.app'
+    "https://*.ngrok.app",
 ]
 
 # Dynamically add the Ngrok URL to ALLOWED_HOSTS
@@ -28,7 +26,7 @@ if os.getenv("RUN_MAIN", None) != "true":  # Prevent duplicate Ngrok connections
     public_url = ngrok.connect(8000).public_url  # Replace 8000 with your Django server port
     print(f"Ngrok URL: {public_url}")
     ALLOWED_HOSTS.append(public_url.replace("https://", "").replace("http://", ""))
-# Application definition
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -47,6 +45,7 @@ INSTALLED_APPS = [
     # "calendarapp.apps.CalendarappConfig",
     'rest_framework',
     'channels',
+    'corsheaders',
  
 ]
 
@@ -62,7 +61,11 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = "cms.urls"
 
@@ -138,6 +141,8 @@ STATIC_URL = "static/"
 # STATICFILES_DIRS = [ os.path.join(BASE_DIR,'static') ]
 STATICFILES_DIRS = [
     BASE_DIR / "project/static",  # Adjust this line if necessary
+    BASE_DIR / "free_schedule/static",
+    BASE_DIR / "mutual_availability/static",
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
 
@@ -160,6 +165,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # Or your SMTP server
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your-email@gmail.com'
-EMAIL_HOST_PASSWORD = 'your-app-specific-password'  # Use app-specific password for Gmail
-DEFAULT_FROM_EMAIL = 'your-email@gmail.com'
+EMAIL_HOST_USER = 'lteodoro@gbox.adnu.edu.ph'
+EMAIL_HOST_PASSWORD = 'ateneocavalry'  # Use app-specific password for Gmail
+DEFAULT_FROM_EMAIL = 'lteodoro@gbox.adnu.edu.ph'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}

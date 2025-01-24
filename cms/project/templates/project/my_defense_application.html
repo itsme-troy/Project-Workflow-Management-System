@@ -16,7 +16,7 @@
     {% comment %} {% if request.user.is_authenticated and user_group and project and project.status == 'approved' and not pending_phases_count >= 1 %}
         <!-- Add Proposal Button --> {% endcomment %}
         <div class="button-container"> <!-- Button container -->
-            <a href="{% url 'submit-defense-application' %}" class="btn btn-add-proposal">
+            <a href="{% url 'submit-defense-application' %}" class="btn btn-outline-success btn-sm">
                 <i class="fas fa-plus"></i> Submit Defense Application
             </a>
             <div class="button-container" style="float: right;">  <!-- Using gap to space out buttons -->

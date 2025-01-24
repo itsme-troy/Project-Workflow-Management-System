@@ -304,12 +304,26 @@ def my_project(request):
     
     if request.user.role != 'STUDENT': 
         messages.error(request, "Only Students can view this page")
-        return redirect('home')
+        if request.user.role == "STUDENT": 
+            return redirect('home-student')
+        elif request.user.role == "FACULTY": 
+            return redirect('home-faculty')
+        elif request.user.is_current_coordinator:
+            return redirect('coordinator-dashboard')
+        else: 
+            return redirect('home')
    
     user_group = get_user_project_group(request)
     if user_group is None:
-            messages.success(request, "You are not a member of any Project Group. Please Register a Project Group First.")
-            return redirect('home')
+            messages.error(request, "You are not a member of any Project Group. Please Register a Project Group First.")
+            if request.user.role == "STUDENT": 
+                return redirect('home-student')
+            elif request.user.role == "FACULTY": 
+                return redirect('home-faculty')
+            elif request.user.is_current_coordinator:
+                return redirect('coordinator-dashboard')
+            else: 
+                return redirect('home')
     
     project = Project.objects.filter(proponents=user_group, status='approved').first()
 
@@ -317,7 +331,7 @@ def my_project(request):
 
 def all_project_ideas(request): 
     if not request.user.is_authenticated:
-        messages.error(request, "Please login to view your notifications.")
+        messages.error(request, "Please login to view ideas.")
         return redirect('login')
     
     # Create a Paginator object with the project_ideas list and specify the number of items per page
@@ -357,7 +371,7 @@ def submit_project_idea(request):
 
 def reject_panel_invitation(request, project_id):
     if not request.user.is_authenticated:
-        messages.error(request, "Please login to view your notifications.")
+        messages.error(request, "Please login to perform this action.")
         return redirect('login')
     
     project = get_object_or_404(Project, id=project_id)
@@ -697,7 +711,10 @@ def decline_join_request(request, group_id, user_id):
 def join_group_list(request):
     if request.user.is_authenticated and request.user.eligible == False: 
         messages.error(request, "Only Eligible Students are able to request to join a Project Group. Please Contact Coordinator to for assistance with Eligibility Concerns")
-        return redirect('home')
+        if request.user.role == "STUDENT": 
+            return redirect('home-student')
+        else: 
+            return redirect('home')
     
     # Get max_proponents value
     max_proponents = ProjectGroupSettings.get_max_proponents()
@@ -745,7 +762,14 @@ def request_join_group(request, group_id):
     
     if request.user.is_authenticated and request.user.eligible == False: 
         messages.error(request, "Only Eligible Students are able to request to join a Project Group. Please Contact Coordinator to for assistance with Eligibility Concerns")
-        return redirect('home')
+        if request.user.role == "STUDENT": 
+            return redirect('home-student')
+        elif request.user.role == "FACULTY": 
+            return redirect('home-faculty')
+        elif request.user.is_current_coordinator:
+            return redirect('coordinator-dashboard')
+        else: 
+            return redirect('home')
 
     if request.method == 'POST':
         group = get_object_or_404(Project_Group, id=group_id, approved=False)
@@ -905,13 +929,27 @@ def submit_defense_application(request):
     
     if user_group is None:
         messages.error(request, "You are not a member of any Project Group. Please Register a Project Group First.")
-        return redirect('my-defense-application')
+        if request.user.role == "STUDENT": 
+            return redirect('home-student')
+        elif request.user.role == "FACULTY": 
+            return redirect('home-faculty')
+        elif request.user.is_current_coordinator:
+            return redirect('coordinator-dashboard')
+        else: 
+            return redirect('home')
         
     project = Project.objects.filter(proponents=user_group, status='approved', is_archived=False).first()
 
     if project is None:
         messages.error(request, "No project found for your group. Please submit a project first and wait for approval from an Adviser.")
-        return redirect('my-defense-application')
+        if request.user.role == "STUDENT": 
+            return redirect('home-student')
+        elif request.user.role == "FACULTY": 
+            return redirect('home-faculty')
+        elif request.user.is_current_coordinator:
+            return redirect('coordinator-dashboard')
+        else: 
+            return redirect('home')
 
     elif project.status == 'pending':
         messages.error(request, "Your project has not been approved yet. You cannot submit a Defense Application.")
@@ -927,7 +965,7 @@ def submit_defense_application(request):
     # Check for any two pending project phase
     pending_phases_count = project.phases.filter(verdict='pending').count()
     if pending_phases_count >= 2:
-        messages.success(request, "There is already a pending Defense Application for your project group. Please wait for a Verdict to be given.")
+        messages.error(request, "There is already a pending Defense Application for your project group. Please wait for a Verdict to be given.")
         return redirect('my-defense-application')
 
     # Fetch custom phases if they exist
@@ -968,7 +1006,7 @@ def submit_defense_application(request):
         # Ensure no pending phase exists before proceeding
         pending_phases = project.phases.filter(verdict='pending').exclude(first_phase=True)
         if pending_phases.exists():
-            messages.success(request, "There is already a pending Defense Application for your project group. Please wait for a verdict.")
+            messages.error(request, "There is already a pending Defense Application for your project group. Please wait for a verdict.")
             return redirect('my-defense-application')  # Redirect if a pending phase exists
 
         form = CapstoneSubmissionForm(request.POST, request.FILES)
@@ -1048,7 +1086,7 @@ def submit_defense_application(request):
                 )
                 return HttpResponseRedirect('/submit_defense_application?submitted=True')
             else:
-                messages.success(request, "There is already a pending Defense Application for your project group. Please wait for a verdict.")
+                messages.error(request, "There is already a pending Defense Application for your project group. Please wait for a verdict.")
                 return redirect('my-defense-application')   
     else:
         form = CapstoneSubmissionForm(initial={
@@ -1125,14 +1163,28 @@ def list_defense_applications(request):
 def my_defense_application(request):
     if request.user.is_authenticated and request.user.role != 'STUDENT':
         messages.error(request, "You are not a Student. You cannot view this page.")
-        return redirect('home')
+        if request.user.role == "STUDENT": 
+            return redirect('home-student')
+        elif request.user.role == "FACULTY": 
+            return redirect('home-faculty')
+        elif request.user.is_current_coordinator:
+            return redirect('coordinator-dashboard')
+        else: 
+            return redirect('home')
     
     # Get the project group of the logged-in user
     project_group = get_user_project_group(request)
     
     if not project_group:
         messages.error(request, "You are not part of any project group.")
-        return redirect('home')
+        if request.user.role == "STUDENT": 
+            return redirect('home-student')
+        elif request.user.role == "FACULTY": 
+            return redirect('home-faculty')
+        elif request.user.is_current_coordinator:
+            return redirect('coordinator-dashboard')
+        else: 
+            return redirect('home')
     
     # Subquery to fetch the latest submission date per project
     latest_application_date_subquery = Defense_Application.objects.filter(
@@ -1792,7 +1844,14 @@ def add_project_group(request):
 
     if request.user.is_authenticated and request.user.eligible == False: 
         messages.error(request, "Only Eligible Students are able to register a Project Group.") #Please Contact Coordinator to for assistance with Eligibility Concerns
-        return redirect('home')
+        if request.user.role == "STUDENT": 
+            return redirect('home-student')
+        elif request.user.role == "FACULTY": 
+            return redirect('home-faculty')
+        elif request.user.is_current_coordinator:
+            return redirect('coordinator-dashboard')
+        else: 
+            return redirect('home')
     
     # Fetch max proponents setting
     max_proponents = ProjectGroupSettings.get_max_proponents()
@@ -1959,27 +2018,17 @@ def show_faculty(request, faculty_id):
     
 def generate_report(request):
     if request.user.is_authenticated: 
-        # total advisers
-        # total students enrolled 
-        # total groups 
-        # topic of each group 
-        # Defense success/fail record, current progress 
-
-        adviser_count = Faculty.objects.filter(role='FACULTY').filter(adviser_eligible=True).count
-        student_count = Student.objects.filter(role='STUDENT').filter(eligible=True ).count 
-        project_group_count = Project_Group.objects.count 
-        panelist_count = Faculty.objects.filter(role='FACULTY').filter(panel_eligible=True).count
-        # projects = Project.objects.all()
-
-        student_uneligible_count = Student.objects.filter(role='STUDENT').filter(eligible=False ).count
-        adviser_uneligible_count = Faculty.objects.filter(role='FACULTY').filter(adviser_eligible=False).count
-        panel_uneligible_count = Faculty.objects.filter(role='FACULTY').filter(panel_eligible=False).count
-        
-        project_group_count = Project_Group.objects.count
-        unapproved_project_group_count = Project_Group.objects.filter(approved=False).count
 
         # Get all projects with their phases
         projects = ApprovedProject.objects.prefetch_related('phases').all()
+        my_projects_only = request.GET.get('my_projects') == 'true'
+
+        if my_projects_only:
+            projects = projects.filter(
+                Q(adviser=request.user) |
+                Q(proponents__proponents__in=[request.user]) |
+                Q(panel__in=[request.user])
+            ).distinct()
 
         # Create a dictionary to store defense results for each project
         projects_with_phases = []
@@ -2006,17 +2055,9 @@ def generate_report(request):
             })
 
         return render(request, 'project/generate_report.html', {
-        "adviser_count": adviser_count, 
-        "student_count": student_count,
-        "project_group_count": project_group_count,
-        "projects": projects, 
-        "student_uneligible_count": student_uneligible_count, 
-        "adviser_uneligible_count": adviser_uneligible_count, 
-        "panelist_count": panelist_count,
-        "panel_uneligible_count": panel_uneligible_count,
-        "project_group_count": project_group_count, 
-        "unapproved_project_group_count": unapproved_project_group_count,
-        'projects_with_phases': projects_with_phases,
+            "projects": projects, 
+            'projects_with_phases': projects_with_phases,
+            "my_projects_only": my_projects_only,
         })
     else: 
         messages.error(request, "Please Login to view this page")
@@ -2045,14 +2086,12 @@ def get_user_project_group(request):
     
 def coordinator_approval_faculty(request): 
     if request.user.is_authenticated: 
-        # Get counts 
-        project_count = Project.objects.filter(status='approved').count
-        proposal_count = Project.objects.filter(status='pending').count
-        student_count = User.objects.filter(role='STUDENT').count
-        faculty_count = User.objects.filter(role='FACULTY').count
-        
         # get list of faculty 
-        faculty_list = User.objects.filter(role='FACULTY').order_by('last_name')
+        faculty_list = User.objects.filter(role='FACULTY').order_by(
+            'adviser_eligible',  # False (not eligible) will come first
+            'panel_eligible',    # False (not eligible) will come first
+            'last_name'          # Then sort alphabetically by last name
+        )
         
         if request.user.role == 'COORDINATOR':
             if request.method == "POST":  
@@ -2096,11 +2135,6 @@ def coordinator_approval_faculty(request):
                 'project/coordinator_approval_faculty.html', 
                 {
                     'faculty_list': faculty_list, 
-                    "project_count": project_count,
-                    "proposal_count": proposal_count,
-                    "student_count": student_count, 
-                    "faculty_count": faculty_count,
-                  
                 })    
         else: 
             messages.error(request, "You aren't authorized to view this Page ")
@@ -2111,12 +2145,8 @@ def coordinator_approval_faculty(request):
     
 def coordinator_approval_student(request): 
     if request.user.is_authenticated: 
-        # Get counts 
-        project_count = Project.objects.filter(status='approved').count
-        proposal_count = Project.objects.filter(status='pending').count
-        student_count = User.objects.filter(role='STUDENT').count
-        faculty_count = User.objects.filter(role='FACULTY').count
-        student_list = User.objects.filter(role='STUDENT').order_by('last_name')
+   
+        student_list = User.objects.filter(role='STUDENT').order_by('eligible','last_name')
         
         # get list of faculty 
         faculty_list = User.objects.filter(role='FACULTY').order_by('last_name')
@@ -2137,11 +2167,7 @@ def coordinator_approval_student(request):
                 return render(request, 
                 'project/coordinator_approval_student.html', 
                 {
-                    'faculty_list': faculty_list, 
-                    "project_count": project_count,
-                    "proposal_count": proposal_count,
-                    "student_count": student_count, 
-                    "faculty_count": faculty_count,
+                   
                     "student_list": student_list,  # Use paginated students
                     
                 })    
@@ -3134,15 +3160,15 @@ def list_student(request):
     if request.user.is_authenticated: 
         student_list = Student.objects.filter(role='STUDENT').order_by('last_name')    
         
-        # p = Paginator(Student.objects.filter(role='STUDENT').order_by('last_name'), 10) 
-        # page = request.GET.get('page')
-        # students = p.get_page(page)
-        # nums = "a" * students.paginator.num_pages
+        p = Paginator(Student.objects.filter(role='STUDENT').order_by('last_name'), 10) 
+        page = request.GET.get('page')
+        students = p.get_page(page)
+        nums = "a" * students.paginator.num_pages
 
         return render(request, 'project/student.html', 
-        {'student_list': student_list })
-        # {'students': students, 
-        # 'nums': nums})
+        {'student_list': student_list, 
+         'nums': nums, 
+          })
     else: 
         messages.error(request, "You Aren't Authorized to view this page.")
         return redirect('login')
@@ -3171,6 +3197,7 @@ def list_faculty(request):
         # student_list = Student.objects.all().order_by('last_name')    
         
         p = Paginator(Student.objects.filter(role='FACULTY').order_by('last_name'), 10) 
+        
         page = request.GET.get('page')
         facultys = p.get_page(page)
         nums = "a" * facultys.paginator.num_pages
@@ -3188,7 +3215,10 @@ def add_project(request):
         group = get_user_project_group(request)
         if group is None:
             messages.error(request, "You are not a member of any Project Group. Please Register a Project Group First.")
-            return redirect('home')
+            if request.user.role=='STUDENT':
+                return redirect('home-student')
+            else:
+                return redirect('home')
         
         if not group.approved:
             messages.error(request, "Your Project Group is not approved. Please Ensure all Students have approved before proceeding.")

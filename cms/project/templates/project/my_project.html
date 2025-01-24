@@ -8,24 +8,31 @@
         
     <div style="display: flex; justify-content: space-between; align-items: center;"> <!-- Flex container for header and button -->
         <h1 style="display: inline-block;"> My Project </h1> <!-- Keep the title inline -->
-        {% if not project %} <!-- Check if there are no projects -->
+        
         <!-- Add Proposal Button -->
-        <div class="button-container"> <!-- Button container -->
-            <a href="{% url 'add-project' %}" class="btn btn-add-proposal">
-                <i class="fas fa-plus"></i> Submit Proposal
-            </a>
-        </div>
-        {% endif %}
-        <div class="button-container" style="float: right;">  <!-- Using gap to space out buttons -->
-            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+        <div class="button-container" style="float: right;"> <!-- Button container -->
+            {% if not project %} 
+                <a href="{% url 'add-project' %}" class="btn btn-outline-success btn-sm">
+                    <i class="fas fa-plus"></i> Submit Proposal
+                </a>
+            {% endif %}
+            
+            <div class=style="float: right;">  <!-- Using gap to space out buttons -->
+                <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+            </div>
         </div>
     </div>
-    
-
+    {% if not project %} 
+            </center>
+            <div class="alert custom-info-alert" role="alert">
+                <h4> You Have No Approved Project yet. </h4>
+            </div>
+            </center>
+    {% else %}
+  
     <table class ="table table-striped table-hover table-bordered table"> 
         <thead> 
         <tr> 
-            
             <th scope="col"> # </th> 
             <th scope="col"> Project Name  </th> 
             <th scope="col"> Adviser </th> 
@@ -39,7 +46,6 @@
     </thead>  
     <tbody>
 
-        {% if project %} 
                 <tr>
                     <td> <strong> 1 </strong>  </td> 
                     <td> <a href ="{% url 'show-project' project.id %}" > {{ project.title}} </a>  </td> 
@@ -79,18 +85,10 @@
                                 {% endif %}"> {{ project.status }}
                             </span>  </td>
                 </tr> 
-            
-        {% else %}
-
-        <div class="alert custom-info-alert text-center" role="alert">
-            <h4> You Have No Approved Project yet. </h4>
-        </div>
-        {% endif %}
-
-
-    </tbody> <!-- Closing tbody tag added -->
-    </table>     
-    <br/> <!-- Moved outside of the table -->
-    <hr/> <br/>
-</div>
+        </tbody> <!-- Closing tbody tag added -->
+        </table>     
+        <br/> <!-- Moved outside of the table -->
+        <hr/> <br/>
+    </div>
+{% endif %}
 {% endblock %}

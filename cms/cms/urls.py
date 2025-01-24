@@ -18,8 +18,12 @@ urlpatterns = [
     # path("calendarapp", include("calendarapp.urls")),
     # path('google_calendar/', include('google_calendar.urls')),
 
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
 
+# Add static and media file handling during development
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # Configure Admin Titles
 admin.site.site_header = "SP System Page"
 admin.site.index_title = "Welcome to the Admin Area"

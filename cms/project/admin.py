@@ -46,7 +46,7 @@ class StudentProfileInline(admin.StackedInline):
 
 class StudentAdmin(admin.ModelAdmin): 
     model = Student
-    fields = ["first_name", "last_name", "email", 'deficiencies', 'student_id', "skills","bio","profile_image"]
+    fields = ["first_name", "last_name", "email", 'deficiencies', 'student_id', "skills","bio","profile_image", "is_email_verified"]
   
     inlines = [StudentProfileInline]
 

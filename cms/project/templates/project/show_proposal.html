@@ -50,14 +50,7 @@
                         <th scope="row" style="color: white;">Project Type</th>
                         <td>{{ project.project_type }}</td>
                     </tr>
-                    <tr>
-                        <th scope="row" style="color: white;">Comments</th>
-                        <td>{{ project.comments }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row" style="color: white;">Description</th>
-                        <td>{{ project.description }}</td>
-                    </tr>
+                
                     <tr>
                         <th scope="row" style="color: white;">Status</th>
                         <td>
@@ -75,6 +68,16 @@
                                 {{ project.status }}
                             </span>
                         </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row" class="description-header" style="color: white;">Description</th>
+                        <td class="description-cell">{{ project.description }}</td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row" class="description-header" style="color: white;">Comments</th>
+                        <td class="description-cell">{{ project.comments }}</td>
                     </tr>
                     
                 </tbody>

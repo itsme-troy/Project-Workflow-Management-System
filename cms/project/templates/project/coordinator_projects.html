@@ -7,7 +7,7 @@
 <div class="table-container"> 
 
     <center>
-        <h1 style="display: inline-block;"> Projects </h1> 
+        <h1 style="display: inline-block;"> All Approved Projects </h1> 
         <div style="margin-right: 10px; float: right;"> <!-- Changed to float right -->
             <div class="button-container" style="float: right; margin-left: 15px;">  <!-- Using gap to space out buttons -->
                 <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
@@ -18,7 +18,7 @@
 
 {% if not approved_projects_with_groups %}
 
-    <div class="alert alert-danger" role="alert">
+    <div class="alert custom-info-alert" role="alert">
         No Projects Available at the moment.
     </div>
 
@@ -37,7 +37,7 @@
             <thead>
                 <tr>
                     <th scope="col"> # </th>
-                    <th scope="col">Project Name</th>
+                    <th scope="col" class="project-name-header">Project Name</th>
                     <th scope="col">Proponents</th>
                     <th scope="col">Adviser</th>
                     <th scope="col">Panel 1</th>
@@ -45,7 +45,7 @@
                     <th scope="col">Panel 3</th>
                     
                     {% if user.is_current_coordinator %}
-                        <th scope="col">Actions</th>
+                         <th scope="col" class="action-column">Actions</th>
                     {% endif %}
                     
                     <th scope="col">Status </th>
@@ -57,21 +57,31 @@
                     {% for project_data in approved_projects_with_groups %}
                         <tr onclick="toggleActions(this)">
                             <td> <strong> {{ forloop.counter }} </strong> </td>
-                            <td> <a href="{% url 'show-project' project_data.project.id %}">{{ project_data.project }}</a>  </td>
+                            <td class="project-name-cell">
+                                <a href="{% url 'show-project' project_data.project.id %}">{{ project_data.project }}</a>  </td>
+                            
                             <td>{{ project_data.project.proponents }}</td>
-                            <td>{{ project_data.project.adviser }}</td>
+
+                                <td>
+                                    <a href="{% url 'show-faculty' project_data.project.adviser.id %}">
+                                         {{ project_data.project.adviser.last_name }}
+                                    </a>
+                                </td>
+
                             {% for panelist in project_data.panel %}
                             <td>
                                 {% if panelist %}
-                                    {{ project_data.panelist.first_name }} {{ panelist.last_name }}
+                                    <a href="{% url 'show-faculty' panelist.id %}">
+                                         {{ panelist.last_name }}
+                                    </a>
                                 {% else %}
                                     -
                                 {% endif %}
                             </td>
-                        {% endfor %}
-                            
+                            {% endfor %}
+                                                        
                                 {% if user.role == 'COORDINATOR' %}
-                                <td> 
+                                <td class="action-cell">
                                         <span class="hint-button" onclick="showActions(this)">Click to show actions</span>
                                         
                                         <!-- Action buttons container, initially hidden -->

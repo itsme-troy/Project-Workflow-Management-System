@@ -76,33 +76,31 @@
 
             <div class="right_menu">
                 <ul>
-                  
                   {% if user.is_authenticated%}
-
                   <li>
                     <a href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="ToggleMenuNotif(event)">
                       <i class="fas fa-bell icon icon-margin"></i>
                       <span class="notification-dropdown-badge" id="notification-count">0</span> 
                         
                       <div class="icon-label"> <span> Notifications </span> </div>
+                   
+          
+                    
                     </a>
                     <ul class="dropdown-menu notification-dropdown text-start" aria-labelledby="notificationsDropdown" id="notifDropdown">
                       <li>
-                        <div class="d-flex justify-content-between align-items-center">
-                          <div class="dropdown-header mb-2">
-                            <span class="icon-label"> Notifications </span>
-                          </div>
+                        <div class="dropdown-header mb-2 d-flex justify-content-between align-items-center">
+                            <span class="icon-label">Notifications</span>
+                            <a href="{% url 'notifications' %}" class="btn btn-outline-primary btn-sm see-all-btn">
+                                See All Notifications
+                            </a>
                         </div>
-                      </li>
+                    </li>
                       <div id="notification-list">
                         <!-- Notifications will be dynamically inserted here -->
                             <li class="dropdown-item text-muted">No notifications at the moment.</li>
                       </div>
-                      <li>
-                        <div class="dropdown-footer text-center">
-                          <a href="{% url 'notifications' %}" class="dropdown-item text-primary">See All Notifications</a>
-                        </div>
-                      </li>
+                    
                     </ul>
                   </li>
                 {% endif %}  
@@ -264,6 +262,13 @@
 
 
     <script>
+
+      document.querySelector('.hamburger').addEventListener('click', function () {
+          const sidebar = document.querySelector('.sidebar');
+          sidebar.classList.toggle('collapsed');
+      });
+
+
       // Show the loading indicator when the page starts loading
       document.getElementById("loadingIndicator").style.display = "flex";
 

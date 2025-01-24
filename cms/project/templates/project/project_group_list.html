@@ -52,7 +52,9 @@
                             {% endif %}
 
                             {% if proponent %}
-                                {{ proponent.first_name }} {{ proponent.last_name }}
+                                <a href="{% url 'show-student' proponent.id %}">
+                                    {{ proponent.first_name }} {{ proponent.last_name }}
+                                </a>
                             {% else %}
                                 &nbsp; <!-- Non-breaking space for empty cells -->
                             {% endif %}

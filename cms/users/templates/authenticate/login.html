@@ -3,7 +3,7 @@
 {% block content %} <!-- content of all web pages go -->
         
         <div class="card mx-auto shadow-lg" style="max-width: 450px; border-radius: 15px; padding: 20px; margin-top: 30px"> <!-- Added padding -->
-            <h1 class="text-center mb-5">Login</h1>
+            <h1 class="text-center mb-5">Login na tita lei</h1>
             <div class="card-body d-flex flex-column align-items-center"> <!-- Center content -->
                 <form action="" method="POST" class="w-100"> <!-- Full width form -->
                     {% csrf_token %}
@@ -33,7 +33,7 @@
                     <p> Don't have an account? Register using a Gbox Account </p>
                     
                     <a href="{% url 'select-registration' %}" class="btn btn-link">
-                        <i class="fas fa-user-plus"></i> Register
+                        <i class="fas fa-address-card icon icon-margin"></i> Register
                     </a>
                 </div>
             </div>

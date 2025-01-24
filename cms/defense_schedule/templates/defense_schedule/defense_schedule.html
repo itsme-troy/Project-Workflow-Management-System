@@ -62,64 +62,72 @@
             </div>
         
             <div id="defense-schedule-container" class="table-container" style="margin-top: 0px; min-height: 0px;">
-                <table class="table table-striped mt-3">
-                    <thead>
+                <!-- Scrollbar at the top -->
+                <div class="table-scrollbar" style="overflow-x: auto; margin-bottom: -17px;">
+                    <div style="width: max-content;"></div>
+                </div>
+            
+                <!-- Table with the same scrollable behavior -->
+                <div class="table-scroll-area" style="overflow-x: auto;">
+                    <table class="table table-striped mt-3">
+                        <thead>
                             <tr>
-                                <th scope="col"> # </th> 
+                                <th scope="col" style="width: 200px;"> Date </th>
                                 <th scope="col"> Project</th>
-                                <th scope="col"> Proponents</th>
                                 <th scope="col"> Adviser </th>
-                                <th scope="col" style="width: 140px;"> Date </th>
-                                <th scope="col"> Panel 1</th>  
-                                <th scope="col"> Panel 2</th>  
-                                <th scope="col"> Panel 3</th> 
+                                <th scope="col"> Panel 1</th>
+                                <th scope="col"> Panel 2</th>
+                                <th scope="col"> Panel 3</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for event_data in events_with_panel %}
                             <tr>
-                                <td style="padding-left: 10px; border-radius: 4px; background: linear-gradient(to right, {{ event.color|default:'#007BFF' }} 5px, #fff 5px);">
-                                    <div style="height: 100%; width: 5px; background-color: {{ event.color|default:'#007BFF' }}; display: inline-block;"></div>
-                                    <strong>{{ forloop.counter }}</strong> </td> 
-                                <td>   <strong>{{ event_data.event.application }}</strong> </td> 
-                                
-                                </td>
-                                <td>{{event_data.event.application.project_group }}</td>
-                                <td>{{event_data.event.application.adviser }}</td>
-                                <td>
+                                <td style="padding: 8px; white-space: nowrap;">
                                     {% with start_date=event_data.event.start|date:"M. d, Y" %}
                                     {% with end_date=event_data.event.end|date:"M. d, Y" %}
                                         {% if start_date == end_date %}
-                                            {{ event_data.event.start|date:"M. d, Y" }} </br>
-                                            Start: {{ event_data.event.start|date:"g:i a" }} </br>
-                                            End: {{ event_data.event.end|date:"g:i a" }} </br> 
+                                            {{ event_data.event.start|date:"M. d, Y" }} <br>
+                                            Start: {{ event_data.event.start|date:"g:i a" }} <br>
+                                            End: {{ event_data.event.end|date:"g:i a" }} <br>
                                         {% else %}
-                                            Start: {{ event_data.event.start|date:"M. d, Y, g:i a" }} </br>
-                                            End: {{ event_data.event.end|date:"M. d, Y, g:i a" }}  
+                                            Start: {{ event_data.event.start|date:"M. d, Y, g:i a" }} <br>
+                                            End: {{ event_data.event.end|date:"M. d, Y, g:i a" }}
                                         {% endif %}
                                     {% endwith %}
-                                    {% endwith %} </td> 
+                                    {% endwith %}
+                                </td>
+                                
+                                <td>
+                                    <a href={% url 'show-project' event_data.event.application.project.id %}>
+                                        <strong>{{ event_data.event.application }}</strong></td>
+                                    </a>
+                                </td>
+                                
+                                <td>
+                                    <a href="{% url 'show-faculty' event_data.event.application.adviser.id %}">
+                                        {{ event_data.event.application.adviser }} </a> </td>
 
-                                    {% comment %} {% with counter=0 %} {% endcomment %}
-                                    {% for panelist in event_data.event.application.panel.all %}
-                                        <td>
-                                            {{ panelist.last_name }}
-                                        </td>
-                                    {% endfor %}
-                                        
-                                     <!-- Add extra cells for missing panelists -->
-                                    {% for _ in event_data.extra_cells|to_range %}
-                                        <td>&nbsp;</td> <!-- Add empty cells for missing panelists -->
-                                    {% endfor %}
+                                
+                                {% for panelist in event_data.event.application.panel.all %}
+                                    <td> 
+                                        <a href={% url 'show-faculty' panelist.id %}>
+                                        {{ panelist.last_name }} </a> </td>
+                                {% endfor %}
+
+                                {% for _ in event_data.extra_cells|to_range %}
+                                <td>&nbsp;</td>
+                                {% endfor %}
+                                
                             </tr>
-                        {% empty %}
+                            {% empty %}
                             <tr>
                                 <td colspan="8" class="text-center">No available schedules found.</td>
                             </tr>
-                        {% endfor %}
+                            {% endfor %}
                         </tbody>
                     </table>
-                </div> 
+                </div>
             </div>
             <!-- Maximize Button -->
           

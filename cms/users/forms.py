@@ -6,6 +6,8 @@ User = get_user_model()
 
 from django import forms 
 
+
+
 class UpdateFacultyProfileForm(forms.ModelForm):
     bio = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}), required=False)
     skills = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}), required=False)  # Add skills field
@@ -150,7 +152,6 @@ class RegisterFacultyForm(UserCreationForm):
         return email
 
         
- 
 # class RegisterUserForm(UserCreationForm):
 #     email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control'}))
 #     first_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))

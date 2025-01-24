@@ -31,8 +31,8 @@
         <thead>
             <tr>
                 <th>#</th> <!-- Loop counter -->
-                <th style="width: 450px;">Project Title</th> <!-- Project title header -->
-                <th scope="col" class="description-column"> Description </th> 
+                <th scope="col" class="project-name-header">Project Title</th> <!-- Project title header -->
+                <th scope="col" class="idea-description-column">Description</th>
                 
                 {% if request.user.role == 'FACULTY' or request.user.is_current_coordinator %}
                     <th scope="col" class="action-column"> Action </th> 
@@ -46,9 +46,11 @@
                     
                     <td><strong>{{ forloop.counter0|add:project_ideas.start_index }}</strong></td> <!-- Continuous counter -->
                     
-                    <td><a href="{% url 'show-project-idea' idea.id %}">{{ idea.title }}</a></td> <!-- Project title link -->
-                    <td class="description-cell">
-                        <div style="overflow-x: auto; white-space: nowrap;"> 
+                    <td class="project-name-cell">
+                        <a href="{% url 'show-project-idea' idea.id %}">{{ idea.title }}</a></td> <!-- Project title link -->
+                    
+                    <td class="idea-description-cell">
+                        <div> 
                             {% if idea.description %}
                                 {{ idea.description }}
                             {% else %}

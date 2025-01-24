@@ -40,7 +40,7 @@
                                 <th scope="col" class="picture-column">Picture</th> 
                                 <th scope="col"> Proponent </th>
                                 <th scope="col"> Status </th>
-                                <th scope="col"> Actions</th>
+                                <th scope="col" class="action-column"> Actions</th>
                             
                             </tr>
                         </thead>
@@ -67,10 +67,12 @@
                                         {% endif %}
                                     </td>
                                     <td><span class="badge bg-success">Approved</span></td>
-                                    <td>
+                                    <td class="action-cell">
                                         {% if user == proponent %}
-                                            <span class="hint-button">Click row to show actions</span>
-                                            <div class="action-buttons">
+                                            <span class="hint-button" onclick="showActions(this)">Click row to show actions</span>
+                                            
+                                            <!-- Action buttons container, initially hidden -->
+                                            <div class="action-buttons" style="display: none;">
                                                 <a href="{% url 'leave-group' group_data.group.id %}" class="btn btn-outline-danger btn-sm"
                                                     onclick="return confirm('Are you sure you want to leave this group? {% if group_data.current_proponents.count > 1 %}The creator role will be transferred to another member.{% else %}The group will be deleted as you are the only member.{% endif %}')">
                                                     Leave Group
@@ -106,7 +108,7 @@
                                         {% endif %}
                                     </td>
                                     <td><span class="badge bg-warning text-dark">Pending</span></td>
-                                    <td>
+                                    <td class="action-cell">
                                         {% if user == pending %}    
                                             <span class="hint-button">Click row to show actions</span>
                                             <div class="action-buttons">
@@ -142,7 +144,7 @@
                                     {% endif %}
                                 </td>
                                     <td><span class="badge bg-danger">Declined</span></td>
-                                    <td>
+                                    <td class="action-cell">
                                         {% if user == group_data.group.creator %}
                                         <span class="hint-button">Click row to show actions</span>
                                         <div class="action-buttons">
@@ -166,7 +168,7 @@
                                         {% for request_user in group_data.join_requests %}
                                             <tr onclick="toggleActions(this)">
                                                 <td>{{ request_user.get_full_name }}</td>
-                                                <td>
+                                                <td class="action-cell">
                                                     <span class="hint-button">Click row to show actions</span>
                                                     <div class="action-buttons">
                                                         <a href="{% url 'accept-join-request' group_data.group.id request_user.id %}" class="btn btn-outline-success btn-sm">Accept</a>
@@ -185,7 +187,7 @@
                     {% if user == group_data.group.creator and not group_data.group.approved %}
                         <div class="mt-3">
                             {% if group_data.current_proponents.count >= 1 and group_data.pending_proponents.count == 0 and group_data.declined_proponents.count == 0 %}
-                                <a href="{% url 'finalize-group' group_data.group.id %}" class="btn btn-success" 
+                                <a href="{% url 'finalize-group' group_data.group.id %}" class="btn btn-outline-success sm" 
                                     onclick="return confirm('Are you sure you want to Create Group with the current members? This action cannot be undone.')">
                                     Create Group with Current Members
                                 </a>
@@ -193,7 +195,7 @@
                             
                               <!-- Only allow inviting more members if the total members are less than max_proponents -->
                             {% if group_data.total_members < group_data.max_proponents %}
-                                <a href="{% url 'invite-more-members' group_data.group.id %}" class="btn btn-primary btn-lg"
+                                <a href="{% url 'invite-more-members' group_data.group.id %}" class="btn btn-outline-primary btn-sm"
                                     onclick="return confirm('Are you sure you want to invite more members to this group?')">
                                 Invite More Members
                                 </a>
@@ -209,19 +211,41 @@
 </div>
 
 <script>
-    function toggleActions(row) {
-        // Remove active class from all rows
-        document.querySelectorAll('tr').forEach(tr => tr.classList.remove('active'));
-        // Add active class to clicked row
-        row.classList.add('active');
-    }
-
-    // Add click handler to close rows when clicking outside
-    document.addEventListener('click', function(event) {
-        if (!event.target.closest('tr')) {
-            document.querySelectorAll('tr').forEach(tr => tr.classList.remove('active'));
-        }
+    document.addEventListener('DOMContentLoaded', function () {
+        // Handle clicking a hint button to show actions
+        document.querySelectorAll('.hint-button').forEach((hintButton) => {
+            hintButton.addEventListener('click', function (event) {
+                // Prevent the event from propagating to the document click handler
+                event.stopPropagation();
+    
+                // Hide all other action buttons and show all hint buttons
+                document.querySelectorAll('.action-buttons').forEach((btns) => btns.style.display = 'none');
+                document.querySelectorAll('.hint-button').forEach((btn) => btn.style.display = 'inline');
+    
+                // Show the action buttons for the clicked row and hide the hint button
+                const row = hintButton.closest('tr');
+                const actionButtons = row.querySelector('.action-buttons');
+    
+                hintButton.style.display = 'none';
+                if (actionButtons) actionButtons.style.display = 'block';
+            });
+        });
+    
+        // Handle clicking outside of rows to hide all action buttons
+        document.addEventListener('click', function (event) {
+            // Hide all action buttons and reset hint buttons
+            document.querySelectorAll('.action-buttons').forEach((btns) => btns.style.display = 'none');
+            document.querySelectorAll('.hint-button').forEach((btn) => btn.style.display = 'inline');
+        });
+    
+        // Prevent row click from triggering when clicking action buttons
+        document.querySelectorAll('.action-buttons a').forEach((actionLink) => {
+            actionLink.addEventListener('click', function (event) {
+                event.stopPropagation();
+            });
+        });
     });
+    
 </script>
 
 {% endblock %}

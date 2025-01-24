@@ -142,10 +142,14 @@
                                 <tbody>
                                     {% for project in latest_projects %}
                                         <tr>
-                                            <td>{{ project.title }}</td>
                                             <td>
-                                                {{ project.adviser.get_full_name|default:"No Adviser" }}
-                                            </td>
+                                                <a href="{% url 'show-project' project.id %}"> {{ project.title }} </a> </td>
+                                            
+                                            <td>
+                                                <a href= "{% url 'show-faculty' project.adviser.id %}">
+                                                {{ project.adviser.get_full_name|default:"No Adviser" }} </a>  </td>
+
+
                                             <td style="display: flex; align-items: center; gap: 0.5rem;">
                                                 <span class="status 
                                                     {% if project.status == 'pending' %}yellow
@@ -190,7 +194,7 @@
                                 </thead>
                                 <tbody>
                                     {% for user in recent_users %}
-                                        <tr class="projects">
+                                    <tr class="projects" style="cursor: pointer;" onclick="redirectToUser('{{ user.get_role_display }}', {{ user.id }})">
                                             <td> 
                                                    <!-- Display the profile image, defaulting to the static default image if not set -->
                                                 {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
@@ -248,7 +252,21 @@
                     selectedOptions[selectedOptions.length - 1].selected = false; // Deselect the last selected option
                 }
             });
+            
         });
+        const facultyBaseUrl = "{% url 'show-faculty' 0 %}".replace('/0/', '/');
+        const studentBaseUrl = "{% url 'show-student' 0 %}".replace('/0/', '/');
+    
+        function redirectToUser(role, id) {
+            role = role.toUpperCase();
+            if (role === 'FACULTY') {
+                window.location.href = `${facultyBaseUrl}${id}`;
+            } else if (role === 'STUDENT') {
+                window.location.href = `${studentBaseUrl}${id}`;
+            } else {
+                console.error("Unknown role:", role);
+            }
+        }
     </script>
     
 {% endblock %}

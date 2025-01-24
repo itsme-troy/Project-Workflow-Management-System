@@ -548,6 +548,11 @@ class SelectPanelistForm(ModelForm):
             if field.help_text:
                 field.help_text = f'<small class="form-text text-muted">{field.help_text}</small>'
 
+            # Make fields read-only by disabling them
+        for field_name in ['title', 'project_type', 'proponents', 'adviser', 'description']:
+            self.fields[field_name].widget.attrs['disabled'] = 'disabled'
+
+
         # Make fields read-only by disabling them
         self.fields['title'].widget.attrs['disabled'] = 'disabled'
         self.fields['project_type'].widget.attrs['disabled'] = 'disabled'

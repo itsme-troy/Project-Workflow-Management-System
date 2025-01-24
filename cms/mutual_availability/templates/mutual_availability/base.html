@@ -10,7 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
     
-    <link rel="stylesheet" href="{% static  'css/mutual_availability.css' %}">
+    <link rel="stylesheet" href="{% static  'css/mutual_availability.css' %}"> 
     <link rel="stylesheet" href="{% static 'free_schedule/css/free_sched.css' %}">
     <link rel="stylesheet" href="{% static 'free_schedule/css/style_calendar.css' %}">
 
@@ -245,7 +245,7 @@
                 eventLimit: false,
                 //contentHeight: 'auto',
                 //height: 'auto',
-                // defaultView: 'agendaWeek',
+                //defaultView: 'month',
                 minTime: '06:00:00', // This line ensures that the calendar starts at 7 AM
                 
                 select: function (start, end, allDay) {

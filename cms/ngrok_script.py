@@ -1,9 +1,12 @@
-from pyngrok import ngrok
+from pyngrok import ngrok, conf
 import time
 
 def start_ngrok():
     # Set your auth token
     ngrok.set_auth_token("2rtoc6LmVmTrR6mWEaRxeZBJZ4w_2XRgnUu2f8rxhdfvSyUx7")
+
+        # Enable logging
+    conf.get_default().log_event_callback = lambda x: print(x)
 
     # Establish the tunnel
     public_url = ngrok.connect(8000)  # Replace 8000 with the port your Django server is running on

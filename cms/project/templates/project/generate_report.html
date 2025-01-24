@@ -14,6 +14,18 @@
       <div class="button-container" style="float: right; margin-left: 15px;">  <!-- Using gap to space out buttons -->
           <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
       </div>
+
+      {% if request.user.role == 'FACULTY' %}
+        <div class="button-container" style="float: right; margin-left: 15px;">
+          <button id="toggleFilter" class="btn btn-outline-secondary btn-sm">
+              {% if my_projects_only %}
+                  Show All Projects
+              {% else %}
+                  Show My Projects
+              {% endif %}
+          </button>
+      </div>
+      {% endif %}
   </div> 
 
 </center>
@@ -31,8 +43,8 @@
   <table class="table table-hover table-bordered">
     <thead>
         <tr>
-            <th scope="col">Project Name</th>
-            <th scope="col">Proponents</th> 
+            <th scope="col" class="project-name-header" style="width: 500px;"> Project Name</th>
+            {% comment %} <th scope="col">Proponents</th>  {% endcomment %}
             <th scope="col">Adviser</th>
             <th scope="col">Proposal Defense</th>
             <th scope="col">Design Defense</th>
@@ -44,9 +56,20 @@
       {% for project_data in projects_with_phases %}
       {% if project_data.project.status == 'approved' %}
           <tr>
-              <td>{{ project_data.project }}</td>
-              <td>{{ project_data.project.proponents }}</td>
-              <td>{{ project_data.project.adviser }}</td>
+              <td class="project-name-cell" style="width: 500px;">
+                <a href="{% url 'show-project' project_data.project.id %}">
+                    {{ project_data.project }}
+                </a>
+            </td>
+              {% comment %} <td>{{ project_data.project.proponents }}</td> {% endcomment %}
+
+
+
+              <td>
+                    <a href="{% url 'show-faculty' project_data.project.adviser.id %}">
+                      {{ project_data.project.adviser.last_name }}
+                  </a>
+             </td>
               
               <td class="verdict-{{ project_data.defense_results.proposal|lower|slugify_filter }}">
                   <span class="badge badge-{{ project_data.defense_results.proposal|lower|slugify_filter }}">
@@ -80,4 +103,24 @@
 {% endif %}
 
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const toggleButton = document.getElementById('toggleFilter');
+    const url = new URL(window.location.href);
+
+    // Set initial button text
+    const myProjects = url.searchParams.get('my_projects') === 'true';
+    toggleButton.textContent = myProjects ? 'Show All Projects' : 'Show My Projects';
+
+    // Toggle filter and button text
+    toggleButton.addEventListener('click', function () {
+      const filter = url.searchParams.get('my_projects') === 'true' ? 'false' : 'true';
+      url.searchParams.set('my_projects', filter);
+      toggleButton.textContent = filter === 'true' ? 'Show All Projects' : 'Show My Projects';
+      window.location.href = url.toString();
+    });
+  });
+</script>
+
 {% endblock %}

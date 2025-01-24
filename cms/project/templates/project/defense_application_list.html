@@ -5,7 +5,7 @@
 
 {% block content %}
 
-<div class="table-container"> 
+<div class="table-container defense-application-list"> 
     <center>
         <h1 style="display: inline-block;"> Defense Application List</h1> 
 
@@ -27,7 +27,7 @@
                 <tr>
                     <th scope="col"> #  </th>
                     <th scope="col"> Type of Defense </th>
-                    <th scope="col"> Project Name </th>
+                    <th scope="col" class="project-name-header">Project Name</th>
                     <th scope="col"> Proponents </th> <!-- New column for Proponents -->
                     <th scope="col"> Adviser </th>
                     <th scope="col"> Date Submitted </th>
@@ -42,13 +42,17 @@
                 {% if application.project.status == 'approved' %}
                 <tr>
                     <td> <strong>{{ forloop.counter }}</strong></td>
-                    <td>{{ application.get_title_display }}</td>
+                    <td class="project-name-cell">{{ application.get_title_display }}</td>
                     <td><a href="{% url 'show-project' application.project.id %}">{{ application.project }}</a></td>
                     
                     <td>  <!-- Display proponents -->
                         {{ application.project.proponents}} </td>
             
-                    <td>{{ application.adviser }}</td>
+                    <td>
+                        <a href="{% url 'show-faculty' application.project.adviser.id %}">
+                            {{ application.adviser.last_name }}
+                       </a>
+                    </td>
                     
                     <td>{{ application.submission_date|date:"M j, Y g:i A" }}</td> 
                     

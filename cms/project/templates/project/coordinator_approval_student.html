@@ -40,7 +40,11 @@
 </center> 
 
 </br>
-
+<div class="help-text" style="margin-bottom: 1rem; text-align: left;">
+    <p style="font-size: 0.9rem; color: #6c757d;">
+        Note: Click the "Eligibility" column header to toggle checkboxes for student eligibility selection.
+    </p>
+</div>
 
 <table class="table table-hover table-bordered">  
     <thead> 
@@ -50,7 +54,7 @@
             <th scope="col"> Name </th> 
 
             <th scope="col" style="width: 100px;" onclick="toggleAllCheckboxes()"> Eligibility 
-                <span class="hint-button" title="Click to toggle eligibility checkboxes">?</span>
+                <span class="hint-button" style="color:white;" title="Click to toggle eligibility checkboxes">?</span>
             </th> 
             <th scope="col" class="deficiencies-column" >
                 Deficiencies
@@ -76,7 +80,11 @@
               {% endif %}
             </td>
             
-            <td>{{ student.first_name }} {{ student.last_name }}</td> <!-- Combined first and last name -->
+            <td>
+                <a href="{% url 'show-student' student.id %}">
+                    {{ student.first_name }} {{ student.last_name }}
+                </a>
+            </td>
 
             <td class="checkbox-cell">
                 <div class="form-check" style="display: none;">
@@ -121,7 +129,6 @@
     {% endfor %}
     </tbody> 
 </table>
-<p class="help-text text-end">Click the "Eligibility" column header to display checkboxes.</p>
 
 
 <script>

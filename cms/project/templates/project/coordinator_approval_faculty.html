@@ -1,20 +1,7 @@
 {% extends 'project/base.html'%} <!-- use the base file -->
 {% load static %}
+
 {% block content %} <!-- content of all web pages go -->
-
-{% comment %} <div class="card">
-    <div class="card-header">
-      System Report  
-    </div>
-    <div class="card-body">
-     <p class="card-text">Student Count: {{ student_count }} </p>
-     <p class="card-text">Faculty Count: {{ faculty_count }} </p>
-     <p class="card-text">Project Count: {{ project_count }}</p>
-     <p class="card-text">Proposal Count: {{ proposal_count }} </p>
-   
-    </div>
-  </div> </br> </br>  {% endcomment %}
-
 
 
 <form action="" method=POST> 
@@ -39,7 +26,11 @@
 </center>
    
 </br>
-
+<div class="help-text" style="margin-bottom: 1rem; text-align: left;">
+    <p style="font-size: 0.9rem; color: #6c757d;">
+        Note: Click the "Eligibility" column header to toggle checkboxes for Faculty eligibility selection.
+    </p>
+</div>
     
 <table class="table table-hover table-bordered">  
     <thead> 
@@ -48,10 +39,10 @@
             <th scope="col" class="picture-column">Picture</th> 
             <th scope="col"> Name</th>
             <th scope="col" style="width: 100px;" onclick="toggleCheckboxes('adviser-column')"> Adviser
-                <span class="hint-button" title="Click to toggle eligibility checkboxes">?</span>  </th> 
+                <span class="hint-button" style="color:white;" title="Click to toggle eligibility checkboxes">?</span>  </th> 
 
             <th scope="col" style="width: 100px;" onclick="toggleCheckboxes('panel-column')"> Panelist
-                <span class="hint-button" title="Click to toggle eligibility checkboxes">?</span> </th> 
+                <span class="hint-button" style="color:white;" title="Click to toggle eligibility checkboxes">?</span> </th> 
 
             <th scope="col" class="deficiencies-column" >
                 Deficiencies </th>
@@ -72,9 +63,13 @@
                         <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table larger-img"> 
                   {% endif %}
                 </td>
-                
-                <td>{{ adviser.first_name }} {{ adviser.last_name }}</td> <!-- Combined first and last name -->
-           
+
+                <td>
+                    <a href="{% url 'show-faculty' adviser.id %}">
+                        {{ adviser.first_name }} {{ adviser.last_name }}
+                    </a>
+                </td>
+
                 <td class="adviser-column">
                     <div class="form-check" style="display: none;"> 
                         <input class="form-check-input"

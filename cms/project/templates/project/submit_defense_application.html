@@ -6,6 +6,7 @@
 
 {% if user.is_authenticated %}
     <center> <h1 style="display: inline-block;"> Submit Defense Application </h1>
+        
         {% if not submitted %} 
         <div class="button-container" style="float: right;">
             <a href="javascript:history.back()" class="btn btn-danger btn-lg btn-block" 
@@ -19,7 +20,7 @@
 
         <div class="alert custom-success-alert text-center" role="alert">
             <h3>Your Defense Application Was Submitted Successfully!</h3><br>
-            <a href="{% url 'my-defense-application' %}" class="btn btn-primary">Go to My Defense Application</a>
+            <a href="{% url 'my-defense-application' %}" class="btn btn-outline-success">Go to My Defense Application</a>
             <!--  button to manually close the alert -->
             <button type="button" class="btn-close" aria-label="Close" onclick="this.closest('.custom-success-alert').remove();"></button>
         </div>
@@ -28,7 +29,7 @@
         
          <!-- Display form errors -->
          {% if form.errors %}
-            <div class="alert alert-danger">
+            <div class="alert custom-info-alert">
                 <ul class="mb-0">
                     {% for error in form.non_field_errors %}
                             <li>{{ error }}</li>

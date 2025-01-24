@@ -1,145 +1,74 @@
 {% extends 'project/base.html' %}
 
-{% block styles %}
-
-{% endblock %}
-
 {% block content %}
+   
+
+<div class="table-container">
+        <center>
+            <h1>Available Project Groups</h1>
+            <div class="button-container" style="margin-top: 10px;">
+                <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+            </div>
+        </center>
 
 
-    <center> <h1 style="display: inline-block; margin-left: -60px"> Available Project Groups </h1> 
-        <div class="button-container" style="float: right;">  <!-- Using gap to space out buttons -->
-            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
-        </div>
-    </center> 
-    <br>
+        {% if not groups_with_all_members %}
+            <div class="alert custom-info-alert text-center" role="alert">
+                <h3>No Project Groups Available at the moment.</h3>
+            </div>
+        {% else %}
 
-    {% if not groups_with_all_members %}
-        <div class="alert custom-info-alert text-center" role="alert">
-            <h3> No Project Groups Available at the moment. </h3>
-        </div>
-    {% else %}
-     
-            {% if groups_with_all_members %}
-                <div class="groups-grid" style="max-width: 500px">
-                    {% for group in groups_with_all_members %}
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Group {{ forloop.counter }}</h5>
-                                <small class="text-muted">
-                                    {{ group.current_proponents|length }}/{{group.max_proponents}}
-                                </small>
-                            </div>
-                            <div class="card-body">
-                                <table class="table compact-table mb-2">
-                                    <thead>
-                                        <tr>
-                                            <th>Proponents</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for proponent in group.current_proponents %}
-                                            <tr>
-                                                <td>
-                                                    {{ proponent.get_full_name }}
-                                                    {% if user == proponent %}
-                                                    <span class="badge bg-info ms-2">You</span>
-                                                    {% endif %}
-                                                    {% if proponent == group.group.creator %}
-                                                        <span class="badge bg-primary ms-2">Leader</span>
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-
-                                        {% with total_slots=group.max_proponents %}
-                                            {% for _ in ""|center:total_slots %}
-                                                {% if forloop.counter > group.current_proponents|length %}
-                                                <tr>
-                                                    <td>&nbsp;</td>
-                                                </tr>
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endwith %}
-                                    </tbody>
-                                </table>
-
-                                {% if group.requests %}
-                                    <div class="text-muted small">
-                                        <table class="table table-sm mb-0">
-                                            <thead>
-                                                <tr>
-                                                    <th>Pending requests</th>
-                                                    <th>Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for proponent in group.requests %}
-                                                        {% if user == proponent %}
-                                                            <tr>
-                                                                <td>
-                                                                    • {{ proponent.get_full_name }}
-                                                                    <span class="badge bg-info ms-2">You</span>
-                                                                </td>
-                                                                
-                                                                {% if proponent in group.declined_requests %}
-                                                                    <td>
-                                                                        <span class="badge bg-danger text-white">Denied</span>
-                                                                        <form method="POST" action="{% url 'request-join-group' group.group.id %}" style="display: inline-block; margin-left: 0.5rem;">
-                                                                            {% csrf_token %}
-                                                                            <button type="submit" 
-                                                                                    class="btn btn-sm btn-warning btn-xs"
-                                                                                    onclick="return confirm('Do you want to resend your join request?')">
-                                                                                Resend Request
-                                                                            </button>
-                                                                        </form>
-                                                                    </td>
-                                                                {% else %}
-                                                                    <td> <span class="badge bg-warning text-dark">Pending </span> </td>
-                                                                {% endif %} 
-                                                            </tr>
-                                                        {% endif %}
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                {% endif %}
-                                
-                                <div class="d-flex justify-content-end mt-2">
-                                    {% if not user_has_group %}
-                                        {% if user in group.join_requests %}
-                                            <form method="POST" action="{% url 'cancel-join-request' group.group.id %}">
-                                                {% csrf_token %}
-                                                <button type="submit" 
-                                                        class="btn btn-sm btn-danger"
-                                                        onclick="return confirm('Are you sure you want to cancel your join request?')">
-                                                    Cancel Request
-                                                </button>
-                                            </form>
-                                        {% elif user not in group.declined_requests %}
-                                            {% if not has_pending_request %}
-                                            <form method="POST" action="{% url 'request-join-group' group.group.id %}">
-                                                {% csrf_token %}
-                                                <button type="submit" 
-                                                        class="btn btn-sm btn-primary"
-                                                        onclick="return confirm('Are you sure you want to request to join this group?')"
-                                                        {% if group.current_proponents|length >= group.max_proponents %} disabled{% endif %}>
-                                                    Request to Join
-                                                </button>
-                                            </form>
-                                            {% else %}
-                                            <button class="btn btn-sm btn-secondary" disabled>Request Pending in Another Group</button>
+        <div class="groups-grid">
+            {% for group in groups_with_all_members %}
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Group {{ forloop.counter }}</h5>
+                        <small class="text-muted">{{ group.current_proponents|length }}/{{ group.max_proponents }}</small>
+                    </div>
+                    <div class="card-body">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Proponents</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for proponent in group.current_proponents %}
+                                    <tr>
+                                        <td>
+                                            {{ proponent.get_full_name }}
+                                            {% if user == proponent %}
+                                                <span class="badge bg-info">You</span>
                                             {% endif %}
-                                        {% endif %}
-                                    {% else %}
-                                        <button class="btn btn-sm btn-secondary" disabled>Already in a group</button>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
+                                            {% if proponent == group.group.creator %}
+                                                <span class="badge bg-primary">Leader</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer">
+                        {% if not user_has_group %}
+                            {% if user in group.join_requests %}
+                                <form method="POST" action="{% url 'cancel-join-request' group.group.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger">Cancel Request</button>
+                                </form>
+                            {% else %}
+                                <form method="POST" action="{% url 'request-join-group' group.group.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-primary">Request to Join</button>
+                                </form>
+                            {% endif %}
+                        {% else %}
+                            <button class="btn btn-sm btn-secondary" disabled>Already in a group</button>
+                        {% endif %}
+                    </div>
                 </div>
-            {% endif %}
-        </div>
-    {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

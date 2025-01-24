@@ -58,7 +58,9 @@ urlpatterns = [
     path('submit_verdict/<int:application_id>/', views.submit_verdict, name='submit_verdict'),
     
     path('generate_report', views.generate_report, name='generate-report'),
+    
     path('show_student/<student_id>', views.show_student, name='show-student'),
+    path('show_faculty/<faculty_id>', views.show_faculty, name='show-faculty'),
 
     path('add_project_group', views.add_project_group, name="add-project-group"),
     path('list_project_group', views.list_project_group, name='list-project-group'), 
@@ -78,7 +80,7 @@ urlpatterns = [
     path('transfer-creator/<int:group_id>/', views.transfer_creator, name='transfer-creator'),
     
     path('my_profile/<profile_id>', views.my_profile, name="my-profile"), 
-    path('show_faculty/<faculty_id>', views.show_faculty, name='show-faculty'),
+    
     path('update_deficiencies/<user_id>', views.update_deficiencies, name='update-deficiencies'), 
     
     path('delete_project_group/<group_id>', views.delete_project_group, name='delete-project-group'),

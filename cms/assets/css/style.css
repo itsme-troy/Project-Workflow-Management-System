@@ -1,3 +1,189 @@
+.fa-lightbulb { color: #ffd700; }
+.fa-brain { color: #4169e1; }
+.fa-plus-circle { color: #32cd32; }
+.fa-home { color:#00ff08;  }
+.fa-user-friends { color: #6fbebe; }
+.fa-user-graduate { color: #b340e0; }  /* Purple - represents academic achievement */
+.fa-chalkboard-teacher { color: #ff7700; } 
+.fa-users { color: #ff2200;}
+.fa-layer-group { color: #aaaaaa; /* Neutral gray */}
+.fa-cog { color: #368aff; } 
+.fa-hourglass-half {   color: #afd6ff; /* Blue to match the theme */}
+.fa-user-plus {   color: #6cff8e; /* Green for positive action */}
+.fa-plus-circle {color: #28a745;}
+.fa-shield-alt { color: #13e3e3; /* Dark slate gray - represents security/protection */ }
+.fa-file-contract { color: #e0b4ff; /* Indigo - represents official/formal documents */ }
+.fa-file-upload { color: #befcfc; /* Teal - represents file system actions */ }
+
+.icon-margin {
+    margin-right: 10px; /* can adjust value as xneeded */
+}
+
+
+.table-container {
+    width: calc(100% - 40px); /* Accounts for block_container padding (20px on each side) */
+    height: calc(100% - 40px); /* Accounts for block_container padding (20px on top and bottom) */
+    padding: 10px;
+    overflow-x: hidden;  /* Enable horizontal scrolling */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 1px solid #dee2e6; /* Light border around the container */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    background-color: #ffffff; /* White background for content */
+    margin: 0 auto; /* Centers the table-container horizontally */
+    box-sizing: border-box; /* Includes padding and border in width and height */
+    max-height: 100vh; /* Adjust max height for the container */
+}
+
+.table-container .table {
+    width: 100%;       /* Ensure the table takes full width */
+    min-width: 950px;  /* Set a minimum width for the table */
+    border-collapse: collapse; /* Avoid border collapse */
+}
+.table-container .table th, 
+.table-container .table td {
+    padding: 12px;                 /* Add padding to table cells */
+    text-align: center;            /* Align text */
+    border-bottom: 1px solid #dee2e6; /* Light border for rows */
+    max-width: 140px;              /* Set a maximum width for cells */
+    white-space: nowrap;           /* Prevent text wrapping */
+    overflow: hidden;              /* Hide overflow content */
+    text-overflow: ellipsis;       /* Add ellipsis for overflow */
+}
+
+
+/* Optional: Ensure table headers have a consistent max-width */
+.table-container .table th {
+    max-width: 180px;              /* Adjust max-width for header cells */
+    background-color: #343a40;     /* Dark background for header */
+    color: white;                  /* White text */
+    text-align: center;            /* Center text in header */
+}
+
+.table-container .table tbody tr:hover{
+    background-color: #f1f1f1; /* Light gray on hover */
+    transition: background-color 0.3s ease; /* Smooth transition */
+}
+/* Custom scrollbar styles for modern look */
+.table-container::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background-color: #cacaca; /* Color of the scrollbar thumb */
+    border-radius: 10px; /* Rounded corners for the thumb */
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Color of the scrollbar track */
+    border-radius: 10px; /* Rounded corners for the track */
+}
+
+.container {
+    width: 80%; /* Default width */
+    max-width: 100%; /* Maximum width the container can grow */
+    min-width: 200px; /* Minimum width the container can shrink to */
+    padding: 30px;
+    margin: 40px auto;
+    background-color: #ffffff; /* White background for content */
+    border-radius: 8px;     
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    text-align: center;
+    
+    /* Enable resizing horizontally */
+    /* resize: both; /* Allow resizing both horizontally and vertically */
+    overflow: auto; /* Allow overflow content if the element is resized */
+}
+
+.profile_name {
+    color:white
+}
+/* Flexbox for Layout */
+.wrapper {
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items */
+}
+
+/* Navbar Background & Color */
+.custom-navbar-bg {
+    background-color: #343a40; /* Dark background */
+    color: #ffffff; /* White text */
+}
+
+/* Navbar Item (Links) */
+.navbar-nav .nav-link {
+    color: #ffffff; /* White text for better contrast */
+    text-decoration: none; /* Remove underline */
+    padding: 12px 20px; /* Increase padding for larger clickable area */
+    border-radius: 5px; /* Rounded corners for a modern look */
+    transition: color 0.3s ease, background-color 0.3s ease; /* Smooth transition */
+    margin-right: 25px; /* Can Adjust the value as needed */
+}
+
+
+/* Hover Effect for Navbar Items */
+.navbar-nav .nav-link:hover {
+    color: #ffffff; /* Keep text color white */
+    background-color: rgba(255, 255, 255, 0.1); /* Light transparent background */
+}
+
+/* Active Link Indicator */
+.nav-link.active {
+    color: inherit; /* Inherit font color */
+    background-color: #007bff; /* Active background color */
+    border-radius: 5px; /* Smooth edges for active items */
+    padding-bottom: 5px;
+    border-bottom: 2px solid #ffffff; /* Underline effect for active links */
+}
+
+
+
+/* Improve Navbar Responsiveness */
+@media (max-width: 992px) {
+    .navbar-nav {
+        flex-direction: column; /* Stack nav items on smaller screens */
+        padding-left: 0;
+    }
+
+    .navbar-nav .nav-item {
+        margin-bottom: 10px;
+    }
+
+    .navbar-nav .nav-link {
+        padding: 12px 20px; /* Increase click area */
+    }
+
+    .navbar-collapse {
+        text-align: center;
+    }
+}
+
+/* Focus States for Accessibility (Keyboard navigation) */
+.navbar-nav .nav-link:focus {
+    outline: none; /* Remove default outline */
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5); /* Focus ring for accessibility */
+}
+
+
+/* Custom Font and Spacing */
+body {
+    font-family: 'Poppins', sans-serif; /* Modern sans-serif font */
+    font-size: 16px;
+    line-height: 1.5; /* Improve readability */
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Poppins', sans-serif; /* Stylish font for headings */
+    margin-bottom: 20px;
+    color: #333; /* Dark color for contrast */
+}
+
+/* For touch devices,  use :focus-within or :active */
+.nav-item.dropdown:focus-within .dropdown-menu,
+.nav-item.dropdown:active .dropdown-menu {
+    display: block; /* Show dropdown when clicked */
+}
 /* General Reset for Table */
 .table {
     width: 100%;
@@ -6,25 +192,115 @@
     overflow-x: auto; /* Allow horizontal scrolling */
     border-collapse: collapse; /* Avoid border collapse */
     font-size: 1rem; /* Make font size more readable */
+    border: 1px solid #000407; /* Add a solid border */
+    border-collapse: collapse; /* Ensure borders collapse into a single border */
+    table-layout: auto; /* Allow dynamic column resizing */
 }
+/* Centering the checkbox inside the td */
+.table td.checkbox-cell {
+    text-align: center; /* Horizontally center the content inside the td */
+    vertical-align: middle; /* Vertically center the content inside the td */
+    padding: 0.5rem; /* Optional: Add padding for better spacing */
+}
+
+/* Optionally, you can make the form-check div also centered */
+.form-check {
+    display: flex;  /* Use flexbox to align items */
+    justify-content: center;  /* Horizontally center the checkbox */
+    align-items: center;  /* Vertically center the checkbox */
+    margin: 0; /* Remove any margin that may exist by default */
+}
+
+/* Style the Deficiencies Column */
+.table td.deficiencies-cell {
+    max-width: 600px; /* Set max-width for the column */
+    overflow-x: auto; /* Allow horizontal scrolling if content overflows */
+    white-space: nowrap; /* Prevent text from wrapping */
+    text-overflow: ellipsis; /* Optionally, show an ellipsis when text overflows */
+    padding: 0.5rem; /* Add padding for better spacing */
+    height: auto; /* Optional: Limit the height to keep things tidy */
+}
+/* Apply styles to the column header */
+.table th.idea-description-column {
+    max-width: 500px !important; /* Set max-width to 500px */
+    word-wrap: break-word !important; /* Break long words */
+    text-align: center !important; /* Center-align text */
+    overflow: hidden !important; /* Ensure no content overflows */
+    white-space: nowrap !important; /* Prevent wrapping */
+    text-overflow: ellipsis !important; /* Show ellipsis if content overflows */
+}
+
+/* Apply styles to the table cell */
+.table td.idea-description-cell {
+    max-width: 600px !important; /* Set max-width for the column */
+    overflow: hidden !important; /* Hide overflow content */
+    white-space: nowrap !important; /* Prevent text from wrapping */
+    text-overflow: ellipsis !important; /* Show an ellipsis when text overflows */
+    padding: 0.5rem !important; /* Add padding for spacing */
+    height: auto !important; /* Allow the cell height to adjust automatically */
+}
+
+/* Apply styles to the Deficiencies column specifically */
+.table th.deficiencies-column {
+    max-width: 500px; /* Set max-width to 500px */
+    word-wrap: break-word; /* Allow text to wrap inside the cell */
+    text-align: center; /* Align text to the center */
+}
+
+
+/* Apply styles to the Deficiencies column specifically */
+.table th.action-column {
+    width: 250px; /* Set a fixed or flexible width */
+    max-width: 300px; /* Optional: Limit maximum width */
+    text-align: center; /* Center align text */
+    word-wrap: break-word; /* Allow word wrapping */
+}
+
+/* Style the Deficiencies Column */
+.table td.action-cell {
+    width: 250px; /* Set a fixed or flexible width */
+    max-width: 300px; /* Optional: Limit maximum width */
+    overflow: visible; /* Ensure content is fully visible */
+    white-space: normal; /* Allow text wrapping */
+    padding: 0.5rem; /* Add padding for spacing */
+    vertical-align: middle; /* Align content vertically */
+    text-align: center; /* Center align text */
+}
+.table td.action-cell a {
+    display: inline-block; /* Ensure each button is treated as a block */
+    margin: 5px 0; /* Add vertical margin for spacing */
+    text-align: center; /* Center-align the buttons */
+}
+
 
 /* Table Header Styling */
 .table th {
     padding: 1rem;
     background-color: #343a40; /* Dark background for header */
     color: white; /* White text */
-    text-align: left; /* Align text to left */
+    text-align: center; /* Align text to center */
     border-bottom: 2px solid #dee2e6;
     font-weight: bold;
 }
-
 /* Table Body Styling */
 .table td {
+    min-height: 50px; /* Adjust as necessary */
+    vertical-align: middle; /* Align content in the middle */
     padding: 1rem;
-    vertical-align: middle; /* Center content vertically */
+    padding-top: 1rem; 
     border-top: 1px solid #dee2e6;
+    text-align: center;
+    align-items: center; /* Center the content vertically */
+    justify-content: center; /* Center the content horizontally */
 }
-
+.table td:not(.picture-column) {
+    padding: 1rem; /* Existing padding */
+    padding-top: 1rem; /* Add top padding for spacing */
+    border-top: 1px solid #dee2e6;
+    text-align: center;
+    align-items: center; /* Center the content vertically */
+    justify-content: center; /* Center the content horizontally */
+}
 /* Table Row Hover Effect */
 .table tbody tr:hover {
     background-color: #f1f1f1; /* Light gray on hover */
@@ -38,8 +314,19 @@
 
 /* Add Borders to Cells */
 .table td, .table th {
-    border: 1px solid #dee2e6;
+    border: 1px solid #dee2e6; /* Consistent border color */
 }
+.table td:empty, .table th:empty {
+    border: 1px solid #dee2e6; /* Match the border color */
+  
+}
+ /* Target the first th element (which corresponds to # column) */
+ .table th:nth-child(1),
+ .table td:nth-child(1) {
+     width: 50px;  /* Set a fixed width for the # column */
+     text-align: center;  /* Optional: center-align the text */
+ }
+
 
 /* Responsive Adjustments for Tables */
 @media (max-width: 768px) {
@@ -48,18 +335,36 @@
         overflow-x: auto;
         white-space: nowrap;
     }
+    .table-container .table th, 
+    .table-container .table td {
+        max-width: 100px; /* Reduce max-width for smaller screens */
+    }
+    .table th.action-column,
+    .table td.action-cell {
+        max-width: 200px;
+    }
+    .description-cell {
+        white-space: normal; /* Ensure text wraps */
+        font-size: 0.8rem; /* Adjust font size for smaller screens */
+    }
+
 }
 
 /* Form Styling */
 form {
-    max-width: 600px; /* Limit form width */
+    max-width: 800%; /* Limit form width */
     margin: 0 auto;
     padding: 20px;
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rg   ba(0, 0, 0, 0.1);
+    background-color: #f8f9fa;
 }
-
+/* Style form labels and fields */
+.form-label {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
 /* Form Field Grouping */
 .form-group {
     margin-bottom: 1.5rem; /* Increase spacing between form fields */
@@ -72,31 +377,23 @@ label {
     margin-bottom: 0.5rem;
     font-size: 1.1em;
     color: #495057;
+    text-align: left;
 }
 
-/* Input and Select Fields */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-select,
-
-textarea {
+input[type="text"], input[type="email"], input[type="password"], select, textarea {
     width: 100%;
-    padding: 12px;
-    border-radius: 4px;
+    padding: 10px;
+    margin: 5px 0 10px;
     border: 1px solid #ced4da;
-    font-size: 1em;
-    color: #495057;
-    transition: border-color 0.3s ease;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border 0.3s ease;
 }
 
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus,
-select:focus,
-textarea:focus {
+/* Focus effect for input fields */
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, select:focus, textarea:focus {
     border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
 }
 
 /* Button styling */
@@ -127,20 +424,29 @@ textarea {
     color: white;
     padding: 10px 20px;
     border: 2px solid #007bff; /* Border to match the background */
-    border-radius: 4px;
+    border-radius: 5px;
     text-align: center;
     text-decoration: none; /* Remove underline from links */
-    font-size: 1em;
+    font-size: 1.2rem;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition for both color and scale */
-    padding: 10px 20px;
-    font-size: 1em;
+}
+
+.btn-outline-success {
+    color: #28a745; /* Green color for success */
+    background-color: transparent; /* Transparent background for outline */
+    border: 2px solid #28a745; /* Green border */
+}
+
+.btn-outline-success:hover {
+    color: white; /* White text on hover */
+    border-color: #28a745; /* Maintain green border */
+    transform: scale(1.05); /* Optional: Slight grow effect */
 }
 
 /* Hover effect */
 .btn:hover {
-    background-color: #0056b3; /* Darker blue on hover */
     border-color: #0056b3; /* Adjust the border color on hover */
     transform: scale(1.05); /* Slight zoom effect on hover */
 }
@@ -153,20 +459,36 @@ textarea {
 
 /* Small button size styling */
 .btn-sm {
-    padding: 6px 12px; /* Smaller padding for sm class */
-    font-size: 0.875em; /* Smaller text size for sm class */
+    padding: 10px 20px; /* Smaller padding for sm class */
+    font-size: 1rem; /* Smaller text size for sm class */
 }
 
 /* Outline style for btn-outline-primary */
 .btn-outline-primary {
     background-color: transparent;
-    color: #007bff;
-    border: 2px solid #007bff;
+    color: #007bff; /* Primary color for text */
+    border-color: #007bff; /* Primary color for border */
 }
 
 .btn-outline-primary:hover {
-    background-color: #007bff;
-    color: white;
+    color: #fff; /* Change text to white on hover */
+    background-color: #007bff; /* Primary color for background */
+    border-color: #007bff; /* Retain primary color for border */
+}
+/* Optional: Active state */
+.btn-outline-primary:active, .btn-outline-primary:focus {
+    color: #fff; /* White text for active state */
+    background-color: #0056b3; /* Darker primary shade */
+    border-color: #0056b3; /* Darker primary border */
+    box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5); /* Focus outline */
+}
+
+/* Optional: Disabled state */
+.btn-outline-primary:disabled {
+    color: #6c757d; /* Muted text */
+    background-color: transparent; /* Transparent background */
+    border-color: #6c757d; /* Muted border */
+    cursor: not-allowed; /* Disable cursor */
 }
 /* Form Validation Styling */
 .form-error {
@@ -233,8 +555,11 @@ select {
 /* Add a container for the button to position it */
 .button-container {
     display: flex; /* Use flexbox */
-    justify-content: flex-end; /* Align to the right */
-    margin-bottom: 20px; /* Space below the button */
+    justify-content: flex-end; /* Align buttons to the right */
+    align-items: center; /* Vertically align the buttons */
+    gap: 10px; /* Add space between buttons */
+    margin-top: 0px; /* Optional: Add some spacing above the buttons */
+    margin-bottom: 0; /* Ensure no additional space below */
 }
 
 .highlight {
@@ -301,7 +626,6 @@ tr.active .action-buttons {
 
 /* Button hover effects */
 .action-buttons .btn:hover {
-    background-color: rgba(0, 0, 0, 0.1);  /* Light hover effect */
     transform: scale(1.05);  /* Slight scale effect */
 }
 
@@ -317,14 +641,49 @@ tr.active .action-buttons {
     border: 1px solid #6c757d;
 }
 
+/* Specific button color classes */
+
 .btn-outline-info {
     color: #17a2b8;
     border: 1px solid #17a2b8;
 }
 
 .btn-outline-danger {
-    color: #dc3545;
-    border: 1px solid #dc3545;
+    color: #dc3545; /* Red text color */
+    border: 1px solid #dc3545; /* Red border */
+    background-color: transparent; /* Transparent background */
+    padding: 0.375rem 0.75rem; /* Padding for spacing */
+    font-size: 1rem; /* Adjust the font size */
+    line-height: 1.5; /* Adjust the line height */
+    border-radius: 0.375rem; /* Rounded corners */
+    transition: all 0.15s ease-in-out; /* Smooth hover effect */
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545; /* Red background on hover */
+    color: white; /* White text on hover */
+    border-color: #dc3545; /* Keep the border red */
+}
+
+.btn-outline-danger.btn-sm {
+    padding: 0.25rem 0.5rem; /* Smaller padding for small button */
+    font-size: 0.875rem; /* Slightly smaller font size */
+    border-radius: 0.25rem; /* Slightly less rounded corners */
+}
+/* Optional: Active state */
+.btn-outline-danger:active, .btn-outline-danger:focus {
+    color: #fff; /* White text for active state */
+    background-color: #c82333; /* Darker danger shade */
+    border-color: #bd2130; /* Darker danger border */
+    box-shadow: 0 0 0 0.2rem rgba(225, 83, 97, 0.5); /* Focus outline */
+}
+
+/* Optional: Disabled state */
+.btn-outline-danger:disabled {
+    color: #6c757d; /* Muted text */
+    background-color: transparent; /* Transparent background */
+    border-color: #6c757d; /* Muted border */
+    cursor: not-allowed; /* Disable cursor */
 }
 
 /* Hover effect for each color button */
@@ -338,21 +697,19 @@ tr.active .action-buttons {
     color: white;
 }
 
-.btn-outline-danger:hover {
-    background-color: #dc3545;
-    color: white;
-}
+
 
 /* Hint button */
 .hint-button {
-    color: #6c757d;
+    color:grey;
     background: none;
     border: none;
     padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
+    font-size: 1rem;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
+    line-height: 1.5; /* Optional for consistent spacing */
 }
 
 /* Hint icon styling */
@@ -388,7 +745,6 @@ tr:not(.active) .hint-button {
 .badge-pending { background-color: #ffc107; color: black; }
 
 
-
 .compact-form {
     margin: 0;
     padding: 0;
@@ -422,6 +778,7 @@ tr:not(.active) .hint-button {
 
 /* Card Option Styling */
 .card-option {
+    border: 2px solid #007bff; /* Blue border */
     background-color: #fff;
     padding: 30px;
     width: 250px;
@@ -434,7 +791,7 @@ tr:not(.active) .hint-button {
     text-decoration: none;
 }
 .card-option:hover {
-    transform: translateY(-5px);
+    transform: scale(1.05); /* Slightly enlarge the card on hover */
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 /* Icon Size */
@@ -451,7 +808,7 @@ tr:not(.active) .hint-button {
 h1 {
     font-size: 2.5em;
     color: #333; /* Dark color for contrast */
-    margin-bottom: 0.6em;
+    margin-bottom: 30px;
     font-family: 'Roboto', sans-serif;
 }
 h2 {
@@ -464,17 +821,22 @@ h2 {
 p {
     font-size: 1em; /* Larger font size */
     margin-bottom: 0.8em;
-    line-height: 1.6; /* Improved line spacing */
+    line-height: 1.6; /* Improved line pacing */
     color: #343a40; 
 }
 a {
-    color: #007bff; /* Link color */
+    color: inherit; /* Link color */
     text-decoration: none; /* Remove underline */
     transition: color 0.3s ease; /* Smooth transition */
+
 }
 a:hover {
-    color: #0056b3; /* Darker blue on hover */
+    color: #0055ff; /* Darker blue on hover */
     text-decoration: underline; /* Underline on hover */
+}
+a:hover, a:focus {
+    text-decoration: underline; /* Keep the underline on hover/focus */
+    color: inherit; /* Maintain the inherited color */
 }
 
 
@@ -488,7 +850,7 @@ a:hover {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 /* Style the buttons */
-.btn-primary, .btn-secondary, .btn-outline-primary, .btn-outline-danger {
+.btn-primary, .btn-secondary, .btn-outline-danger, .btn-success {
     font-size: 0.8em;
     padding: 6px 12px;
     /* background-color: #007bff;
@@ -496,6 +858,12 @@ a:hover {
     transition: background-color 0.3s ease; */
 }
 
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-color: #007bff;
+}
 .btn-primary:hover {
     background-color: #0056b3; /* Darker blue on hover */
     transform: scale(1.05);
@@ -510,16 +878,6 @@ a:hover {
 .btn-secondary:hover {
     background-color: #5a6268;
     transform: scale(1.05);
-}
-
-/* Style the alert messages */
-.alert {
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    font-size: 0.9em;
-    margin-bottom: 20px;
 }
 
 /* Center the content */
@@ -546,8 +904,15 @@ a:hover {
 }
 
 .user-designation {
-    font-weight: bold;
-    margin-right: 20px; /* Adjust margin as needed */
+    position: fixed; /* Ensures the element stays in the same place */
+    bottom: 0;       /* Aligns it to the bottom of the viewport */
+    right: 0;        /* Aligns it to the right of the viewport */
+    z-index: 9999;   /* Very high value to ensure it’s above other elements */
+    background-color: #f8f9fa; /* Light background for visibility */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds shadow for emphasis */
+    padding: 10px 15px; /* Adds spacing inside the box */
+    border-radius: 8px; /* Rounded corners */
+    font-size: 0.9rem; /* Adjust font size */
 }
 
 .d-flex {
@@ -560,54 +925,8 @@ a:hover {
     background-color: #87CEEB; /* Sky blue color */
 }
 
-.unread {
-    background-color: #e7f3fe; /* Light blue background for unread notifications */
-    font-weight: bold; /* Bold text for unread notifications */
-    border-left: 4px solid #007bff; /* Add a blue border to the left for emphasis */
-}
 
-.notification-list {
-    max-height: 500px; /* Set a maximum height for the notifications list */
-    overflow-y: auto; /* Enable vertical scrolling */
-    border: 1px solid #dee2e6; /* Optional: Add a border for better visibility */
-    border-radius: 4px; /* Optional: Rounded corners */
-    margin-top: 10px; /* Optional: Space above the list */
-    background-color: #ffffff; /* White background for contrast */
-} 
-.no-notifications {
-    text-align: center;
-}
-.no-notifications h4 {
-    font-size: 1.5em;
-    color: #6c757d;
-}
 
-.notification-item {
-    padding: 20px;
-    border-bottom: 1px solid #eee;
-    transition: background-color 0.3s ease;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    background-color: #f9f9f9;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    font-size: 0.95em;
-}
-.notification-item .d-flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.notification-item .text-muted {
-    font-size: 0.9em;
-}
-.dropdown-menu {
-    min-width: 150px;
-}
-
-.notification-item.unread {
-    background-color: #e3f2fd; /* Light gray background for unread notifications */
-    font-weight: bold; /* Bold text for unread notifications */
-}
 @media (max-width: 768px) {
     .notification-list {
         max-height: 400px; /* Adjust for smaller screens */
@@ -620,133 +939,263 @@ a:hover {
         width: 80%;
         margin-bottom: 20px;
     }
+    form {
+        max-width: 100%;
+        padding: 15px;
+    }
+    label {
+        font-size: 1rem;  /* Adjust font size on smaller screens */
+    }
+    input[type="text"], input[type="email"], input[type="password"], select, textarea {
+        font-size: 1rem;  /* Ensure form fields are sized appropriately */
+    }
+
 
 }
 
-
-.notification-link {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-/* Style the notification badge */
-.notification-count {
-    background-color: #dc3545; /* Red background */
-    color: #ffffff; /* White text */
-    border-radius: 50%; /* Circular shape */
-    padding: 5px 10px; /* Padding for better appearance */
+/* General Alert Styling */
+body.custom-sky-blue-bg {
+    background-color: #87CEEB; /* Custom sky blue color */
 }
 
-.notification-item:hover {
-    background-color: #f1f1f1; /* Light gray background on hover */
-    transform: translateY(-2px); /* Slightly lift the item */
-    cursor: pointer;
-}   
-/* Add a background color to the navbar */
-.custom-navbar-bg {
-    background-color: #343a40; /* Dark background */
-    color: #ffffff; /* White text */
-}
-
-.navbar-nav {
-    padding-left: 0; /* Remove default padding */
-    margin-bottom: 0; /* Remove default margin */
-}
-
-.navbar-nav .nav-item {
-    margin-bottom: 10px; /* Add space between items */
-}
-
-/* Update nav-link styles for better aesthetics */
-.navbar-nav .nav-link {
-    color: #ffffff; /* White text for better contrast */
-    transition: color 0.3s ease, background-color 0.3s ease; /* Smooth transition */
-    padding: 8px 16px; /* Increase padding for better click area */
-    border-radius: 5px; /* Rounded corners */
-}
-
-.navbar-nav .nav-link:hover {
-    color: #007bff; /* Blue color on hover */
-    background-color: rgba(255, 255, 255, 0.1); /* Light transparent background on hover */
-}
-
-/* Style the dropdown menu */
-.dropdown-menu {
-    background-color: #343a40; /* Match navbar background */
-    border: none; /* Remove border */
-    border-radius: 5px; /* Rounded corners */
-}
-.dropdown-item {
-    color: #ffffff; /* White text */
-    transition: background-color 0.3s ease; /* Smooth transition */
-}
-.dropdown-item:hover {
-    background-color: #007bff; /* Blue background on hover */
-}
-
-
-/* Style the alert messages */
 .alert {
-    background-color: #f8d7da; /* Light red background */
-    color: #721c24; /* Dark red text */
-    border-color: #f5c6cb; /* Light red border */
+    padding: 15px 40px; /* Increase padding slightly for more space around text */
+    margin-top: 15px; /* Remove the top margin */
+    margin-bottom: 15px; /* Remove bottom margin */
+    border-radius: 8px;
+    font-family: 'Arial', sans-serif;
+    font-size: 1.1em; /* Slightly larger font size for better readability */
+    font-weight: 600; /* Make text bolder for emphasis */
+    line-height: 1; /* Increased line height for better readability */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between icon and text */
+    border: 1px solid transparent;
+    transition: opacity 0.5s ease-out;
+    
+    position: fixed; /* Fixed positioning to stay at the center */
+    top: 10%; /* Position at the center top */
+    left: 50%; /* Position at the center horizontally */
+    transform: translateX(-50%); /* Center horizontally */
+    max-width: 90%; /* Restrict the width to fit well on mobile screens */
+    z-index: 1000; /* Make sure it's above other elements */
+    
+    background-color: #FFF8DC; /* Light background color (light cream/yellow) */
+    color: #333333; /* Dark text color for better contrast */
+    border-color: #FFD700; /* Optional border color (gold) */
 }
-.alert-info {
-    background-color: #d9edf7;
-    color: #31708f;
-    padding: 15px;
-    border-radius: 4px;
-    margin-bottom: 20px;
-}
-.alert-warning {
-    background-color: #fcf8e3;
-    color: #8a6d3b;
-    padding: 15px;
-    border-radius: 4px;
-    margin-bottom: 20px;
-}
-/* Style for success messages */
+
+
+/* Success Alerts */
 .alert-success {
-    background-color: #d4edda; /* Light green background */
-    color: #155724; /* Dark green text */
-    border-color: #c3e6cb; /* Light green border */
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    font-size: 0.9em;
-    margin-bottom: 20px;
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+.alert-success::before {
+    content: "✔";
+    font-size: 1.5em;
+    color: #28a745;
+}
+.alert-success:hover {
+    background-color: #c3e6cb;
+    transition: all 0.2s ease;
 }
 
-/* Style for error messages */
+/* Error Alerts */
 .alert-error {
-    background-color: #f8d7da; /* Light red background */
-    color: #721c24; /* Dark red text */
-    border-color: #f5c6cb; /* Light red border */
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    font-size: 0.9em;
-    margin-bottom: 20px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+.alert-error::before {
+    content: "✘"; /* Cross icon for error */
+    font-size: 1.5em;
+    color: #dc3545; /* Red */
+}
+.alert-error:hover {
+    background-color: #f5c6cb;
+    /* transform: translateY(-2px); */
+    transition: all 0.2s ease;
 }
 
+/* Info Alerts */
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-color: #bee5eb;
+}
+.alert-info::before {
+    content: "ℹ"; /* Info icon */
+    font-size: 1.5em;
+    color: #17a2b8; /* Blue */
+}
+.alert-info:hover {
+    background-color: #bee5eb;
+    /* transform: translateY(-2px); */
+    transition: all 0.2s ease;
+}
 
-/* Add custom styles for buttons */
-.btn-close {
-    color: #721c24; /* Dark red close button */
+/* Warning Alerts */
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-color: #ffeeba;
+}
+.alert-warning::before {
+    content: "⚠"; /* Warning icon */
+    font-size: 1.5em;
+    color: #ffc107; /* Yellow */
+}
+.alert-warning:hover {
+    background-color: #ffeeba;
+    /* transform: translateY(-2px); */
+    transition: all 0.2s ease;
+}
+
+/* Close Button Styling */
+.alert .btn-close {
+    background-color: transparent;
+    border: none;
+    font-size: 1.2em;
+    color: inherit; /* Match alert text color */
+    cursor: pointer;
+    margin-left: 15px; /* Add some margin to the left to create space between the text and button */
+    padding: 5px; /* Remove any default padding */
+    display: inline-block;
 }
 
 /* Add any additional styles you need */
 
+/* Prevent the notification from disappearing */
+.no-timeout-alert {
+    animation: none !important;  /* Disables any fade-out or timeout animations */
+    transition: none !important; /* Disables any transitions */
+}
+
+/* Custom Success Alert */
+.custom-success-alert {
+    /* Inherit general alert styles */
+    @extend .alert;
+
+    background-color: #d4edda; /* Custom success background */
+    border-color: #c3e6cb; /* Custom border color */
+    color: #155724; /* Custom text color */
+    padding: 15px 30px; /* Adjust padding to make it larger */
+    border-radius: 5px; /* Optional: slightly rounded corners */
+    position: relative; /* To position the close button */
+}
+
+/* Close Button Styling */
+.custom-success-alert .btn-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #155724;
+    font-size: 1.25rem;
+    line-height: 1;
+    opacity: 1;
+}
+h4 {
+    margin: 0; /* Remove default margins for better alignment */
+    display: inline-block;
+    vertical-align: middle; /* Ensures the text aligns with icon vertically */
+}
+
+/* Custom Error Alert */
+.custom-error-alert {
+    /* Inherit general alert styles */
+    @extend .alert;
+
+    background-color: #f8d7da; /* Custom error background */
+    border-color: #f5c6cb; /* Custom border color */
+    color: #721c24; /* Custom text color */
+    padding: 30px 30px; /* Adjust padding to make it larger */
+    border-radius: 5px; /* Slightly rounded corners */
+    position: relative; /* To position the close button */
+    display: flex; /* Use flexbox to control the layout of icon and text */
+    align-items: center; /* Vertically center the items */
+}
+
+/* Close Button Styling */
+.custom-error-alert .btn-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #721c24;
+    font-size: 1.25rem;
+    line-height: 1;
+    opacity: 1;
+}
+/* Hover effect for custom error alert */
+.custom-error-alert:hover {
+    background-color: #f5c6cb; /* Slightly darker when hovered */
+    /* transform: translateY(-2px); */
+    transition: all 0.2s ease;
+}
+
+/* Icon for error alert */
+.custom-error-alert::before {
+    content: "✘"; /* Cross icon for error */
+    font-size: 1.5em;
+    color: #dc3545; /* Red */
+    margin-right: 10px; /* Add space between icon and text */
+    display: inline-block; /* Make sure the icon behaves like inline text */
+}
+
+/* Custom Info Alert */
+.custom-info-alert {
+    /* Inherit general alert styles */
+    @extend .alert;
+
+    background-color: #d1ecf1; /* Custom info background */
+    border-color: #bee5eb; /* Custom border color */
+    color: #0c5460; /* Custom text color */
+    padding: 15px 15px; /* Adjust padding to make it larger */
+    border-radius: 5px; /* Slightly rounded corners */
+    position: relative; /* To position the close button */
+}
+
+/* Close Button Styling */
+.custom-info-alert .btn-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #0c5460;
+    font-size: 1.25rem;
+    line-height: 1;
+    opacity: 1;
+}
+
+/* Hover effect for custom info alert */
+.custom-info-alert:hover {
+    background-color: #bee5eb; /* Slightly darker when hovered */
+    /* transform: translateY(-2px); */
+    transition: all 0.2s ease;
+}
+
+/* Icon for info alert */
+.custom-info-alert::before {
+    content: "ℹ️"; /* Info icon */
+    font-size: 1.5em;
+    color: #17a2b8; /* Teal blue */
+}
+/*
 body {
-    background-color: #f8f9fa; /* Light background color */
+    background-color: #f8f9fa; Light background color 
     font-family: 'Roboto',  sans-serif, Arial,;
     font-size: 16px; 
-    line-height: 1.6; /* improve line spacing */
+    line-height: 1.6; /* improve line spacing 
     color: #343a40;
-}
+}*/
+
 .container, .card {
     padding: 30px; /* Increased padding */
 }
@@ -767,16 +1216,6 @@ body {
 }
 
 
-.container {
-    background-color: #fff; /* White background for content */
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
-    margin: 20px auto;
-    max-width: 1200px;
-    max-width: 80%;
-    text-align: center;
-    padding: 50px 20px; 
-}
 .card {
     max-width: 100%; /* Allow the card to use full width */
     margin-bottom: 20px; /* Add space between cards */
@@ -785,6 +1224,7 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
     font-size: 0.9em;
     transition: box-shadow 0.3s ease;
+    
 }
 .card:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
@@ -799,14 +1239,6 @@ body {
 }
 
 
-.btn-outline-primary {
-    border-color: #007bff;
-    color: #007bff;
-}
-.btn-outline-primary:hover {
-    background-color: #007bff;
-    color: #ffffff;
-}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
@@ -837,7 +1269,10 @@ body {
         padding: 15px;
     }
     .card {
-        margin: 10px;
+        margin: 15px;
+    }
+    h1 {
+        font-size: 2em; /* Adjust heading size */
     }
     .table th,
     .table td {
@@ -867,16 +1302,16 @@ body {
         font-size: 1.2em;
     }
 }
-.form-error {
-    color: #dc3545; /* Red color for error text */
-    font-size: 0.9em; /* Adjust font size */
-    margin-top: 0.5em; /* Space above the error message */
-    padding: 5px; /* Padding around the error message */
-    background-color: #f8d7da; /* Light red background */
-    border: 1px solid #f5c6cb; /* Light red border */
-    border-radius: 4px; /* Rounded corners */
-}
+/* Make the form responsive */
+@media (max-width: 576px) {
+    .container {
+        padding: 10px;
+    }
 
+    .btn {
+        width: 100%;
+    }
+}
 
 
 #searchForm {
@@ -912,3 +1347,179 @@ body {
 .navbar-nav {
     margin-right: 20px; /* Add margin to separate from search form */
 }
+
+/* Calendar Container Styling */
+.my_calendar {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 10px 0;
+    min-height: 750px; /* Match the height of your table container */
+}
+
+/* Calendar Header Styling */
+.my_calendar .fc-header-toolbar {
+    margin-bottom: 1.5em !important;
+    padding: 10px;
+}
+
+/* Calendar Buttons */
+.my_calendar .fc-button {
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+    color: #495057 !important;
+    padding: 8px 16px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+}
+
+.my_calendar .fc-button:hover {
+    background-color: #e9ecef !important;
+    border-color: #ced4da !important;
+    transform: translateY(-1px);
+}
+
+.my_calendar .fc-button-active {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+    color: #ffffff !important;
+}
+
+/* Calendar Title */
+.my_calendar .fc-toolbar-title {
+    font-size: 1.5em !important;
+    font-weight: 600 !important;
+    color: #343a40 !important;
+}
+
+/* Calendar Grid */
+.my_calendar .fc-daygrid-day {
+    transition: background-color 0.2s ease;
+}
+
+.my_calendar .fc-daygrid-day:hover {
+    background-color: #f8f9fa;
+}
+
+/* Calendar Events */
+.my_calendar .fc-event {
+    border-radius: 4px !important;
+    padding: 3px 6px !important;
+    margin: 2px 0 !important;
+    border: none !important;
+    font-size: 0.9em !important;
+    cursor: pointer !important;
+    transition: transform 0.2s ease !important;
+}
+
+.my_calendar .fc-event:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Today's Date Highlight */
+.my_calendar .fc-day-today {
+    background-color: rgba(0, 123, 255, 0.05) !important;
+}
+
+/* Weekend Days */
+.my_calendar .fc-day-sat, .my_calendar .fc-day-sun {
+    background-color: #f8f9fa !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .my_calendar {
+        padding: 10px;
+        margin: 10px 0;
+    }
+
+    .my_calendar .fc-toolbar-title {
+        font-size: 1.2em !important;
+    }
+
+    .my_calendar .fc-button {
+        padding: 6px 12px !important;
+        font-size: 0.9em !important;
+    }
+}
+
+
+/* General Scrollbar Styles for td */
+.table-container td::-webkit-scrollbar {
+    height: 10px; /* Adjust scrollbar height */
+}
+
+.table-container td::-webkit-scrollbar-thumb {
+    background: #888; /* Scrollbar thumb color */
+    border-radius: 10px; /* Round scrollbar corners */
+}
+
+.table-container td::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Thumb hover color */
+}
+
+/* Styles for the "Project Name" column header */
+.project-name-header {
+    max-width: 400px !important; /* Increase maximum width */
+    width: auto !important; /* Allow the column to take more space */
+    text-align: left; /* Optional: Align text to the left */
+    white-space: normal !important; /* Allow wrapping */
+    overflow: visible !important; /* Ensure full content is visible */
+}
+
+/* Styles for the "Project Name" table cells */
+.project-name-cell {
+    max-width: 350px !important; /* Increase the maximum width */
+    white-space: normal !important; /* Allow wrapping */
+    overflow: visible !important; /* Show full content */
+    text-align: left; /* Optional: Align text to the left */
+    word-wrap: break-word; /* Ensure long words are broken */
+}
+
+/* Link inside the project name cell */
+.project-name-cell a {
+    display: inline-block; /* Ensure link behaves like a block for scrolling */
+    max-width: 100%; /* Make sure the link doesn't exceed the cell width */
+    overflow: hidden; /* Hide overflow text */
+    text-overflow: ellipsis; /* Add ellipsis if text overflows */
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+/* Override global styles for the Description header */
+.description-header {
+    white-space: normal !important; /* Allow text to wrap */
+    overflow: visible !important; /* Ensure full content is visible */
+    word-wrap: break-word; /* Break long words if necessary */
+    display: table-cell; /* Ensure proper alignment for table headers */
+    vertical-align: middle; /* Vertically center the text */
+}
+
+
+/* Override global styles for the Description cell */
+.description-cell {
+    white-space: normal !important; /* Allow text wrapping */
+    overflow: visible !important; /* Show all content */
+    text-align: left !important; /* Align text to the left */
+    font-size: 0.9rem; /* Optional: Adjust font size for better readability */
+    padding: 10px; /* Add padding for spacing */
+    max-width: 100%; /* Prevent overflow of the cell */
+    word-wrap: break-word; /* Ensure long words are broken */
+}
+
+
+.defense-application-list .project-name-cell {
+    max-width: 200px; /* Set the maximum width */
+    overflow-x: auto; /* Enable horizontal scrolling for long text */
+    white-space: nowrap; /* Prevent text from wrapping */
+    position: relative; /* Needed for proper rendering of the scrollbar */
+    scrollbar-width: thin; /* For Firefox: Use thin scrollbar */
+    scrollbar-color: #888 #f0f0f0; /* For Firefox: Thumb and track colors */
+}
+.defense-application-list .project-name-cell {
+    max-width: 200px;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+

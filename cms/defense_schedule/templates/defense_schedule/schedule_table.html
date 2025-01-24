@@ -28,20 +28,20 @@
     </center> 
     <div class="row">
         <div class="col-md-12">
-                <div class="table-container" style="margin-top: 0px; min-height: 0px">
+                <div>
                     
                     <table class="table table-striped mt-3">
                         <thead>
                             <tr>
                                 <th scope="col"> # </th> 
-                                <th scope="col"> Project</th>
+                                <th scope="col" style="width: 200px;"> Date </th>
+                                <th scope="col" class="project-name-header">Project </th>
                                 <th scope="col"style="width: 140px;"> Proponents</th>
                                 <th scope="col"> Adviser </th>
-                                <th scope="col" style="width: 140px;"> Date </th>
                                 <th scope="col"> Panel 1</th>  
                                 <th scope="col"> Panel 2</th>  
                                 <th scope="col"> Panel 3</th>
-                                <th scope="col" style="width: 140px;"> Action </th>  
+                                <th scope="col" class="action-column">Actions</th> 
                             </tr>
                         </thead>
                         <tbody>
@@ -49,37 +49,51 @@
                             <tr>
                                 <td>
                                     <strong>{{ forloop.counter }}</strong> </td> 
-                                <td>   <strong>{{ event_data.event.application }}</strong> </td> 
                                 
-                                </td>
-                                <td>{{event_data.event.application.project_group }}</td>
-                                <td>{{event_data.event.application.adviser }}</td>
-                                <td>
+                                <td style="padding: 8px; white-space: nowrap;">
                                     {% with start_date=event_data.event.start|date:"M. d, Y" %}
                                     {% with end_date=event_data.event.end|date:"M. d, Y" %}
                                         {% if start_date == end_date %}
-                                            {{ event_data.event.start|date:"M. d, Y" }} </br>
-                                            Start: {{ event_data.event.start|date:"g:i a" }} </br>
-                                            End: {{ event_data.event.end|date:"g:i a" }} </br> 
+                                            {{ event_data.event.start|date:"M. d, Y" }} <br>
+                                            Start: {{ event_data.event.start|date:"g:i a" }} <br>
+                                            End: {{ event_data.event.end|date:"g:i a" }} <br> 
                                         {% else %}
-                                            Start: {{ event_data.event.start|date:"M. d, Y, g:i a" }} </br>
+                                            Start: {{ event_data.event.start|date:"M. d, Y, g:i a" }} <br>
                                             End: {{ event_data.event.end|date:"M. d, Y, g:i a" }}  
                                         {% endif %}
                                     {% endwith %}
-                                    {% endwith %} </td> 
-                                    
+                                    {% endwith %}
+                                </td>
+                                
+                                <td class="project-name-cell">
+                                    <a href=" {% url 'show-project' event_data.event.application.project.id %}">  
+                                     <strong>{{ event_data.event.application }}</strong>  
+                                    </a>
+                                </td>
+
+                                </td>
+                                <td>{{event_data.event.application.project.proponents }}</td>
+
+                     
+                                <td>
+                                    <a href="{% url 'show-faculty' event_data.event.application.adviser.id %}"> 
+                                        {{event_data.event.application.adviser }}
+                                    </a> 
+                                </td>
+
                                   <!-- Loop through the panelists and display their last name -->
                                     {% for panelist in event_data.event.application.panel.all %}
                                         <td>
-                                            {{ panelist.last_name }}
-                                        </td>
+                                            <a href={% url 'show-faculty' panelist.id %}>
+                                                {{ panelist.last_name }} </a> </td>
+
                                     {% endfor %}
 
                                     <!-- Add extra cells for missing panelists -->
                                     {% for _ in event_data.extra_cells|to_range %}
                                         <td>&nbsp;</td> <!-- Add empty cells for missing panelists -->
                                     {% endfor %}
-                                <td>
+                                <td class="action-cell">
                                     {% if event_data.is_panelist or event_data.is_adviser or request.user.is_current_coordinator %} 
                                             <a href="{% url 'show-application' event_data.event.application.id %}"
                                             class="btn btn-outline-secondary btn-sm">View Application</a> 
