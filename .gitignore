@@ -1,6 +1,6 @@
 # Virtual environment
 .venv/
-virt/
+.virt/
 
 # Python bytecode
 __pycache__/
@@ -34,3 +34,9 @@ Thumbs.db
 
 # Pyenv
 pyenv.cfg
+
+# IDE and OS Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
