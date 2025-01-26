@@ -10,10 +10,12 @@ urlpatterns = [
     
     path('register_student', views.register_student, name='register_student'),
     path('register_faculty', views.register_faculty, name='register_faculty'),
-    path('verify-email/<str:token>/', views.verify_email, name='verify_email'),
+    # path('verify-email/<str:token>/', views.verify_email, name='verify_email'),
     
     #path('register_user', views.register_user, name='register_user'),
     path('update_user', views.update_user, name='update-user'),
     
+    path('activate/<uidb64>/<token>/', views.activate, name='activate')
+
 
  ]

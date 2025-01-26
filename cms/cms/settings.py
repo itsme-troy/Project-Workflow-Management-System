@@ -166,8 +166,13 @@ EMAIL_HOST = 'smtp.gmail.com'  # Or your SMTP server
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'lteodoro@gbox.adnu.edu.ph'
-EMAIL_HOST_PASSWORD = 'ateneocavalry'  # Use app-specific password for Gmail
+EMAIL_HOST_PASSWORD = 'akiutvbdldgwgxos'  # Use app-specific password for Gmail
 DEFAULT_FROM_EMAIL = 'lteodoro@gbox.adnu.edu.ph'
+EMAIL_USE_TLS = True
+
+PASSWORD_RESET_TIMEOUT = 14400
+
+
 
 CACHES = {
     'default': {
