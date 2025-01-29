@@ -30,111 +30,21 @@ from django.core.mail import EmailMessage
 
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
+from .authentication import EmailVerifiedBackend
 
-
-# from .decorators import user_not_authenticated
-
-ABSTRACT_API_KEY = "27979452bb704be3a9fcdcaf1d5ab7b6"
-
-
-# class EmailVerifiedBackend(ModelBackend):
-#     def authenticate(self, request, username=None, password=None, **kwargs):
-#         # Use email instead of username
-#         email = kwargs.get('email', username)  # Support both username and email
-#         try:
-#             user = User.objects.get(email=email)
-#         except User.DoesNotExist:
-#             return None
-
-#         # Check password
-#         if user.check_password(password):
-#             # Check if the user is active and verified
-#             if not user.is_email_verified:
-#                 raise ValidationError("Your email address is not verified.")
-#             if not user.email.endswith('@gbox.adnu.edu.ph'):
-#                 raise ValidationError("Only GBox accounts are allowed.")
-#             if not user.is_active:
-#                 raise ValidationError("Your account is inactive.")
-#             return user
-#         return None
-
-# def verify_email(request, token):
-#     user_data = cache.get(token)
-#     if not user_data:
-#         messages.error(request, "The verification link is invalid or has expired.")
-#         return redirect('register_student')
-
-#     # Save the user to the database
-#     user = User(
-#         first_name=user_data['first_name'],
-#         last_name=user_data['last_name'],
-#         email=user_data['email'],
-#         student_id=user_data['student_id'],
-#         course=user_data['course'],
-#         role=user_data['role'],
-#         is_email_verified=True,
-#         is_active=True,
-#     )
-#     user.set_password(user_data['password'])  # Hash the password
-#     user.save()
-
-#     # Clear the cache
-#     cache.delete(token)
-
-#     messages.success(request, "Your email has been verified successfully! You can now log in.")
-#     return redirect('login')
-
-
-# def send_verification_email(user):
+def validate_email_with_abstract_api(email):
+    """
+    Validate email using Abstract API.
+    """
+    url = f"https://emailvalidation.abstractapi.com/v1/?api_key={settings.ABSTRACT_API_KEY}&email={email}"
+    response = requests.get(url)
     
-#     """ 
-#         Send a verification email with a unique token to the user's email address.
-#     """
+    if response.status_code == 200:
+        data = response.json()
+        if data.get("is_valid_format", {}).get("value") and data.get("deliverability") == "DELIVERABLE":
+            return True
+    return False
 
-#     try:
-#         # Generate a unique verification token
-#         user.email_verification_token = str(uuid.uuid4())
-#         user.save()  # Save the token in the database
-
-
-#         # Print the token for debugging purposes
-#         print(f"Generated email verification token: {user.email_verification_token}")
-
-        
-#         # Create the verification link
-#         verification_link = f"http://SeniorsProjectHub.com/verify-email/{user.email_verification_token}"
-#         subject = "Verify Your Email Address"
-#         message = (
-#             f"Hi {user.first_name},\n\n"
-#             f"Please click the link below to verify your email address:\n\n"
-#             f"{verification_link}\n\n"
-#             "Thank you!"
-#         )
-#         from_email = settings.DEFAULT_FROM_EMAIL
-#         recipient_list = [user.email]
-        
-#         logger.info(f"Sending email to: {recipient_list}, from: {from_email}")
-#         send_mail(subject, message, from_email, recipient_list)
-#         logger.info("Verification email sent successfully.")
-#     except Exception as e:
-#         logger.error(f"Error sending email: {e}")
-#         raise e
-    
-
-    
-# def validate_email_with_abstract_api(email):
-#     """
-#     Validate email using Abstract API.
-#     """
-#     url = f"https://emailvalidation.abstractapi.com/v1/?api_key={ABSTRACT_API_KEY}&email={email}"
-#     response = requests.get(url)
-#     if response.status_code == 200:
-#         data = response.json()
-#         if data.get("is_valid_format").get("value") and data.get("deliverability") == "DELIVERABLE":
-#             return True
-#         else:
-#             return False
-#     return False
 
 def activate(request, uidb64, token):
     try:
@@ -176,48 +86,42 @@ def register_student(request):
     if request.method == "POST":
         form = RegisterStudentForm(request.POST)
         if form.is_valid():
+            email = form.cleaned_data.get('email')
+
+            # Double-check with API before finalizing registration
+            if not validate_email_with_abstract_api(email):
+                messages.error(request, "Email verification failed. Please enter a valid email.")
+                return redirect('register_student')
+
             user = form.save(commit=False)
-            user.is_active=False
+            user.role = "STUDENT"
+            user.is_active = False  # Prevent login until verified
             user.save()
-            activateEmail(request, user, form.cleaned_data.get('email'))
-            return redirect('home')     
+            activateEmail(request, user, email)  # Send verification email
+            return redirect('home')
     else:
         form = RegisterStudentForm()
 
     return render(request, 'authenticate/register_student.html', {'form': form})
 
-
 def register_faculty(request):
     if request.method == "POST":
         form = RegisterFacultyForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data['email']
-            
-            # Validate email using Abstract API
-            # if not validate_email_with_abstract_api(email):
-            #     messages.error(request, "Invalid email address. Please provide a valid GBox email.")
-            #     return render(request, 'authenticate/register_faculty.html', {'form': form})
+            email = form.cleaned_data.get('email')
+
+            # Double-check with API before finalizing registration
+            if not validate_email_with_abstract_api(email):
+                messages.error(request, "Email verification failed. Please enter a valid email.")
+                return redirect('register_faculty')
             
             user = form.save(commit=False)
+            user.role = "FACULTY"
             user.is_active=False
             user.save()
-            # user.is_email_verified = False
-            # user.role = "FACULTY"
-            activateEmail(request, user, form.cleaned_data.get('email'))
-            user.save()
-            
-            # Send verification email
-            # try:
-            #     send_verification_email(user)
-            #     messages.success(
-            #         request, 
-            #         "Faculty Registration Successful! A verification email has been sent to your GBox email address. Please verify your email to activate your account."
-            #     )
-            # except Exception as e:
-            #     messages.error(request, "An error occurred while sending the verification email. Please try again later.")
-            #     return render(request, 'authenticate/register_faculty.html', {'form': form})
-            
+            activateEmail(request, user, email)
             return redirect('home')
+       
     else:
         form = RegisterFacultyForm()
 

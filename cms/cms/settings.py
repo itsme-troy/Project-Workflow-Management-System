@@ -28,6 +28,9 @@ if os.getenv("RUN_MAIN", None) != "true":  # Prevent duplicate Ngrok connections
     ALLOWED_HOSTS.append(public_url.replace("https://", "").replace("http://", ""))
 
 
+ABSTRACT_API_KEY = "27979452bb704be3a9fcdcaf1d5ab7b6"
+
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -179,3 +182,7 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     }
 }
+AUTHENTICATION_BACKENDS = [
+    'users.authentication.EmailVerifiedBackend',  
+    'django.contrib.auth.backends.ModelBackend',
+]

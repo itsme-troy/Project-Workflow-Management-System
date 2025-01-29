@@ -1,12 +1,11 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
+from .utils import validate_email_with_abstract_api
 # from django.contrib.auth.models import User 
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
 from django import forms 
-
-
 
 class UpdateFacultyProfileForm(forms.ModelForm):
     bio = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}), required=False)
@@ -80,10 +79,7 @@ class ProfilePicForm(forms.ModelForm):
             instance.save()
         return instance
 
-
-
 class RegisterStudentForm(UserCreationForm):
-
     course_choices = [
         ("BS Information Technology", "BS Information Technology"), 
         ("BS Computer Science", "BS Computer Science"), 
@@ -121,6 +117,11 @@ class RegisterStudentForm(UserCreationForm):
         email = self.cleaned_data.get('email')
         if not email.endswith('@gbox.adnu.edu.ph'):  # Replace 'gbox.domain' with the actual GBox domain
             raise ValidationError('Only GBox accounts are allowed.')
+        
+        # Verify email existence using Abstract API
+        if not validate_email_with_abstract_api(email):
+            raise ValidationError("Invalid or non-existent email address. Please provide a valid email.")
+        
         return email
 
 class RegisterFacultyForm(UserCreationForm):
@@ -149,8 +150,12 @@ class RegisterFacultyForm(UserCreationForm):
         email = self.cleaned_data.get('email')
         if not email.endswith('@gbox.adnu.edu.ph'):  # only gbox accounts are allowed
             raise ValidationError('Only GBox accounts are allowed.')
+        
+        # Verify email existence using Abstract API
+        if not validate_email_with_abstract_api(email):
+            raise ValidationError("Invalid or non-existent email address. Please provide a valid email.")
+        
         return email
-
         
 # class RegisterUserForm(UserCreationForm):
 #     email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control'}))

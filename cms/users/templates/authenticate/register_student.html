@@ -23,11 +23,6 @@
         {% endfor %}
     {% endif %}
 
-    {% comment %} <div class="alert alert-info">
-        A verification email has been sent to your email address. Please verify your email to activate your account.
-    </div>
-    <br/> {% endcomment %}
-
     <form action="{% url 'register_student' %}" method="POST">
         {% csrf_token %}
 
@@ -42,6 +37,7 @@
                 {% endif %}
             </div>
         {% endfor %}
+        
         <div class="d-grid gap-2">
             <button type="submit" class="btn btn-primary btn-lg">Submit</button>
         </div>
