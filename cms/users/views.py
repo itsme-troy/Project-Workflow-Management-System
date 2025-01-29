@@ -6,9 +6,11 @@ from .forms import RegisterFacultyForm, RegisterStudentForm
 from .forms import UpdateStudentProfileForm, UpdateFacultyProfileForm
 from .forms import ProfilePicForm
 from django.contrib.auth import get_user_model 
+from django.http import HttpResponse
 
 User = get_user_model()
 import requests
+
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.conf import settings
@@ -135,26 +137,27 @@ ABSTRACT_API_KEY = "27979452bb704be3a9fcdcaf1d5ab7b6"
 #     return False
 
 def activate(request, uidb64, token):
-    User = get_user_model()
     try:
+        # Decode the UID
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
-    except:
-        user = None
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
+        return HttpResponse(f"Invalid activation link: {e}")
 
+    # check the token 
     if user is not None and account_activation_token.check_token(user, token):
-        user.is_active = True
+        user.is_email_verified = True
+        user.is_active = True  
         user.save()
-        messages.success(request, "Thank you for your email confirmation. Now you can login your account.")
+        messages.success(request, "Account activated! You may now log in.")
         return redirect('login')
     else:
-        messages.error(request, "Activation link is invalid!")
+        return HttpResponse("Invalid activation link.")
 
-    return redirect('home')
 def activateEmail(request, user, to_email):
     mail_subject = "Activate your user account."
     message = render_to_string("authenticate/activate_account.html", {
-        'user': user.username,
+        'user': user.first_name,
         'domain': get_current_site(request).domain,
         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'token': account_activation_token.make_token(user),
@@ -163,11 +166,25 @@ def activateEmail(request, user, to_email):
     email = EmailMessage(mail_subject, message, to=[to_email])
     if email.send():
        messages.success(request, mark_safe(
-            f'Dear <b>{user}</b>, please go to your email <b>{to_email}</b> inbox and click on the '
-            f'received activation link to confirm and complete the registration. <b>Note:</b> Check your spam folder.'
+            f'Hello {user.first_name}, Please check your email (<b>{to_email}</b>) for the activation link. '
+            f'Confirm your registration to proceed. <b>Check spam if needed.</b>'
         ))
     else:
         messages.error(request, f'Problem sending email to {to_email}, check if you typed it correctly.')
+
+def register_student(request):
+    if request.method == "POST":
+        form = RegisterStudentForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.is_active=False
+            user.save()
+            activateEmail(request, user, form.cleaned_data.get('email'))
+            return redirect('home')     
+    else:
+        form = RegisterStudentForm()
+
+    return render(request, 'authenticate/register_student.html', {'form': form})
 
 
 def register_faculty(request):
@@ -205,64 +222,6 @@ def register_faculty(request):
         form = RegisterFacultyForm()
 
     return render(request, 'authenticate/register_faculty.html', {'form': form})
-
-def register_student(request):
-    if request.method == "POST":
-        form = RegisterStudentForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data['email']
-
-            user = form.save(commit=False)
-            user.is_active=False
-            activateEmail(request, user, form.cleaned_data.get('email'))
-            user.save()
-            return redirect('home')     
-
-
-            # Validate email using Abstract API
-            # try:
-            #     if not validate_email_with_abstract_api(email):
-            #         messages.error(request, "Invalid GBox email. Please provide a valid GBox email.")
-            #         return render(request, 'authenticate/register_student.html', {'form': form})
-            # except Exception:
-            #     messages.error(request, "An error occurred during email validation.")
-            #     return render(request, 'authenticate/register_student.html', {'form': form})
-
-            # Generate a unique token and store user data in cache
-            # token = str(uuid.uuid4())
-            # user_data = {
-            #     'first_name': form.cleaned_data['first_name'],
-            #     'last_name': form.cleaned_data['last_name'],
-            #     'email': email,
-            #     'student_id': form.cleaned_data['student_id'],
-            #     'course': form.cleaned_data['course'],
-            #     'password': form.cleaned_data['password1'],
-            #     'role': 'STUDENT',
-            # }
-            # cache.set(token, user_data, timeout=3600)  # Cache user data for 1 hour
-
-            # Send verification email
-            # try:
-            #     verification_link = f"http://yourwebsite.com/verify-email/{token}/"
-            #     send_mail(
-            #         subject="Verify Your Email Address",
-            #         message=f"Hi {form.cleaned_data['first_name']},\n\nPlease verify your email by clicking the following link:\n\n{verification_link}\n\nThank you!",
-            #         from_email=settings.DEFAULT_FROM_EMAIL,
-            #         recipient_list=[email],
-            #     )
-            #     messages.success(
-            #         request,
-            #         "A verification email has been sent to your GBox email address. Please verify your email to complete registration."
-            #     )
-            # except Exception:
-            #     messages.error(request, "An error occurred while sending the verification email. Please try again.")
-            #     return render(request, 'authenticate/register_student.html', {'form': form})
-
-            # return redirect('home')  # Redirect after submission
-    else:
-        form = RegisterStudentForm()
-
-    return render(request, 'authenticate/register_student.html', {'form': form})
 
 
 def update_user(request): 
@@ -342,8 +301,8 @@ def login_user(request):
 
 
     if request.method == "POST": 
-        email = request.POST["email"]
-        password = request.POST["password"]
+        email = request.POST.get("email", "").strip()
+        password = request.POST.get("password", "")
         
          # Check if the user exists in the database
         try:
