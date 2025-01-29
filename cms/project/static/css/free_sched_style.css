@@ -409,6 +409,11 @@ body {
   font-size: 22px;
   transition: transform 0.5s ease; /* Smooth transition for transform */
 }
+.sub-menu-link:hover{
+  text-decoration: none; /* Ensure no underline appears on hover */
+  color: inherit; /* Keeps text color the same */
+}
+
 .sub-menu-link:hover span {
   transition: translateX(5px);
 
@@ -1108,7 +1113,7 @@ body {
 }
 
 .user-info-link:hover {
-  text-decoration: underline; /* Optional hover effect */
+  text-decoration: none; /* Optional hover effect */
 }
 
 /* Style for the project cards container */

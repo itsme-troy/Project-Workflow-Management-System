@@ -14,8 +14,9 @@ class EmailVerifiedBackend(ModelBackend):
             return None
         
         # Check email validity via Abstract API
-        if not validate_email_with_abstract_api(email):
-            raise ValidationError("Invalid or non-existent email. Please check your email address.")
+        if not user.is_email_verified: 
+            if not validate_email_with_abstract_api(email):
+                raise ValidationError("Invalid or non-existent email. Please check your email address.")
 
         if user.check_password(password):
             if not user.is_email_verified:
