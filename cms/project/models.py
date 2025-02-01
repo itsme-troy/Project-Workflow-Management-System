@@ -76,6 +76,7 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
         FACULTY = "FACULTY", "Faculty"
         STUDENT = "STUDENT", "Student"
 
+
     email = models.EmailField(blank=True, default='', unique=True)
     is_email_verified = models.BooleanField(default=False)
     email_verification_token = models.UUIDField(default=uuid.uuid4, editable=False)

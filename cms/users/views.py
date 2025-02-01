@@ -67,7 +67,7 @@ def activate(request, uidb64, token):
 def activateEmail(request, user, to_email):
     mail_subject = "Activate your user account."
     message = render_to_string("authenticate/activate_account.html", {
-        'user': user.first_name,
+        'user_first_name': user.first_name,  # Pass only the first_name
         'domain': get_current_site(request).domain,
         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'token': account_activation_token.make_token(user),
@@ -75,8 +75,9 @@ def activateEmail(request, user, to_email):
     })
     email = EmailMessage(mail_subject, message, to=[to_email])
     if email.send():
-       messages.success(request, mark_safe(
-            f'Hello {user.first_name}, a verification email has been sent to {to_email}. Please check your inbox (and spam folder) to activate your account.'
+         messages.success(request, mark_safe(
+            f'Hello {user.first_name}, a verification email has been sent to {to_email}. '
+            'Please check your inbox (and spam folder) to activate your account.'
         ))
     else:
         messages.error(request, f'Problem sending email to {to_email}, check if you typed it correctly.')

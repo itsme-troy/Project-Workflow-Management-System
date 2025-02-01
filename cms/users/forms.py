@@ -129,7 +129,6 @@ class RegisterFacultyForm(UserCreationForm):
     first_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
     last_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
 
-    
     class Meta: 
         model = User 
         fields = ('email', 'first_name', 'last_name', 
@@ -156,7 +155,8 @@ class RegisterFacultyForm(UserCreationForm):
             raise ValidationError("Invalid or non-existent email address. Please provide a valid email.")
         
         return email
-        
+  
+
 # class RegisterUserForm(UserCreationForm):
 #     email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control'}))
 #     first_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
