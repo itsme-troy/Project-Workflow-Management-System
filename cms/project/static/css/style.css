@@ -92,8 +92,8 @@
 
 .table-container .table {
     width: 100%;       /* Ensure the table takes full width */
-    min-width: 950px;  /* Set a minimum width for the table */
-    border-collapse: collapse; /* Avoid border collapse */
+    min-width: 600px;  /* Set a minimum width for the table */
+
 }
 .table-container .table th, 
 .table-container .table td {
@@ -246,6 +246,7 @@ h1, h2, h3, h4 {
 }
 /* General Reset for Table */
 .table {
+    min-width: 600px;
     width: 100%;
     margin-bottom: 1rem;
     color: #212529;
@@ -314,6 +315,10 @@ h1, h2, h3, h4 {
     max-width: 300px; /* Optional: Limit maximum width */
     text-align: center; /* Center align text */
     word-wrap: break-word; /* Allow word wrapping */
+}
+
+.action-cell {
+    text-align: center;
 }
 
 /* Style the Deficiencies Column */
@@ -390,7 +395,13 @@ h1, h2, h3, h4 {
 
 /* Responsive Adjustments for Tables */
 @media (max-width: 768px) {
+    .action-buttons a {
+        font-size: 10px;
+        padding: 5px 8px;
+    }
+
     .table {
+        font-size: 12px; /* Reduce font size for readability */
         display: block; /* Allow horizontal scrolling */
         overflow-x: auto;
         white-space: nowrap;
@@ -866,10 +877,12 @@ tr:not(.active) .hint-button {
 }
 
 h1 {
-    font-size: 2.5em;
+    font-size: 24px;
+    text-align: center;
     color: #333; /* Dark color for contrast */
     margin-bottom: 30px;
     font-family: 'Roboto', sans-serif;
+
 }
 h2 {
     font-size: 2em;
@@ -1299,13 +1312,6 @@ body {
 }
 
 
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .navbar-nav {
-        flex-direction: column; /* Ensure vertical stacking on smaller screens */
-    }
-}
 @media (max-width: 900px) {
     form {
         padding: 15px;
@@ -1332,7 +1338,7 @@ body {
         margin: 15px;
     }
     h1 {
-        font-size: 2em; /* Adjust heading size */
+        font-size: 20px; /* Adjust heading size */
     }
     .table th,
     .table td {
@@ -1490,6 +1496,15 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    .card {
+        max-width: 90%;
+    }
+
     .my_calendar {
         padding: 10px;
         margin: 10px 0;
@@ -1504,7 +1519,6 @@ body {
         font-size: 0.9em !important;
     }
 }
-
 
 /* General Scrollbar Styles for td */
 .table-container td::-webkit-scrollbar {

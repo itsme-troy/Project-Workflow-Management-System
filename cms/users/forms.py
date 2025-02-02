@@ -155,7 +155,6 @@ class RegisterFacultyForm(UserCreationForm):
             raise ValidationError("Invalid or non-existent email address. Please provide a valid email.")
         
         return email
-  
 
 # class RegisterUserForm(UserCreationForm):
 #     email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control'}))

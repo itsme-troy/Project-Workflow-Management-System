@@ -1,0 +1,80 @@
+{% extends 'project/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="table-container">
+
+<center> <h1 style="display: inline-block;"> My Project Group </h1> 
+    
+    {% if not groups_with_all_members %}
+        <!-- Button Container -->
+        <div class="button-container" style="float: left;">
+            <a href="{% url 'join-group-list' %}" class="btn btn-outline-success btn-sm">
+                <i class="fas fa-user-plus"></i> Join 
+            </a>
+            <a href="{% url 'add-project-group' %}" class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-plus-circle"></i> Register 
+            </a>
+        </div> 
+    {% endif %}
+
+    <div class="button-container" style="float: right;">
+        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm" 
+        style="float: right;"> Back </a> 
+    </div> 
+
+ </center> 
+
+    {% if not groups_with_all_members %}
+        <div class="alert custom-info-alert text-center" role="alert">
+            <h4>You are not part of any approved project groups.</h4>
+        </div>
+    {% else %}
+        {% for group_data in groups_with_all_members %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{{ group_data.group.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="picture-column">Picture</th> 
+                                <th scope="col">Proponent</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for proponent in group_data.current_proponents %}
+                                <tr>
+                                    <td>
+                                        {% if proponent.profile_image and proponent.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                                            <img src="{{ proponent.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid larger-img">
+                                      {% else %}
+                                        {% comment %} no {% endcomment %}
+                                            <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table larger-img"> 
+                                      {% endif %}
+                                    </td>
+
+                                    <td>{{ proponent.get_full_name }}</td>
+                                    <td><span class="badge bg-success">Approved</span></td>
+                                    <td>
+                                        {% if user == proponent %}
+                                            <a href="{% url 'leave-group' group_data.group.id %}" class="btn btn-outline-danger btn-sm"
+                                                onclick="return confirm('Are you sure you want to leave this group?')">
+                                                Leave Group
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

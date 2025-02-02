@@ -241,6 +241,12 @@ class ProjectGroupForm(ModelForm):
             if hasattr(user, '_wrapped') and isinstance(user._wrapped, object):
                 user = user._wrapped
 
+             # **Validation: Prevent users with an existing project group from creating another**
+            if Project_Group.objects.filter(proponents=user, approved=True).exists():
+                self.fields['proponents'].widget.attrs['disabled'] = True  # Disable the field
+                self.fields['proponents'].help_text = "You are already in an approved project group."
+                return
+
             # Pre-select the logged-in user's ID in the proponents field
             if 'proponents' in self.fields:
                 initial_proponents = self.initial.get('proponents', [])  # Get initial proponents

@@ -64,7 +64,10 @@ urlpatterns = [
 
     path('add_project_group', views.add_project_group, name="add-project-group"),
     path('list_project_group', views.list_project_group, name='list-project-group'), 
+    
+    path('my_project_group/', views.my_project_group, name="my-project-group"),
     path('my_project_group_waitlist', views.my_project_group_waitlist, name='my-project-group-waitlist'), 
+    
     path('approve-group-membership/<int:group_id>/', views.approve_group_membership, name='approve-group-membership'),
     path('reject-group-membership/<int:group_id>/', views.reject_group_membership, name='reject-group-membership'),
     path('finalize-group/<int:group_id>/', views.finalize_group, name='finalize-group'),

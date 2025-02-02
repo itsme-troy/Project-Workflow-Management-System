@@ -683,9 +683,10 @@ def decline_join_request(request, group_id, user_id):
                 notification_type='DECLINED_JOIN_REQUEST',
                 group=None,
                 sender=request.user,
-                message=f"You have declined to join {group.creator.get_full_name()}'s group.",
+                message=f"Your join request for {group.creator.get_full_name()}'s group has been declined.",
                 redirect_url = reverse('my-project-group-waitlist')
             )   
+
         except Exception as e:
             logger.error(f"Failed to create notification for {user}: {str(e)}")
     
@@ -694,10 +695,10 @@ def decline_join_request(request, group_id, user_id):
             try:
                 Notification.objects.create(
                     recipient=member,
-                    notification_type='DECLINED_JOIN_REQUEST',
+                    notification_type='DECLINED _JOIN_REQUEST',
                     group=group,
                     sender=request.user,
-                    message=f"{user.get_full_name()} has declined to join the group.",
+                    message=f"{user.get_full_name()}'s join request has been declined.",
                     redirect_url = reverse('my-project-group-waitlist')
                 )
             except Exception as e:
@@ -712,7 +713,7 @@ def join_group_list(request):
     if request.user.is_authenticated and request.user.eligible == False: 
         messages.error(request, "Only Eligible Students are able to request to join a Project Group. Please Contact Coordinator to for assistance with Eligibility Concerns")
         if request.user.role == "STUDENT": 
-            return redirect('home-student')
+            return redirect('my-project-group-waitlist')
         else: 
             return redirect('home')
     
@@ -1294,7 +1295,26 @@ def list_project_group(request):
     else:
         messages.success(request, "Please Login to view this page")
         return redirect('home')
-    
+
+def my_project_group(request):
+    if request.user.is_authenticated:
+        # Get all approved groups where the user is a proponent
+        approved_groups = Project_Group.objects.filter(proponents=request.user, approved=True)
+
+        # Create a data structure to include group details
+        groups_with_all_members = [
+            {
+                'group': group,
+                'current_proponents': group.proponents.all(),  # Approved members
+                'total_members': group.proponents.count(),  # Total number of members
+            } for group in approved_groups
+        ]
+        return render(request, 'project/my_project_group.html', {
+            'groups_with_all_members': groups_with_all_members,
+        })
+    else:
+        messages.error(request, "Please log in to view your project groups.")
+        return redirect('home')
     
 def my_project_group_waitlist(request):
     if request.user.is_authenticated:
@@ -1313,6 +1333,7 @@ def my_project_group_waitlist(request):
 
         # Consolidate groups and avoid duplicates
         all_groups = list(set(pending_groups) | set(groups_where_user_is_creator) | set(groups_where_user_approved))
+        all_groups = [group for group in all_groups if not group.approved]  # Exclude approved groups
 
         # Create enhanced data structure with both proponents and pending proponents
         groups_with_all_members = [
@@ -1845,7 +1866,7 @@ def add_project_group(request):
     if request.user.is_authenticated and request.user.eligible == False: 
         messages.error(request, "Only Eligible Students are able to register a Project Group.") #Please Contact Coordinator to for assistance with Eligibility Concerns
         if request.user.role == "STUDENT": 
-            return redirect('home-student')
+            return redirect('my-project-group-waitlist')
         elif request.user.role == "FACULTY": 
             return redirect('home-faculty')
         elif request.user.is_current_coordinator:
@@ -1934,7 +1955,7 @@ def add_project_group(request):
                     logger.error(f"Failed to create notification for {proponent}: {str(e)}")
             
             messages.success(request, "Group created and invitations sent to selected students.")
-            return HttpResponseRedirect('/add_project_group?submitted=True') 
+            return redirect('my-project-group-waitlist') 
     else:
         form = ProjectGroupForm(user=request.user, approved_users=get_user_ids_with_group(request))
         if 'submitted' in request.GET:
