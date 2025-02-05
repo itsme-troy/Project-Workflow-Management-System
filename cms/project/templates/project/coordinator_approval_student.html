@@ -4,20 +4,6 @@
 
 {% block content %} <!-- content of all web pages go -->
 
-
-{% comment %} <div class="card">
-    <div class="card-header">
-      System Report  
-    </div>
-    <div class="card-body">
-     <p class="card-text">Student Count: {{ student_count }} </p>
-     <p class="card-text">Faculty Count: {{ faculty_count }} </p>
-     <p class="card-text">Project Count: {{ project_count }}</p>
-     <p class="card-text">Proposal Count: {{ proposal_count }} </p>
-   
-    </div>
-  </div> </br> {% endcomment %}
-
   <form action="" method=POST> 
     {% csrf_token %} 
 
@@ -56,13 +42,13 @@
             <th scope="col" style="width: 100px;" onclick="toggleAllCheckboxes()"> Eligibility 
                 <span class="hint-button" style="color:white;" title="Click to toggle eligibility checkboxes">?</span>
             </th> 
-            <th scope="col" class="deficiencies-column" >
-                Deficiencies
+            <th scope="col" class="remarks-column" >
+                Remarks
             </th>
             
             <th scope="col" style="width: 300px;">Actions</th>
             
-            {% comment %} <th scope="col"> Eligibility Deficiencies  </th>  {% endcomment %}
+            {% comment %} <th scope="col"> Eligibility remarks  </th>  {% endcomment %}
         </tr> 
     </thead>  
     <tbody>
@@ -96,12 +82,12 @@
                 </div>
             </td>
             
-            <td class="deficiencies-cell">
+            <td class="remark-cell">
                 <div style="overflow-x: auto; white-space: nowrap;">
-                    {% if student.deficiencies %}
-                            {{ student.deficiencies }}
+                    {% if student.remarks %}
+                            {{ student.remarks }}
                     {% else %}
-                        <span class="text-muted">No deficiencies</span>
+                        <span class="text-muted"> None </span>
                     {% endif %}
                 </div> 
             </td>
@@ -111,8 +97,8 @@
                 <div class="action-buttons small-btn" style="display: none;">
 
                 
-                    <a href="{% url 'update-deficiencies' student.id %}" class="btn btn-outline-secondary btn-sm mb-1">
-                         Update Deficiencies </a> 
+                    <a href="{% url 'update-remarks' student.id %}" class="btn btn-outline-secondary btn-sm mb-1">
+                         Update remarks </a> 
 
                     <a href="{% url 'delete-user' student.id %}" 
                         class="btn btn-outline-danger btn-sm"
@@ -122,8 +108,8 @@
                   
                 </div> 
             </td>
-                    {% comment %} <td> {{ student.eligibilty_deficiencies }}</td> 
-            <td> <a href="{% url 'update_deficiencies' 'student.id' %}" > Update </a>  </td>  {% endcomment %}
+                    {% comment %} <td> {{ student.eligibilty_remarks }}</td> 
+            <td> <a href="{% url 'update_remarks' 'student.id' %}" > Update </a>  </td>  {% endcomment %}
         </tr>
        
     {% endfor %}

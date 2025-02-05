@@ -23,12 +23,12 @@ User = get_user_model()
 #             self.fields['phases'].queryset = ProjectPhase.objects.filter(project=project)
 
 
-class UpdateDeficienciesForm(forms.ModelForm):  
+class UpdateRemarksForm(forms.ModelForm):  
 
     class Meta: 
         model = User  # Ensure 'User' is the correct model you are using
         
-        fields = ('first_name', 'last_name', 'email', 'student_id', 'course', 'deficiencies')
+        fields = ('first_name', 'last_name', 'email', 'student_id', 'course', 'remarks')
 
         course_choices = [
             ("BS Information Technology", "BS Information Technology"), 
@@ -42,10 +42,10 @@ class UpdateDeficienciesForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
             'student_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Student ID'}),
             'course': forms.Select(choices=course_choices, attrs={'class': 'form-select'}),
-            'deficiencies': forms.Textarea(attrs={
+            'remarks': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 5,  # Adjust rows as needed
-                'placeholder': 'Enter deficiencies or requirements for the student here...'
+                'placeholder': 'Enter remarks or requirements for the student here...'
             }),
         }
     def __init__(self, *args, **kwargs):
@@ -60,21 +60,21 @@ class UpdateDeficienciesForm(forms.ModelForm):
         for field_name in ['first_name', 'last_name', 'email', 'student_id', 'course']:
             self.fields[field_name].widget.attrs['disabled'] = 'disabled'
 
-class UpdateDeficienciesFacultyForm(forms.ModelForm):  
+class UpdateRemarksFacultyForm(forms.ModelForm):  
 
     class Meta: 
         model = User  # Ensure 'User' is the correct model you are using
         
-        fields = ('first_name', 'last_name', 'email', 'deficiencies')
+        fields = ('first_name', 'last_name', 'email', 'remarks')
         
         widgets = { 
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last name'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
-            'deficiencies': forms.Textarea(attrs={
+            'remarks': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 5,  # Adjust rows as needed
-                'placeholder': 'Enter deficiencies or requirements for the Faculty here...'
+                'placeholder': 'Enter remarks or requirements for the Faculty here...'
             }),
         }
     def __init__(self, *args, **kwargs):

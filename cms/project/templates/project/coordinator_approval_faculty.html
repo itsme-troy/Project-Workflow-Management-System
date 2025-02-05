@@ -44,8 +44,8 @@
             <th scope="col" style="width: 100px;" onclick="toggleCheckboxes('panel-column')"> Panelist
                 <span class="hint-button" style="color:white;" title="Click to toggle eligibility checkboxes">?</span> </th> 
 
-            <th scope="col" class="deficiencies-column" >
-                Deficiencies </th>
+            <th scope="col" class="remarks-column" >
+                Remarks </th>
             <th scope="col" style="width: 300px;"> Actions </th>
         </tr> 
     </thead>  
@@ -89,12 +89,12 @@
                             name="box">
                     </div> 
                 </td>
-                <td class="deficiencies-cell">
+                <td class="remarks-cell">
                     <div style="overflow-x: auto; white-space: nowrap;">
-                        {% if adviser.deficiencies %}
-                                {{ adviser.deficiencies }}
+                        {% if adviser.remarks %}
+                                {{ adviser.remarks }}
                         {% else %}
-                            <span class="text-muted">No deficiencies</span>
+                            <span class="text-muted">No remarks</span>
                         {% endif %}
                     </div>  </td>
 
@@ -102,8 +102,8 @@
                     <span class="hint-button" onclick="showActions(this)">Click to show actions</span>   
                     <div class="action-buttons small-btn" style="display: none;">
                         
-                        <a href="{% url 'update-deficiencies' adviser.id %}" class="btn btn-outline-secondary btn-sm mb-1">
-                            Update Deficiencies </a> 
+                        <a href="{% url 'update-remarks' adviser.id %}" class="btn btn-outline-secondary btn-sm mb-1">
+                            Update remarks </a> 
 
                         <a href="{% url 'delete-user' adviser.id %}" onclick="return confirm('Are you sure you want to delete this account?');">
                             <button type="button" class="btn btn-outline-danger btn-sm">Delete User </button> </a>  

@@ -11,7 +11,7 @@ from .models import AppUserManager, Defense_Application, ProjectGroupSettings
 from .models import Student, Faculty, Coordinator, ApprovedProjectGroup,  Project_Group
 from .models import StudentProfile, FacultyProfile, CoordinatorProfile, Coordinator
 from .models import Project_Idea
-from .forms import ProjectIdeaForm, UpdateDeficienciesForm, UpdateDeficienciesFacultyForm
+from .forms import ProjectIdeaForm, UpdateRemarksForm, UpdateRemarksFacultyForm
 from defense_schedule.models import Defense_schedule 
 # from .forms import CustomProjectPhaseForm
 
@@ -636,7 +636,7 @@ def accept_join_request(request, group_id, user_id): # Accept Join Request from 
                 notification_type='ADDED_TO_GROUP',
                 group=group,
                 sender=request.user,
-                message=f"You have been added to {group.creator.get_full_name()}'s group.",
+                message=f"Your join request for {group.creator.get_full_name()}'s group has been accepted.",
                 redirect_url = reverse('my-project-group-waitlist')
             )
 
@@ -1358,7 +1358,7 @@ def my_project_group_waitlist(request):
         return redirect('home')
 
     
-def update_deficiencies(request, user_id ): 
+def update_remarks(request, user_id ): 
     # Authentication and permissions check
     if not request.user.is_authenticated: 
         messages.error(request, "Please Login to view this page")
@@ -1377,10 +1377,10 @@ def update_deficiencies(request, user_id ):
 
     # Determine form based on user role
     if selected_user.role == 'STUDENT':
-        form = UpdateDeficienciesForm(request.POST or None, instance=selected_user)
+        form = UpdateRemarksForm(request.POST or None, instance=selected_user)
     # Initialize the form
     elif selected_user.role == 'FACULTY':
-        form = UpdateDeficienciesFacultyForm(request.POST or None, instance=selected_user)
+        form = UpdateRemarksFacultyForm(request.POST or None, instance=selected_user)
     
     if request.method == 'POST':
             if form.is_valid():
@@ -1406,14 +1406,14 @@ def update_deficiencies(request, user_id ):
                     recipient=selected_user,
                     notification_type='DEFICIENCIES',
                     sender=request.user,
-                    message=f"Your Eligibility Deficiencies has been updated.",
+                    message=f"Your Eligibility remarks has been updated.",
                     redirect_url=redirect_url  
 
                     )
                 except Exception as e: 
                     logger.error(f"Failed to create notification for {selected_user}: {str(e)}")
 
-                messages.success(request, "User's deficiencies updated successfully!")
+                messages.success(request, "User's remarks updated successfully!")
 
                 if selected_user.role == 'STUDENT':
                     return redirect('coordinator-approval-student')
@@ -1424,12 +1424,12 @@ def update_deficiencies(request, user_id ):
                 messages.error(request, "Please correct the errors below.")
 
      # Compute deficiencies_list for template display
-    deficiencies_list = [d.strip() for d in selected_user.deficiencies.split(',')] if selected_user.deficiencies else []
+    remarks_list = [d.strip() for d in selected_user.remarks.split(',')] if selected_user.remarks else []
 
-    return render(request, 'project/update_deficiencies.html', {
+    return render(request, 'project/update_remarks.html', {
         'user': selected_user,
         'form': form, 
-        'deficiencies_list': deficiencies_list,
+        'remarks_list': remarks_list,
     })
   
     

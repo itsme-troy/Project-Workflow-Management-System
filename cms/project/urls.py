@@ -84,7 +84,7 @@ urlpatterns = [
     
     path('my_profile/<profile_id>', views.my_profile, name="my-profile"), 
     
-    path('update_deficiencies/<user_id>', views.update_deficiencies, name='update-deficiencies'), 
+    path('update_remarks/<user_id>', views.update_remarks, name='update-remarks'), 
     
     path('delete_project_group/<group_id>', views.delete_project_group, name='delete-project-group'),
 

@@ -18,8 +18,8 @@
 
         <div class="btn-group" role="group" aria-label="Faculty Filter">
             <button type="button" class="btn btn-secondary" onclick="filterFaculty('all')">All Faculty</button>
-            <button type="button" class="btn btn-secondary" onclick="filterFaculty('adviser')">Eligible Advisers</button>
-            <button type="button" class="btn btn-secondary" onclick="filterFaculty('panelist')">Eligible Panelists</button>
+            <button type="button" class="btn btn-secondary" onclick="filterFaculty('adviser')">Available Advisers</button>
+            <button type="button" class="btn btn-secondary" onclick="filterFaculty('panelist')">Available Panelists</button>
         </div> 
         
         <div class="table-responsive"> <br/> 
@@ -33,9 +33,9 @@
                         <th scope="col" class="picture-column">Picture</th> 
                         <th scope="col"> Name  </th> 
                         <th scope="col"> Email </th> 
-                        <th scope="col" class="deficiencies-column" >
-                            Deficiencies
-                        </th>     
+                        {% comment %} <th scope="col" class="deficiencies-column" >
+                            Availability
+                        </th>      {% endcomment %}
                         {% comment %} <th scope="col" style="width: 150px;"> Action </th>  {% endcomment %}
                     </tr> 
                 </thead>  
@@ -59,7 +59,7 @@
                                 </td>
                                 <td>{{ faculty.first_name }} {{ faculty.last_name }}</td> <!-- Combined first and last name -->
                                 <td>{{ faculty.email }}</td> 
-                                <td class="deficiencies-cell">
+                                {% comment %} <td class="deficiencies-cell">
                                     <div style="overflow-x: auto; white-space: nowrap;">
                                         {% if student.deficiencies %}
                                                 {{ student.deficiencies }}
@@ -67,7 +67,7 @@
                                             <span class="text-muted">No deficiencies</span>
                                         {% endif %}
                                     </div> 
-                                </td>
+                                </td> {% endcomment %}
                                 {% comment %} <td>
                                     <a href="{% url 'show-faculty' faculty.id %}" class="btn btn-outline-primary btn-sm">View Profile</a>
                                 </td> {% endcomment %}
