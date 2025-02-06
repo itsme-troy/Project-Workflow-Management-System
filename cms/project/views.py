@@ -3178,22 +3178,32 @@ def search_projects(request):
         {'searched':searched})
 
 def list_student(request): 
-    if request.user.is_authenticated: 
-        student_list = Student.objects.filter(role='STUDENT').order_by('last_name')    
-        
-        p = Paginator(Student.objects.filter(role='STUDENT').order_by('last_name'), 10) 
-        page = request.GET.get('page')
-        students = p.get_page(page)
-        nums = "a" * students.paginator.num_pages
-
-        return render(request, 'project/student.html', 
-        {'student_list': student_list, 
-         'nums': nums, 
-          })
-    else: 
-        messages.error(request, "You Aren't Authorized to view this page.")
+    if not request.user.is_authenticated: 
+        messages.error(request, "You aren't authorized to view this page.")
         return redirect('login')
-    
+
+    filter_type = request.GET.get('filter', 'all')  # Get the filter type from URL
+
+    if filter_type == 'eligible':
+        student_list = Student.objects.filter(role='STUDENT', eligible=True).order_by('last_name')
+    elif filter_type == 'waitlist':
+        student_list = Student.objects.filter(role='STUDENT', eligible=False).order_by('last_name')
+    else:
+        student_list = Student.objects.filter(role='STUDENT').order_by('last_name')
+
+    paginator = Paginator(student_list, 10)
+    page = request.GET.get('page')
+    students = paginator.get_page(page)
+    nums = "a" * students.paginator.num_pages
+    start_index = (students.number - 1) * students.paginator.per_page
+
+    return render(request, 'project/student.html', {
+        'students': students,
+        'nums': nums,
+        'start_index': start_index,
+        'filter_type': filter_type  # Pass filter type to the template
+    })
+
 
 def list_student_waitlist(request): 
     if request.user.is_authenticated: 
