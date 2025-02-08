@@ -19,15 +19,15 @@
     </center> 
 
     <div class="btn-group" role="group" aria-label="Student Filter">
-        <button type="button" class="btn btn-secondary" onclick="showTable('all')">All Students</button>
-        <button type="button" class="btn btn-secondary" onclick="showTable('eligible')">Eligible Students</button>
-        <button type="button" class="btn btn-secondary" onclick="showTable('waitlist')">Students on Waitlist</button>
+        {% comment %} <button type="button" class="btn btn-secondary" onclick="showTable('all')">All Students</button> {% endcomment %}
+        <button type="button" class="btn btn-secondary" onclick="showTable('eligible')"> Students</button>
+        <button type="button" class="btn btn-secondary" onclick="showTable('waitlist')"> Waitlist</button>
     </div>
 
-    <div id="all-students-table" class="table-responsive" > <!-- style="display: none;" -->
-        <br/>
+    <div class="table-responsive"> <br/> 
         <table class="table table-hover table-bordered">
-            <caption>All Students</caption>
+            <caption class="text-center"> Student List</caption>
+
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">#</th>
@@ -86,172 +86,34 @@
 </ul>
 </nav>
     </div>
-    
-    <div id="eligible-students-table" class="table-responsive" > <!-- style="display: none;" -->
-        <br/>
-        <table class="table table-hover table-bordered">
-            <caption>Eligible Students</caption>
-
-                <!-- Similar structure as above, but filter students to show only eligible ones -->
-                 <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col" class="picture-column">Picture</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Course</th>
-                        <th scope="col" class="deficiencies-column">Remarks</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for student in students %}
-                    <tr data-eligible="{{ student.eligible|yesno:'true,false' }}" onclick="location.href='{% url 'show-student' student.id %}'" style="cursor: pointer;">
-                        <td><strong>{{ forloop.counter|add:start_index }}</strong></td>
-                        <td>
-                            {% if student.profile_image and student.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
-                            <figure><img src="{{ student.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid" width="250px" height="250px"></figure>
-                            {% else %}
-                            <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table larger-img">
-                            {% endif %}
-                        </td>
-                        <td>{{ student.first_name }} {{ student.last_name }}</td>
-                        <td>{{ student.course }}</td>
-                        <td class="deficiencies-cell">
-                            <div style="overflow-x: auto; white-space: nowrap;">
-                                {% if student.deficiencies %}
-                                {{ student.deficiencies }}
-                                {% else %}
-                                <span class="text-muted">No deficiencies</span>
-                                {% endif %}
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-        
-        </table>
-        
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-center">
-
-            {% if students.has_previous %}
-                <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
-                <li class="page-item"><a class="page-link" href="?page={{students.previous_page_number}}">Previous</a></li>
-            {% endif %}
-
-        
-            {% for i in nums %}
-            <li class="page-item {% if forloop.counter == students.number %}disabled{% endif %}">
-            <a class="page-link" href="?page={{forloop.counter}}">{{ forloop.counter }}</a>
-        </li>
-            {% endfor %}
-            {% if students.has_next %}
-                <li class="page-item"> <a class="page-link" href="?page={{students.next_page_number}}">Next</a></li>
-                <li class="page-item"> <a class="page-link" href="?page={{students.paginator.num_pages}}">Last &raquo;</a></li>
-            {% endif %}
-            <li class="page-item ml-auto disabled"><a href="#" class="page-link"> Page {{ students.number }} of {{ students.paginator.num_pages }} </a></li>
-        </ul>
-        </nav>
-    </div>
-
-    <div id="waitlist-students-table" class="table-responsive">  <!-- style="display: none;" -->
-        <br/>
-        <table class="table table-hover table-bordered">
-            <caption>Students on Waitlist</caption>
-            <!-- Similar structure as above, but filter students to show only waitlisted ones -->
-        
-            <!-- Similar structure as above, but filter students to show only eligible ones -->
-            <thead class="thead-dark">
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col" class="picture-column">Picture</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Course</th>
-                    <th scope="col" class="deficiencies-column">Remarks</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for student in students %}
-                <tr data-eligible="{{ student.eligible|yesno:'true,false' }}" onclick="location.href='{% url 'show-student' student.id %}'" style="cursor: pointer;">
-                    <td><strong>{{ forloop.counter|add:start_index }}</strong></td>
-                    <td>
-                        {% if student.profile_image and student.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
-                        <figure><img src="{{ student.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid" width="250px" height="250px"></figure>
-                        {% else %}
-                        <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table larger-img">
-                        {% endif %}
-                    </td>
-                    <td>{{ student.first_name }} {{ student.last_name }}</td>
-                    <td>{{ student.course }}</td>
-                    <td class="deficiencies-cell">
-                        <div style="overflow-x: auto; white-space: nowrap;">
-                            {% if student.deficiencies %}
-                            {{ student.deficiencies }}
-                            {% else %}
-                            <span class="text-muted">No deficiencies</span>
-                            {% endif %}
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-center">
-
-            {% if students.has_previous %}
-                <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
-                <li class="page-item"><a class="page-link" href="?page={{students.previous_page_number}}">Previous</a></li>
-            {% endif %}
-
-        
-            {% for i in nums %}
-            <li class="page-item {% if forloop.counter == students.number %}disabled{% endif %}">
-            <a class="page-link" href="?page={{forloop.counter}}">{{ forloop.counter }}</a>
-        </li>
-            {% endfor %}
-            {% if students.has_next %}
-                <li class="page-item"> <a class="page-link" href="?page={{students.next_page_number}}">Next</a></li>
-                <li class="page-item"> <a class="page-link" href="?page={{students.paginator.num_pages}}">Last &raquo;</a></li>
-            {% endif %}
-            <li class="page-item ml-auto disabled"><a href="#" class="page-link"> Page {{ students.number }} of {{ students.paginator.num_pages }} </a></li>
-        </ul>
-        </nav>
-    </div>
-
-        </div>
-    <hr/>
-
-{% comment %} </div> {% endcomment %}
-<!-- 
-{{ students }} </br> 
-Has Previous: {{ students.has_previous }} <br/> 
-Has Next: {{ students.has_next }} <br/> 
-Current Page: {{ students.number }} <br/> 
-Number of Pages: {{ students.paginator.num_pages }} <br/> 
-<hr><br/><br/> -->
 
 </div>
-<script>
-    function showTable(type) {
-        const allTable = document.getElementById('all-students-table');
-        const eligibleTable = document.getElementById('eligible-students-table');
-        const waitlistTable = document.getElementById('waitlist-students-table');
+ <script>
+    function filterStudents(type) {
+        const rows = document.querySelectorAll('tbody tr');
+        const buttons = document.querySelectorAll('.btn-group .btn');
 
-        allTable.style.display = 'none';
-        eligibleTable.style.display = 'none';
-        waitlistTable.style.display = 'none';
+        // Remove 'active' class from all buttons
+        buttons.forEach(button => button.classList.remove('active'));
 
-        if (type === 'all') {
-            allTable.style.display = 'block';
-        } else if (type === 'eligible') {
-            eligibleTable.style.display = 'block';
-        } else if (type === 'waitlist') {
-            waitlistTable.style.display = 'block';
-        }
+        // Add 'active' class to the clicked button
+        document.querySelector(`.btn-group .btn[onclick="filterStudents('${type}')"]`).classList.add('active');
+
+        rows.forEach(row => {
+            const isEligible = row.dataset.adviser === 'true';
+            const isNotEligible = row.dataset.panelist === 'true';
+
+            if (type === 'all') {
+                row.style.display = '';
+            } else if (type === 'adviser' && isAdviser) {
+                row.style.display = '';
+            } else if (type === 'panelist' && isPanelist) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
     }
-    // Initialize by showing all students table
-    showTable('all');
 </script>
 
 {% endblock %}

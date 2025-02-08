@@ -20,7 +20,7 @@ urlpatterns = [
 
     path('list-faculty', views.list_faculty, name="list-faculty"),
     path('list-student', views.list_student, name="list-student"),
-    path('list-student-waitlist', views.list_student_waitlist, name="list-student-waitlist"),
+    # path('list-student-waitlist', views.list_student_waitlist, name="list-student-waitlist"),
     
     path('archived_projects', views.list_archived_projects, name='list-archived-projects'), 
     path('archive_project/<project_id>/', views.archive_project, name='archive-project'),
