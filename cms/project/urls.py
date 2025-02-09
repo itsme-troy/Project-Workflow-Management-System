@@ -50,6 +50,8 @@ urlpatterns = [
     
     path('coordinator_approval_faculty', views.coordinator_approval_faculty, name='coordinator-approval-faculty'),
     path('coordinator_approval_student', views.coordinator_approval_student, name='coordinator-approval-student'),
+    path("update-student-eligibility/", views.update_student_eligibility, name="update_student_eligibility"),
+        path("update-faculty-eligibility/", views.update_faculty_eligibility, name="update_faculty_eligibility"),
     path('select_coordinator', views.select_coordinator, name='select-coordinator'),
     
     path('my_defense_application', views.my_defense_application, name='my-defense-application'),

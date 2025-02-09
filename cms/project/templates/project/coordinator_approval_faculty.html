@@ -3,10 +3,9 @@
 
 {% block content %} <!-- content of all web pages go -->
 
-
+<!-- adviser and panelist checkbox instantly updates faculty eligibility -->
 <form action="" method=POST> 
     {% csrf_token %} 
-
     <center>
     <h1 style="display: inline-block;"> Faculty Eligibility Approval Form </h1> 
     <div class="text-start" style="float: left;">
@@ -20,9 +19,7 @@
         <div class="button-container" style="float: right; margin-left: 15px;">  <!-- Using gap to space out buttons -->
             <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
         </div>
-        <button class="btn btn-success mb-3 " type="submit">Save All Changes</button>
     </div> 
-
 </center>
    
 </br>
@@ -51,15 +48,14 @@
     </thead>  
     <tbody>
 
-       {% for adviser in faculty_list %}
+       {% for adviser in facultys %}
     
             <tr onclick="toggleActions(this)">
-                <td><strong> {{ forloop.counter }} </strong></td>
+                <td><strong>{{ forloop.counter|add:start_index }}</strong></td>
                 <td>
                     {% if adviser.profile_image and adviser.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
                         <img src="{{ adviser.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid larger-img">
                   {% else %}
-                    {% comment %} no {% endcomment %}
                         <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table larger-img"> 
                   {% endif %}
                 </td>
@@ -71,24 +67,25 @@
                 </td>
 
                 <td class="adviser-column">
-                    <div class="form-check" style="display: none;"> 
-                        <input class="form-check-input"
+                    <div class="form-check">
+                        <input class="form-check-input faculty-eligibility-checkbox"
                             type="checkbox" 
                             {% if adviser.adviser_eligible %} checked="checked" {% endif %}
-                            value={{adviser.id}} 
-                            name="boxes">
+                            data-faculty-id="{{ adviser.id }}"
+                            data-type="adviser">
                     </div> 
                 </td>
 
                 <td class="panel-column">
-                    <div class="form-check" style="display: none;"> 
-                        <input class="form-check-input"
+                    <div class="form-check">
+                        <input class="form-check-input faculty-eligibility-checkbox"
                             type="checkbox" 
                             {% if adviser.panel_eligible %} checked="checked" {% endif %}
-                            value={{adviser.id}} 
-                            name="box">
+                            data-faculty-id="{{ adviser.id }}"
+                            data-type="panel">
                     </div> 
                 </td>
+
                 <td class="remarks-cell">
                     <div style="overflow-x: auto; white-space: nowrap;">
                         {% if adviser.remarks %}
@@ -114,6 +111,39 @@
 </table>
 <p class="help-text text-end">Click the "Eligibility" column header to display checkboxes.</p>
 
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+    
+        <!-- Ensures that both the filter and the pagination number persist across pages. -->
+        {% if facultys.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?filter={{ filter_type }}&page=1">&laquo; First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?filter={{ filter_type }}&page={{ facultys.previous_page_number }}">Previous</a>
+            </li>
+        {% endif %}
+
+        {% for i in nums %}
+        <li class="page-item {% if forloop.counter == facultys.number %}disabled{% endif %}">
+            <a class="page-link" href="?filter={{ filter_type }}&page={{ forloop.counter }}">{{ forloop.counter }}</a>
+        </li>
+        {% endfor %}
+
+        {% if facultys.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?filter={{ filter_type }}&page={{ facultys.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?filter={{ filter_type }}&page={{ facultys.paginator.num_pages }}">Last &raquo;</a>
+            </li>
+        {% endif %}
+        
+        <li class="page-item ml-auto disabled">
+            <a href="#" class="page-link"> Page {{ facultys.number }} of {{ students.paginator.num_pages }} </a>
+        </li>
+    </ul>
+</nav>
 
 <script>
     function toggleCheckboxes(columnClass) {
@@ -166,6 +196,42 @@
             document.querySelectorAll('.action-buttons').forEach(btns => btns.style.display = 'none');
         }
     });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".faculty-eligibility-checkbox").forEach(checkbox => {
+            checkbox.addEventListener("change", function() {
+                let facultyId = this.getAttribute("data-faculty-id");
+                let eligibilityType = this.getAttribute("data-type");
+                let isChecked = this.checked;
+    
+                fetch("{% url 'update_faculty_eligibility' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({
+                        faculty_id: facultyId,
+                        eligibility_type: eligibilityType,
+                        eligible: isChecked
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== "success") {
+                        alert("Error updating eligibility.");
+                        this.checked = !isChecked; // Revert checkbox if error
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("An error occurred. Please try again.");
+                    this.checked = !isChecked; // Revert checkbox if error
+                });
+            });
+        });
+    });
+
 </script>
 
 {% endblock %}

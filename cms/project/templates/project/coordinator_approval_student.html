@@ -14,15 +14,13 @@
             <i class="fas fa-chalkboard-teacher icon icon-margin"></i> Go to Faculty Approval
         </a> 
     </div> 
-    
     <div style="margin-right: 10px; float: right;"> <!-- Changed to float right -->
         
         <div class="button-container" style="float: right; margin-left: 15px;">  <!-- Using gap to space out buttons -->
             <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
         </div>
-        <button class="btn btn-success mb-3 " type="submit">Save All Changes</button>
+        {% comment %} <button class="btn btn-success mb-3 " type="submit">Save All Changes</button> {% endcomment %}
     </div> 
-
 </center> 
 
 </br>
@@ -45,23 +43,20 @@
             <th scope="col" class="remarks-column" >
                 Remarks
             </th>
-            
             <th scope="col" style="width: 300px;">Actions</th>
-            
             {% comment %} <th scope="col"> Eligibility remarks  </th>  {% endcomment %}
         </tr> 
     </thead>  
     <tbody>
 
-    {% for student in student_list %} 
+    {% for student in students %} 
 
         <tr onclick="toggleActions(this)">
-            <td><strong> {{ forloop.counter }} </strong></td>
+            <td><strong>{{ forloop.counter|add:start_index }}</strong></td>
             <td>
                 {% if student.profile_image and student.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
                     <img src="{{ student.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid larger-img">
               {% else %}
-                {% comment %} no {% endcomment %}
                     <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table larger-img"> 
               {% endif %}
             </td>
@@ -69,16 +64,14 @@
             <td>
                 <a href="{% url 'show-student' student.id %}">
                     {{ student.first_name }} {{ student.last_name }}
-                </a>
-            </td>
+                </a></td>
 
             <td class="checkbox-cell">
-                <div class="form-check" style="display: none;">
-                    <input class="form-check-input"
+                <div class="form-check">
+                    <input class="form-check-input student-eligibility-checkbox"
                         type="checkbox" 
                         {% if student.eligible %} checked="checked" {% endif %}
-                        value="{{ student.id }}" 
-                        name="student_box">
+                        data-student-id="{{ student.id }}">
                 </div>
             </td>
             
@@ -111,12 +104,48 @@
                     {% comment %} <td> {{ student.eligibilty_remarks }}</td> 
             <td> <a href="{% url 'update_remarks' 'student.id' %}" > Update </a>  </td>  {% endcomment %}
         </tr>
-       
+        {% empty %}
+        <tr>
+            <td colspan="6" class="text-center">No students found.</td>
+        </tr>
+
     {% endfor %}
     </tbody> 
 </table>
+      
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+    
+        <!-- Ensures that both the filter and the pagination number persist across pages. -->
+        {% if students.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?filter={{ filter_type }}&page=1">&laquo; First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?filter={{ filter_type }}&page={{ students.previous_page_number }}">Previous</a>
+            </li>
+        {% endif %}
 
+        {% for i in nums %}
+        <li class="page-item {% if forloop.counter == students.number %}disabled{% endif %}">
+            <a class="page-link" href="?filter={{ filter_type }}&page={{ forloop.counter }}">{{ forloop.counter }}</a>
+        </li>
+        {% endfor %}
 
+        {% if students.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?filter={{ filter_type }}&page={{ students.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?filter={{ filter_type }}&page={{ students.paginator.num_pages }}">Last &raquo;</a>
+            </li>
+        {% endif %}
+        
+        <li class="page-item ml-auto disabled">
+            <a href="#" class="page-link"> Page {{ students.number }} of {{ students.paginator.num_pages }} </a>
+        </li>
+    </ul>
+</nav>
 <script>
     
     function toggleAllCheckboxes() {
@@ -172,7 +201,39 @@
         }
     });
 
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".student-eligibility-checkbox").forEach(checkbox => {
+            checkbox.addEventListener("change", function() {
+                let studentId = this.getAttribute("data-student-id");
+                let isChecked = this.checked;
     
+                fetch("{% url 'update_student_eligibility' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({
+                        student_id: studentId,
+                        eligible: isChecked
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== "success") {
+                        alert("Error updating eligibility.");
+                        this.checked = !isChecked; // Revert checkbox if error
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("An error occurred. Please try again.");
+                    this.checked = !isChecked; // Revert checkbox if error
+                });
+            });
+        });
+    });
+
 </script>
 
 

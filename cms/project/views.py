@@ -2105,99 +2105,148 @@ def get_user_project_group(request):
     else: 
         return None
     
-def coordinator_approval_faculty(request): 
-    if request.user.is_authenticated: 
-        # get list of faculty 
-        faculty_list = User.objects.filter(role='FACULTY').order_by(
-            'adviser_eligible',  # False (not eligible) will come first
-            'panel_eligible',    # False (not eligible) will come first
-            'last_name'          # Then sort alphabetically by last name
-        )
-        
-        if request.user.role == 'COORDINATOR':
-            if request.method == "POST":  
-                id_list = request.POST.getlist('boxes')
-
-                # Unchecked all users 
-                faculty_list.update(adviser_eligible=False)
-        
-                # update the database
-                for x in id_list: 
-                    User.objects.filter(pk=int(x)).update(adviser_eligible=True)
-                
-                    # try:
-                    #     Notification.objects.create(
-                    #         recipient=User.objects.get(pk=int(x)),
-                    #         notification_type='ADVISER_ELIGIBILITY',
-                    #         message="You have been marked as eligible to be an adviser."
-                    #     )
-                    # except Exception as e:
-                    #     logger.error(f"Failed to create notification for adviser eligibility: {str(e)}")
-
-                panel_id_list = request.POST.getlist('box')
-                
-                # Unchecked all users 
-                faculty_list.update(panel_eligible=False)
-                
-                # update the database
-                for y in panel_id_list: 
-                    User.objects.filter(pk=int(y)).update(panel_eligible=True)
-                
-                messages.success(request, "Faculty Approval Form has been updated")
-                return redirect('coordinator-approval-faculty')
-            else: 
-                # # Paginate the faculty list
-                # paginator = Paginator(faculty_list, 5)  # Show 10 faculty members per page
-                # page_number = request.GET.get('page')
-                # paginated_faculty = paginator.get_page(page_number)
-                # nums = "a" * paginated_faculty.paginator.num_pages
-
-                return render(request, 
-                'project/coordinator_approval_faculty.html', 
-                {
-                    'faculty_list': faculty_list, 
-                })    
-        else: 
-            messages.error(request, "You aren't authorized to view this Page ")
-            return redirect('home')
-    else: 
+def coordinator_approval_faculty(request):
+    if not request.user.is_authenticated: 
         messages.error(request, "Please Login to view this page")
         return redirect('login')
+
+    if request.user.role != 'COORDINATOR':
+        messages.error(request, "You aren't authorized to view this Page")
+        return redirect('home')
+
+    # get list of faculty, ordered by eligibibility and name
+    faculty_list = User.objects.filter(role='FACULTY').order_by(
+        'adviser_eligible',  # False (not eligible) will come first
+        'panel_eligible',    # False (not eligible) will come first
+        'last_name'          # Then sort alphabetically by last name
+    )
     
+    if request.method == "POST":  
+        id_list = request.POST.getlist('boxes')
+
+        # Unchecked all users 
+        faculty_list.update(adviser_eligible=False)
+
+        # update the database
+        for x in id_list: 
+            User.objects.filter(pk=int(x)).update(adviser_eligible=True)
+        
+            # try:
+            #     Notification.objects.create(
+            #         recipient=User.objects.get(pk=int(x)),
+            #         notification_type='ADVISER_ELIGIBILITY',
+            #         message="You have been marked as eligible to be an adviser."
+            #     )
+            # except Exception as e:
+            #     logger.error(f"Failed to create notification for adviser eligibility: {str(e)}")
+
+        panel_id_list = request.POST.getlist('box')
+        
+        # update the database
+        for y in panel_id_list: 
+            User.objects.filter(pk=int(y)).update(panel_eligible=True)
+        
+        messages.success(request, "Faculty Approval Form has been updated")
+        return redirect('coordinator-approval-faculty')
+
+          # Pagination logic
+    p = Paginator(faculty_list, 10)  # Show 10 students per page
+    page = request.GET.get('page')
+    facultys = p.get_page(page)
+    nums = "a" * facultys.paginator.num_pages
+    start_index = (facultys.number - 1) * facultys.paginator.per_page
+
+    return render(request, 'project/coordinator_approval_faculty.html', {
+        "facultys": facultys,  # Send paginated students
+        "nums": nums, 
+        "start_index": start_index
+    })
+
+
 def coordinator_approval_student(request): 
-    if request.user.is_authenticated: 
-   
-        student_list = User.objects.filter(role='STUDENT').order_by('eligible','last_name')
-        
-        # get list of faculty 
-        faculty_list = User.objects.filter(role='FACULTY').order_by('last_name')
-        
-        if request.user.role == 'COORDINATOR':
-            if request.method == "POST":  
-                student_box_list = request.POST.getlist('student_box')
-                student_list.update(eligible=False)
-                for z in student_box_list:
-                    User.objects.filter(pk=int(z)).update(eligible=True)
-
-                messages.success(request, "Student Approval Form has been updated")
-                # Create a notification for the student
-                # Update notifications
-                return redirect('coordinator-approval-student')
-            else: 
-    
-                return render(request, 
-                'project/coordinator_approval_student.html', 
-                {
-                   
-                    "student_list": student_list,  # Use paginated students
-                    
-                })    
-        else: 
-            messages.error(request, "You aren' authorized to view this Page ")
-            return redirect('home')
-    else: 
+    if not request.user.is_authenticated: 
         messages.error(request, "Please Login to view this page")
         return redirect('login')
+    
+    if request.user.role != 'COORDINATOR':
+        messages.error(request, "You aren't authorized to view this Page")
+        return redirect('home')
+
+    # Fetch students, ordered by eligibility & last name
+    student_list = User.objects.filter(role='STUDENT').order_by('eligible','last_name')
+    
+    if request.method == "POST":  
+        student_box_list = request.POST.getlist('student_box')
+
+        # Reset all students to ineligible
+        student_list.update(eligible=False)
+
+        # Approve selected students
+        for z in student_box_list:
+            User.objects.filter(pk=int(z)).update(eligible=True)
+
+        messages.success(request, "Student Approval Form has been updated")
+        # Create a notification for the student
+        # Update notifications
+        return redirect('coordinator-approval-student')
+    
+    # Pagination logic
+    p = Paginator(student_list, 10)  # Show 10 students per page
+    page = request.GET.get('page')
+    students = p.get_page(page)
+    nums = "a" * students.paginator.num_pages
+    start_index = (students.number - 1) * students.paginator.per_page
+
+    return render(request, 'project/coordinator_approval_student.html', {
+        "students": students,  # Send paginated students
+        "nums": nums, 
+        "start_index": start_index
+    })
+
+def update_student_eligibility(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            student_id = data.get("student_id")
+            is_eligible = data.get("eligible")
+
+            student = User.objects.filter(id=student_id, role="STUDENT").first()
+            if student:
+                student.eligible = is_eligible
+                student.save()
+                return JsonResponse({"status": "success"})
+            else:
+                return JsonResponse({"status": "error", "message": "Student not found"}, status=400)
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=400)
+    
+    return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
+
+def update_faculty_eligibility(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            faculty_id = data.get("faculty_id")
+            eligibility_type = data.get("eligibility_type")  # 'adviser' or 'panel'
+            is_eligible = data.get("eligible")
+
+            faculty = User.objects.filter(id=faculty_id, role="FACULTY").first()
+            if faculty:
+                if eligibility_type == "adviser":
+                    faculty.adviser_eligible = is_eligible
+                elif eligibility_type == "panel":
+                    faculty.panel_eligible = is_eligible
+                else:
+                    return JsonResponse({"status": "error", "message": "Invalid eligibility type"}, status=400)
+
+                faculty.save()
+                return JsonResponse({"status": "success"})
+            else:
+                return JsonResponse({"status": "error", "message": "Faculty member not found"}, status=400)
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=400)
+
+    return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
        
 def coordinator_projects(request):
     if not request.user.is_authenticated: 
