@@ -5,7 +5,7 @@
 {% block content %} <!-- content of all web pages go -->
 
 <div class="table-container"> 
-    <center> <h1 style="display: inline-block; margin-left: -60px"> Faculty List </h1> 
+    <center> <h1 style="display: inline-block; margin-left: -30px"> Faculty List </h1> 
         <div class="button" style="float: left;">
             <a href="{% url 'list-student' %}" class="btn btn-primary">
                 <i class="fas fa-users icon"> </i> View Student List
@@ -16,11 +16,12 @@
         </div>
     </center> 
 
+        <!-- Filters persist across pagination (?filter=adviser&page=2) --> 
         <div class="btn-group" role="group" aria-label="Faculty Filter">
-            <button type="button" class="btn btn-secondary" onclick="filterFaculty('all')">All Faculty</button>
-            <button type="button" class="btn btn-secondary" onclick="filterFaculty('adviser')">Available Advisers</button>
-            <button type="button" class="btn btn-secondary" onclick="filterFaculty('panelist')">Available Panelists</button>
-        </div> 
+            {% comment %} <a href="?filter=all&page=1" class="btn btn-secondary {% if filter_type == 'all' %}active{% endif %}">All Faculty</a> {% endcomment %}
+            <a href="?filter=adviser&page=1" class="btn btn-secondary {% if filter_type == 'adviser' %}active{% endif %}"> Advisers</a>
+            <a href="?filter=panelist&page=1" class="btn btn-secondary {% if filter_type == 'panelist' %}active{% endif %}"> Panelists</a>
+        </div>
         
         <div class="table-responsive"> <br/> 
             <table class="table table-hover table-bordered"> 
@@ -86,56 +87,40 @@ Current Page: {{ students.number }} <br/>
 Number of Pages: {{ students.paginator.num_pages }} <br/> 
 <hr><br/><br/> -->
 
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center">
+<!-- preserves selected filter -->
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
 
         {% if facultys.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
-            <li class="page-item"><a class="page-link" href="?page={{facultys.previous_page_number}}">Previous</a></li>
+            <li class="page-item">
+                <a class="page-link" href="?filter={{ filter_type }}&page=1">&laquo; First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?filter={{ filter_type }}&page={{ facultys.previous_page_number }}">Previous</a>
+            </li>
         {% endif %}
 
-    
         {% for i in nums %}
         <li class="page-item {% if forloop.counter == facultys.number %}disabled{% endif %}">
-        <a class="page-link" href="?page={{forloop.counter}}">{{ forloop.counter }}</a>
-    </li>
+            <a class="page-link" href="?filter={{ filter_type }}&page={{ forloop.counter }}">{{ forloop.counter }}</a>
+        </li>
         {% endfor %}
+
         {% if facultys.has_next %}
-            <li class="page-item"> <a class="page-link" href="?page={{facultys.next_page_number}}">Next</a></li>
-            <li class="page-item"> <a class="page-link" href="?page={{facultys.paginator.num_pages}}">Last &raquo;</a></li>
+            <li class="page-item">
+                <a class="page-link" href="?filter={{ filter_type }}&page={{ facultys.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?filter={{ filter_type }}&page={{ facultys.paginator.num_pages }}">Last &raquo;</a>
+            </li>
         {% endif %}
         
-        <li class="page-item ml-auto disabled"><a href="#" class="page-link"> Page {{ facultys.number }} of {{ students.paginator.num_pages }} </a></li>
-
+        <li class="page-item ml-auto disabled">
+            <a href="#" class="page-link"> Page {{ facultys.number }} of {{ facultys.paginator.num_pages }} </a>
+        </li>
     </ul>
-    </nav>
+</nav>
+
 </div>
-<script>
-    function filterFaculty(type) {
-        const rows = document.querySelectorAll('tbody tr');
-        const buttons = document.querySelectorAll('.btn-group .btn');
 
-        // Remove 'active' class from all buttons
-        buttons.forEach(button => button.classList.remove('active'));
-
-        // Add 'active' class to the clicked button
-        document.querySelector(`.btn-group .btn[onclick="filterFaculty('${type}')"]`).classList.add('active');
-
-        rows.forEach(row => {
-            const isAdviser = row.dataset.adviser === 'true';
-            const isPanelist = row.dataset.panelist === 'true';
-
-            if (type === 'all') {
-                row.style.display = '';
-            } else if (type === 'adviser' && isAdviser) {
-                row.style.display = '';
-            } else if (type === 'panelist' && isPanelist) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    }
-</script>
-    
 {% endblock %}
