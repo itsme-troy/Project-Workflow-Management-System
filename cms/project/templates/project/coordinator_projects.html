@@ -3,11 +3,9 @@
 
 {% block content %} <!-- content of all web pages go -->
  
-
 <div class="table-container"> 
-
     <center>
-        <h1 style="display: inline-block;"> All Approved Projects </h1> 
+        <h1 style="display: inline-block;"> Projects </h1> 
         <div style="margin-right: 10px; float: right;"> <!-- Changed to float right -->
             <div class="button-container" style="float: right; margin-left: 15px;">  <!-- Using gap to space out buttons -->
                 <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
@@ -15,9 +13,7 @@
         </div> 
     </center>
 
-
 {% if not approved_projects_with_groups %}
-
     <div class="alert custom-info-alert" role="alert">
         No Projects Available at the moment.
     </div>
@@ -56,7 +52,7 @@
                 {% if approved_projects_with_groups %}
                     {% for project_data in approved_projects_with_groups %}
                         <tr onclick="toggleActions(this)">
-                            <td> <strong> {{ forloop.counter }} </strong> </td>
+                            <td><strong>{{ forloop.counter|add:start_index }}</strong></td>
                             <td class="project-name-cell">
                                 <a href="{% url 'show-project' project_data.project.id %}">{{ project_data.project }}</a>  </td>
                             
@@ -116,35 +112,50 @@
                                             {% endif %}
                                         "> {{ project_data.project.status }}
                                         </span>  </td>
-                            
                         </tr>
                     {% endfor %}
                 
             {% endif %}
             </tbody>
         </table>  <hr/> 
-    </div>
 {% endif %}
-    <nav aria-label="Approved Projects Pagination">
-        <ul class="pagination justify-content-center">
-            {% if approved_page_obj.has_previous %}
-                <li class="page-item"><a class="page-link" href="?approved_page=1">&laquo; First</a></li>
-                <li class="page-item"><a class="page-link" href="?approved_page={{ approved_page_obj.previous_page_number }}">Previous</a></li>
-            {% endif %}
 
-            {% for num in approved_page_obj.paginator.page_range %}
-                <li class="page-item {% if num == approved_page_obj.number %}active{% endif %}">
-                    <a class="page-link" href="?approved_page={{ num }}">{{ num }}</a>
-                </li>
-            {% endfor %}
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+    
+        <!-- Ensures that both the filter and the pagination number persist across pages. -->
+        {% if projects.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1">&laquo; First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ projects.previous_page_number }}">Previous</a>
+            </li>
+        {% endif %}
 
-            {% if approved_page_obj.has_next %}
-                <li class="page-item"><a class="page-link" href="?approved_page={{ approved_page_obj.next_page_number }}">Next</a></li>
-                <li class="page-item"><a class="page-link" href="?approved_page={{ approved_page_obj.paginator.num_pages }}">Last &raquo;</a></li>
-            {% endif %}
-        </ul>
-    </nav>
+        {% for i in nums %}
+        <li class="page-item {% if forloop.counter == projects.number %}disabled{% endif %}">
+            <a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a>
+        </li>
+        {% endfor %}
+
+        {% if projects.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ projects.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ projects.paginator.num_pages }}">Last &raquo;</a>
+            </li>
+        {% endif %}
+        
+        <li class="page-item ml-auto disabled">
+            <a href="#" class="page-link"> Page {{ projects.number }} of {{ projects.paginator.num_pages }} </a>
+        </li>
+    </ul>
+</nav>
 </div>
+</div>
+
     <script>
         function toggleActions(row) {
             // Remove active class from all rows

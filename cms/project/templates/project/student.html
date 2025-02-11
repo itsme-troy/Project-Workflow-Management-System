@@ -19,7 +19,7 @@
     </center> 
 
     <div class="btn-group" role="group" aria-label="Student Filter">
-        <a href="?filter=eligible&page=1" class="btn btn-secondary {% if filter_type == 'eligible' %}active{% endif %}"> Students</a>
+        <a href="?filter=eligible&page=1" class="btn btn-secondary {% if filter_type == 'eligible' %}active{% endif %}"> Eligible </a>
         <a href="?filter=waitlist&page=1" class="btn btn-secondary {% if filter_type == 'waitlist' %}active{% endif %}"> Waitlist</a>
     </div>
 
@@ -73,7 +73,7 @@
                     </li>
                     <li class="page-item">
                         <a class="page-link" href="?filter={{ filter_type }}&page={{ students.previous_page_number }}">Previous</a>
-                    </li>S
+                    </li>
                 {% endif %}
         
                 {% for i in nums %}

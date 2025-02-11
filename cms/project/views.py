@@ -2260,18 +2260,19 @@ def coordinator_projects(request):
     # Grab the projects from that adviser
     approved_projects = Project.objects.filter(status='approved', is_archived=False).order_by('title')
     
-    approved_paginator = Paginator(approved_projects, 10)  # Show 10 projects per page
-    approved_page_number = request.GET.get('approved_page')
-    approved_page_obj = approved_paginator.get_page(approved_page_number)  
-    approved_nums = "a" * approved_page_obj.paginator.num_pages
+    p = Paginator(approved_projects, 10)  # Show 10 projects per page
+    page = request.GET.get('page')
+    projects = p.get_page(page)  
+    nums = "a" * projects.paginator.num_pages
+    start_index = (projects.number - 1) * projects.paginator.per_page
 
     # Prepare data for each project with its groups and proponents
     approved_projects_with_groups = []
-    for project in approved_page_obj:
+    for project in projects:
         project_group = Project_Group.objects.filter(project=project, approved=True).first()
         
         # Fetch the project where the current group are the proponents
-        project = Project.objects.filter(proponents=project_group, status='approved').first()
+        project = project
         
         if project_group and project: 
             proponents = list(project_group.proponents.all())
@@ -2286,15 +2287,14 @@ def coordinator_projects(request):
                 'group': project_group,
                 'proponents': proponents, 
                 'panel': panel_members,
-                # 'status': project.status,
             })
 
     return render(request, 'project/coordinator_projects.html', {
         "approved_projects_with_groups": approved_projects_with_groups,
-        "approved_page_obj": approved_page_obj,
-        "approved_nums": approved_nums,
+        "projects": projects,
+        "nums": nums,
+        'start_index': start_index,
     })
-
 
 def adviser_projects(request):
     if not request.user.is_authenticated: 
