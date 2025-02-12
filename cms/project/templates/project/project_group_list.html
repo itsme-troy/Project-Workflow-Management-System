@@ -42,7 +42,7 @@
         <tbody>
             {% for group_data in project_groups_with_proponents %}  
                 <tr onclick="toggleActions(this)" {% if user in group_data.proponents %}class="table-warning"{% endif %}>
-                    <td><strong>{{ forloop.counter}}</strong></td> <!-- Continuous counter -->
+                    <td><strong>{{ forloop.counter|add:start_index }}</strong></td> <!-- Continuous counter -->
                     {% for proponent in group_data.proponents %}
                         <td>
                             {% if proponent.profile_image and proponent.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}

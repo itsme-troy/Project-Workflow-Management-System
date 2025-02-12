@@ -1243,7 +1243,6 @@ def list_project_group(request):
         project_groups = Project_Group.objects.filter(approved=True)
         max_members_in_any_group = 0  # Track the max number of proponents in any group
 
-
         # Prepare project groups with proponents padded to at least 3
         project_groups_with_proponents = []
 
@@ -1276,7 +1275,7 @@ def list_project_group(request):
 
 
         # Paginate the project groups
-        p = Paginator(project_groups_with_proponents, 8)  # Show 6 project groups per page
+        p = Paginator(project_groups_with_proponents, 10)  # Show 6 project groups per page
         page = request.GET.get('page')
         paginated_groups = p.get_page(page)
         nums = "a" * paginated_groups.paginator.num_pages
