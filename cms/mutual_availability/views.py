@@ -31,15 +31,20 @@ import random
 # from django.utils import timezone
 
 FACULTY_COLOR_MAP = {}  # A global dictionary to map faculty to colors
+ASSIGNED_COLORS = set()  # Keep track of assigned colors
 
-def generate_random_color():
-    """Generate a random hex color."""
-    return "#{:06x}".format(random.randint(0, 0xFFFFFF))
+def generate_unique_color():
+    """Generate a unique hex color that isn't already assigned."""
+    while True:
+        color = "#{:06x}".format(random.randint(0, 0xFFFFFF))
+        if color not in ASSIGNED_COLORS:
+            ASSIGNED_COLORS.add(color)
+            return color
 
 def get_faculty_color(faculty):
-    """Retrieve or assign a color for a specific faculty."""
+    """Retrieve or assign a unique color for a faculty member."""
     if faculty.id not in FACULTY_COLOR_MAP:
-        FACULTY_COLOR_MAP[faculty.id] = generate_random_color()
+        FACULTY_COLOR_MAP[faculty.id] = generate_unique_color()
     return FACULTY_COLOR_MAP[faculty.id]
 
 

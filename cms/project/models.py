@@ -116,7 +116,7 @@ class AppUser(AbstractUser, PermissionsMixin):  # permissionsMixin
     EMAIL_FIELD = "email"
     REQUIRED_FIELDS = []
 
-    color = models.CharField(max_length=7, default="#007BFF")  # Hex color code
+    color = models.CharField(max_length=7, blank=True, null=True)  # Hex color code
 
     created_at = models.DateTimeField(auto_now_add=True)  # Automatically set timestamp when the user is created
 

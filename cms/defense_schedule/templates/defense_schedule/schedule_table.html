@@ -11,12 +11,11 @@
 <!-- Increase the container size by setting a larger width and padding -->
 <div class="table-container" style="overflow-x: auto; width: 100%; height: 100vh; margin: 0px;">
 
-
     <center> <h1 style="display: inline-block; margin-left: -200px"> Defense Schedule </h1> 
         {% if request.user.is_current_coordinator %}
             <div class="btn-sm" style="float: left;">
                     <a href="{% url 'view-schedule' %}" class="btn btn-primary btn-sm">
-                        <i class="fas fa-calendar-alt icon icon-margin"></i>View Common Schedule
+                        <i class="fas fa-calendar-alt icon icon-margin"></i>Mutual Availability
                     </a>
             </div> 
         {% endif %}

@@ -4,7 +4,6 @@
 {% load custom_filters %}  <!-- Load custom filters -->
 
 <head>
-    
     <style>
         #maximize-defense-schedule {
             margin-top: 10px; /* Adjust spacing if needed */
@@ -25,7 +24,7 @@
         {% if request.user.is_current_coordinator %}
             <div class="btn-sm" style="float: left;">
                     <a href="{% url 'view-schedule' %}" class="btn btn-primary btn-sm">
-                        <i class="fas fa-calendar-alt icon icon-margin"></i>View Common Schedule
+                        <i class="fas fa-calendar-alt icon icon-margin"></i> Mutual Availability 
                     </a>
             </div> 
         {% endif %}
