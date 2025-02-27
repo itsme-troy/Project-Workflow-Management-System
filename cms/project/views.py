@@ -181,7 +181,7 @@ def coordinator_dashboard(request):
     project_group_count = Project_Group.objects.count
     unapproved_project_group_count = Project_Group.objects.filter(approved=False).count
 
-    latest_projects = Project.objects.all().order_by('-created_at')[:15]
+    latest_projects = Project.objects.all().order_by('-created_at')[:20]
     project_count = Project.objects.filter(status='approved').count
     recent_users = User.objects.all().order_by('-created_at')[:10]
 

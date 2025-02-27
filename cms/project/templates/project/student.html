@@ -14,7 +14,7 @@
         </div> 
 
         <div class="button-container" style="float: right;">  <!-- Using gap to space out buttons -->
-            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left"></i> </a>
         </div>
     </center> 
 
@@ -33,7 +33,7 @@
                     <th scope="col" class="picture-column">Picture</th>
                     <th scope="col">Name</th>
                     <th scope="col">Course</th>
-                    <th scope="col" class="deficiencies-column">Remarks</th>
+                    <th scope="col" class="deficiencies-column" data-orderable="false">Remarks</th>
                 </tr>
             </thead>
             <tbody>
@@ -54,7 +54,7 @@
                             {% if student.remarks %}
                             {{ student.remarks }}
                             {% else %}
-                            <span class="text-muted">No deficiencies</span>
+                            <span class="text-muted">None </span>
                             {% endif %}
                         </div>
                     </td>

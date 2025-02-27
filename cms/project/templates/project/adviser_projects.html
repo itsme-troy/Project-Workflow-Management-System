@@ -111,7 +111,7 @@
             {% endif %}
             </tbody>
         </table>  <hr/> 
-    {% endif %}
+
         <nav aria-label="Approved Projects Pagination">
             <ul class="pagination justify-content-center">
                 {% if approved_page_obj.has_previous %}
@@ -132,7 +132,7 @@
             </ul>
         </nav>
     </div>
-
+{% endif %}
     <script>
         function toggleActions(row) {
             // Remove active class from all rows

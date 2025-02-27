@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect 
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_backends
 from django.contrib import messages 
 from django.contrib.auth.forms import UserCreationForm
 from .forms import RegisterFacultyForm, RegisterStudentForm
@@ -151,6 +151,10 @@ def update_user(request):
         if user_form.is_valid() and profile_form.is_valid: 
             user_form.save()
             profile_form.save()
+
+            # Set authentication backend manually
+            backend = get_backends()[0]  # Choose the first authentication backend
+            current_user.backend = f"{backend.__module__}.{backend.__class__.__name__}"
 
             login(request, current_user)
             

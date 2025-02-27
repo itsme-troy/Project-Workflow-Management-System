@@ -113,6 +113,7 @@ html {
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     font-size: 16px;
+    overflow-x: hidden;
 }
 /* Base color */
 body {
@@ -120,6 +121,7 @@ body {
   min-height: 100vh;
   background-color: #c7c7c7; /* Light gray background */
   color: #525252; /* Dark text for contrast */
+  overflow-x: hidden;
 }
 .sidebar-collapsed {
   overflow: hidden; /* Hide scrollbar */
@@ -139,13 +141,14 @@ body {
 }
 
 .block_container {
+  flex-grow: 1; /* Ensure this container grows to fill available space */
   border: 2px solid #000;
   text-align: center;
-  margin: 2.5% 5% 2.5% 2.5%; /* Top, Right, Bottom, Left */
+  margin: 2.5% 56% 2.5% 2.5%; /* Top, Right, Bottom, Left */
   background-color: #fff7f7;
   padding: 20px;
-  height: 100vh; /* 100% of the viewport height */
-  width: calc(94.7vw - 2.5%); /* Adjust width to account for the increased margin-right */
+  height: 100vh;  /* 100% of the viewport height */
+  width: calc(94.7vw - 0%); /*  Adjust width to account for the increased margin-right */
   transition: all 0.3s ease;
   box-sizing: border-box; /* Includes padding and border in the width and height */
   overflow: auto; /* Always show scrollbars if content overflows */
@@ -446,10 +449,14 @@ body {
 }
 
 .main_container {
-  margin: 30px; /* Set all margins to 30px */
-  width: calc(100% - 100px); /* Adjusted width for the sidebar */
-  margin-left: 80px; /* Offset for the sidebar */
-  overflow: hidden; /* Defafult state */
+  margin-top: 30px;
+  margin-left: 0px; /* Set all margins to 30px */
+  width: calc(100% - 300px); /* Adjusted width for the sidebar */
+  margin-left: 50px; /* Offset for the sidebar */
+  padding: 20px; /* Add padding for content */
+  display: flex;
+  flex-direction: column; /* Ensure content is stacked vertically */
+
 }
 
 .main_container .sidebar ul li.nav-item.dropdown .dropdown-menu {
@@ -498,7 +505,6 @@ body {
 .main_container .sidebar {
   transition: width 0.3s ease, margin 0.3s ease, opacity 0.3s ease; /* Add opacity transition */
   opacity: 1; /* Default opacity */
-
 }
 
 .main_container .sidebar .sidebar__inner{
@@ -691,7 +697,7 @@ body {
   top: 60px;
   left: 0;
   width: 300px; /* Default expanded width */
-  height: 100%;
+  height: 100vh;
   background: #333131;
   transition: width 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
   z-index: 999;
@@ -802,11 +808,11 @@ body {
 .grid-container {
   display: grid;
   grid-template-columns: 1fr 2fr; /* Adjust the fraction values as needed */
-  gap: 10px; /* Reduced gap for better spacing */
+   /*gap: 10px; Reduced gap for better spacing */
   padding: 20px; /* Add padding around the grid */
   max-height: 800px; /* Set a maximum height */
   overflow: auto; /* Allows scrolling when content overflows */
-
+  /* background-color: #000; */
 }
 
 .grid-container .pic-skills-column {
@@ -1042,12 +1048,12 @@ body {
 }
 
 .user-pic-table {
-  width: 50px; /* Set a fixed width */
-  height: 50px; /* Set a fixed height */
+  width: 40px; /* Set a fixed width */
+  height: 40px; /* Set a fixed height */
   border-radius: 50%; /* Keep the circular shape */
   object-fit: cover; /* Ensure the image covers the area without distortion */
   display: block; /* Make it a block element */
-  margin:  auto; /* Center the image horizontally */
+  margin:  auto; /* Center the Pimage horizontally */
 }
 .proponent-info {
   display: flex; /* Use flexbox for alignment */

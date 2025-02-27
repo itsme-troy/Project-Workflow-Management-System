@@ -11,7 +11,7 @@
 
         <div style="margin-right: 10px; float: right;"> <!-- Changed to float right -->
             <div class="button-container" style="float: right; margin-left: 15px;">  <!-- Using gap to space out buttons -->
-                <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+                <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left"></i> </a>
             </div>
         </div> 
     </center>
@@ -31,8 +31,8 @@
                     <th scope="col"> Proponents </th> <!-- New column for Proponents -->
                     <th scope="col"> Adviser </th>
                     <th scope="col"> Date Submitted </th>
+                    <th class="verdict-column" scope="col"> Verdict </th>
                     <th scope="col"> Action </th>
-                    <th scope="col"> Verdict </th>
                    
                 </tr>
             </thead>
@@ -55,32 +55,37 @@
                     </td>
                     
                     <td>{{ application.submission_date|date:"M j, Y g:i A" }}</td> 
-                    
-                    <td>
-                        <a href="{% url 'show-application' application.id %}"
-                        class="btn btn-outline-secondary btn-sm">View Application</a> 
-                    </td>
 
-                    <td>
+                    <td class="verdict-column">
                         {% with form=verdict_forms|get_item:application.id %}
                         {% if form %}
                             {% if form.instance.verdict != "pending" %}
                                 <p>{{ form.instance.get_verdict_display }}</p>
                             {% else %}
-                                <form method="post" action="{% url 'submit_verdict' application.id %}" class="compact-form">
-                                    {% csrf_token %}
-                                    <div class="form-group">
-                                        {{ form.as_p }}
-                                    </div>
-                                    <button type="submit" class="btn btn-primary" 
-                                        onclick="return confirm('Are you sure you want to submit the verdict?');">Submit Verdict</button>  </form>
+                                    <form method="post" action="{% url 'submit_verdict' application.id %}" class="compact-form d-flex align-items-center gap-2">
+                                        {% csrf_token %}
+                                        <div class="verdict-dropdown">
+                                            {{ form.verdict }} <!-- Render only the dropdown -->
+                                        </div> 
+
+                                        <button type="submit" class="btn btn-primary btn-sm" style="font-size: 12px;"
+                                            onclick="return confirm('Are you sure you want to submit the verdict?');">
+                                            Submit
+                                        </button>
+                                    </form>
+                                    
                             {% endif %}
                         {% else %}
                             <p>No form available for this application.</p>
                         {% endif %}
                         {% endwith %}
                     </td>
-                 
+                    
+                    <td>
+                        <a href="{% url 'show-application' application.id %}"
+                        class="btn btn-outline-secondary btn-sm">View</a> 
+                    </td>
+
                 </tr>
                 {% endif %}
                 {% endfor %}

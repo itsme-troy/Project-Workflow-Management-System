@@ -12,7 +12,7 @@
             </a> 
         </div> 
         <div class="button-container" style="float: right;">  <!-- Using gap to space out buttons -->
-            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm"> <i class="fas fa-arrow-left"></i> </a>
         </div>
     </center> 
 
@@ -33,6 +33,7 @@
                         <th scope="col" class="picture-column">Picture</th> 
                         <th scope="col"> Name  </th> 
                         <th scope="col"> Email </th> 
+                        <th scope="col"> Field/Specialty </th> 
                         {% comment %} <th scope="col" class="deficiencies-column" >
                             Availability
                         </th>      {% endcomment %}
@@ -71,13 +72,14 @@
                                 {% comment %} <td>
                                     <a href="{% url 'show-faculty' faculty.id %}" class="btn btn-outline-primary btn-sm">View Profile</a>
                                 </td> {% endcomment %}
+                                <td> {{ faculty.skills }}</td> 
                             </tr> 
                         {% endif %}
                     {% endfor %}
                 </tbody>
             </table> 
         </div>
-        <br> <hr/> 
+<hr/> 
 
 <!-- 
 {{ students }} </br> 

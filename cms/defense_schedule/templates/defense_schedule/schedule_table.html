@@ -21,11 +21,11 @@
         {% endif %}
             
         <div class="button-container" style="float: right;">  <!-- Using gap to space out buttons -->
-            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">   <i class="fas fa-arrow-left"></i> </a>
         </div>
 
     </center> 
-    <div class="row">
+    <div class="row w-100">
         <div class="col-md-12">
                 <div>
                     
@@ -40,7 +40,7 @@
                                 <th scope="col"> Panel 1</th>  
                                 <th scope="col"> Panel 2</th>  
                                 <th scope="col"> Panel 3</th>
-                                <th scope="col" class="action-column">Actions</th> 
+                                <th scope="col">Actions</th> 
                             </tr>
                         </thead>
                         <tbody>
@@ -92,10 +92,10 @@
                                     {% for _ in event_data.extra_cells|to_range %}
                                         <td>&nbsp;</td> <!-- Add empty cells for missing panelists -->
                                     {% endfor %}
-                                <td class="action-cell">
+                                <td>
                                     {% if event_data.is_panelist or event_data.is_adviser or request.user.is_current_coordinator %} 
                                             <a href="{% url 'show-application' event_data.event.application.id %}"
-                                            class="btn btn-outline-secondary btn-sm">View Application</a> 
+                                            class="btn btn-outline-secondary btn-sm">View </a> 
                                     {% endif %}
                                 </td>
             
