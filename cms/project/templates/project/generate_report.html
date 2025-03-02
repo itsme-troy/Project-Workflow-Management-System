@@ -5,18 +5,13 @@
 {% block content %}
 
 <div class="table-container">
+  <div class="header-container">
+    <h1 class="page-title">  Report </h1> 
 
-<center>
-  <h1 style="display: inline-block;"> Projects Defense Progress </h1> 
-
-  <div style="margin-right: 10px; float: right;"> <!-- Changed to float right -->
-      
-      <div class="button-container" style="float: right; margin-left: 15px;">  <!-- Using gap to space out buttons -->
-          <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">   <i class="fas fa-arrow-left"></i> </a>
-      </div>
+    <div class="header-buttons">
 
       {% if request.user.role == 'FACULTY' %}
-        <div class="button-container" style="float: right; margin-left: 15px;">
+        <div> 
           <button id="toggleFilter" class="btn btn-outline-secondary btn-sm">
               {% if my_projects_only %}
                   Show All Projects
@@ -24,17 +19,19 @@
                   Show My Projects
               {% endif %}
           </button>
-      </div>
+        </div>
       {% endif %}
-  </div> 
 
-</center>
+      <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">   <i class="fas fa-arrow-left"></i> </a>
 
+    </div>
 
+  </div>
+     
 {% if not projects_with_phases %}
   <center> 
-    <div class="alert alert-danger" role="alert">
-      <h4> No projects Available at the moment. </h4> 
+    <div class="alert custom-info-alert" role="alert">
+      <h5> No projects Available at the moment. </h5  > 
     </div> 
   </center> 
 

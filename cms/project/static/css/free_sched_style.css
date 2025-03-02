@@ -1164,6 +1164,7 @@ figure {
   font-size: 24px;
   font-weight: bold;
   margin: 0;
+  text-transform: uppercase; /* Converts text to uppercase */
 }
 
 .header-buttons {
