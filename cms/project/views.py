@@ -2256,7 +2256,7 @@ def coordinator_projects(request):
         messages.error(request, "You are not authorized to view this page")
         return redirect('login')
     
-    # Grab the projects from that adviser
+    # Grab the projects 
     approved_projects = Project.objects.filter(status='approved', is_archived=False).order_by('title')
     
     p = Paginator(approved_projects, 10)  # Show 10 projects per page
@@ -2346,6 +2346,66 @@ def adviser_projects(request):
         "approved_page_obj": approved_page_obj,
         "approved_nums": approved_nums,
         'start_index': start_index, 
+    })
+
+from django.core.paginator import Paginator
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Project, Project_Group  # Import necessary models
+
+def faculty_tab(request):
+    if not request.user.is_authenticated: 
+        messages.error(request, "Please Login to view this page")
+        return redirect('login')
+    
+    if request.user.role != 'FACULTY': 
+        messages.error(request, "You are not authorized to view this page")
+        return redirect('home')
+
+    # Get the filter type from the URL parameters, default to 'approved_projects'
+    filter_type = request.GET.get('filter', 'approved_projects')
+
+    # Retrieve projects based on filter type
+    if filter_type == 'approved_projects': 
+        projects = Project.objects.filter(status='approved', is_archived=False).order_by('title')
+    elif filter_type == 'projects':
+        projects = Project.objects.filter(adviser=request.user, status='approved').order_by('title')
+    elif filter_type == 'proposals':
+        projects = Project.objects.filter(adviser=request.user, status__in=['pending', 'declined']).order_by('title')
+    elif filter_type == 'panelist':
+        projects = Project.objects.filter(panel=request.user, status='approved').order_by('title')
+    else:
+        projects = Project.objects.filter(adviser=request.user).order_by('title')
+
+    # Paginate projects (adjust items per page as needed)
+    paginator = Paginator(projects, 5)  
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Prepare data for the template
+    projects_with_details = []
+    for project in page_obj:
+        project_group = Project_Group.objects.filter(project=project, approved=True).first()
+        
+        # Get proponents (students assigned to the project)
+        proponents = list(project_group.proponents.all()) if project_group else []
+        proponents_str = ', '.join([p.last_name for p in proponents]) if proponents else '-'
+        
+        # Get panel members
+        panel_members = list(project.panel.all()) if project else []
+        panel_members += [None] * (3 - len(panel_members))  # Pad to exactly 3 panel members
+
+        projects_with_details.append({
+            'project': project,
+            'proponents': proponents_str,
+            'adviser': project.adviser.last_name if project.adviser else '-',
+            'panel': panel_members,
+        })
+
+    return render(request, 'project/faculty_tab.html', {
+        'filter_type': filter_type,
+        'projects_with_details': projects_with_details,
+        'page_obj': page_obj,
     })
 
 

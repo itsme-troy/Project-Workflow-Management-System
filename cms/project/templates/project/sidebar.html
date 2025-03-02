@@ -170,52 +170,51 @@
 
             {% endif %}
 
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Projects">
-                  <span class="icon"> <i class="fas fa-project-diagram icon icon-margin"></i> </span> 
-                  <span class="sidebar-link-text"> Projects </span> 
+            {% if user.role != 'FACULTY' %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Projects">
+                    <span class="icon"> <i class="fas fa-project-diagram icon icon-margin"></i> </span> 
+                    <span class="sidebar-link-text"> Projects </span> 
 
-                </a>
-                <ul class="dropdown-menu">
-                    
-                  {% if user.is_authenticated %}
-        
-                    {% if user.role == 'STUDENT' %}
-                        <li><a class="dropdown-item" href="{% url 'my-project' %}"><i class="fas fa-tasks icon icon-margin"></i> My Project  </a></li> 
-                        <li><a class="dropdown-item" href="{% url 'list-proposals' %}"><i class="fas fa-file-alt icon icon-margin"></i> All Proposals  </a></li> 
-                        <li><a class="dropdown-item" href="{% url 'add-project' %}"><i class="fas fa-file-upload icon icon-margin"></i> Add Proposal  </a></li>
-                    {% endif %}
-
-                    {% if user.role == 'FACULTY' %}
-                        <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}">
-                            <i class="fas fa-tasks icon icon-margin"></i> All Projects  
-                        </a></li>
-                        <li><a class="dropdown-item" href="{% url 'adviser-projects' %}">
-                            <i class="fas fa-clipboard-list icon icon-margin"></i> Advisory Projects  
-                        </a></li>
-                        <li><a class="dropdown-item" href="{% url 'adviser-proposals' %}">
-                            <i class="fas fa-paper-plane icon icon-margin"></i> Received Proposals  
-                        </a></li>
-                        <li><a class="dropdown-item" href="{% url 'panel-projects' %}">
-                            <i class="fas fa-chalkboard icon icon-margin"></i> Panel Projects 
-                        </a></li>
+                    </a>
+                    <ul class="dropdown-menu">
+                        
+                        {% if user.role == 'STUDENT' %}
+                            <li><a class="dropdown-item" href="{% url 'my-project' %}"><i class="fas fa-tasks icon icon-margin"></i> My Project  </a></li> 
+                            <li><a class="dropdown-item" href="{% url 'list-proposals' %}"><i class="fas fa-file-alt icon icon-margin"></i> All Proposals  </a></li> 
+                            <li><a class="dropdown-item" href="{% url 'add-project' %}"><i class="fas fa-file-upload icon icon-margin"></i> Add Proposal  </a></li>
                         {% endif %}
-                    
-                    {% if request.user.is_current_coordinator %}
-                            <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}">
-                                <i class="fas fa-check-circle icon icon-margin"></i> View Projects
-                            </a></li>
 
-                            <li><a class="dropdown-item" href="{% url 'list-archived-projects' %}">
-                                <i class="fas fa-archive icon icon-margin"></i> Archived Projects
-                            </a></li>
-                    
-                    {% endif %}
+            
+                        
+                        {% if request.user.is_current_coordinator %}
+                                <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}">
+                                    <i class="fas fa-check-circle icon icon-margin"></i> View Projects
+                                </a></li>
 
-                {% endif  %}
+                                <li><a class="dropdown-item" href="{% url 'list-archived-projects' %}">
+                                    <i class="fas fa-archive icon icon-margin"></i> Archived Projects
+                                </a></li>
+                        
+                        {% endif %}
 
-                </ul>
-            </li>
+
+                    </ul>
+                </li>
+  
+            {% endif %}
+
+            
+            {% if user.role == 'FACULTY' %}
+
+                <li>
+                    <a href="{% url 'faculty-tab' %}" class="sidebar-link" data-title="Faculty_tab">
+                        <span class="icon"> <i class="fas fa-project-diagram icon icon-margin"></i> </span> 
+                        <span class="sidebar-link-text"> Projects </span>
+                    </a>
+                </li>
+            {% endif %}
+
 
             {% if user.role == 'STUDENT'%}
             <li class="nav-item dropdown">

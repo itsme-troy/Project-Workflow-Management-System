@@ -4,32 +4,25 @@
 {% block content %} <!-- content of all web pages go -->
  
 <div class="table-container"> 
-    <center>
-        <h1 style="display: inline-block;"> Projects </h1> 
-        <div style="margin-right: 10px; float: right;"> <!-- Changed to float right -->
-            <div class="button-container" style="float: right; margin-left: 15px;">  <!-- Using gap to space out buttons -->
-                <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
-            </div>
-        </div> 
-    </center>
+    <div class="header-container">
+        <h1 class="page-title"> PROJECTS </h1> 
+
+        <div class="header-buttons">
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+    </div>
 
 {% if not approved_projects_with_groups %}
     <div class="alert custom-info-alert" role="alert">
-        No Projects Available at the moment.
+     <h5>   No Projects Available at the moment. </h5>
     </div>
 
 {% else %}
-    
-    {% comment %} {% if user.is_current_coordinator %}
-    <div class="d-flex justify-content-end"> 
-        <a href="{% url 'create-custom-phases' %}"
-        class="btn btn-primary mb-3">
-            <i class="bi bi-plus-circle"></i> Create Custom Phases
-        </a> 
-    </div> 
-    {% endif %} {% endcomment %}
-
-        <table class="table table-hover table-bordered">
+  
+    <div class="table-reponsive">
+        <table class="table table-hover table-bordered student-table">
             <thead>
                 <tr>
                     <th scope="col"> # </th>
@@ -89,13 +82,6 @@
                                             class=" btn btn-outline-info btn-sm"
                                             onclick="return confirm('Are you sure you want to archive this project?');">Archive Project</a>  
 
-                                            {% comment %} <a href="{% url 'delete-project' project_data.project.id %}"
-                                            class=" btn btn-outline-danger btn-sm"
-                                            onclick="return confirm('Are you sure you want to delete this project?');">Delete Project</a>  {% endcomment %}
-
-                                            {% comment %} <a href="{% url 'delete-project' project_data.project.id %}"
-                                            class=" btn btn-outline-danger btn-sm"
-                                            onclick="return confirm('Are you sure you want to delete this project?');">Delete Project</a>  {% endcomment %}
                                         </div> 
                                    </td>   {% endif %}
 
@@ -118,7 +104,8 @@
             {% endif %}
             </tbody>
         </table>  <hr/> 
-{% endif %}
+    </div>
+
 
 <nav aria-label="Page navigation example">
     <ul class="pagination justify-content-center">
@@ -155,6 +142,7 @@
 </nav>
 </div>
 </div>
+{% endif %}
 
     <script>
         function toggleActions(row) {

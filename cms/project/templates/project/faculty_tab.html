@@ -1,0 +1,132 @@
+{% extends 'project/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="table-container">
+    <div class="header-container">
+        <h1 class="page-title">FACULTY TAB</h1>
+
+        <!-- Advisory Projects Filter Buttons -->
+        <div class="btn-group student-filter" role="group" aria-label="Project Filter">
+            <a href="?filter=approved_projects&page=1" class="btn btn-secondary {% if filter_type == 'approved_projects' %}active{% endif %}">All </a>
+            <a href="?filter=projects&page=1" class="btn btn-secondary {% if filter_type == 'projects' %}active{% endif %}">My Projects</a>
+            <a href="?filter=proposals&page=1" class="btn btn-secondary {% if filter_type == 'proposals' %}active{% endif %}">Proposals</a>
+            <a href="?filter=panelist&page=1" class="btn btn-secondary {% if filter_type == 'panelist' %}active{% endif %}">Panel</a>
+        </div>
+
+        <div class="header-buttons">
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+    </div>
+
+    {% if not projects_with_details %}
+        <div class="alert custom-info-alert" role="alert">
+            <h5>No Projects Available at the moment.</h5>
+        </div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered student-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Project Name</th>
+                        <th>Proponents</th>
+                        <th>Adviser</th>
+                        <th>Panel 1</th>
+                        <th>Panel 2</th>
+                        <th>Panel 3</th>
+                        <th>Actions</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project_data in projects_with_details %}
+                    <tr onclick="toggleActions(this)">
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <a href="{% url 'show-project' project_data.project.id %}">
+                                {{ project_data.project.title }}
+                            </a>
+                        </td>
+                        <td>{{ project_data.proponents }}</td>
+                        <td>
+                            <a href="{% url 'show-faculty' project_data.project.adviser.id %}">
+                                {{ project_data.adviser }}
+                            </a>
+                        </td>
+
+                        {% for panelist in project_data.panel %}
+                        <td>
+                            {% if panelist %}
+                                <a href="{% url 'show-faculty' panelist.id %}">{{ panelist.last_name }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+
+                        <td class="action-cell">
+                            <span class="hint-button" onclick="showActions(this)">Click to show actions</span>
+                            <div class="action-buttons" style="display: none;">
+                                <a href="{% url 'select-panelist' project_data.project.id %}" class="btn btn-outline-secondary btn-sm">Select Panelist</a>
+                                <a href="{% url 'archive-project' project_data.project.id %}" class="btn btn-outline-info btn-sm" onclick="return confirm('Are you sure you want to archive this project?');">Archive Project</a>
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="badge 
+                                {% if project_data.project.status == 'approved' %} bg-success
+                                {% elif project_data.project.status == 'pending' %} bg-warning text-dark
+                                {% elif project_data.project.status == 'declined' %} bg-danger
+                                {% else %} bg-secondary {% endif %}
+                            ">
+                                {{ project_data.project.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+
+<script>
+    function toggleActions(row) {
+        document.querySelectorAll('tr').forEach(tr => tr.classList.remove('active'));
+        row.classList.add('active');
+    }
+
+    function showActions(hintButton) {
+        document.querySelectorAll('.hint-button').forEach(btn => btn.style.display = 'inline');
+        document.querySelectorAll('.action-buttons').forEach(btns => btns.style.display = 'none');
+        hintButton.style.display = 'none';
+        hintButton.nextElementSibling.style.display = 'block';
+    }
+</script>
+
+{% endblock %}
