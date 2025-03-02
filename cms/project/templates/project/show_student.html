@@ -3,6 +3,7 @@
 
     <!-- ===== ===== Remix Font Icons Cdn ===== ===== -->
     <link rel="stylesheet" href="fonts/remixicon.css">
+    
     {% block content %}
     
     <div class="grid-container">
@@ -43,7 +44,7 @@
                         <span class="role {{ student.role|lower }}">{{ student.role }}</span> 
                     </div>
                     <div class="button-container" style="display: flex; gap: 10px;">  <!-- Using gap to space out buttons -->
-                        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+                        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">  <i class="fas fa-arrow-left"> </i></a>
                         {% if request.user.id == student.id %}
                             <a href="{% url 'update-user' %}" class="btn btn-outline-secondary btn-sm">Edit Profile</a> <!-- Edit Profile Button -->
                         {% endif %}

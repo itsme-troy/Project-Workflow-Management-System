@@ -5,26 +5,29 @@
 {% block content %} <!-- content of all web pages go -->
 
 <div class="table-container"> 
-    <center> <h1 style="display: inline-block; margin-left: -30px"> Faculty List </h1> 
-        <div class="button" style="float: left;">
-            <a href="{% url 'list-student' %}" class="btn btn-primary">
-                <i class="fas fa-users icon"> </i> View Student List
-            </a> 
-        </div> 
-        <div class="button-container" style="float: right;">  <!-- Using gap to space out buttons -->
-            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm"> <i class="fas fa-arrow-left"></i> </a>
-        </div>
-    </center> 
+    <div class="header-container">
+        <h1 class="page-title">FACULTY LIST</h1>
 
-        <!-- Filters persist across pagination (?filter=adviser&page=2) --> 
-        <div class="btn-group" role="group" aria-label="Faculty Filter">
-            {% comment %} <a href="?filter=all&page=1" class="btn btn-secondary {% if filter_type == 'all' %}active{% endif %}">All Faculty</a> {% endcomment %}
-            <a href="?filter=adviser&page=1" class="btn btn-secondary {% if filter_type == 'adviser' %}active{% endif %}"> Advisers</a>
-            <a href="?filter=panelist&page=1" class="btn btn-secondary {% if filter_type == 'panelist' %}active{% endif %}"> Panelists</a>
+        <!-- Student Filter Buttons -->
+        <div class="btn-group student-filter" role="group" aria-label="Student Filter">
+            <a href="?filter=adviser&page=1" class="btn btn-secondary {% if filter_type == 'adviser' %}active{% endif %}"> Adviser</a>
+            <a href="?filter=panelist&page=1" class="btn btn-secondary {% if filter_type == 'panelist' %}active{% endif %}"> Panelist</a>
         </div>
-        
+
+        <div class="header-buttons">
+         
+            <a href="{% url 'list-student' %}" class="btn faculty-btn">
+                Student 
+           </a> 
+
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+    </div> 
+
         <div class="table-responsive"> <br/> 
-            <table class="table table-hover table-bordered"> 
+            <table class="table table-hover table-bordered student-table"> 
                 <caption class="text-center">Faculty List</caption>
         
                 <thead class="thead-dark"> 
@@ -52,26 +55,15 @@
                                 <td><strong>{{ forloop.counter|add:start_index }}</strong></td>
                                 <td>
                                     {% if faculty.profile_image and faculty.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
-                                        <figure><img src="{{ faculty.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid width="250px" height="250px""></figure>
+                                        <figure>
+                                            <img src="{{ faculty.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid">
+                                        </figure>
                                 {% else %}
-                                    {% comment %} no {% endcomment %}
-                                        <figure><img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table width="250px" height="250px""> </figure>
+                                        <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table">
                                 {% endif %}
                                 </td>
                                 <td>{{ faculty.first_name }} {{ faculty.last_name }}</td> <!-- Combined first and last name -->
                                 <td>{{ faculty.email }}</td> 
-                                {% comment %} <td class="deficiencies-cell">
-                                    <div style="overflow-x: auto; white-space: nowrap;">
-                                        {% if student.deficiencies %}
-                                                {{ student.deficiencies }}
-                                        {% else %}
-                                            <span class="text-muted">No deficiencies</span>
-                                        {% endif %}
-                                    </div> 
-                                </td> {% endcomment %}
-                                {% comment %} <td>
-                                    <a href="{% url 'show-faculty' faculty.id %}" class="btn btn-outline-primary btn-sm">View Profile</a>
-                                </td> {% endcomment %}
                                 <td> {{ faculty.skills }}</td> 
                             </tr> 
                         {% endif %}

@@ -30,6 +30,12 @@
         {% endif %}
             
         <div class="button-container" style="float: right;"> <!-- Using gap to space out buttons -->
+            {% if request.user.is_current_coordinator %}
+                <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
+                    <i class="fas fa-plus-circle icon" style="color: white;"></i> Create
+                </button>
+            {% endif %}
+            
             <button class="btn btn-sm btn-outline-secondary" id="toggle-defense-schedule-btn">
                 <i class="fas fa-compress"></i> Minimize Defense Schedule
             </button>
@@ -50,14 +56,8 @@
     
     <!-- Defense Schedule Section -->
     <div class="col-md-5" id="defense-schedule-column">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-            
+            <div class="d-flex align-items-center justify-content-between mb-3">
                 <h3>Defense Schedule</h3>
-                {% if request.user.is_current_coordinator %}
-                    <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
-                        <i class="fas fa-plus-circle icon" style="color: white;"></i> Create
-                    </button>
-                {% endif %}
             </div>
         
             <div id="defense-schedule-container" class="table-container" style="margin-top: 0px; min-height: 0px;">
