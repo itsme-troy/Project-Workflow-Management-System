@@ -69,12 +69,67 @@
                         {% endfor %}
 
                         <td class="action-cell">
-                            <span class="hint-button" onclick="showActions(this)">Click to show actions</span>
-                            <div class="action-buttons" style="display: none;">
-                                <a href="{% url 'select-panelist' project_data.project.id %}" class="btn btn-outline-secondary btn-sm">Select Panelist</a>
-                                <a href="{% url 'archive-project' project_data.project.id %}" class="btn btn-outline-info btn-sm" onclick="return confirm('Are you sure you want to archive this project?');">Archive Project</a>
-                            </div>
+                            {% if filter_type == 'projects' or filter_type == 'approved_projects' %}
+                                {% if user == project_data.project.adviser %}
+                                    <span class="hint-button" onclick="showActions(this)">Click row to show actions</span>
+                                    <div class="action-buttons small-btn" style="display: none;">
+                                        <a href="{% url 'select-panelist' project_data.project.id %}"
+                                           class="btn btn-outline-secondary btn-sm">Select Panelist</a> 
+                                        <a href="{% url 'reject-project' project_data.project.id %}"
+                                           class="btn btn-outline-danger btn-sm"
+                                           onclick="return confirm('Are you sure you want to reject this project? This will move it to the Proposals section.');">
+                                           Reject Project
+                                        </a> 
+                                        <a href="{% url 'delete-project' project_data.project.id %}"
+                                           class="btn btn-outline-danger btn-sm"
+                                           onclick="return confirm('Are you sure you want to delete this project?');">
+                                           Delete Project
+                                        </a> 
+                                    </div>
+                                {% endif %}
+                            
+                            {% elif filter_type == 'proposals' %}
+                                {% if user == project_data.project.adviser %}
+                                    <span class="hint-button" onclick="showActions(this)">Click row to show actions</span>
+                                    <div class="action-buttons small-btn" style="display: none;">
+                                        <a href="{% url 'accept-proposal' project_data.project.id %}"
+                                           class="btn btn-outline-success btn-sm"
+                                           onclick="return confirm('Are you sure you want to accept this proposal? Accepting will automatically decline other pending proposals received from this group.');">
+                                           Accept Proposal
+                                        </a> 
+                                        <a href="{% url 'add-comments' project_data.project.id %}"
+                                           class="btn btn-outline-secondary btn-sm">Add Comments</a>
+                                        {% if project_data.project.status != 'declined' %}
+                                            <a href="{% url 'reject-proposal' project_data.project.id %}"
+                                               class="btn btn-outline-danger btn-sm"
+                                               onclick="return confirm('Are you sure you want to decline this proposal?');">
+                                               Decline Proposal
+                                            </a> 
+                                        {% endif %}
+                                        {% if project_data.project.status == 'declined' %}
+                                            <a href="{% url 'delete-proposal' project_data.project.id %}"
+                                               class="btn btn-outline-danger btn-sm"
+                                               onclick="return confirm('Are you sure you want to delete this proposal?');">
+                                               Delete Proposal
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            
+                            {% elif filter_type == 'panelist' %}
+                                {% if user in project_data.panel %}
+                                    <span class="hint-button" onclick="showActions(this)">Click row to show actions</span>
+                                    <div class="action-buttons small-btn" style="display: none;">
+                                        <a href="{% url 'reject-panel-invitation' project_data.project.id %}"
+                                           class="btn btn-outline-danger btn-sm"
+                                           onclick="return confirm('Are you sure you want to reject the panel invitation for this project?');">
+                                           Reject Panelist Role
+                                        </a> 
+                                    </div>
+                                {% endif %}
+                            {% endif %}
                         </td>
+                        
 
                         <td>
                             <span class="badge 
