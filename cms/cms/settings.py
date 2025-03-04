@@ -30,7 +30,6 @@ if os.getenv("RUN_MAIN", None) != "true":  # Prevent duplicate Ngrok connections
 
 ABSTRACT_API_KEY = "27979452bb704be3a9fcdcaf1d5ab7b6"
 
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -51,7 +50,6 @@ INSTALLED_APPS = [
     'corsheaders',
  
 ]
-
 
 # Specify the ASGI application (for Django Channels)
 ASGI_APPLICATION = 'yourproject.asgi.application'
@@ -104,7 +102,6 @@ DATABASES = {
         "PASSWORD": "root",
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

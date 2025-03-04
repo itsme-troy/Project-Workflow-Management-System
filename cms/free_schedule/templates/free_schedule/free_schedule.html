@@ -10,17 +10,17 @@
 {% if user.is_authenticated %}
 
 <div class="table-container" style="margin: 0px; min-height: 1000px; width: 100%;"> 
-    <center> <h1 style="display: inline-block; margin-left: -60px">  Set Free Schedule  </h1> 
-    
-        <div class="button-container" style="float: right;">  <!-- Using gap to space out buttons -->
+    <div class="header-container">
+        <h1 class="page-title">Set Free Schedule</h1>
+        
+        <div class="header-buttons">
             <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
         </div>
-    </center> 
+    </div>
 
     <div class="row w-100">        
         <div class="col-md-8"> 
             <div class="my_calendar">
-                {% comment %} <h3> Calendar </h3> {% endcomment %}
                 <div id='calendar'></div>
             </div> 
         </div>
@@ -58,9 +58,9 @@
     </div>
 
     <!-- Debug -->
-    {% comment %} {% for event in events %}
-        <p>{{ event.title }} - {{ event.start|localtime }} to {{ event.end|localtime }}</p>
-    {% endfor %}   {% endcomment %}
+    {% for event in events %}
+        <p>{{ event.start|localtime }} to {{ event.end|localtime }}</p>
+    {% endfor %}  
 
     <!-- Include the modal -->
     {% include 'free_schedule/create_schedule_modal.html' %}

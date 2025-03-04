@@ -58,11 +58,9 @@ def all_sched(request): # still return
 
         out.append({
             'id': event.id,
-            'title': event.title,
             'start': start_local.isoformat(),
             'end': end_local.isoformat(),
             'color': event.color, 
-            
         })
     
    # Log the output for debugging

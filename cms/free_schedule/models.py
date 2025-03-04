@@ -4,7 +4,7 @@ from project.models import Defense_Application
 
 class Available_schedule(models.Model):
     id = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=255,null=True,blank=True)
+    # title = models.CharField(max_length=255,null=True,blank=True)
     start = models.DateTimeField(null=True,blank=True)
     end = models.DateTimeField(null=True,blank=True)
     faculty = models.ForeignKey(Faculty, null=True, on_delete=models.CASCADE)

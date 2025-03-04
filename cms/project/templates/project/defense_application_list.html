@@ -5,16 +5,17 @@
 
 {% block content %}
 
-<div class="table-container defense-application-list"> 
-    <center>
-        <h1 style="display: inline-block;"> Defense Application List</h1> 
+<div class="table-container defense-application-list">
+    <div class="header-container">
+        <h1 class="page-title"> Defense Application List</h1> 
 
-        <div style="margin-right: 10px; float: right;"> <!-- Changed to float right -->
-            <div class="button-container" style="float: right; margin-left: 15px;">  <!-- Using gap to space out buttons -->
-                <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left"></i> </a>
-            </div>
+        <div class="header-buttons">
+            <a href="javascript:history.back()" 
+                class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i>
+            </a>
         </div> 
-    </center>
+    </div>
 
 {% if not defense_applications %}
     <div class="alert custom-error-alert no-timeout-alert" role="alert">

@@ -894,15 +894,14 @@ tr:not(.active) .hint-button {
 
 .badge {
     display: inline-block;
-    padding: 6px 12px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    line-height: 1.2;
+    padding: 3px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.1;
     text-align: center;
     white-space: nowrap;
-    vertical-align: baseline;
-    border-radius: 5px;
-    text-transform: capitalize;  /* Ensure text is capitalized */
+    vertical-align: middle;
+    border-radius: 4px;
 }
 .badge-accepted { background-color: #5cb85c; color: white; }
 .badge-accepted-with-revisions { background-color: #5cb85c; color: white; }

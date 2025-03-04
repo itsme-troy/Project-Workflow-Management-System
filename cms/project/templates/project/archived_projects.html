@@ -4,7 +4,6 @@
 
 {% block content %} <!-- content of all web pages go -->
 
-
 <div class="table-container"> 
     <div class="header-container">
         <h1 class="page-title">Archived Projects </h1>
@@ -96,7 +95,6 @@
         </table>  <hr/> 
   </div>
 
-{% endif %}
     <nav aria-label="Approved Projects Pagination">
         <ul class="pagination justify-content-center">
             {% if approved_page_obj.has_previous %}
@@ -118,6 +116,8 @@
     </nav>
   
 </div>
+
+{% endif %}
     <script>
         function toggleActions(row) {
             // Remove active class from all rows

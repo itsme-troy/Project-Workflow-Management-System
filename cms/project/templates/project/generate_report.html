@@ -58,10 +58,6 @@
                     {{ project_data.project }}
                 </a>
             </td>
-              {% comment %} <td>{{ project_data.project.proponents }}</td> {% endcomment %}
-
-
-
               <td>
                     <a href="{% url 'show-faculty' project_data.project.adviser.id %}">
                       {{ project_data.project.adviser.last_name }}

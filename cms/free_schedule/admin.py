@@ -5,8 +5,8 @@ from .models import Available_schedule
 
 @admin.register(Available_schedule)
 class Available_scheduleAdmin(admin.ModelAdmin): 
-    fields = ( 'title', 'start', 'end', 'faculty', 'color') #'title',
-    list_display = ( 'title','start', 'end', 'faculty') # 'title',
+    fields = ( 'start', 'end', 'faculty', 'color') 
+    list_display = ('start', 'end', 'faculty') 
 
 
     

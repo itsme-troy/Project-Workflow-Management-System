@@ -3,21 +3,25 @@
 
 {% block content %} <!-- content of all web pages go -->
 
-<div class="card mx-auto shadow-lg" style="max-width: 1500px; border-radius: 15px; padding: 35px; margin-top: 10px">
+<div class="table-container"> 
+    <div class="header-container">
+        <h1 class="page-title">Senior Project Ideas</h1>
 
-    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0;">
-        <center> <h1 style="margin: 0;">Senior Project Ideas</h1> </center>
-    
-        <div style="display: flex; gap: 10px;">
+        <div class="header-buttons">
             {% if request.user.role == "FACULTY" %}
                 <a href="{% url 'submit-project-idea' %}" class="btn btn-add-proposal" style="padding: 10px 20px; border-radius: 5px; background-color: #007bff; color: white; text-decoration: none; transition: background-color 0.3s;">
                     <i class="fas fa-plus"></i> Submit Project Idea
                 </a>
             {% endif %}
-            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">    <i class="fas fa-arrow-left"></i></a>
-        </div>
-    </div> </br>
 
+            <a href="javascript:history.back()" 
+                class="btn btn-outline-secondary btn-sm">  
+                <i class="fas fa-arrow-left"></i>
+            </a>
+
+        </div>
+    </div>
+    
 {% if not project_ideas %} <!-- Check if there are no project ideas -->
         
     <center>

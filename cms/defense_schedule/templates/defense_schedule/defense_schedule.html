@@ -19,32 +19,35 @@
 {% if user.is_authenticated %}
 
 <div class="table-container" style="margin: 0px; overflow-x: hidden; height=100%" > 
+    <div class="header-container">
+        <h1 class="page-title"> Calendar </h1>
 
-    <center> <h1 style="display: inline-block; margin-left: -80px"> Calendar </h1> 
-        {% if request.user.is_current_coordinator %}
-            <div class="btn-sm" style="float: left;">
-                    <a href="{% url 'view-schedule' %}" class="btn btn-primary btn-sm">
-                        <i class="fas fa-calendar-alt icon icon-margin"></i> Mutual Availability 
-                    </a>
-            </div> 
-        {% endif %}
-            
-        <div class="button-container" style="float: right;"> <!-- Using gap to space out buttons -->
+        <div class="header-buttons">
+
             {% if request.user.is_current_coordinator %}
+       
+               
                 <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
-                    <i class="fas fa-plus-circle icon" style="color: white;"></i> Create
+                    <i class="fas fa-plus-circle icon" style="color: white;"></i> Create Schedule
                 </button>
+
+                <button class="btn btn-sm btn-outline-secondary" id="toggle-defense-schedule-btn">
+                    <i class="fas fa-compress"></i> Minimize Schedule
+                </button>
+                <button class="btn btn-sm btn-outline-secondary d-none" id="maximize-defense-schedule-btn">
+                    <i class="fas fa-expand"></i> Maximize Schedule
+                </button>
+
+                <a href="{% url 'view-schedule' %}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-calendar-alt icon icon-margin"></i> Mutual Availability 
+                </a>
+
+                <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">   <i class="fas fa-arrow-left"></i> </a>
+            </div>
             {% endif %}
-            
-            <button class="btn btn-sm btn-outline-secondary" id="toggle-defense-schedule-btn">
-                <i class="fas fa-compress"></i> Minimize Defense Schedule
-            </button>
-            <button class="btn btn-sm btn-outline-secondary d-none" id="maximize-defense-schedule-btn">
-                <i class="fas fa-expand"></i> Maximize Defense Schedule
-            </button>
-            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">   <i class="fas fa-arrow-left"></i> </a>
         </div>
-     
+
+          
     </center> 
     <div class="row w-100">
         <div class="col-md-7" id="calendar-column" style="position: relative; margin-left: 0px;">
@@ -56,8 +59,8 @@
     
     <!-- Defense Schedule Section -->
     <div class="col-md-5" id="defense-schedule-column">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <h3>Defense Schedule</h3>
+            <div class="header-container">
+                <h1 class="page-title">Defense Schedule</h1>
             </div>
         
             <div id="defense-schedule-container" class="table-container" style="margin-top: 0px; min-height: 0px;">
@@ -68,7 +71,7 @@
             
                 <!-- Table with the same scrollable behavior -->
                 <div class="table-scroll-area" style="overflow-x: auto;">
-                    <table class="table table-striped mt-3">
+                    <table class="table table-striped mt-3 student-table">
                         <thead>
                             <tr>
                                 <th scope="col" style="width: 200px;"> Date </th>
@@ -84,16 +87,16 @@
                             <tr>
                                 <td style="padding: 8px; white-space: nowrap;">
                                     {% with start_date=event_data.event.start|date:"M. d, Y" %}
-                                    {% with end_date=event_data.event.end|date:"M. d, Y" %}
-                                        {% if start_date == end_date %}
-                                            {{ event_data.event.start|date:"M. d, Y" }} <br>
-                                            Start: {{ event_data.event.start|date:"g:i a" }} <br>
-                                            End: {{ event_data.event.end|date:"g:i a" }} <br>
-                                        {% else %}
-                                            Start: {{ event_data.event.start|date:"M. d, Y, g:i a" }} <br>
-                                            End: {{ event_data.event.end|date:"M. d, Y, g:i a" }}
-                                        {% endif %}
-                                    {% endwith %}
+                                        {% with end_date=event_data.event.end|date:"M. d, Y" %}
+                                            {% if start_date == end_date %}
+                                                {{ event_data.event.start|date:"M. d, Y" }} <br>
+                                                {{ event_data.event.start|date:"g:i a" }} <br>
+                                                {{ event_data.event.end|date:"g:i a" }} <br>
+                                            {% else %}
+                                                {{ event_data.event.start|date:"M. d, Y, g:i a" }} <br>
+                                                {{ event_data.event.end|date:"M. d, Y, g:i a" }}
+                                            {% endif %}
+                                        {% endwith %}
                                     {% endwith %}
                                 </td>
                                 

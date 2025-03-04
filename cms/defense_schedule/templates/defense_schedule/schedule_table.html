@@ -10,21 +10,23 @@
 
 <!-- Increase the container size by setting a larger width and padding -->
 <div class="table-container" style="overflow-x: auto; width: 100%; height: 100vh; margin: 0px;">
+    <div class="header-container">
+        <h1 class="page-title"> Defense Schedule </h1> 
 
-    <center> <h1 style="display: inline-block; margin-left: -200px"> Defense Schedule </h1> 
-        {% if request.user.is_current_coordinator %}
-            <div class="btn-sm" style="float: left;">
-                    <a href="{% url 'view-schedule' %}" class="btn btn-primary btn-sm">
-                        <i class="fas fa-calendar-alt icon icon-margin"></i>Mutual Availability
-                    </a>
-            </div> 
-        {% endif %}
-            
-        <div style="float: right;">  <!-- Using gap to space out buttons -->
-            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">   <i class="fas fa-arrow-left"></i> </a>
+        <div class="header-buttons">
+            {% if request.user.is_current_coordinator %}
+                <a href="{% url 'view-schedule' %}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-calendar-alt icon icon-margin"></i>Mutual Availability
+                </a>
+            {% endif %}
+            <a href="javascript:history.back()"
+                class="btn btn-outline-secondary btn-sm">  
+                <i class="fas fa-arrow-left"></i> 
+            </a>
+
         </div>
-
-    </center> 
+    </div>
+            
     <div class="row w-100">
         <div class="col-md-12">
                 <div>
