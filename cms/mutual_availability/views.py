@@ -120,9 +120,6 @@ def view_schedule(request):
         messages.error(request, "Please login to view this page")
         return redirect('login')
 
-
-
-
     project_id = request.GET.get('project')
 
     if project_id and project_id.isdigit():

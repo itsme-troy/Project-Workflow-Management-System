@@ -8,25 +8,22 @@
 {% endblock %}
 {% block content %}
 
-
 <div class="table-container"> 
+    <div class="header-container">
+        <h1 class="page-title">My Defense Application </h1> 
 
-<div style="display: flex; justify-content: space-between; align-items: center;"> <!-- Flex container for header and button -->
-    <h1 style="display: inline-block;">My Submitted Defense Application</h1> <!-- Keep the title inline -->
-    {% comment %} {% if request.user.is_authenticated and user_group and project and project.status == 'approved' and not pending_phases_count >= 1 %}
-        <!-- Add Proposal Button --> {% endcomment %}
-        <div class="button-container"> <!-- Button container -->
+        <div class="header-buttons">
             <a href="{% url 'submit-defense-application' %}" class="btn btn-outline-success btn-sm">
-                <i class="fas fa-plus"></i> Submit Defense Application
+                <i class="fas fa-plus"></i> Submit  Application
             </a>
-            <div class="button-container" style="float: right;">  <!-- Using gap to space out buttons -->
-                <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
-            </div>
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i>
+            </a>
         </div>
-    {% comment %} {% endif %} {% endcomment %}
-</div>
+    </div>
+         
 {% if not application_data %}
-    <center>
+    <center> </br>
         <div class="alert custom-info-alert text-center no-timeout-alert" role="alert">
             <h5> No defense applications found for your project group. </h5> 
         </div> 

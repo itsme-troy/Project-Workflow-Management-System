@@ -3,10 +3,16 @@
 <link rel="stylesheet" href="{% static 'css/custom.css' %}">
 {% block content %} <!-- content of all web pages go -->
 
-{% if user.is_authenticated %}
-    {% if user.is_current_coordinator %} 
-        <h1> Select Coordinator chosen Panelist </h1> <br/> 
-        
+<div class="table-container">
+    <div class="header-container">
+        <h1 class="page-title">Coordinator Panelist Selection</h1> 
+
+        <div class="header-buttons">
+            <a href="{% url 'coordinator-approval-student' %}" class="btn btn-outline-danger btn-sm"> Cancel </a>
+        </div>
+    </div>
+
+
         <!-- Display form errors -->
         {% if form.errors %}
          <div class="alert alert-danger">
@@ -29,20 +35,8 @@
             <br/> 
             <input type="submit" value="Update"
             class="btn btn-secondary"> 
-            <a href="{% url 'coordinator-projects' %}" class="btn btn-outline-danger btn-sm"> Cancel </a>
-        {% else %}
-            <h2> Access Denied! </h2> 
-            <p> Only the Coordinator can update this project...</p>
-         
-           
-        {% endif %}
-{% else %}
-    <h1> Sorry! You must be Logged In to view This Page... </h1> 
-        </br> 
-    <a href="{% url 'login' %}">Login Here! </a> 
 
-{% endif %} 
-
+</div>
 <script>
     document.getElementById('CoordinatorSelectPanelistForm').onsubmit = function() {
         // Enable the proponents and adviser fields before submitting the form

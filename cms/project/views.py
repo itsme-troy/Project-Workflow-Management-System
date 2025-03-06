@@ -1178,14 +1178,17 @@ def my_defense_application(request):
     
     if not project_group:
         messages.error(request, "You are not part of any project group.")
-        if request.user.role == "STUDENT": 
-            return redirect('home-student')
-        elif request.user.role == "FACULTY": 
-            return redirect('home-faculty')
-        elif request.user.is_current_coordinator:
-            return redirect('coordinator-dashboard')
-        else: 
-            return redirect('home')
+        if request.user.is_authenticated: 
+            if request.user.role == "STUDENT": 
+                return redirect('home-student')
+            elif request.user.role == "FACULTY": 
+                return redirect('home-faculty')
+            elif request.user.is_current_coordinator:
+                return redirect('coordinator-dashboard')
+            else: 
+              return redirect('home')
+        else:
+             return redirect('home')
     
     # Subquery to fetch the latest submission date per project
     latest_application_date_subquery = Defense_Application.objects.filter(
@@ -1881,7 +1884,7 @@ def add_project_group(request):
     
     if approved_groups.exists():
         messages.error(request, "You are already part of an approved project group and cannot create a new one.")
-        return redirect('my-project-group-waitlist')
+        return redirect('my-project-group')
 
     # Check for pending project groups
     pending_groups = Project_Group.objects.filter(proponents=request.user, approved=False)

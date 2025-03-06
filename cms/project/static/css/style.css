@@ -1,19 +1,18 @@
-.fa-lightbulb { color: #ffd700; }
+/* .fa-lightbulb { color: #ffd700; }
 .fa-brain { color: #4169e1; }
 .fa-plus-circle { color: #32cd32; }
 .fa-home { color:#00ff08;  }
 .fa-user-friends { color: #6fbebe; }
-.fa-user-graduate { color: #b340e0; }  /* Purple - represents academic achievement */
+.fa-user-graduate { color: #b340e0; } 
 .fa-chalkboard-teacher { color: #ff7700; } 
 .fa-users { color: #ff2200;}
-.fa-layer-group { color: #aaaaaa; /* Neutral gray */}
+.fa-layer-group { color: #aaaaaa;}
 .fa-cog { color: #368aff; } 
-.fa-hourglass-half {   color: #afd6ff; /* Blue to match the theme */}
-.fa-user-plus {   color: #6cff8e; /* Green for positive action */}
-.fa-plus-circle {color: #28a745;}
-.fa-shield-alt { color: #13e3e3; /* Dark slate gray - represents security/protection */ }
-.fa-file-contract { color: #e0b4ff; /* Indigo - represents official/formal documents */ }
-.fa-file-upload { color: #befcfc; /* Teal - represents file system actions */ }
+.fa-hourglass-half {   color: #afd6ff;}
+.fa-user-plus {   color: #28a745;} 
+.fa-shield-alt { color: #13e3e3; }
+.fa-file-contract { color: #e0b4ff; }
+.fa-file-upload { color: #befcfc; } */
 
 .icon-margin {
     margin-right: 10px; /* can adjust value as xneeded */
@@ -112,12 +111,19 @@
 
 /* Optional: Ensure table headers have a consistent max-width */
 .table-container .table th {
+    vertical-align: middle;
     max-width: 180px;              /* Adjust max-width for header cells */
     background-color: #343a40;     /* Dark background for header */
     color: white;                  /* White text */
     text-align: center;            /* Center text in header */
 }
 
+.column-title {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Ensures text and icons are aligned properly */
+    gap: 5px; /* Adds space between text and icon */
+}
 .table-container .table tbody tr:hover{
     background-color: #f8f9fa; /* Light gray background */
     transition: background-color 0.3s ease; /* Smooth transition */
@@ -469,6 +475,7 @@ h1, h2, h3, h4 {
 
 /* Form Styling */
 form {
+    width: 100%;
     max-width: 800%; /* Limit form width */
     margin: 0 auto;
     padding: 20px;
@@ -600,7 +607,7 @@ textarea {
 /* Outline style for btn-outline-primary */
 .btn-outline-primary {
     background-color: transparent;
-    color: #007bff; /* Primary color for text */
+    color: #007bff; /* Primary color for text */ 
     border-color: #007bff; /* Primary color for border */
 }
 
@@ -608,6 +615,7 @@ textarea {
     color: #fff; /* Change text to white on hover */
     background-color: #007bff; /* Primary color for background */
     border-color: #007bff; /* Retain primary color for border */
+
 }
 /* Optional: Active state */
 .btn-outline-primary:active, .btn-outline-primary:focus {
@@ -832,7 +840,7 @@ tr.active .action-buttons {
     border-color: #dc3545; /* Keep the border red */
 }
 
-.btn-outline-danger.btn-sm {
+.btn-outline-danger .btn-sm {
     padding: 0.25rem 0.5rem; /* Smaller padding for small button */
     font-size: 0.875rem; /* Slightly smaller font size */
     border-radius: 0.25rem; /* Slightly less rounded corners */
@@ -865,6 +873,19 @@ tr.active .action-buttons {
 }
 
 
+
+/* Hint button */
+.hint-button {
+    color:grey;
+    background: none;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.5; /* Optional for consistent spacing */
+}
 
 /* Hint button */
 .hint-button {
@@ -1011,10 +1032,10 @@ a {
 }
 a:hover {
     color: #0055ff; /* Darker blue on hover */
-    text-decoration: underline; /* Underline on hover */
+    text-decoration: none; /* Underline on hover */
 }
 a:hover, a:focus {
-    text-decoration: underline; /* Keep the underline on hover/focus */
+    text-decoration: none; /* Keep the underline on hover/focus */
     color: inherit; /* Maintain the inherited color */
 }
 
@@ -1707,3 +1728,26 @@ body {
 }
 
 
+button {
+    padding: 10px 20px; /* Ensures consistent padding */
+    font-size: 16px; /* Matches font sizes */
+    border-radius: 5px; /* Adds consistent border radius */
+}
+
+.submit-btn {
+    background-color: blue;
+    color: white;
+    border: none;
+}
+
+.cancel-btn {
+    background-color: red;
+    color: white;
+    border: none;
+}
+
+.submit-btn, .cancel-btn {
+    width: 100px; /* Ensures same width */
+    height: 40px; /* Ensures same height */
+    text-align: center;
+}

@@ -3,147 +3,152 @@
 
 {% block content %} <!-- content of all web pages go -->
 
-<!-- adviser and panelist checkbox instantly updates faculty eligibility -->
-<form action="" method=POST> 
-    {% csrf_token %} 
-    <center>
-    <h1 style="display: inline-block;"> Faculty Eligibility Approval Form </h1> 
-    <div class="text-start" style="float: left;">
-        <a href="{% url 'coordinator-approval-student' %}" class="btn btn-primary">
-            <i class="fas fa-user-graduate icon icon-margin"></i> Go to Student Approval
-        </a>
-    </div> 
-    
-    <div style="margin-right: 10px; float: right;"> <!-- Changed to float right -->
-        
-        <div class="button-container" style="float: right; margin-left: 15px;">  <!-- Using gap to space out buttons -->
-            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+
+<div class="table-container">
+    <div class="header-container">
+        <h1 class="page-title"> Faculty Eligibility Approval Form</h1>
+        <div class="header-buttons">
+            <a href="{% url 'coordinator-approval-student' %}" class="faculty-btn">
+                <i class="fas fa-user-graduate icon icon-margin"></i>Student 
+            </a>
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">  
+                <i class="fas fa-arrow-left"></i>
+            </a>
         </div>
-    </div> 
-</center>
-   
-</br>
-<div class="help-text" style="margin-bottom: 1rem; text-align: left;">
-    <p style="font-size: 0.9rem; color: #6c757d;">
-        Note: Click the "Eligibility" column header to toggle checkboxes for Faculty eligibility selection.
-    </p>
-</div>
-    
-<table class="table table-hover table-bordered">  
-    <thead> 
-        <tr> 
-            <th scope="col"> # </th> 
-            <th scope="col" class="picture-column">Picture</th> 
-            <th scope="col"> Name</th>
-            <th scope="col" style="width: 100px;" onclick="toggleCheckboxes('adviser-column')"> Adviser
-                <span class="hint-button" style="color:white;" title="Click to toggle eligibility checkboxes">?</span>  </th> 
-
-            <th scope="col" style="width: 100px;" onclick="toggleCheckboxes('panel-column')"> Panelist
-                <span class="hint-button" style="color:white;" title="Click to toggle eligibility checkboxes">?</span> </th> 
-
-            <th scope="col" class="remarks-column" >
-                Remarks </th>
-            <th scope="col" style="width: 300px;"> Actions </th>
-        </tr> 
-    </thead>  
-    <tbody>
-
-       {% for adviser in facultys %}
-    
-            <tr onclick="toggleActions(this)">
-                <td><strong>{{ forloop.counter|add:start_index }}</strong></td>
-                <td>
-                    {% if adviser.profile_image and adviser.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
-                        <img src="{{ adviser.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid larger-img">
-                  {% else %}
-                        <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table larger-img"> 
-                  {% endif %}
-                </td>
-
-                <td>
-                    <a href="{% url 'show-faculty' adviser.id %}">
-                        {{ adviser.first_name }} {{ adviser.last_name }}
-                    </a>
-                </td>
-
-                <td class="adviser-column">
-                    <div class="form-check">
-                        <input class="form-check-input faculty-eligibility-checkbox"
-                            type="checkbox" 
-                            {% if adviser.adviser_eligible %} checked="checked" {% endif %}
-                            data-faculty-id="{{ adviser.id }}"
-                            data-type="adviser">
-                    </div> 
-                </td>
-
-                <td class="panel-column">
-                    <div class="form-check">
-                        <input class="form-check-input faculty-eligibility-checkbox"
-                            type="checkbox" 
-                            {% if adviser.panel_eligible %} checked="checked" {% endif %}
-                            data-faculty-id="{{ adviser.id }}"
-                            data-type="panel">
-                    </div> 
-                </td>
-
-                <td class="remarks-cell">
-                    <div style="overflow-x: auto; white-space: nowrap;">
-                        {% if adviser.remarks %}
-                                {{ adviser.remarks }}
-                        {% else %}
-                            <span class="text-muted">No remarks</span>
-                        {% endif %}
-                    </div>  </td>
-
-                <td> 
-                    <span class="hint-button" onclick="showActions(this)">Click to show actions</span>   
-                    <div class="action-buttons small-btn" style="display: none;">
-                        
-                        <a href="{% url 'update-remarks' adviser.id %}" class="btn btn-outline-secondary btn-sm mb-1">
-                            Update remarks </a> 
-
-                        <a href="{% url 'delete-user' adviser.id %}" onclick="return confirm('Are you sure you want to delete this account?');">
-                            <button type="button" class="btn btn-outline-danger btn-sm">Delete User </button> </a>  
-                    </div> </td>
-            </tr> 
-        {% endfor %}
-    </tbody> 
-</table>
-<p class="help-text text-end">Click the "Eligibility" column header to display checkboxes.</p>
-
-<nav aria-label="Page navigation example">
-    <ul class="pagination justify-content-center">
-    
-        <!-- Ensures that both the filter and the pagination number persist across pages. -->
-        {% if facultys.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?filter={{ filter_type }}&page=1">&laquo; First</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="?filter={{ filter_type }}&page={{ facultys.previous_page_number }}">Previous</a>
-            </li>
-        {% endif %}
-
-        {% for i in nums %}
-        <li class="page-item {% if forloop.counter == facultys.number %}disabled{% endif %}">
-            <a class="page-link" href="?filter={{ filter_type }}&page={{ forloop.counter }}">{{ forloop.counter }}</a>
-        </li>
-        {% endfor %}
-
-        {% if facultys.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?filter={{ filter_type }}&page={{ facultys.next_page_number }}">Next</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="?filter={{ filter_type }}&page={{ facultys.paginator.num_pages }}">Last &raquo;</a>
-            </li>
-        {% endif %}
+    </div>
+    <!-- adviser and panelist checkbox instantly updates faculty eligibility -->
+    <form action="" method=POST> 
+        {% csrf_token %} 
+             
+    <div class="help-text" style="margin-bottom: 1rem; text-align: left;">
+        <p style="font-size: 0.9rem; color: #6c757d;">
+            Note: Click the "Eligibility" column header to toggle checkboxes for Faculty eligibility selection.
+        </p>
+    </div>
         
-        <li class="page-item ml-auto disabled">
-            <a href="#" class="page-link"> Page {{ facultys.number }} of {{ students.paginator.num_pages }} </a>
-        </li>
-    </ul>
-</nav>
+    <table class="table table-hover table-bordered student-table">  
+        <thead> 
+            <tr> 
+                <th scope="col"> # </th> 
+                <th scope="col" class="picture-column">Picture</th> 
+                <th scope="col"> Name</th>
+                <th scope="col" style="width: 120px;" onclick="toggleCheckboxes('adviser-column')"> 
+                    <span class="column-title">
+                        Adviser 
+                        <span class="hint-button" style="color:white;" title="Click to toggle eligibility checkboxes">?</span>
+                    </span>
+                </th>
+
+                <th scope="col" style="width: 120px;" onclick="toggleCheckboxes('panel-column')"> 
+                    <span class="column-title">
+                      Panelist
+                    <span class="hint-button" style="color:white;" title="Click to toggle eligibility checkboxes">?</span>
+                </th> 
+
+                <th scope="col" class="remarks-column" >
+                    Remarks </th>
+                <th scope="col" class="actions-column">Actions</th>
+            </tr> 
+        </thead>  
+        <tbody>
+
+        {% for adviser in facultys %}
+        
+                <tr onclick="toggleActions(this)">
+                    <td><strong>{{ forloop.counter|add:start_index }}</strong></td>
+                    <td>
+                        {% if adviser.profile_image and adviser.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                            <img src="{{ adviser.profile_image.url }}" alt="profile_pic" class="user-pic-table img-fluid larger-img">
+                    {% else %}
+                            <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic-table larger-img"> 
+                    {% endif %}
+                    </td>
+
+                    <td>
+                        <a href="{% url 'show-faculty' adviser.id %}">
+                            {{ adviser.first_name }} {{ adviser.last_name }}
+                        </a>
+                    </td>
+
+                    <td class="adviser-column">
+                        <div class="form-check">
+                            <input class="form-check-input faculty-eligibility-checkbox"
+                                type="checkbox" 
+                                {% if adviser.adviser_eligible %} checked="checked" {% endif %}
+                                data-faculty-id="{{ adviser.id }}"
+                                data-type="adviser">
+                        </div> 
+                    </td>
+
+                    <td class="panel-column">
+                        <div class="form-check">
+                            <input class="form-check-input faculty-eligibility-checkbox"
+                                type="checkbox" 
+                                {% if adviser.panel_eligible %} checked="checked" {% endif %}
+                                data-faculty-id="{{ adviser.id }}"
+                                data-type="panel">
+                        </div> 
+                    </td>
+
+                    <td class="remarks-cell">
+                        <div style="overflow-x: auto; white-space: nowrap;">
+                            {% if adviser.remarks %}
+                                    {{ adviser.remarks }}
+                            {% else %}
+                                <span class="text-muted">No remarks</span>
+                            {% endif %}
+                        </div>  </td>
+
+                    <td> 
+                        <span class="hint-button" onclick="showActions(this)">Click to show actions</span>   
+                        <div class="action-buttons small-btn" style="display: none;">
+                            
+                            <a href="{% url 'update-remarks' adviser.id %}" class="btn btn-outline-secondary btn-sm mb-1">
+                                Update  </a> 
+
+                            <a href="{% url 'delete-user' adviser.id %}" onclick="return confirm('Are you sure you want to delete this account?');">
+                                <button type="button" class="btn btn-outline-danger btn-sm">Delete  </button> </a>  
+                        </div> </td>
+                </tr> 
+            {% endfor %}
+        </tbody> 
+    </table>
+    <p class="help-text text-end">Click the "Eligibility" column header to display checkboxes.</p>
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+        
+            <!-- Ensures that both the filter and the pagination number persist across pages. -->
+            {% if facultys.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?filter={{ filter_type }}&page=1">&laquo; First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?filter={{ filter_type }}&page={{ facultys.previous_page_number }}">Previous</a>
+                </li>
+            {% endif %}
+
+            {% for i in nums %}
+            <li class="page-item {% if forloop.counter == facultys.number %}disabled{% endif %}">
+                <a class="page-link" href="?filter={{ filter_type }}&page={{ forloop.counter }}">{{ forloop.counter }}</a>
+            </li>
+            {% endfor %}
+
+            {% if facultys.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?filter={{ filter_type }}&page={{ facultys.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?filter={{ filter_type }}&page={{ facultys.paginator.num_pages }}">Last &raquo;</a>
+                </li>
+            {% endif %}
+            
+            <li class="page-item ml-auto disabled">
+                <a href="#" class="page-link"> Page {{ facultys.number }} of {{ students.paginator.num_pages }} </a>
+            </li>
+        </ul>
+    </nav>
+</div>
 
 <script>
     function toggleCheckboxes(columnClass) {

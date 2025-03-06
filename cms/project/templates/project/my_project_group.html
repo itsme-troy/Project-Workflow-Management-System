@@ -4,37 +4,34 @@
 {% block content %}
 
 <div class="table-container">
+    <div class="header-container">
+        <h1 class="page-title">My Project Group</h1>
 
-<center> <h1 style="display: inline-block;"> My Project Group </h1> 
-    
-    {% if not groups_with_all_members %}
-        <!-- Button Container -->
-        <div style="float: left;">
-            <a href="{% url 'join-group-list' %}" class="btn btn-outline-success btn-sm">
-                <i class="fas fa-user-plus"></i> Join 
-            </a>
-            <a href="{% url 'add-project-group' %}" class="btn btn-outline-primary btn-sm">
-                <i class="fas fa-plus-circle"></i> Register 
-            </a>
-        </div> 
-    {% endif %}
-
-    <div style="float: right;">
-        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm" 
-        style="float: right;"> Back </a> 
-    </div> 
- </center> 
-</br>
+        <div class="header-buttons">
+                <a href="{% url 'join-group-list' %}" class="btn btn-outline-success btn-sm">
+                    <i class="fas fa-user-plus"></i> Join 
+                </a>
+                <a href="{% url 'add-project-group' %}" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-plus-circle"></i> Register 
+                </a>
+                <a href="javascript:history.back()" 
+                    class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left"></i> 
+                </a> 
+        </div>
+    </div>
 
     {% if not groups_with_all_members %}
+        </br>
         <div class="alert custom-info-alert text-center" role="alert">
             <h5>You are not part of any approved project groups.</h5>
         </div>
     {% else %}
+    </br> </br> 
         {% for group_data in groups_with_all_members %}
             <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">{{ group_data.group.name }}</h5>
+                <div class="card-header d-flex justify-content-start align-items-center gap-3">
+                    <span class="badge bg-primary px-3 py-2">Members: {{ group_data.total_members }}</span>
                 </div>
                 <div class="card-body">
                     <table class="table">

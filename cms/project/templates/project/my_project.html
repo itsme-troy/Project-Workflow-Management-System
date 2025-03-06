@@ -5,28 +5,28 @@
 
 
 <div class="table-container"> 
-        
-    <div style="display: flex; justify-content: space-between; align-items: center;"> <!-- Flex container for header and button -->
-        <h1 style="display: inline-block;"> My Project </h1> <!-- Keep the title inline -->
-        
-        <!-- Add Proposal Button -->
-        <div class="button-container" style="float: right;"> <!-- Button container -->
+    <div class="header-container">
+        <h1 class="page-title">My Project </h1> 
+
+        <div class="header-buttons">
             {% if not project %} 
                 <a href="{% url 'add-project' %}" class="btn btn-outline-success btn-sm">
                     <i class="fas fa-plus"></i> Submit Proposal
                 </a>
+                <a href="javascript:history.back()" 
+                    class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
             {% endif %}
-            
-            <div class=style="float: right;">  <!-- Using gap to space out buttons -->
-                <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
-            </div>
         </div>
+
     </div>
     
     {% if not project %} 
+        </br>
             </center>
             <div class="alert custom-info-alert" role="alert">
-                <h4> You Have No Approved Project yet. </h4>
+                <h5>You Have No Approved Project yet. </h5> 
             </div>
             </center>
     {% else %}

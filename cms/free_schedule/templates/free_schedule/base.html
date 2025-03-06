@@ -221,7 +221,7 @@
                     element.find('.fc-time').html(displayContent);  // Ensure you're targeting the correct element
 
                     // Remove the title from the event display by setting it to an empty string
-                    element.find('.fc-title').html('');
+                   // element.find('.fc-title').html('');
                  // Apply the color to the event
                     element.css({
                         'border': `2px solid ${eventColor}`,
@@ -241,14 +241,14 @@
                 
                     var startFormatted = formatDate(event.start); 
                     var endFormatted = formatDate(event.end); 
-                    var title = event.title;
+                   // var title = event.title;
                     var id = event.id;
 
                     $.ajax({
                         type: "GET",
                         url: 'update_sched',
                         data: {
-                            'title': title, 
+                           // 'title': title, 
                             'start': startFormatted, 
                             'end': endFormatted,
                             'id': id, 
@@ -257,7 +257,6 @@
                         success: function (data) {
                             refreshEventsList()
                             calendar.fullCalendar('refetchEvents');
-                            refreshEventsList(); // Refresh the events list
                             alert('Schedule Updated');
                         },
                         error: function (data) {
@@ -269,14 +268,14 @@
                 eventDrop: function (event) {
                     var startFormatted = formatDate(event.start); 
                     var endFormatted = formatDate(event.end); 
-                    var title = event.title;
+               //     var title = event.title;
                     var id = event.id;
 
                     $.ajax({
                         type: "GET",
                         url: 'update_sched',
                         data: {
-                            'title': title, 
+                        //    'title': title, 
                             'start': startFormatted, 
                             'end': endFormatted, 
                             'id': id

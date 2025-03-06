@@ -7,9 +7,15 @@
     
 {% block content %} <!-- content of all web pages go -->
 
-{% if user.is_authenticated %}
+<div class="table-container">
+    <div class="header-container">
+        <h1 class="page-title">  Add Project Comments </h1> 
+        <div class="header-buttons">
+            <a href="javascript:history.back()" class="btn btn-outline-danger btn-sm"> Cancel </a>
+        </div>
+    </div>
+    {% if user.is_authenticated %}
     {% if user == project.adviser %} 
-        <h1> Add Project Comments </h1> <br/> 
         <!--logged in user can be called by
         "user" which is already valid for every page -->
         {% comment %} Logged In user: {{ user }}
@@ -58,6 +64,7 @@
     <a href="{% url 'login' %}">Login Here! </a> 
 
 {% endif %}
+</div>
  
 <script>
     document.getElementById('addCommentsForm').onsubmit = function() {

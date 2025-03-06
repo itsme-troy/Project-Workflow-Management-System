@@ -7,26 +7,26 @@
 {% block content %}
 
 <div class="table-container"> 
-    
-<center> <h1 style="display: inline-block;"> My Project Group Waitlist </h1> 
-    
-    <!-- Button Container -->
-    <div class="button-container" style="float: left;">
-        <a href="{% url 'join-group-list' %}" class="btn btn-outline-success btn-sm">
-            <i class="fas fa-user-plus"></i> Join
-        </a>
-        <a href="{% url 'add-project-group' %}" class="btn btn-outline-primary btn-sm">
-            <i class="fas fa-plus-circle"></i> Register
-        </a>
-    </div>
-    
-    <div class="button-container" style="float: right;">
-        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm" 
-        style="float: right;"> Back </a> 
-    </div> </center> 
-    <br/>
+    <div class="header-container">
+        <h1 class="page-title">My Project Group Waitlist</h1>
 
+        <div class="header-buttons">
+            <a href="{% url 'join-group-list' %}" class="btn btn-outline-success btn-sm">
+                <i class="fas fa-user-plus"></i> Join
+            </a>
+            
+            <a href="{% url 'add-project-group' %}" class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-plus-circle"></i> Register
+            </a>
+
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+    </div>
+        
 {% if not groups_with_all_members%}
+    </br>
     <center>
         <div class="alert custom-info-alert" role="alert">
             <h5> No Project Group Invitations Available at the moment. </h5> 

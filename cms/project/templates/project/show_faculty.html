@@ -40,14 +40,14 @@
             <subsection class="user_details card">
                 <div class="header-container">
                     <div class="UserName">
-                        <h1 class="name">{{ faculty.first_name}} {{ faculty.last_name }}</h1>
+                        <h1 class="name">{{ faculty.first_name}} {{ faculty.last_name }}</h1></br>
                         <span class="role {{ faculty.role|lower }}">{{ faculty.role }}</span>
                     </div>
-                    <div class="button-container" style="display: flex; gap: 10px;">  <!-- Using gap to space out buttons -->
-                        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+                    <div class="header-buttons">  <!-- Using gap to space out buttons -->
                         {% if request.user.id == faculty.id %}
                             <a href="{% url 'update-user' %}" class="btn btn-outline-secondary btn-sm">Edit Profile</a> <!-- Edit Profile Button -->
                         {% endif %}
+                        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">  <i class="fas fa-arrow-left"></i></a>
                     </div>
                 </div>
                

@@ -7,225 +7,225 @@
 
 {% block content %} 
 
-<div class="dashboard">
-    <div class="main-content">
-        <header class="header-container">
-            <h2> 
-                <label for="">
-                    <span class="material-symbols-outlined">dashboard</span>
-                </label>  
-                Coordinator Dashboard
-            </h2>
+    <div class="dashboard">
+        <div class="main-content">
+            <header class="header-container">
+                <h2> 
+                    <label for="">
+                        <span class="material-symbols-outlined">dashboard</span>
+                    </label>  
+                    Coordinator Dashboard
+                </h2>
 
-            <div class="right-side">
-                    <button id="settings-btn" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#settingsModal">
-                        <i class="material-icons">settings</i> Settings
-                    </button>
-            
-                    <form id="searchForm" class="d-flex ms-auto" method="POST" action="{% url 'search-projects' %}" role="search">
-                        {% csrf_token %}
-                        <div class="search-wrapper">
-                            <span class="material-symbols-outlined search-icon">search</span>
-                            <input type="search" name="searched" placeholder="Search a project" class="form-control me-2" aria-label="Search" />
-                        </div>
-                        <button id="searchButton" class="btn btn-outline-primary" type="submit">Search</button>
-                    </form>
-                </div>
-            </header>
-        </div>
-
-    <main> 
-        
-            <div class="cards"> 
-                <!-- Wrap the card with an anchor tag to add the link -->
-               <a href="{% url 'coordinator-approval-student' %}" class="card-link">
-                   <div class="card-single"> 
-                       <div>
-                           <h1> {{ student_count }} </h1>
-                           <span class="card-title">  Students </span>
-                           </br>
-                           <p5> <span> Approval Required: {{ student_uneligible_count }} </span> </p5>
-                       </div>
-                       <div>
-                           <span><i class="fas fa-user-graduate icon icon-margin"></i></span>
-                       </div>
-                   </div>
-               </a>
-               
-               <a href="{% url 'coordinator-approval-faculty' %}" class="card-link">
-                   <div class="card-single"> 
-                       <div>
-                           <h1> {{ faculty_count}} </h1>
-                           <span class="card-title">  Faculty </span> </br>
-                           <span> Approval Required: </span> 
-                           <span>  Adviser: {{ adviser_uneligible_count }}</span> 
-                           <span> Panelist: {{ panel_uneligible_count }} </span> </br>
-                       </div>
-                       <div>
-                           <span> <i class="fas fa-chalkboard-teacher icon icon-margin"></i></span> 
-                       </div>
-                   </div> 
-               </a>
-   
-               
-               <a href="{% url 'list-project-group' %}" class="card-link">
-                   <div class="card-single"> 
-                       <div>
-                           <h1> {{ project_group_count }} </h1>
-                           <span class="card-title">  Project Groups </span>
-                       </div>
-                       <div>
-                           <span class="icon"><i class="fas fas fa-users icon icon-margin"></i></span> 
-                       </div>
-                   </div>
-               </a>
-   
-               <a href="{% url 'coordinator-projects' %}" class="card-link">
-                   <div class="card-single"> 
-                       <div>
-                           <h1> {{ project_count }} </h1>
-                           <span class="card-title"> Projects </span>
-                       </div>
-                       <div>
-                           <span class="icon"><i class="fas fa-project-diagram icon icon-margin"></i></span>
-                       </div>
-                   </div>
-               </a>
-   
-               <a href="{% url 'list-defense-applications' %}" class="card-link">
-                   <div class="card-single"> 
-                       <div>
-                           <h1> {{ defense_applications_count }} </h1>
-                           <span class="card-title"> Defense Applications </span>
-                       </div>
-                       <div>
-                           <span class="icon"><i class="fas fa-shield-alt icon icon-margin"></i> </span> 
-                       </div>
-                   </div>
-               </a>
-            
-               <a href="{% url 'defense-schedule' %}" class="card-link">
-                   <div class="card-single"> 
-                       <div>
-                           <h1> {{ defense_schedule_count }} </h1>
-                           <span class="card-title"> Defense Schedules  </span>
-                       </div>
-                       <div>
-                           <span class="icon"><i class="fas fa-calendar-alt icon icon-margin"></i></span> 
-                       </div>
-                   </div>
-               </a>
-           </div> 
-   
-           <div class="recent-grid">
-               <div class="projects"> 
-                   <div class="card">
-                       <div class="card-header"> 
-                           <h3> Recent Projects</h3>
-   
-                           <button class="see-all-button" onclick="window.location.href='{% url 'coordinator-projects' %}'">
-                                <span class="see-all-text">View all</span>
-                                <span class="material-symbols-outlined" style="color: white;">arrow_forward</span>
-                            </button>
-                       </div>
-   
-                       <div class="card-body"> 
-                           <div class="table-responsive">
-                            <table width="100%">
-                                <thead>
-                                    <tr>
-                                        <td>Project</td>
-                                        <td>Adviser</td>
-                                        <td>Status</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for project in latest_projects %}
-                                        <tr>
-                                            <td>
-                                                <a href="{% url 'show-project' project.id %}"> {{ project.title }} </a> </td>
-                                            
-                                            <td>
-                                                <a href= "{% url 'show-faculty' project.adviser.id %}">
-                                                {{ project.adviser.get_full_name|default:"No Adviser" }} </a>  </td>
-
-
-                                            <td style="display: flex; align-items: center; gap: 0.5rem;">
-                                                <span class="status 
-                                                    {% if project.status == 'pending' %}yellow
-                                                    {% elif project.status == 'approved' %}green
-                                                    {% elif project.status == 'declined' %}red
-                                                    {% endif %}
-                                                "></span>
-                                                <span>{{ project.status|title }}</span>
-                                            </td>
-                                        </tr>
-                                    {% empty %}
-                                        <tr>
-                                            <td colspan="3" class="text-center">No projects available.</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                   </div>
-               </div>
-           </div>
-   
-           <div class="customers"> 
-               <div class="card">
-                   <div class="card-header">
-                       <h3> Recent Users </h3>
-   
-                       <button class="see-all-button" onclick="window.location.href='{% url 'list-student' %}'">
-                            <span class="see-all-text">View All</span>
-                            <span class="material-symbols-outlined" style="color: white;">arrow_forward</span>
+                <div class="right-side">
+                        <button id="settings-btn" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                            <i class="material-icons">settings</i> Settings
                         </button>
-                   </div>
-
-                   <div class="card-body"> 
-                        <table width="100%">
-                                <thead>
-                                    <tr>
-                                        <td>Picture</td>
-                                        <td>Name</td>
-                                        <td>Role</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for user in recent_users %}
-                                    <tr class="projects" style="cursor: pointer;" onclick="redirectToUser('{{ user.get_role_display }}', {{ user.id }})">
-                                            <td> 
-                                                   <!-- Display the profile image, defaulting to the static default image if not set -->
-                                                {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
-                                                        <img src="{{ user.profile_image.url }}" alt="profile_pic" class="user-pic img-fluid"style="margin-left: 0px;">
-                                                {% else %}
-                                                        <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic" style="margin-left: 0px;"> 
-                                                {% endif %} </td> 
-
-                                            <td class="info"><!-- Display the user's full name -->
-                                                {{ user.get_full_name }} </td>
-                                            
-                                            <!-- Display the user's role -->
-                                            <td class="role"> <small> {{ user.get_role_display }} </small></td> 
-                                            
-                                        </tr> 
-                                    {% empty %}
-                                        <tr>
-                                            <td colspan="3" class="text-center">No recent users found.</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody> 
-                            </table> 
-                    </div>  
-                </div>
+                
+                        <form id="searchForm" class="d-flex ms-auto" method="POST" action="{% url 'search-projects' %}" role="search">
+                            {% csrf_token %}
+                            <div class="search-wrapper">
+                                <span class="material-symbols-outlined search-icon">search</span>
+                                <input type="search" name="searched" placeholder="Search a project" class="form-control me-2" aria-label="Search" />
+                            </div>
+                            <button id="searchButton" class="btn btn-outline-primary" type="submit">Search</button>
+                        </form>
+                    </div>
+                </header>
             </div>
 
-        {% include 'project/modals/settings_modal.html' %}
-    </main>
+        <main> 
+            
+                <div class="cards"> 
+                    <!-- Wrap the card with an anchor tag to add the link -->
+                <a href="{% url 'coordinator-approval-student' %}" class="card-link">
+                    <div class="card-single"> 
+                        <div>
+                            <h1> {{ student_count }} </h1>
+                            <span class="card-title">  Students </span>
+                            </br>
+                            <p5> <span> Approval Required: {{ student_uneligible_count }} </span> </p5>
+                        </div>
+                        <div>
+                            <span><i class="fas fa-user-graduate icon icon-margin"></i></span>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="{% url 'coordinator-approval-faculty' %}" class="card-link">
+                    <div class="card-single"> 
+                        <div>
+                            <h1> {{ faculty_count}} </h1>
+                            <span class="card-title">  Faculty </span> </br>
+                            <span> Approval Required: </span> 
+                            <span>  Adviser: {{ adviser_uneligible_count }}</span> 
+                            <span> Panelist: {{ panel_uneligible_count }} </span> </br>
+                        </div>
+                        <div>
+                            <span> <i class="fas fa-chalkboard-teacher icon icon-margin"></i></span> 
+                        </div>
+                    </div> 
+                </a>
+    
+                
+                <a href="{% url 'list-project-group' %}" class="card-link">
+                    <div class="card-single"> 
+                        <div>
+                            <h1> {{ project_group_count }} </h1>
+                            <span class="card-title">  Project Groups </span>
+                        </div>
+                        <div>
+                            <span class="icon"><i class="fas fas fa-users icon icon-margin"></i></span> 
+                        </div>
+                    </div>
+                </a>
+    
+                <a href="{% url 'coordinator-projects' %}" class="card-link">
+                    <div class="card-single"> 
+                        <div>
+                            <h1> {{ project_count }} </h1>
+                            <span class="card-title"> Projects </span>
+                        </div>
+                        <div>
+                            <span class="icon"><i class="fas fa-project-diagram icon icon-margin"></i></span>
+                        </div>
+                    </div>
+                </a>
+    
+                <a href="{% url 'list-defense-applications' %}" class="card-link">
+                    <div class="card-single"> 
+                        <div>
+                            <h1> {{ defense_applications_count }} </h1>
+                            <span class="card-title"> Defense Applications </span>
+                        </div>
+                        <div>
+                            <span class="icon"><i class="fas fa-shield-alt icon icon-margin"></i> </span> 
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="{% url 'defense-schedule' %}" class="card-link">
+                    <div class="card-single"> 
+                        <div>
+                            <h1> {{ defense_schedule_count }} </h1>
+                            <span class="card-title"> Defense Schedules  </span>
+                        </div>
+                        <div>
+                            <span class="icon"><i class="fas fa-calendar-alt icon icon-margin"></i></span> 
+                        </div>
+                    </div>
+                </a>
+            </div> 
+    
+            <div class="recent-grid">
+                <div class="projects"> 
+                    <div class="card">
+                        <div class="card-header"> 
+                            <h3> Recent Projects</h3>
+    
+                            <button class="see-all-button" onclick="window.location.href='{% url 'coordinator-projects' %}'">
+                                    <span class="see-all-text">View all</span>
+                                    <span class="material-symbols-outlined" style="color: white;">arrow_forward</span>
+                                </button>
+                        </div>
+    
+                        <div class="card-body"> 
+                            <div class="table-responsive">
+                                <table width="100%">
+                                    <thead>
+                                        <tr>
+                                            <td>Project</td>
+                                            <td>Adviser</td>
+                                            <td>Status</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for project in latest_projects %}
+                                            <tr>
+                                                <td>
+                                                    <a href="{% url 'show-project' project.id %}"> {{ project.title }} </a> </td>
+                                                
+                                                <td>
+                                                    <a href= "{% url 'show-faculty' project.adviser.id %}">
+                                                    {{ project.adviser.get_full_name|default:"No Adviser" }} </a>  </td>
 
 
-    <div >
+                                                <td style="display: flex; align-items: center; gap: 0.5rem;">
+                                                    <span class="status 
+                                                        {% if project.status == 'pending' %}yellow
+                                                        {% elif project.status == 'approved' %}green
+                                                        {% elif project.status == 'declined' %}red
+                                                        {% endif %}
+                                                    "></span>
+                                                    <span>{{ project.status|title }}</span>
+                                                </td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="3" class="text-center">No projects available.</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="customers"> 
+                <div class="card">
+                    <div class="card-header">
+                        <h3> Recent Users </h3>
+    
+                        <button class="see-all-button" onclick="window.location.href='{% url 'list-student' %}'">
+                                <span class="see-all-text">View All</span>
+                                <span class="material-symbols-outlined" style="color: white;">arrow_forward</span>
+                            </button>
+                    </div>
+
+                    <div class="card-body"> 
+                            <table width="100%">
+                                    <thead>
+                                        <tr>
+                                            <td>Picture</td>
+                                            <td>Name</td>
+                                            <td>Role</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in recent_users %}
+                                        <tr class="projects" style="cursor: pointer;" onclick="redirectToUser('{{ user.get_role_display }}', {{ user.id }})">
+                                                <td> 
+                                                    <!-- Display the profile image, defaulting to the static default image if not set -->
+                                                    {% if user.profile_image and user.profile_image.url != '/media/static/images/default_profile_pic.jpg' %}
+                                                            <img src="{{ user.profile_image.url }}" alt="profile_pic" class="user-pic img-fluid"style="margin-left: 0px;">
+                                                    {% else %}
+                                                            <img src="{% static '/images/default_profile_pic.jpg' %}" class="img-fluid user-pic" style="margin-left: 0px;"> 
+                                                    {% endif %} </td> 
+
+                                                <td class="info"><!-- Display the user's full name -->
+                                                    {{ user.get_full_name }} </td>
+                                                
+                                                <!-- Display the user's role -->
+                                                <td class="role"> <small> {{ user.get_role_display }} </small></td> 
+                                                
+                                            </tr> 
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="3" class="text-center">No recent users found.</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody> 
+                                </table> 
+                        </div>  
+                    </div>
+                </div>
+
+            {% include 'project/modals/settings_modal.html' %}
+        </main>
+
+
+        <div >
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const settingsModal = document.getElementById('settingsModal');

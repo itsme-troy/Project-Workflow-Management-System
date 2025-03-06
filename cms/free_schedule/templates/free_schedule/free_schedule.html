@@ -58,11 +58,11 @@
     </div>
 
     <!-- Debug -->
-    {% for event in events %}
+    {% comment %} {% for event in events %}
         <p>{{ event.start|localtime }} to {{ event.end|localtime }}</p>
     {% endfor %}  
 
-    <!-- Include the modal -->
+    <!-- Include the modal --> {% endcomment %}
     {% include 'free_schedule/create_schedule_modal.html' %}
     
     {% else %}

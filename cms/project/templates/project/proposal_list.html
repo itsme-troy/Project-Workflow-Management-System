@@ -3,20 +3,22 @@
 
 {% block content %} <!-- content of all web pages go -->
 
-<div class="table-container"> 
-    <h1 style="display: inline-block;"> My Submitted Proposals </h1>
-    <div class="button-container" style="float: right;">
-        <a href="{% url 'add-project' %}" class="btn btn-outline-success btn-sm">
-            <i class="fas fa-plus"></i> Submit Proposal
-        </a>
+<div class="table-container">
+    <div class="header-container">
+        <h1 class="page-title">My Submitted Proposals </h1> 
+
+        <div class="header-buttons">
+            <a href="{% url 'add-project' %}" class="btn btn-outline-success btn-sm">
+                <i class="fas fa-plus"></i> Submit Proposal
+            </a>
+        </div>
     </div>
-    <br/>
 
         <!-- Alert for no projects -->
     {% if not projects %}
-    <center>
+    <center> </br>
         <div class="alert custom-info-alert" role="alert">
-            <h4> No proposals submitted yet!</h4>
+            <h5>No proposals submitted yet!</h5> 
         </div>
     </center> 
     

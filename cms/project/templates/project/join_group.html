@@ -4,15 +4,17 @@
    
 
 <div class="table-container">
-        <center>
-            
-            <h1 style="display: inline-block;"> Available Project Groups</h1> 
-            <div class="button-container" style="float: right;">
-                <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
-            </div>
-        </center>
+    <div class="header-container">
+        <h1 class="page-title">Available Project Group </h1> 
 
-
+        <div class="header-buttons">
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+ 
+    </div>
+    
         {% if not groups_with_all_members %}
             <div class="alert custom-info-alert text-center" role="alert">
                 <h3>No Project Groups Available at the moment.</h3>

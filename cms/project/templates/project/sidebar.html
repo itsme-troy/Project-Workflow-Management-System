@@ -40,8 +40,6 @@
                     </li>
               </li>
 
-       
-
         {% else %}    
 
         <a href="{% url 'my-profile' request.user.id %}">
@@ -326,51 +324,13 @@
             {% endif %}
 
             {% if request.user.is_authenticated %}
-                
-                    {% if request.user.role == 'FACULTY' %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Ideas">
-                                <span class="icon"><i class="fas fa-lightbulb icon icon-margin"></i> </span>
-                                <span class="sidebar-link-text">Ideas </span> 
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{% url 'all-project-ideas' %}" >    <i class="fas fa-brain icon icon-margin"></i> All Project Ideas </a></li>
-                                {% if request.user.role == 'FACULTY' %}
-                                <li><a class="dropdown-item" href="{% url 'submit-project-idea' %}">  <i class="fas fa-plus-circle icon icon-margin"></i> Submit Idea </a></li>  {% endif %}
-                            </ul>
-                        </li>
-                    {% else %}
                         <li>    
                             <a href="{% url 'all-project-ideas' %}" class="sidebar-link">
                                 <span class="icon"><i class="fas fa-lightbulb icon icon-margin"></i> </i></span> 
                                 <span class="sidebar-link-text"> Project Ideas </span>
                             </a>
                         </li>
-                    
-                    {% endif %}
             {% endif %}
-
-
-{% comment %}             
-            {% if request.user.role == 'COORDINATOR' and request.user.is_current_coordinator %}
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Coordinator_tab">
-                    <span class="icon"><i class="fas fa-cog icon icon-margin"></i></span> 
-                    <span class="sidebar-link-text">Settings  </span> 
-                </a>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'select-coordinator' %}"><i class="fas fa-user-plus"></i> Select New Coordinator</a></li>
-                <li><a class="dropdown-item" href="{% url 'create-custom-phases' %}"><i class="fas fa-file-alt"></i> Create Custom Phase </a></li> 
-                
-                </ul>
-          </li>
-            {% endif %} {% endcomment %}
-            
-        
-
-            {% comment %} <li><a class="nav-link" href="{% url 'notifications' %}">
-                <i class="fas fa-bell icon icon-margin"></i> Notifications
-            </a></li> {% endcomment %}
 
             <li class="nav-item" class="sidebar-link">
                 <a class="nav-link" href="{% url 'logout' %}" data-title="logout">
@@ -379,45 +339,6 @@
                 </a>
               </li>
         {% endif %}
-            {% comment %} {% else %}
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'login' %}">
-                  <i class="fas fa-sign-in-alt"></i> Login
-                </a>
-              </li> {% endcomment %}
-            {% comment %} {% endif %} {% endcomment %}
-
-
-            {% comment %} <li>
-                <a href="#" >
-                    <span class="icon"><i class="fas fa-dice-d6"></i></span>
-                    <span class="title">Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a href="free_schedule">
-                    <span class="icon"><i class="fab fa-delicious"></i></span>
-                    <span class="title">Calendar </span>
-                </a>
-            </li> {% endcomment %}
-            {% comment %} <li>
-                <a href="#">
-                    <span class="icon"><i class="fab fa-elementor"></i></span>
-                    <span class="title">UI Elements</span>
-                </a>
-            </li> {% endcomment %}
-            {% comment %} <li>
-                <a href="#">
-                    <span class="icon"><i class="fas fa-chart-pie"></i></span>
-                    <span class="title">Charts</span>
-                </a>
-            </li> {% endcomment %}
-            {% comment %} <li>
-                <a href="#">
-                    <span class="icon"><i class="fas fa-border-all"></i></span>
-                    <span class="title">Tables</span>
-                </a>
-            </li> {% endcomment %}
         </ul>
         </div> 
     </div>
