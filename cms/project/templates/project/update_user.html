@@ -2,16 +2,16 @@
 
 {% block content %}
 
-<div class="card mx-auto shadow-lg" style="max-width: 1000px; border-radius: 15px; padding: 15px; margin-top: 10px">
-
-    <center> <h1 style="display: inline-block; margin-left: 50px"> Update User</h1> 
-        <div class="button-container" style="float: right;">
-            <a href="javascript:history.back()" class="btn btn-outline-danger btn-sm" 
-            style="float: right;"> Cancel </a> 
-        </div> 
+<div class="table-container mx-auto shadow-lg" style="max-width: 1000px; border-radius: 15px; padding: 15px; margin-top: 10px">
+    <div class="header-container"> 
+        <h1 class="page-title"> Update User </h1> 
+        <div class="header-buttons">
+            <a href="javascript:history.back()" 
+                class="btn btn-outline-danger btn-sm"> Cancel
+             </a> 
+        </div>
+    </div> 
     
-    </center> 
-
             <form method="POST" action="" enctype="multipart/form-data" class="mt-4 w-100">
                 {% csrf_token %}
                 

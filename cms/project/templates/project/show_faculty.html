@@ -40,9 +40,9 @@
             <subsection class="user_details card">
                 <div class="header-container">
                     <div class="UserName">
-                        <h1 class="name">{{ faculty.first_name}} {{ faculty.last_name }}</h1></br>
+                        <h1 class="name">{{ faculty.first_name}} {{ faculty.last_name }}</h1></br> 
                         <span class="role {{ faculty.role|lower }}">{{ faculty.role }}</span>
-                    </div>
+                    </div> 
                     <div class="header-buttons">  <!-- Using gap to space out buttons -->
                         {% if request.user.id == faculty.id %}
                             <a href="{% url 'update-user' %}" class="btn btn-outline-secondary btn-sm">Edit Profile</a> <!-- Edit Profile Button -->
@@ -50,6 +50,7 @@
                         <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">  <i class="fas fa-arrow-left"></i></a>
                     </div>
                 </div>
+                
                
                 <div class="bio-section" style="margin-top: 20px;">
                     <h4 class="text-center"></h4>

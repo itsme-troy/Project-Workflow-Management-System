@@ -1,23 +1,27 @@
 {% extends 'project/base.html'%} <!-- use the base file -->
 
 {% block content %} <!-- content of all web pages go -->
-<center>
+
 <div class="table-container"> 
-    </br> 
+  <div class="header-container">
+    <h1 class="page-title">Search Projects</h1>
+    
+    <div class="header-buttons">
+        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
+          <i class="fas fa-arrow-left"></i>
+      </a>
+    </div>
+  </div>
 
     {% if searched %}
         <center> <h1 style="display: inline-block; margin-left: -60px">{{searched}}</h1> 
 
-          <div class="button-container" style="float: right;">  <!-- Using gap to space out buttons -->
-              <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
-          </div>
-      </center> 
         <!-- Table with reduced width -->
-        <table class="table table-striped table-hover table-bordered table-custom w-50"> 
+        <table class="table table-striped table-hover table-custom w-50"> 
           <thead> 
             <tr> 
-                <th scope="col"> Project Name  </th> 
-                <th scope="col"> Adviser </th> 
+                <th scope="col" style="min-width: 250px;"> Project Name  </th> 
+                <th scope="col" "width: 150px;"> Adviser </th> 
             </tr> 
         </thead>  
         <tbody>

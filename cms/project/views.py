@@ -296,38 +296,37 @@ def delete_user(request, user_id):
         messages.error(request, "User does not exist.")
         return redirect('user-list')  # Redirect to a user list or appropriate page
 
-
 def my_project(request): 
-    if not request.user.is_authenticated: 
+    if request.user.is_authenticated: 
+        # Redirect coordinators first
+        if request.user.is_current_coordinator:
+            messages.error(request, "Only Students can view this page")
+            return redirect("coordinator-dashboard")
+
+        # Define role-based redirects
+        role_redirects = {
+            "STUDENT": "home-student",
+            "FACULTY": "home-faculty",
+        }
+
+        # Role validation (Only STUDENT can proceed)
+        if request.user.role != "STUDENT":
+            messages.error(request, "Only Students can view this page")
+            return redirect(role_redirects.get(request.user.role, "home"))
+        
+        # Check if the user is part of a project group
+        user_group = get_user_project_group(request)
+        if user_group is None:
+            messages.error(request, "You are not a member of any Project Group. Please Register a Project Group First.")
+            # return redirect("my-home")
+
+        # Retrieve approved project for the group
+        project = Project.objects.filter(proponents=user_group, status="approved").first()
+
+        return render(request, "project/my_project.html", {"project": project} )#"project": project})
+    else:
         messages.error(request, "Please Login to view this page")
         return redirect('home')
-    
-    if request.user.role != 'STUDENT': 
-        messages.error(request, "Only Students can view this page")
-        if request.user.role == "STUDENT": 
-            return redirect('home-student')
-        elif request.user.role == "FACULTY": 
-            return redirect('home-faculty')
-        elif request.user.is_current_coordinator:
-            return redirect('coordinator-dashboard')
-        else: 
-            return redirect('home')
-   
-    user_group = get_user_project_group(request)
-    if user_group is None:
-            messages.error(request, "You are not a member of any Project Group. Please Register a Project Group First.")
-            if request.user.role == "STUDENT": 
-                return redirect('home-student')
-            elif request.user.role == "FACULTY": 
-                return redirect('home-faculty')
-            elif request.user.is_current_coordinator:
-                return redirect('coordinator-dashboard')
-            else: 
-                return redirect('home')
-    
-    project = Project.objects.filter(proponents=user_group, status='approved').first()
-
-    return render(request, 'project/my_project.html', {'project': project })
 
 def all_project_ideas(request): 
     if not request.user.is_authenticated:
@@ -3354,7 +3353,7 @@ def add_project(request):
         if group is None:
             messages.error(request, "You are not a member of any Project Group. Please Register a Project Group First.")
             if request.user.role=='STUDENT':
-                return redirect('home-student')
+                return redirect('list-proposals')
             else:
                 return redirect('home')
         

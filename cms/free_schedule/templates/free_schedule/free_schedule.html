@@ -6,15 +6,15 @@
 {% block content %}
 
 {{ block.super }}  <!-- This will include the calendar from base.html -->
- 
-{% if user.is_authenticated %}
 
 <div class="table-container" style="margin: 0px; min-height: 1000px; width: 100%;"> 
     <div class="header-container">
         <h1 class="page-title">Set Free Schedule</h1>
         
         <div class="header-buttons">
-            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">Back</a>
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">   
+               <i class="fas fa-arrow-left"></i>
+            </a>
         </div>
     </div>
 
@@ -25,7 +25,6 @@
             </div> 
         </div>
   
-
     <div class="col-md-4">
         <div class="scrollable-events">
 
@@ -65,12 +64,7 @@
     <!-- Include the modal --> {% endcomment %}
     {% include 'free_schedule/create_schedule_modal.html' %}
     
-    {% else %}
-        <h1> Sorry! Please login first to view this Page. </h1> 
-    </br> </br> 
-        <a href="{% url 'login' %}"> Login Here </a>
 
-    {% endif %}
 </div>
 
 {% endblock %}
