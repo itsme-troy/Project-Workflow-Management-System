@@ -38,6 +38,13 @@
 {% else %}
   
   <table class="table table-hover table-bordered">
+    <caption class="text-center">
+      {% if my_projects_only %}
+          My Projects Report
+      {% else %}
+          All Projects Report
+      {% endif %}
+  </caption>
     <thead>
         <tr>
             <th scope="col" class="project-name-header" style="width: 500px;"> Project Name</th>

@@ -32,12 +32,15 @@
                 <div>
                     
                     <table class="table table-striped mt-3">
+                        <caption class="text-center">
+                            Defense Schedule List
+                        </caption>
                         <thead>
                             <tr>
                                 <th scope="col"> # </th> 
                                 <th scope="col" style="width: 200px;"> Date </th>
                                 <th scope="col" class="project-name-header">Project </th>
-                                <th scope="col"style="width: 140px;"> Proponents</th>
+                                <th scope="col"style="proponents-column"> Proponents</th>
                                 <th scope="col"> Adviser </th>
                                 <th scope="col"> Panel 1</th>  
                                 <th scope="col"> Panel 2</th>  
@@ -80,6 +83,7 @@
                                     <a href="{% url 'show-faculty' event_data.event.application.adviser.id %}"> 
                                         {{event_data.event.application.adviser }}
                                     </a> 
+                                
                                 </td>
 
                                   <!-- Loop through the panelists and display their last name -->
@@ -104,7 +108,7 @@
                             </tr>
                         {% empty %}
                             <tr>
-                                <td colspan="8" class="text-center">No available schedules found.</td>
+                                <td colspan="8" class="text-center">No schedules found.</td>
                             </tr>
                         {% endfor %}
                         </tbody>

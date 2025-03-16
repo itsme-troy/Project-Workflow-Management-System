@@ -1468,3 +1468,10 @@ button[type="submit"] {
   outline: none;
   box-shadow: 0px 0px 8px rgba(40, 167, 69, 0.7);
 }
+
+.proponents-column {
+  min-width: 30px;
+  max-width: 400px;  /* Optional: Prevent it from expanding too much */
+  width: auto;  /* Ensures flexibility */
+  text-align: center; /* Optional: Centers text */
+}

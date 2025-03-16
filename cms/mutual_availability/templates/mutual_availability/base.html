@@ -8,7 +8,8 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.39/moment-timezone.min.js"></script>
     
     <link rel="stylesheet" href="{% static  'css/mutual_availability.css' %}"> 
     <link rel="stylesheet" href="{% static 'free_schedule/css/free_sched.css' %}">
@@ -35,7 +36,7 @@
             colorPreview.style.backgroundColor = newColor;
         
             // Perform AJAX POST request to update the color in the database
-            fetch("{% url 'update_faculty_color' %}", {  // Replace with the correct URL name
+            fetch("{% url 'update_faculty_color' %}", { 
                 method: "POST",
                 headers: {
                     "X-CSRFToken": "{{ csrf_token }}",  // CSRF token for security
@@ -90,7 +91,7 @@
         function refreshEventsList() {
             $.ajax({
                 type: "GET",
-                url: "{% url 'all_sched' %}",
+                url: "/mutual_availability/all_sched/",
                 dataType: "json",
                 success: function (data) {
                     const list = $('.list-group');
@@ -188,7 +189,7 @@
         
                 // Send AJAX request
                 $.ajax({
-                    url: 'create_defense_sched', // URL for the view
+                    url: "/mutual_availability/create_defense_sched/", // URL for the view
                     type: 'POST',
                     headers: {
                         'X-CSRFToken': csrfToken // Include the CSRF token in the headers
@@ -229,7 +230,7 @@
                     
                     // Make an AJAX request to fetch events based on the selected project
                     $.ajax({
-                        url: '{% url "all_sched" %}',  // Adjust to the correct URL pattern
+                        url: "/mutual_availability/all_sched/", // URL for the view 
                         data: {
                             'project': project_id,  // Send the selected project ID to the server
                         },

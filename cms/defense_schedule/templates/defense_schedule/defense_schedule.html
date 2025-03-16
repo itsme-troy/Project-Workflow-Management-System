@@ -3,17 +3,6 @@
 {% load tz %}
 {% load custom_filters %}  <!-- Load custom filters -->
 
-<head>
-    <style>
-        #maximize-defense-schedule {
-            margin-top: 10px; /* Adjust spacing if needed */
-        }
-        .button-container button {
-            margin-left: 5px; /* Add spacing between buttons */
-        }
-    </style>
-</head> 
-
 {% block content %}
 {{ block.super }}  <!-- This will include the calendar from base.html -->
 {% if user.is_authenticated %}
@@ -25,11 +14,6 @@
         <div class="header-buttons">
 
             {% if request.user.is_current_coordinator %}
-       
-               
-                <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
-                    <i class="fas fa-plus-circle icon" style="color: white;"></i> Create Schedule
-                </button>
 
                 <button class="btn btn-sm btn-outline-secondary" id="toggle-defense-schedule-btn">
                     <i class="fas fa-compress"></i> Minimize Schedule
@@ -47,90 +31,89 @@
             {% endif %}
         </div>
 
-          
     </center> 
-    <div class="row w-100">
-        <div class="col-md-7" id="calendar-column" style="position: relative; margin-left: 0px;">
-    
-            <div class="my_calendar" style="margin-top: 0px;">
-                <div id="calendar"></div>
+
+   <div class="row w-100">
+    <!-- Flex Container for Calendar & Schedule List -->
+    <div class="col-md-12 d-flex flex-wrap">
+        
+        <!-- Calendar Section (70%) -->
+        <div class="my_calendar" id="calendar-column" style="width: 65%;">
+            <div id='calendar'></div>
+        </div>
+
+        <!-- Schedule List Section (35%) -->
+        <div id="defense-schedule-column" class="table-container" style="width: 35%; padding-left: 15px;">
+            <div class="header-container">
+                <h1 class="page-title" style="text-transform: none;">Defense Schedule</h1>
+                <div class="header-buttons">
+                    <button id="create-defense-schedule-btn" class="btn btn-success btn-sm">
+                        <i class="fas fa-plus-circle icon" style="color: white;"></i> Create
+                    </button>
+                      <!-- Delete All Button -->
+                    <button id="delete-all-defense-schedules-btn" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash-alt icon" style="color: white;"></i> Delete All
+                    </button>
+                </div>
+            </div>        
+
+            <div class="table-scroll-area" style="overflow-x: auto;">
+                <table class="table table-striped mt-3 student-table">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="width: 200px;">Date</th>
+                            <th scope="col" class="project-name-header">Project</th>
+                            <th>Adviser</th>
+                            <th>Panel 1</th>
+                            <th>Panel 2</th>
+                            <th>Panel 3</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event_data in events_with_panel %}
+                        <tr>
+                            <td style="padding: 8px; white-space: nowrap;">
+                                {% with start_date=event_data.event.start|date:"M. d, Y" %}
+                                {% with end_date=event_data.event.end|date:"M. d, Y" %}
+                                    {% if start_date == end_date %}
+                                        {{ event_data.event.start|date:"M. d, Y" }} <br>
+                                        {{ event_data.event.start|date:"g:i a" }} <br>
+                                        {{ event_data.event.end|date:"g:i a" }} <br> 
+                                    {% else %}
+                                         {{ event_data.event.start|date:"M. d, Y, g:i a" }} <br>
+                                         {{ event_data.event.end|date:"M. d, Y, g:i a" }}  
+                                    {% endif %}
+                                {% endwith %}
+                                {% endwith %}
+                            </td>
+                            <td><a href="{% url 'show-project' event_data.event.application.project.id %}">{{ event_data.event.application }}</a></td>
+                          
+                            <td><a href="{% url 'show-faculty' event_data.event.application.adviser.id %}">{{ event_data.event.application.adviser }}</a></td>
+                            
+                            
+                            <!-- Loop through the panelists and display their last name -->
+                            {% for panelist in event_data.event.application.panel.all %}
+                            <td>
+                                <a href={% url 'show-faculty' panelist.id %}>
+                                    {{ panelist.last_name }} </a> </td>
+
+                            {% endfor %}
+
+                            <!-- Add extra cells for missing panelists -->
+                            {% for _ in event_data.extra_cells|to_range %}
+                                <td>&nbsp;</td> <!-- Add empty cells for missing panelists -->
+                            {% endfor %}
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No schedules found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
-    
-    <!-- Defense Schedule Section -->
-    <div class="col-md-5" id="defense-schedule-column">
-            <div class="header-container">
-                <h1 class="page-title">Defense Schedule</h1>
-            </div>
-        
-            <div id="defense-schedule-container" class="table-container" style="margin-top: 0px; min-height: 0px;">
-                <!-- Scrollbar at the top -->
-                <div class="table-scrollbar" style="overflow-x: auto; margin-bottom: -17px;">
-                    <div style="width: max-content;"></div>
-                </div>
-            
-                <!-- Table with the same scrollable behavior -->
-                <div class="table-scroll-area" style="overflow-x: auto;">
-                    <table class="table table-striped mt-3 student-table">
-                        <thead>
-                            <tr>
-                                <th scope="col" style="width: 200px;"> Date </th>
-                                <th scope="col"> Project</th>
-                                <th scope="col"> Adviser </th>
-                                <th scope="col"> Panel 1</th>
-                                <th scope="col"> Panel 2</th>
-                                <th scope="col"> Panel 3</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for event_data in events_with_panel %}
-                            <tr>
-                                <td style="padding: 8px; white-space: nowrap;">
-                                    {% with start_date=event_data.event.start|date:"M. d, Y" %}
-                                        {% with end_date=event_data.event.end|date:"M. d, Y" %}
-                                            {% if start_date == end_date %}
-                                                {{ event_data.event.start|date:"M. d, Y" }} <br>
-                                                {{ event_data.event.start|date:"g:i a" }} <br>
-                                                {{ event_data.event.end|date:"g:i a" }} <br>
-                                            {% else %}
-                                                {{ event_data.event.start|date:"M. d, Y, g:i a" }} <br>
-                                                {{ event_data.event.end|date:"M. d, Y, g:i a" }}
-                                            {% endif %}
-                                        {% endwith %}
-                                    {% endwith %}
-                                </td>
-                                
-                                <td>
-                                    <a href={% url 'show-project' event_data.event.application.project.id %}>
-                                        <strong>{{ event_data.event.application }}</strong></td>
-                                    </a>
-                                </td>
-                                
-                                <td>
-                                    <a href="{% url 'show-faculty' event_data.event.application.adviser.id %}">
-                                        {{ event_data.event.application.adviser }} </a> </td>
 
-                                
-                                {% for panelist in event_data.event.application.panel.all %}
-                                    <td> 
-                                        <a href={% url 'show-faculty' panelist.id %}>
-                                        {{ panelist.last_name }} </a> </td>
-                                {% endfor %}
-
-                                {% for _ in event_data.extra_cells|to_range %}
-                                <td>&nbsp;</td>
-                                {% endfor %}
-                                
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="8" class="text-center">No available schedules found.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
             <!-- Maximize Button -->
           
         </div>
@@ -146,6 +129,7 @@
     {% endif %}
 
     <script>
+        
         document.addEventListener("DOMContentLoaded", function () {
             const toggleButton = document.getElementById("toggle-defense-schedule-btn");
             const maximizeButton = document.getElementById("maximize-defense-schedule-btn");
@@ -155,8 +139,7 @@
             toggleButton.addEventListener("click", function () {
                 // Minimize the defense schedule
                 defenseScheduleColumn.style.display = "none";
-                calendarColumn.classList.remove("col-md-7");
-                calendarColumn.classList.add("col-md-12");
+                calendarColumn.style.width = "100%"; // Make the calendar full width
                 toggleButton.classList.add("d-none"); // Hide minimize button
                 maximizeButton.classList.remove("d-none"); // Show maximize button
             });
@@ -164,8 +147,7 @@
             maximizeButton.addEventListener("click", function () {
                 // Maximize the defense schedule
                 defenseScheduleColumn.style.display = "block";
-                calendarColumn.classList.remove("col-md-12");
-                calendarColumn.classList.add("col-md-7");
+                calendarColumn.style.width = "65%"; // Restore original width
                 maximizeButton.classList.add("d-none"); // Hide maximize button
                 toggleButton.classList.remove("d-none"); // Show minimize button
             });

@@ -412,7 +412,7 @@ RESULT_CHOICES = [
         # return self.name
 
 class Project(models.Model): 
-    name = models.CharField('Name', max_length=120, null=True) 
+    # name = models.CharField('Name', max_length=120, null=True) 
     title = models.CharField('Title', max_length=120, null=True) # 120 characters
     project_type = models.CharField('Project Type', null=True, max_length=50 )
     description = models.TextField(null=True) # we dont have to put a description if we do not want to

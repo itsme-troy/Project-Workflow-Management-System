@@ -1,83 +1,168 @@
-.fa-lightbulb { color: #ffd700; }
+/* .fa-lightbulb { color: #ffd700; }
 .fa-brain { color: #4169e1; }
 .fa-plus-circle { color: #32cd32; }
 .fa-home { color:#00ff08;  }
 .fa-user-friends { color: #6fbebe; }
-.fa-user-graduate { color: #b340e0; }  /* Purple - represents academic achievement */
+.fa-user-graduate { color: #b340e0; } 
 .fa-chalkboard-teacher { color: #ff7700; } 
 .fa-users { color: #ff2200;}
-.fa-layer-group { color: #aaaaaa; /* Neutral gray */}
+.fa-layer-group { color: #aaaaaa;}
 .fa-cog { color: #368aff; } 
-.fa-hourglass-half {   color: #afd6ff; /* Blue to match the theme */}
-.fa-user-plus {   color: #6cff8e; /* Green for positive action */}
-.fa-plus-circle {color: #28a745;}
-.fa-shield-alt { color: #13e3e3; /* Dark slate gray - represents security/protection */ }
-.fa-file-contract { color: #e0b4ff; /* Indigo - represents official/formal documents */ }
-.fa-file-upload { color: #befcfc; /* Teal - represents file system actions */ }
+.fa-hourglass-half {   color: #afd6ff;}
+.fa-user-plus {   color: #28a745;} 
+.fa-shield-alt { color: #13e3e3; }
+.fa-file-contract { color: #e0b4ff; }
+.fa-file-upload { color: #befcfc; } */
 
 .icon-margin {
     margin-right: 10px; /* can adjust value as xneeded */
 }
 
+.groups-grid {
+    display: grid; /* Use grid layout for easier column control */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 3 columns with flexibility for smaller screens */
+    gap: 20px; /* Space between cards */
+    justify-content: center;
+    padding: 20px;
+    max-width: 1200px; /* Optional max width */
+    margin: 0 auto; /* Center grid within the page */
+}
+
+.groups-grid .card {
+    background-color: #fff; /* Card background color */
+    border: 1px solid #dee2e6; /* Light border */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    overflow: hidden; /* Prevent content overflow */
+    padding: 20px; /* Space inside cards */
+    display: flex;
+    flex-direction: column; /* Ensures child elements stack vertically */
+    box-sizing: border-box; /* Include padding and border in width/height */
+}
+
+.groups-grid .card-header {
+    background-color: #f8f9fa; /* Light gray background */
+    padding: 10px 15px;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: bold;
+    text-align: center;
+}
+
+.groups-grid .card-body {
+    padding: 15px;
+    flex-grow: 1; /* Allow content to grow */
+}
+
+.groups-grid .card-footer {
+    margin-top: 10px;
+    text-align: center; /* Center buttons and footer elements */
+}
+
+.groups-grid .card table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.groups-grid .card table th,
+.groups-grid .card table td {
+    padding: 8px;
+    border-top: 1px solid #dee2e6;
+    text-align: left;
+}
 
 .table-container {
-    width: calc(100% - 40px); /* Accounts for block_container padding (20px on each side) */
-    height: calc(100% - 40px); /* Accounts for block_container padding (20px on top and bottom) */
-    padding: 10px;
-    overflow-x: hidden;  /* Enable horizontal scrolling */
-    overflow-y: auto; /* Enable vertical scrolling */
-    border: 1px solid #dee2e6; /* Light border around the container */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    padding: 1px 10px 10px 10px;
+    overflow-x: auto;  /* Always show horizontal scrollbars if content overflows */
+    overflow-y: auto;  /* Always show vertical scrollbars if content overflows */
+    border: 1px solid #000000; /* Light border around the container */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
     background-color: #ffffff; /* White background for content */
     margin: 0 auto; /* Centers the table-container horizontally */
     box-sizing: border-box; /* Includes padding and border in width and height */
     max-height: 100vh; /* Adjust max height for the container */
+    scrollbar-width: auto; /* For Firefox, make scrollbars thinner */
+    scrollbar-color: #cccccc #f5f5f5; /* Custom scrollbar colors */
+    justify-content: center; /* Ensures content stays vertically centered */
+    flex-direction: column;
+    min-height: 1000px; /* Adjust based on your design */
 }
 
 .table-container .table {
     width: 100%;       /* Ensure the table takes full width */
-    min-width: 950px;  /* Set a minimum width for the table */
-    border-collapse: collapse; /* Avoid border collapse */
+    min-width: 600px;  /* Set a minimum width for the table */
+    border: 1px solid #000000; /* Light border around the container */
+
 }
 .table-container .table th, 
 .table-container .table td {
-    padding: 12px;                 /* Add padding to table cells */
+    padding: 12px 16px;                 /* Add padding to table cells */
     text-align: center;            /* Align text */
     border-bottom: 1px solid #dee2e6; /* Light border for rows */
     max-width: 140px;              /* Set a maximum width for cells */
     white-space: nowrap;           /* Prevent text wrapping */
     overflow: hidden;              /* Hide overflow content */
     text-overflow: ellipsis;       /* Add ellipsis for overflow */
+    line-height: 1.5; /* Ensure spacing between text */
+    vertical-align: middle; /* Align text vertically */
 }
 
 
 /* Optional: Ensure table headers have a consistent max-width */
 .table-container .table th {
+    vertical-align: middle;
     max-width: 180px;              /* Adjust max-width for header cells */
     background-color: #343a40;     /* Dark background for header */
     color: white;                  /* White text */
     text-align: center;            /* Center text in header */
 }
 
+.column-title {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Ensures text and icons are aligned properly */
+    gap: 5px; /* Adds space between text and icon */
+}
 .table-container .table tbody tr:hover{
-    background-color: #f1f1f1; /* Light gray on hover */
+    background-color: #f8f9fa; /* Light gray background */
     transition: background-color 0.3s ease; /* Smooth transition */
 }
 /* Custom scrollbar styles for modern look */
 .table-container::-webkit-scrollbar {
-    width: 8px; /* Width of the scrollbar */
+    width: 12px; /* Scrollbar width */
+    height: 12px; /* Scrollbar height for horizontal scrollbar */
 }
 
 .table-container::-webkit-scrollbar-thumb {
-    background-color: #cacaca; /* Color of the scrollbar thumb */
-    border-radius: 10px; /* Rounded corners for the thumb */
+    background: #cccccc; /* Color of the scrollbar thumb */
+    border-radius: 6px; /* Round the edges of the thumb */
 }
 
 .table-container::-webkit-scrollbar-track {
-    background: #f1f1f1; /* Color of the scrollbar track */
-    border-radius: 10px; /* Rounded corners for the track */
+    background: #f5f5f5; /* Background color of the track */
+    border-radius: 6px; /* Round the edges of the track */
 }
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: #bbbbbb; /* Darker color when hovering over the scrollbar */
+}
+/* Adjust minimum widths for columns */
+.table-container .table th:nth-child(2),
+.table-container .table td:nth-child(2) {
+    min-width: 200px; /* Project Name */
+}
+
+.table-container .table th:nth-child(3),
+.table-container .table td:nth-child(3) {
+    min-width: 150px; /* Adviser */
+}
+
+.table-container .table th:nth-child(6),
+.table-container .table td:nth-child(6) {
+    min-width: 120px; /* Status */
+}
+
 
 .container {
     width: 80%; /* Default width */
@@ -186,15 +271,26 @@ h1, h2, h3, h4 {
 }
 /* General Reset for Table */
 .table {
+    min-width: 600px;
     width: 100%;
     margin-bottom: 1rem;
     color: #212529;
     overflow-x: auto; /* Allow horizontal scrolling */
-    border-collapse: collapse; /* Avoid border collapse */
+    border-collapse: separate; /* Avoid border collapse */
     font-size: 1rem; /* Make font size more readable */
     border: 1px solid #000407; /* Add a solid border */
     border-collapse: collapse; /* Ensure borders collapse into a single border */
     table-layout: auto; /* Allow dynamic column resizing */
+    border-spacing: 0 5px; /* Adds subtle space between rows */
+    background: white; 
+    border-radius: 8px;
+    overflow: hidden;
+}
+/* Make headers stand out with rounded edges */
+.table thead {
+    background: #343a40;
+    color: white;
+    font-size: 0.9rem;
 }
 /* Centering the checkbox inside the td */
 .table td.checkbox-cell {
@@ -212,7 +308,7 @@ h1, h2, h3, h4 {
 }
 
 /* Style the Deficiencies Column */
-.table td.deficiencies-cell {
+.table td.remarks-cell {
     max-width: 600px; /* Set max-width for the column */
     overflow-x: auto; /* Allow horizontal scrolling if content overflows */
     white-space: nowrap; /* Prevent text from wrapping */
@@ -241,10 +337,13 @@ h1, h2, h3, h4 {
 }
 
 /* Apply styles to the Deficiencies column specifically */
-.table th.deficiencies-column {
+.table th.remarks-column {
     max-width: 500px; /* Set max-width to 500px */
     word-wrap: break-word; /* Allow text to wrap inside the cell */
     text-align: center; /* Align text to the center */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 
@@ -254,6 +353,10 @@ h1, h2, h3, h4 {
     max-width: 300px; /* Optional: Limit maximum width */
     text-align: center; /* Center align text */
     word-wrap: break-word; /* Allow word wrapping */
+}
+
+.action-cell {
+    text-align: center;
 }
 
 /* Style the Deficiencies Column */
@@ -266,6 +369,7 @@ h1, h2, h3, h4 {
     vertical-align: middle; /* Align content vertically */
     text-align: center; /* Center align text */
 }
+
 .table td.action-cell a {
     display: inline-block; /* Ensure each button is treated as a block */
     margin: 5px 0; /* Add vertical margin for spacing */
@@ -301,6 +405,12 @@ h1, h2, h3, h4 {
     align-items: center; /* Center the content vertically */
     justify-content: center; /* Center the content horizontally */
 }
+/* Reduce padding between rows */
+.table tbody tr {
+    line-height: 1.2; /* Adjust row height */
+    padding: 6px 10px;
+}
+
 /* Table Row Hover Effect */
 .table tbody tr:hover {
     background-color: #f1f1f1; /* Light gray on hover */
@@ -312,10 +422,17 @@ h1, h2, h3, h4 {
     background-color: #f8f9fa; /* Light gray background for odd rows */
 }
 
-/* Add Borders to Cells */
+/* Add Borders to Cells & reduce padding in table cells */
 .table td, .table th {
     border: 1px solid #dee2e6; /* Consistent border color */
+    padding: 8px 12px !important; /* Compact but readable */
+    vertical-align: middle;
 }
+/* Reduce row hover effect padding */
+.table-hover tbody tr:hover {
+    background-color: #f5f5f5 !important;
+}
+
 .table td:empty, .table th:empty {
     border: 1px solid #dee2e6; /* Match the border color */
   
@@ -330,7 +447,13 @@ h1, h2, h3, h4 {
 
 /* Responsive Adjustments for Tables */
 @media (max-width: 768px) {
+    .action-buttons a {
+        font-size: 10px;
+        padding: 5px 8px;
+    }
+
     .table {
+        font-size: 12px; /* Reduce font size for readability */
         display: block; /* Allow horizontal scrolling */
         overflow-x: auto;
         white-space: nowrap;
@@ -352,6 +475,7 @@ h1, h2, h3, h4 {
 
 /* Form Styling */
 form {
+    width: 100%;
     max-width: 800%; /* Limit form width */
     margin: 0 auto;
     padding: 20px;
@@ -423,7 +547,6 @@ textarea {
     display: inline-block;
     color: white;
     padding: 10px 20px;
-    border: 2px solid #007bff; /* Border to match the background */
     border-radius: 5px;
     text-align: center;
     text-decoration: none; /* Remove underline from links */
@@ -459,14 +582,32 @@ textarea {
 
 /* Small button size styling */
 .btn-sm {
-    padding: 10px 20px; /* Smaller padding for sm class */
-    font-size: 1rem; /* Smaller text size for sm class */
+    padding: 4px 8px; /* Smaller padding for sm class */
+    font-size: 0.8rem; /* Smaller text size for sm class */
+    line-height: 1.5; /* Prevent unnecessary height */
+}
+/* Medium button (default) */
+.btn-md {
+    padding: 6px 12px; /* Slightly bigger than small */
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+/* Large button *//* Large button */
+.btn-lg {
+    padding: 10px 16px; /* More padding for large */
+    font-size: 1.1rem; 
+    line-height: 1.4;
+}
+.btn-lg {
+    padding: 10px 16px; /* More padding for large */
+    font-size: 1.1rem; 
+    line-height: 1.4;
 }
 
 /* Outline style for btn-outline-primary */
 .btn-outline-primary {
     background-color: transparent;
-    color: #007bff; /* Primary color for text */
+    color: #007bff; /* Primary color for text */ 
     border-color: #007bff; /* Primary color for border */
 }
 
@@ -474,6 +615,7 @@ textarea {
     color: #fff; /* Change text to white on hover */
     background-color: #007bff; /* Primary color for background */
     border-color: #007bff; /* Retain primary color for border */
+
 }
 /* Optional: Active state */
 .btn-outline-primary:active, .btn-outline-primary:focus {
@@ -503,6 +645,37 @@ textarea {
 /* Spacer for Form Elements */
 .compact-form .form-group {
     margin-bottom: 10px; /* Reduced margin */
+}
+
+.compact-form label {
+    display: none;
+}
+.compact-form {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Adjust spacing */
+    max-width: 100%; /* Prevent excessive stretching */
+    flex-wrap: nowrap; /* Prevent elements from wrapping */
+}
+
+/* Adjust dropdown width to fit properly */
+.compact-form .verdict-dropdown select {
+    min-width: 150px;  /* Ensure it can fit long text */
+    max-width: 180px; /* Prevent excessive width */
+    padding-right: 30px; /* Ensure arrow doesn'tb overlap text */
+}
+
+.compact-form .verdict-column .button {
+    padding: 4px 8px; /* Reduce button size */
+    font-size: 0.8rem; /* Smaller text */
+    white-space: nowrap; /* Prevent text wrapping */
+}
+th.verdict-column,
+td.verdict-column {
+    min-width: 250px;
+    max-width: 250px;
+    text-align: center;
+    padding: 5px;
 }
 
 /* Responsive Form */
@@ -637,8 +810,10 @@ tr.active .action-buttons {
 
 /* Specific button color classes */
 .btn-outline-secondary {
+    border-color: #6c757d;
     color: #6c757d;
-    border: 1px solid #6c757d;
+    padding: 6px 12px;
+    font-size: 0.875rem;
 }
 
 /* Specific button color classes */
@@ -665,7 +840,7 @@ tr.active .action-buttons {
     border-color: #dc3545; /* Keep the border red */
 }
 
-.btn-outline-danger.btn-sm {
+.btn-outline-danger .btn-sm {
     padding: 0.25rem 0.5rem; /* Smaller padding for small button */
     font-size: 0.875rem; /* Slightly smaller font size */
     border-radius: 0.25rem; /* Slightly less rounded corners */
@@ -712,6 +887,19 @@ tr.active .action-buttons {
     line-height: 1.5; /* Optional for consistent spacing */
 }
 
+/* Hint button */
+.hint-button {
+    color:grey;
+    background: none;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.5; /* Optional for consistent spacing */
+}
+
 /* Hint icon styling */
 .hint-button::before {
     content: "↗";
@@ -727,15 +915,14 @@ tr:not(.active) .hint-button {
 
 .badge {
     display: inline-block;
-    padding: 0.35em 0.5em;
-    font-size: 85%;
-    font-weight: 700;
-    line-height: 1.2;
+    padding: 5px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.1;
     text-align: center;
     white-space: nowrap;
-    vertical-align: baseline;
-    border-radius: 0.25rem;
-    text-transform: capitalize;  /* Ensure text is capitalized */
+    vertical-align: middle;
+    border-radius: 4px;
 }
 .badge-accepted { background-color: #5cb85c; color: white; }
 .badge-accepted-with-revisions { background-color: #5cb85c; color: white; }
@@ -754,6 +941,10 @@ tr:not(.active) .hint-button {
     margin-bottom: 5px;
 }
 
+.compact-form button{
+    flex-shrink: 0; /* Prevents shrinking */
+    min-width: auto; /* Prevents unwanted expansion */
+}
 .compact-form input,
 .compact-form select,
 .compact-form button {
@@ -805,11 +996,20 @@ tr:not(.active) .hint-button {
     color: #333;
 }
 
+/* Improve button filter layout */
+.btn-group .btn {
+    border-radius: 5px;
+    padding: 6px 12px;
+    font-size: 0.875rem;
+}
+
 h1 {
-    font-size: 2.5em;
+    font-size: 1.5rem;
+    text-align: center;
     color: #333; /* Dark color for contrast */
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     font-family: 'Roboto', sans-serif;
+    font-weight: bold;
 }
 h2 {
     font-size: 2em;
@@ -832,10 +1032,10 @@ a {
 }
 a:hover {
     color: #0055ff; /* Darker blue on hover */
-    text-decoration: underline; /* Underline on hover */
+    text-decoration: none; /* Underline on hover */
 }
 a:hover, a:focus {
-    text-decoration: underline; /* Keep the underline on hover/focus */
+    text-decoration: none; /* Keep the underline on hover/focus */
     color: inherit; /* Maintain the inherited color */
 }
 
@@ -863,6 +1063,9 @@ a:hover, a:focus {
     border: none;
     color: white;
     border-color: #007bff;
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    border-radius: 5px;
 }
 .btn-primary:hover {
     background-color: #0056b3; /* Darker blue on hover */
@@ -1239,13 +1442,6 @@ body {
 }
 
 
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .navbar-nav {
-        flex-direction: column; /* Ensure vertical stacking on smaller screens */
-    }
-}
 @media (max-width: 900px) {
     form {
         padding: 15px;
@@ -1272,7 +1468,7 @@ body {
         margin: 15px;
     }
     h1 {
-        font-size: 2em; /* Adjust heading size */
+        font-size: 20px; /* Adjust heading size */
     }
     .table th,
     .table td {
@@ -1430,6 +1626,15 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    .card {
+        max-width: 90%;
+    }
+
     .my_calendar {
         padding: 10px;
         margin: 10px 0;
@@ -1444,7 +1649,6 @@ body {
         font-size: 0.9em !important;
     }
 }
-
 
 /* General Scrollbar Styles for td */
 .table-container td::-webkit-scrollbar {
@@ -1523,3 +1727,27 @@ body {
     white-space: nowrap;
 }
 
+
+button {
+    padding: 10px 20px; /* Ensures consistent padding */
+    font-size: 16px; /* Matches font sizes */
+    border-radius: 5px; /* Adds consistent border radius */
+}
+
+.submit-btn {
+    background-color: blue;
+    color: white;
+    border: none;
+}
+
+.cancel-btn {
+    background-color: red;
+    color: white;
+    border: none;
+}
+
+.submit-btn, .cancel-btn {
+    width: 100px; /* Ensures same width */
+    height: 40px; /* Ensures same height */
+    text-align: center;
+}

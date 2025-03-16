@@ -1,0 +1,10 @@
+#schedule-application {
+    width: 100%; /* Set full width */
+    min-width: 250px; /* Ensure minimum width */
+    max-width: 400px; /* Limit width if needed */
+}
+
+select option {
+    white-space: normal;
+    word-wrap: break-word;
+}

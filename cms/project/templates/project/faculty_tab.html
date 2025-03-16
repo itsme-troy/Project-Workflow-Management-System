@@ -29,18 +29,32 @@
     {% else %}
         <div class="table-responsive">
             <table class="table table-hover table-bordered student-table">
-                <caption class="text-center"> Project List</caption>
+
+                <caption class="text-center">
+                    {% if filter_type == 'approved_projects' %}
+                         List of All Approved Projects
+                    {% elif filter_type == 'projects' %}
+                        My Advisory Projects
+                    {% elif filter_type == 'proposals' %}
+                        My Received Proposals 
+                    {% elif filter_type == 'panelist' %}
+                        Projects Where I Am included as a Panelist
+                    {% else %}
+                        Project List
+                    {% endif %}
+                </caption>
+
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Project Name</th>
-                        <th>Proponents</th>
-                        <th>Adviser</th>
-                        <th>Panel 1</th>
-                        <th>Panel 2</th>
-                        <th>Panel 3</th>
-                        <th>Actions</th>
-                        <th>Status</th>
+                        <th scope="col"> #</th>
+                        <th scope="col"> Project Name</th>
+                        <th scope="col" style="min-width: 250px;"> Proponents</th>
+                        <th scope="col"> Adviser</th>
+                        <th scope="col"> Panel 1</th>
+                        <th scope="col"> Panel 2</th>
+                        <th scope="col"> Panel 3</th>
+                        <th scope="col"> Actions</th>
+                        <th scope="col"> Status</th>
                     </tr>
                 </thead>
                 <tbody>

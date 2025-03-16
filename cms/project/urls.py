@@ -50,8 +50,6 @@ urlpatterns = [
     path('adviser_proposals', views.adviser_proposals, name='adviser-proposals'),
     path('panel_projects', views.panel_projects, name='panel-projects'),
    
-    
-
     path('coordinator_approval_faculty', views.coordinator_approval_faculty, name='coordinator-approval-faculty'),
     path('coordinator_approval_student', views.coordinator_approval_student, name='coordinator-approval-student'),
     path("update-student-eligibility/", views.update_student_eligibility, name="update_student_eligibility"),

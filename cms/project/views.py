@@ -25,16 +25,14 @@ from .models import Approved_Adviser, ApprovedProject
 from django.db import IntegrityError
 from .models import ProjectPhase
 import logging
-from django.db.models import Subquery, OuterRef, Max, Q
+
+from django.db.models import Subquery, OuterRef, Max, Q, F
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django.conf import settings
 from .models import Notification
-from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.urls import reverse
-from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 
@@ -316,8 +314,8 @@ def my_project(request):
         
         # Check if the user is part of a project group
         user_group = get_user_project_group(request)
-        if user_group is None:
-            messages.error(request, "You are not a member of any Project Group. Please Register a Project Group First.")
+        # if user_group is None:
+            # messages.error(request, "You are not a member of any Project Group. Please Register a Project Group First.")
             # return redirect("my-home")
 
         # Retrieve approved project for the group
@@ -930,7 +928,7 @@ def submit_defense_application(request):
     if user_group is None:
         messages.error(request, "You are not a member of any Project Group. Please Register a Project Group First.")
         if request.user.role == "STUDENT": 
-            return redirect('home-student')
+            return redirect('my-defense-application')
         elif request.user.role == "FACULTY": 
             return redirect('home-faculty')
         elif request.user.is_current_coordinator:
@@ -943,7 +941,7 @@ def submit_defense_application(request):
     if project is None:
         messages.error(request, "No project found for your group. Please submit a project first and wait for approval from an Adviser.")
         if request.user.role == "STUDENT": 
-            return redirect('home-student')
+            return redirect('my-defense-application')
         elif request.user.role == "FACULTY": 
             return redirect('home-faculty')
         elif request.user.is_current_coordinator:
@@ -1109,8 +1107,7 @@ def submit_defense_application(request):
     })
 
     
-from django.db.models import Subquery, OuterRef, F
-from django.utils import timezone
+
     
 def list_defense_applications(request):
     if request.user.is_authenticated:
@@ -1175,21 +1172,22 @@ def my_defense_application(request):
     # Get the project group of the logged-in user
     project_group = get_user_project_group(request)
     
-    if not project_group:
-        messages.error(request, "You are not part of any project group.")
-        if request.user.is_authenticated: 
-            if request.user.role == "STUDENT": 
-                return redirect('home-student')
-            elif request.user.role == "FACULTY": 
-                return redirect('home-faculty')
-            elif request.user.is_current_coordinator:
-                return redirect('coordinator-dashboard')
-            else: 
-              return redirect('home')
-        else:
-             return redirect('home')
+    # if not project_group:
+        # messages.error(request, "You are not part of any project group.")
+        # if request.user.is_authenticated: 
+        #     if request.user.role == "STUDENT": 
+        #         return redirect('home-student')
+        #     elif request.user.role == "FACULTY": 
+        #         return redirect('home-faculty')
+        #     elif request.user.is_current_coordinator:
+        #         return redirect('coordinator-dashboard')
+        #     else: 
+        #       return redirect('home')
+        # else:
+        #      return redirect('home')
     
     # Subquery to fetch the latest submission date per project
+    
     latest_application_date_subquery = Defense_Application.objects.filter(
         project=OuterRef('project')
     ).order_by('-submission_date').values('submission_date')[:1]
@@ -2380,7 +2378,7 @@ def faculty_tab(request):
         projects = Project.objects.filter(adviser=request.user).order_by('title')
 
     # Paginate projects (adjust items per page as needed)
-    paginator = Paginator(projects, 5)  
+    paginator = Paginator(projects, 10)  
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

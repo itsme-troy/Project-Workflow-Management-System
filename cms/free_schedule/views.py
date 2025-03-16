@@ -58,14 +58,19 @@ def all_sched(request): # still return
 
         out.append({
             'id': event.id,
+            # 'title': event.title, 
             'start': start_local.isoformat(),
             'end': end_local.isoformat(),
             'color': event.color, 
         })
     
    # Log the output for debugging
-    logger.debug("Returning events: " + json.dumps(out, indent=4))  
+       
+    print(json.dumps(out, indent=4))  # Debugging
+    
     return JsonResponse(out, safe=False)
+    # logger.debug("Returning events: " + json.dumps(out, indent=4))  
+    # return JsonResponse(out, safe=False)
 
 def add_sched(request):
     # title = request.GET.get("title")
@@ -130,7 +135,7 @@ def add_sched(request):
 def update_sched(request):
     start = request.GET.get("start")
     end = request.GET.get("end")
-    title = request.GET.get("title")
+    # title = request.GET.get("title")
     event_id = request.GET.get("id")
     
     try:
@@ -140,14 +145,14 @@ def update_sched(request):
         event = Available_schedule.objects.get(id=event_id)
         event.start = start_datetime
         event.end = end_datetime
-        event.title = title
+        # event.title = title
         event.save()
 
         return JsonResponse({
             'status': 'success',
             'message': 'Schedule updated successfully',
             'id': event.id,
-            'title': event.title,
+            # 'title': event.title,
             'start': event.start.isoformat(),
             'end': event.end.isoformat(),
         })

@@ -148,7 +148,7 @@ def add_sched(request):
     start = request.GET.get("start")
     end = request.GET.get("end")
     color = request.GET.get("color", None)
-    application_id = request.GET("application")
+    application_id = request.GET.get("application")
     # all_day = request.GET.get("allDay", "false") == "true"
     # logger.debug(f"Received data: title={title}, start={start}, end={end}")
 

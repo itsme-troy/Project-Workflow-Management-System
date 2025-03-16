@@ -1129,7 +1129,6 @@ a:hover, a:focus {
 }
 
 
-
 @media (max-width: 768px) {
     .notification-list {
         max-height: 400px; /* Adjust for smaller screens */
@@ -1546,9 +1545,10 @@ body {
 
 /* Calendar Container Styling */
 .my_calendar {
+    overflow-x: auto;
     background-color: #ffffff;
     border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin: 10px 0;
     min-height: 750px; /* Match the height of your table container */
@@ -1557,23 +1557,21 @@ body {
 /* Calendar Header Styling */
 .my_calendar .fc-header-toolbar {
     margin-bottom: 1.5em !important;
-    padding: 10px;
+    padding: 5px;
 }
 
 /* Calendar Buttons */
 .my_calendar .fc-button {
-    background-color: #f8f9fa !important;
-    border: 1px solid #dee2e6 !important;
-    color: #495057 !important;
-    padding: 8px 16px !important;
-    font-weight: 500 !important;
-    transition: all 0.3s ease !important;
+    padding: 10px 10px !important; /* Increase padding for better touch experience */
+    font-size: 0.9em !important; /* Slightly reduce text size for balance */
+    margin: 0px !important; /* Adds spacing between buttons */
+    border-radius: 6px !important; /* Smooth rounded corners */
+    transition: all 0.3s ease-in-out !important;
 }
 
 .my_calendar .fc-button:hover {
-    background-color: #e9ecef !important;
-    border-color: #ced4da !important;
-    transform: translateY(-1px);
+    transform: scale(1.05); /* Slight hover effect */
+
 }
 
 .my_calendar .fc-button-active {
@@ -1584,36 +1582,34 @@ body {
 
 /* Calendar Title */
 .my_calendar .fc-toolbar-title {
-    font-size: 1.5em !important;
-    font-weight: 600 !important;
-    color: #343a40 !important;
+    font-size: 1.8em !important;
+    font-weight: bold !important;
+    color: #333 !important;
 }
 
 /* Calendar Grid */
 .my_calendar .fc-daygrid-day {
-    transition: background-color 0.2s ease;
+    padding: 10px !important;
+    transition: all 0.3s ease;
 }
 
 .my_calendar .fc-daygrid-day:hover {
-    background-color: #f8f9fa;
+    background: rgba(0, 123, 255, 0.1);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Calendar Events */
 .my_calendar .fc-event {
-    border-radius: 4px !important;
-    padding: 3px 6px !important;
-    margin: 2px 0 !important;
-    border: none !important;
-    font-size: 0.9em !important;
-    cursor: pointer !important;
-    transition: transform 0.2s ease !important;
+    color: white !important;
+    border-radius: 6px !important;
+    padding: 5px 8px !important;
+    font-weight: 500 !important;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .my_calendar .fc-event:hover {
-    transform: translateY(-1px) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(-2px);
 }
-
 /* Today's Date Highlight */
 .my_calendar .fc-day-today {
     background-color: rgba(0, 123, 255, 0.05) !important;
@@ -1626,6 +1622,16 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+
+    .my_calendar .fc-header-toolbar {
+        flex-direction: column !important; /* Stack buttons vertically on small screens */
+        gap: 6px !important; /* Reduce spacing for better fit */
+    }
+
+    .my_calendar .fc-button {
+        padding: 8px 14px !important; /* Reduce padding slightly */
+        font-size: 0.8em !important; /* Adjust font size */
+    }
     .action-buttons {
         display: flex;
         flex-direction: column;
@@ -1646,7 +1652,26 @@ body {
 
     .my_calendar .fc-button {
         padding: 6px 12px !important;
-        font-size: 0.9em !important;
+        font-size: 0.8em !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .my_calendar .fc-header-toolbar {
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    .my_calendar {
+        padding: 5px;
+    }
+}
+@media (max-width: 480px) {
+    .my_calendar .fc-toolbar-title {
+        font-size: 1em !important;
+    }
+    .fc-view {
+        min-width: 400px;
     }
 }
 

@@ -9,7 +9,7 @@
 
         <div class="header-buttons">
             {% if request.user.role == "FACULTY" %}
-                <a href="{% url 'submit-project-idea' %}" class="btn btn-add-proposal" style="padding: 10px 20px; border-radius: 5px; background-color: #007bff; color: white; text-decoration: none; transition: background-color 0.3s;">
+                <a href="{% url 'submit-project-idea' %}" class="btn faculty-btn" style="padding: 10px 20px; border-radius: 5px; background-color: #007bff; color: white; text-decoration: none; transition: background-color 0.3s;">
                     <i class="fas fa-plus"></i> Submit Idea
                 </a>
             {% endif %}
@@ -32,6 +32,10 @@
 {% else %}
     
     <table class="table table-hover table-bordered"> <!-- Table for project ideas -->
+        <caption class="text-center">
+            Project Ideas List
+        </caption>
+
         <thead>
             <tr>
                 <th>#</th> <!-- Loop counter -->

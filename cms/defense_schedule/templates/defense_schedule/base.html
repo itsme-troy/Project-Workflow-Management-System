@@ -8,8 +8,10 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-    <scripxxt src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
-     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.39/moment-timezone.min.js"></script>
+    
+    <!-- FullCalendar
     <link rel="stylesheet" href="{% static 'free_schedule/css/free_sched.css' %}">
     <link rel="stylesheet" href="{% static 'free_schedule/css/style_calendar.css' %}">
     
@@ -24,7 +26,6 @@
     {{ block.super }}
 
     <script>
-
         function formatDate(date) {
             return moment(date).toISOString(); // Use ISO format
         }
@@ -43,7 +44,7 @@
         function refreshEventsList() {
             $.ajax({
                 type: "GET",
-                url: 'all_sched',  
+                url: "/defense_schedule/all_sched/",
                 dataType: "json",
                 
                 success: function (data) {
@@ -140,7 +141,7 @@
         
                 // Send AJAX request
                 $.ajax({
-                    url: 'create_defense_schedule', // URL for the view
+                    url: "/defense_schedule/create_defense_schedule/",
                     type: 'POST',
                     headers: {
                         'X-CSRFToken': csrfToken // Include the CSRF token in the headers
@@ -168,7 +169,7 @@
                     right: 'month,agendaWeek,agendaDay'
                 },
                 timezone: 'Asia/Manila', // Align with server timezone
-                events: 'all_sched',  // Load events from this endpoint
+                events: "/defense_schedule/all_sched/",  // Load events from this endpoint
                 selectable: true,  // Enable selection on the calendar
                 selectHelper: true,  // Disable "helper" selection UI
                 editable: true,  // Allow event editing
@@ -219,15 +220,15 @@
                     // Format start and end times in the local timezone (Asia/Manila)
                     var startFormatted = moment(event.start).tz('Asia/Manila').format('hh:mm A');
                     var endFormatted = moment(event.end).tz('Asia/Manila').format('hh:mm A');
-                    var timeText = startFormatted + ' - </br>' + endFormatted; 
+                    var timeText = startFormatted + ' </br>' + endFormatted; 
                 
                     // Construct the content to display project title first, followed by the time
                     var displayContent = `
-                        <div style="font-size: 14px; font-weight: bold; color: ${textColor}; text-align: center;" >
+                        <div style="font-size: 12px; font-weight: bold; color: ${textColor}; text-align: center;" >
                             ${event.application}
-                        </div>  <div style="font-size: 14px; font-weight: bold; color: ${textColor};" >
-                        </div>
-                        <div style="font-size: 12px; color: ${textColor};">
+                        </div>  
+                        
+                        <div style="font-size: 12px; color: ${textColor}; text-align: center;">
                             ${timeText}
                         </div>
                     `;
@@ -272,7 +273,8 @@
 
                     $.ajax({
                         type: "GET",
-                        url: 'update_sched',
+                        url: "/defense_schedule/update_sched/",
+                        
                         data: {
                             'start': startFormatted, 
                             'end': endFormatted,
@@ -305,7 +307,7 @@
 
                     $.ajax({
                         type: "GET",
-                        url: 'update_sched',
+                        url: "/defense_schedule/update_sched/",
                         data: {
                             'start': startFormatted, 
                             'end': endFormatted, 
@@ -315,7 +317,7 @@
                         dataType: "json",
                         success: function (data) {
                             calendar.fullCalendar('refetchEvents');
-                            //refreshEventsList(); // Refresh the events 
+                            refreshEventsList(); // Refresh the events 
                             location.reload(); // Refresh the page to show the new schedule
                             alert('Schedule Updated');
                         },
@@ -338,7 +340,9 @@
                         var id = event.id;
                         $.ajax({
                             type: "GET",
-                            url: 'remove_sched',
+                            url: "/defense_schedule/remove_sched/",
+                        
+
                             data: {
                                 'id': id,
                                 'csrfmiddlewaretoken': '{{ csrf_token }}',  // Include CSRF token for safety

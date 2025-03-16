@@ -15,7 +15,7 @@
     <div class="row g-4 text-center">
         <!-- Advisory Projects Card -->
         <div class="col-md-4">
-            <a href="{% url 'adviser-projects' %}" class="card-link text-decoration-none text-dark">
+            <a href="{% url 'faculty-tab' %}?filter=projects" class="card-link text-decoration-none text-dark">
                 <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
                     <div class="card-body">
                         <i class="fas fa-users-cog fa-3x mb-3 text-primary"></i>
@@ -28,7 +28,7 @@
 
         <!-- Received Proposals Card -->
         <div class="col-md-4">
-            <a href="{% url 'adviser-proposals' %}" class="card-link text-decoration-none text-dark">
+            <a href="{% url 'faculty-tab' %}?filter=proposals" class="card-link text-decoration-none text-dark">
                 <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
                     <div class="card-body">
                         <i class="fas fa-paper-plane fa-3x mb-3 text-success"></i>
@@ -41,7 +41,7 @@
 
         <!-- Panel Projects Card -->
         <div class="col-md-4">
-            <a href="{% url 'panel-projects' %}" class="card-link text-decoration-none text-dark">
+            <a href="{% url 'faculty-tab' %}?filter=panelist" class="card-link text-decoration-none text-dark">
                 <div class="card h-100 border-3 shadow-sm d-flex flex-column align-items-center">
                     <div class="card-body">
                         <i class="fas fa-chalkboard fa-3x mb-3 text-warning"></i>
@@ -102,5 +102,18 @@
         </div>
     </div>
 </footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var filter = "{{ filter_type }}";  // Get filter from Django context
+
+        if (filter) {
+            var targetTab = document.getElementById(filter);
+            if (targetTab) {
+                targetTab.click(); // Simulate a click on the correct tab
+            }
+        }
+    });
+</script>
 
 {% endblock %}

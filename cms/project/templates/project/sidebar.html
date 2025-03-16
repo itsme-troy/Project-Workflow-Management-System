@@ -180,11 +180,9 @@
                         {% if user.role == 'STUDENT' %}
                             <li><a class="dropdown-item" href="{% url 'my-project' %}"><i class="fas fa-tasks icon icon-margin"></i> My Project  </a></li> 
                             <li><a class="dropdown-item" href="{% url 'list-proposals' %}"><i class="fas fa-file-alt icon icon-margin"></i> All Proposals  </a></li> 
-                            <li><a class="dropdown-item" href="{% url 'add-project' %}"><i class="fas fa-file-upload icon icon-margin"></i> Add Proposal  </a></li>
+                            {% comment %} <li><a class="dropdown-item" href="{% url 'add-project' %}"><i class="fas fa-file-upload icon icon-margin"></i> Add Proposal  </a></li> {% endcomment %}
                         {% endif %}
 
-            
-                        
                         {% if request.user.is_current_coordinator %}
                                 <li><a class="dropdown-item" href="{% url 'coordinator-projects' %}">
                                     <i class="fas fa-check-circle icon icon-margin"></i> View Projects
@@ -244,18 +242,6 @@
                     </li>
             {% endif %}
 
-            {% comment %} {% if user.role == 'FACULTY' %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Faculty_tab">
-                        <span class="icon"><i class="fas fa-chalkboard-teacher icon icon-margin"></i> </span>
-                        <span class="sidebar-link-text">Faculty Tab</span>
-                    </a>
-                    <ul class="dropdown-menu">
-                  
-                        <li><a class="dropdown-item" href="{% url 'free-schedule' %}"> Set Available Schedule  </a></li>
-                    </ul>
-                </li>
-            {% endif %} {% endcomment %}
 
             {% if request.user.role == 'FACULTY' or request.user.is_current_coordinator %}
                 <li>    
@@ -265,24 +251,6 @@
                     </a>
                 </li>
             {% endif %}
-
-            {% comment %} {% if request.user.role == 'COORDINATOR' and request.user.is_current_coordinator %}
-              
-                            
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-title="Coordinator_tab">
-                            <span class="icon"><i class="fas fa-user-tie"></i></span> 
-                            <span class="sidebar-link-text">Coordinator Tab </span> 
-                        </a>
-                    <ul class="dropdown-menu">
-   
-                        <li><a class="dropdown-item" href="{% url 'common-sched-calendar' %}"><i class="fas fa-calendar-alt"></i> View Common Available Schedule</a></li>
-                     
-                        <li><a class="dropdown-item" href="{% url 'create-custom-phases' %}"><i class="fas fa-file-alt"></i> Create Custom Phase </a></li>
-                        
-                        </ul>
-                    </li>
-            {% endif %} {% endcomment %}
 
             {% if request.user.is_authenticated %}
                     {% if request.user.role == 'STUDENT' %}

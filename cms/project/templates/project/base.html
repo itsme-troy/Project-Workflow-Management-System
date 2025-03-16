@@ -10,21 +10,19 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="path/to/line-awesome/css/line-awesome-font-awesome.min.css" >
-    <link rel="stylesheet" href="fonts/remixicon.css">
-    <link rel="stylesheet" href="{% static 'images/default_profile_pic.jpg' %}">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="stylesheet" href="{% static 'images/user.jpg' %}">
-    <link rel="stylesheet" href="{% static 'css/notification.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/line-awesome/1.3.0/css/line-awesome.min.css">
 
+    <link rel="stylesheet" href="fonts/remixicon.css">
+    {% comment %} <img src="{% static 'images/default_profile_pic.jpg' %}" alt="Profile Picture"> {% endcomment %}
+    {% comment %} <img src="{% static 'images/user.jpg' %}" alt="Profile Picture"> {% endcomment %}
+    
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/notification.css' %}">
     <link rel="stylesheet" href="{% static 'css/free_sched_style.css' %}">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
     <!-- ===== ===== Custom Css ===== ===== -->
-    <link rel="stylesheet" href="{% static 'profile_style.css' %}">
-    <link rel="stylesheet" href="{% static 'responsive.css' %}">
-
-    <!-- ===== ===== Remix Font Icons Cdn ===== ===== -->
-    <link rel="stylesheet" href="fonts/remixicon.css">
+    {% comment %} <link rel="stylesheet" href="{% static 'css/profile_style.css' %}"> {% endcomment %}
+    {% comment %} <link rel="stylesheet" href="{% static 'css/responsive.css' %}"> {% endcomment %}
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
@@ -81,8 +79,6 @@
                       <span class="notification-dropdown-badge" id="notification-count">0</span> 
                         
                       <div class="icon-label"> <span> Notifications </span> </div>
-          
-                    
                     </a>
                     <ul class="dropdown-menu notification-dropdown text-start" aria-labelledby="notificationsDropdown" id="notifDropdown">
                       <li>
@@ -97,23 +93,10 @@
                         <!-- Notifications will be dynamically inserted here -->
                             <li class="dropdown-item text-muted">No notifications at the moment.</li>
                       </div>
-                    
                     </ul>
                   </li>
                 {% endif %}  
-              {% comment %}                 
-                  <li> <a href="#">Features</a> </li>
-                  <li> <a href="#">About</a> </li>
-                  <li> <a href="#">Contact</a> </li> {% endcomment %}
-                  
-                    {% comment %} 
-                  <li><i class="fas fa-user"></i>
-                    <div class="">
-                      <div class="">Profile</div>
-                      <div class="dd_item">Change Password</div>
-                      <div class="dd_item"><a href="{% url 'logout' %}" style="text-decoration: none; color: inherit;"><i class="fas fa-sign-out-alt"></i> Logout</a></div>
-                    </div>
-                  </li> {% endcomment %}
+  
                 </ul>
                   <div><span class="user-info-header" onclick="toggleMenu()">
                     {% if request.user.is_authenticated %}     
@@ -164,13 +147,7 @@
                             <span class="material-icons">chevron_right</span>
                           </a>
                           
-                          {% comment %} <a href="#" class="sub-menu-link">
-                            <i class="material-icons">settings</i>
-                            <p>Settings</p> <!--  and Privacy -->
-                            <span class="material-icons">chevron_right</span>
-                          </a>
-
-                           {% endcomment %}
+          
                               <!-- Delete Account Button -->
                           <a href="{% url 'delete-account' user.id %}" class="sub-menu-link"
                               onclick="return confirm('Are you sure you want delete your account? This action cannot be undone.')">
@@ -249,7 +226,6 @@
   </main> 
         <br/> 
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     
     {% csrf_token %}
     

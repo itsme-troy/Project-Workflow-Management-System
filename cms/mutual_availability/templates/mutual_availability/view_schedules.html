@@ -33,10 +33,13 @@
 
     <section id="faculty-schedule" class="faculty-schedule-container mb-6 border p-3 rounded bg-light mb-3">
         <!-- Faculty Schedules -->
-        <div class="d-flex justify-content-between align-items-center">
-            <h4>Available Schedules</h4>
-            <button id="toggle-button" class="btn btn-sm btn-secondary">Minimize</button>
+        <div class="header-container">
+            <h4 class="page-title" style="text-transform:none; ">Faculty</h4>
+            <div class="header-buttons">
+                <button id="toggle-button" class="btn btn-sm btn-secondary">Minimize</button>
+            </div>
         </div>
+          
             <div id="faculty-content" class="faculty-content">
                 <ul id="faculty-list-group" class="list-group">
                     {% for faculty, schedules in grouped_events.items %}
@@ -153,9 +156,8 @@
             <!-- Filter by Project Form -->
         <div class="mb-6">
             <form id="filter-project-form" method="GET" class="border p-3 rounded bg-light mb-3" action="{% url 'view-schedule' %}">
-                <h5>Filter Common Schedule Results </h5>
                 <div class="mb-2">
-                    <label for="project" class="form-label">Select Project:</label>
+                    <label for="project" class="form-label">Select Project Filter:</label>
                     <select name="project" id="project" class="form-control">
                         <option value="" {% if not request.GET.project %}selected{% endif %}>
                             All Project
@@ -174,7 +176,7 @@
         
             <div class="mb-4">
                 <section class="common-schedule-container mb-6 border p-3 rounded bg-light mb-3">
-                    <h5 class="form-label text-center mb-3">Common Schedule</h5>
+                    <h5 class="form-label text-center mb-3">Mutual Availability</h5>
                     
                     <ul id="common-schedule-list" class="list-group">
                         {% for start, end in common_schedules %}

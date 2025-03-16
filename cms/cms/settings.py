@@ -28,6 +28,10 @@ if os.getenv("RUN_MAIN", None) != "true":  # Prevent duplicate Ngrok connections
     ALLOWED_HOSTS.append(public_url.replace("https://", "").replace("http://", ""))
 
 
+INTERNAL_IPS = [
+    "127.0.0.1",  # Localhost
+]
+
 ABSTRACT_API_KEY = "27979452bb704be3a9fcdcaf1d5ab7b6"
 
 INSTALLED_APPS = [
@@ -121,17 +125,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = 'Asia/Manila'
+USE_TZ = True
 
 USE_I18N = True
-
-USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -144,6 +146,7 @@ STATICFILES_DIRS = [
     BASE_DIR / "free_schedule/static",
     BASE_DIR / "mutual_availability/static",
 ]
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
 
 MEDIA_URL = 'media/'

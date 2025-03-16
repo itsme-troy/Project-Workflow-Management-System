@@ -26,7 +26,16 @@
 
     <div class="table-responsive"> 
         <table class="table table-hover table-bordered student-table">
-            <caption class="text-center"> Student List</caption>
+            
+            <caption class="text-center">
+                {% if filter_type == 'eligible' %}
+                    List of Eligible Students
+                {% elif filter_type == 'waitlist' %}
+                    List of Waitlisted Students
+                {% else %}
+                    Student List
+                {% endif %}
+            </caption>
 
             <thead class="thead-dark">
                 <tr>
